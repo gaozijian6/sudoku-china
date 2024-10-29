@@ -5,7 +5,6 @@ const sudokuStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingTop: 20,
   },
   gameInfo: {
     flexDirection: 'row',
@@ -14,6 +13,9 @@ const sudokuStyles = StyleSheet.create({
     width: 360,
     marginBottom: 20,
     alignSelf: 'center',
+    height: 40,
+    position: 'relative',
+    top: 10,
   },
   sudokuGrid: {
     width: 365,
@@ -21,8 +23,11 @@ const sudokuStyles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignSelf: 'center',
-    borderWidth: 2,
-    // borderColor: '#000',
+  },
+  gameInfoText: {
+    fontSize: 16,
+    marginHorizontal: 10,
+    color: 'rgb(59, 61, 99)',
   },
   sudokuCell: {
     width: 40,
@@ -31,22 +36,22 @@ const sudokuStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
-    borderColor: '#d9d9d9',
+    borderColor: 'rgb(204,223,253)',
   },
   sudokuCellRightBorder: {
-    borderRightWidth: 3,
+    borderRightWidth: 2,
     borderRightColor: '#000000',
   },
   sudokuCellBottomBorder: {
-    borderBottomWidth: 3,
+    borderBottomWidth: 2,
     borderBottomColor: '#000000',
   },
   sudokuCellLeftBorder: {
-    borderLeftWidth: 3,
+    borderLeftWidth: 2,
     borderLeftColor: '#000000',
   },
   sudokuCellTopBorder: {
-    borderTopWidth: 3,
+    borderTopWidth: 2,
     borderTopColor: '#000000',
   },
   sudokuCellTopNoBorder: {
@@ -84,8 +89,10 @@ const sudokuStyles = StyleSheet.create({
     fontSize: 8,
   },
   givenNumber: {
-    fontWeight: 'bold',
-    color: '#1890ff',
+    color: '#000',
+  },
+  userNumber: {
+    color: 'rgb(80,101,182)',
   },
   errorCell: {
     backgroundColor: '#ffccc7',
@@ -105,19 +112,18 @@ const sudokuStyles = StyleSheet.create({
     alignItems: 'center',
   },
   draftCellActive: {
-    backgroundColor: '#f0f0f0',
   },
   draftCellText: {
     fontSize: 8,
   },
   selectedCell: {
-    backgroundColor: '#e6f7ff',
     borderWidth: 2,
-    borderColor: '#1890ff',
+    backgroundColor: 'rgb(204,223,253)',
   },
   selectedNumber: {
-    fontSize: 18,
+    fontSize: 30,
     fontWeight: 'bold',
+    color: 'rgb(78,106,176)',
   },
   candidateNumber: {
     backgroundColor: '#9bf9ab',
@@ -141,11 +147,39 @@ const sudokuStyles = StyleSheet.create({
     marginTop: 20,
     flexDirection: 'row',
     flexWrap: 'wrap',
+    width: '100%',
+    justifyContent: 'space-evenly',
+    paddingHorizontal: 16,
+    position: 'relative',
+    top: -25,
+  },
+  buttonContainer: {
+    alignItems: 'center',
+  },
+  circleButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: '#d9d9d9',
+  },
+  buttonText: {
+    marginTop: 4,
+    fontSize: 12,
+    color: '#666666',
+  },
+  buttonIcon: {
+    width: 32,
+    height: 32,
   },
   numberButtons: {
     flexDirection: 'row',
     justifyContent: 'center',
     flexWrap: 'wrap',
+    marginTop: 10,
+    position: 'relative',
+    top: -25,
   },
   numberButton: {
     flexDirection: 'column',
@@ -154,10 +188,17 @@ const sudokuStyles = StyleSheet.create({
     width: 40,
     height: 60,
     margin: 2,
+    borderWidth: 1,
+    borderColor: '#d9d9d9',
+    borderRadius: 5,
+    fontSize: 30,
+    paddingBottom: 6,
+    paddingTop: 4,
   },
   remainingCount: {
     fontSize: 12,
     marginTop: 2,
+    color: 'rgb(125,123,134)',
   },
   solveButton: {
     marginTop: 20,

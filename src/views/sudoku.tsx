@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, {useState, useEffect, useCallback} from 'react';
 // import { Card, Button, message, Drawer } from "antd";
 // import { CloseOutlined } from "@ant-design/icons";
-import {View, Text, TouchableOpacity, ViewStyle} from 'react-native';
-import {Button, Drawer} from '@ant-design/react-native';
+import {View, Text, TouchableOpacity, ViewStyle, Image} from 'react-native';
+import {Button} from '@ant-design/react-native';
 import {
   useTimer,
   solve,
@@ -14,7 +14,7 @@ import {
   useSudokuBoard,
   deepCopyBoard,
   copyOfficialDraft,
-} from "../tools";
+} from '../tools';
 import {
   hiddenSingle,
   singleCandidate,
@@ -36,16 +36,18 @@ import {
   swordfish,
   eureka,
   trialAndError,
-} from "../tools/solution";
-import type { CellData, Position } from "../tools";
-import type { Result } from "../tools/solution";
-import { SOLUTION_METHODS, DIFFICULTY } from "../constans";
-import styles from "./sudokuStyles";
+} from '../tools/solution';
+import type {CellData, Position} from '../tools';
+import type {Result} from '../tools/solution';
+import {SOLUTION_METHODS, DIFFICULTY} from '../constans';
+import styles from './sudokuStyles';
+import {Svg, Path} from 'react-native-svg';
+import {Switch} from '@ant-design/react-native';
 
 const Sudoku: React.FC = () => {
   const initialBoard = Array(9)
     .fill(null)
-    .map(() => Array(9).fill({ value: null, isGiven: false, draft: [] }));
+    .map(() => Array(9).fill({value: null, isGiven: false, draft: []}));
   const {
     board,
     updateBoard,
@@ -61,7 +63,7 @@ const Sudoku: React.FC = () => {
   const [eraseMode, setEraseMode] = useState<boolean>(false);
   const [draftMode, setDraftMode] = useState<boolean>(false);
   const [remainingCounts, setRemainingCounts] = useState<number[]>(
-    Array(9).fill(9)
+    Array(9).fill(9),
   );
   const [lastErrorTime, setLastErrorTime] = useState<number | null>(null);
   const errorCooldownPeriod = 1000; // 错误冷却时间，单位毫秒
@@ -71,13 +73,13 @@ const Sudoku: React.FC = () => {
     col: number;
   } | null>(null);
   const [selectionMode, setSelectionMode] = useState<1 | 2>(1);
-  const [errorCells, setErrorCells] = useState<{ row: number; col: number }[]>(
-    []
+  const [errorCells, setErrorCells] = useState<{row: number; col: number}[]>(
+    [],
   );
   const [officialDraftUsed, setOfficialDraftUsed] = useState<boolean>(false);
   const [hintDrawerVisible, setHintDrawerVisible] = useState<boolean>(false);
-  const [hintContent, setHintContent] = useState<string>("");
-  const [hintMethod, setHintMethod] = useState<string>("");
+  const [hintContent, setHintContent] = useState<string>('');
+  const [hintMethod, setHintMethod] = useState<string>('');
   const [result, setResult] = useState<Result | null>(null);
   const [prompts, setPrompts] = useState<number[]>([]);
   const [positions, setPositions] = useState<number[]>([]);
@@ -99,21 +101,698 @@ const Sudoku: React.FC = () => {
     //   [null,5,null,6,null,8,null,3,4],
     // ];
 
-    let newBoard: CellData[][] = initialBoard.map((row) =>
-      row.map((value) => ({
+    let newBoard: CellData[][] = initialBoard.map(row =>
+      row.map(value => ({
         value,
         isGiven: value !== null,
         draft: [],
-      }))
+      })),
     );
 
-    // newBoard =
+    newBoard =[
+      [
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  2,
+                  3,
+                  5,
+                  9
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  3,
+                  4,
+                  5
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  2,
+                  3,
+                  5
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  4,
+                  6
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  2,
+                  6,
+                  7,
+                  9
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  2,
+                  4,
+                  6,
+                  9
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  5,
+                  6,
+                  7,
+                  8,
+                  9
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  6,
+                  7,
+                  9
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  3,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9
+              ]
+          }
+      ],
+      [
+          {
+              "value": 7,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": 8,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  2,
+                  3
+              ]
+          },
+          {
+              "value": 5,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  2,
+                  6,
+                  9
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  2,
+                  6,
+                  9
+              ]
+          },
+          {
+              "value": 1,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": 4,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  3,
+                  6,
+                  9
+              ]
+          }
+      ],
+      [
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  5,
+                  9
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  4,
+                  5
+              ]
+          },
+          {
+              "value": 6,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": 3,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  7,
+                  9
+              ]
+          },
+          {
+              "value": 8,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": 2,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  7,
+                  9
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  5,
+                  7,
+                  9
+              ]
+          }
+      ],
+      [
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  3,
+                  8
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  3,
+                  6,
+                  7
+              ]
+          },
+          {
+              "value": 9,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": 2,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  6,
+                  8
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  3,
+                  4,
+                  6
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  4,
+                  6,
+                  7,
+                  8
+              ]
+          },
+          {
+              "value": 5,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  4,
+                  6,
+                  7,
+                  8
+              ]
+          }
+      ],
+      [
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  5,
+                  8
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  5,
+                  6
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  5,
+                  8
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  4,
+                  6,
+                  8
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  5,
+                  6,
+                  8
+              ]
+          },
+          {
+              "value": 7,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  4,
+                  6,
+                  8,
+                  9
+              ]
+          },
+          {
+              "value": 3,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  2,
+                  4,
+                  6,
+                  8,
+                  9
+              ]
+          }
+      ],
+      [
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  3,
+                  5,
+                  8
+              ]
+          },
+          {
+              "value": 2,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": 4,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": 6,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  5,
+                  6,
+                  8
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  3,
+                  5,
+                  6
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  6,
+                  7,
+                  8
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  6,
+                  7
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  6,
+                  7,
+                  8
+              ]
+          }
+      ],
+      [
+          {
+              "value": 4,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": 9,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  2,
+                  5,
+                  7
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  6
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  2,
+                  5,
+                  6
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  2,
+                  5,
+                  6
+              ]
+          },
+          {
+              "value": 3,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": 8,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  2,
+                  5,
+                  6,
+                  7
+              ]
+          }
+      ],
+      [
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  2,
+                  5,
+                  8
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  5
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  2,
+                  5,
+                  8
+              ]
+          },
+          {
+              "value": 7,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": 3,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  2,
+                  5,
+                  6,
+                  9
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  4,
+                  5,
+                  6,
+                  9
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  2,
+                  6,
+                  9
+              ]
+          },
+          {
+              "value": 1,
+              "isGiven": false,
+              "draft": []
+          }
+      ],
+      [
+          {
+              "value": 6,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  3,
+                  5,
+                  7
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  2,
+                  3,
+                  5,
+                  7,
+                  8
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  8
+              ]
+          },
+          {
+              "value": 4,
+              "isGiven": false,
+              "draft": []
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  1,
+                  2,
+                  5,
+                  9
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  5,
+                  7,
+                  9
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  2,
+                  7,
+                  9
+              ]
+          },
+          {
+              "value": null,
+              "isGiven": false,
+              "draft": [
+                  2,
+                  5,
+                  7,
+                  9
+              ]
+          }
+      ]
+  ]
 
-    updateBoard(newBoard, "生成新棋盘");
+    updateBoard(newBoard, '生成新棋盘');
 
     // 生成解决方案
-    const solvedBoard = newBoard.map((row) => row.map((cell) => ({ ...cell })));
+    const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
     solve(solvedBoard);
+    console.log(currentStep);
+    
   };
 
   useEffect(() => {
@@ -126,14 +805,14 @@ const Sudoku: React.FC = () => {
 
   useEffect(() => {
     if (selectionMode === 2 && !selectedCell) {
-      setSelectedCell({ row: 0, col: 0 });
+      setSelectedCell({row: 0, col: 0});
     }
   }, [selectionMode, selectedCell]);
 
   const updateRemainingCounts = () => {
     const counts = Array(9).fill(9);
-    board.forEach((row) => {
-      row.forEach((cell) => {
+    board.forEach(row => {
+      row.forEach(cell => {
         if (cell.value) {
           counts[cell.value - 1]--;
         }
@@ -143,12 +822,9 @@ const Sudoku: React.FC = () => {
   };
 
   // 点击方格的回调函数
-  const handleCellChange = (
-    row: number,
-    col: number,
-  ) => {
+  const handleCellChange = (row: number, col: number) => {
     if (selectionMode === 2) {
-      setSelectedCell({ row, col });
+      setSelectedCell({row, col});
 
       if (eraseMode && !board[row][col].isGiven) {
         const newBoard = deepCopyBoard(board);
@@ -184,10 +860,10 @@ const Sudoku: React.FC = () => {
         if (officialDraftUsed) {
           const affectedCells = updateRelatedCellsDraft(
             newBoard,
-            [{ row, col }],
+            [{row, col}],
             oldValue,
             getCandidates,
-            true // 添加 isUndo 参数
+            true, // 添加 isUndo 参数
           );
           updateBoard(newBoard, `擦除 (${row}, ${col}) 的值`, affectedCells);
         } else {
@@ -199,25 +875,25 @@ const Sudoku: React.FC = () => {
         cell.draft.includes(selectedNumber)
       ) {
         // 如果是草稿模式且有选中的数字，只擦除该候选数字
-        cell.draft = cell.draft.filter((num) => num !== selectedNumber);
+        cell.draft = cell.draft.filter(num => num !== selectedNumber);
         updateBoard(
           newBoard,
-          `从 (${row}, ${col}) 擦除草稿数字 ${selectedNumber}`
+          `从 (${row}, ${col}) 擦除草稿数字 ${selectedNumber}`,
         );
       } else if (!draftMode && cell.draft.length > 0 && selectedNumber) {
         // 如果不是草稿模式且有草稿数字，擦除对应候选字
         if (cell.draft.includes(selectedNumber)) {
-          cell.draft = cell.draft.filter((num) => num != selectedNumber);
+          cell.draft = cell.draft.filter(num => num != selectedNumber);
           updateBoard(
             newBoard,
-            `擦除 (${row}, ${col}) 的草稿数字 ${selectedNumber}`
+            `擦除 (${row}, ${col}) 的草稿数字 ${selectedNumber}`,
           );
         } else {
           cell.draft.push(selectedNumber);
           cell.draft.sort((a, b) => a - b);
           updateBoard(
             newBoard,
-            `在 (${row}, ${col}) 的草稿中添加 ${selectedNumber}`
+            `在 (${row}, ${col}) 的草稿中添加 ${selectedNumber}`,
           );
         }
       } else {
@@ -231,7 +907,7 @@ const Sudoku: React.FC = () => {
         newBoard,
         row,
         col,
-        selectedNumber
+        selectedNumber,
       );
       if (conflictCells.length > 0) {
         setErrorCells(conflictCells);
@@ -259,15 +935,15 @@ const Sudoku: React.FC = () => {
         // 更新相关单元格的草稿数字
         const affectedCells = updateRelatedCellsDraft(
           newBoard,
-          [{ row, col }],
+          [{row, col}],
           selectedNumber,
-          getCandidates
+          getCandidates,
         );
 
         updateBoard(
           newBoard,
           `设置 (${row}, ${col}) 为 ${selectedNumber}`,
-          affectedCells
+          affectedCells,
         );
       } else {
         const currentTime = Date.now();
@@ -275,8 +951,8 @@ const Sudoku: React.FC = () => {
           lastErrorTime === null ||
           currentTime - lastErrorTime > errorCooldownPeriod
         ) {
-          setErrorCount((prevCount) => prevCount + 1);
-          setErrorCells([{ row, col }]);
+          setErrorCount(prevCount => prevCount + 1);
+          setErrorCells([{row, col}]);
           setLastErrorTime(currentTime);
           setTimeout(() => setErrorCells([]), errorCooldownPeriod);
         }
@@ -296,9 +972,9 @@ const Sudoku: React.FC = () => {
   };
 
   const solveSudoku = () => {
-    const solvedBoard = board.map((row) => row.map((cell) => ({ ...cell })));
+    const solvedBoard = board.map(row => row.map(cell => ({...cell})));
     if (solve(solvedBoard)) {
-      updateBoard(solvedBoard, "求解数独");
+      updateBoard(solvedBoard, '求解数独');
     }
     // message.info(`解的情况: ${checkSolutionStatus(solvedBoard)}`);
   };
@@ -307,7 +983,7 @@ const Sudoku: React.FC = () => {
     if (selectionMode === 1) {
       setEraseMode(!eraseMode);
     } else if (selectionMode === 2 && selectedCell) {
-      const { row, col } = selectedCell;
+      const {row, col} = selectedCell;
       handleCellChange(row, col);
     }
   };
@@ -315,7 +991,7 @@ const Sudoku: React.FC = () => {
   // 选择数字
   const handleNumberSelect = (number: number) => {
     if (selectionMode === 2 && selectedCell) {
-      const { row, col } = selectedCell;
+      const {row, col} = selectedCell;
       const cell = board[row][col];
 
       if (cell.value !== null || cell.isGiven) {
@@ -330,7 +1006,7 @@ const Sudoku: React.FC = () => {
           newBoard,
           row,
           col,
-          number
+          number,
         );
         if (conflictCells.length > 0) {
           setErrorCells(conflictCells);
@@ -358,16 +1034,14 @@ const Sudoku: React.FC = () => {
             lastErrorTime === null ||
             currentTime - lastErrorTime > errorCooldownPeriod
           ) {
-            setErrorCount((prevCount) => prevCount + 1);
+            setErrorCount(prevCount => prevCount + 1);
             setLastErrorTime(currentTime);
           }
           return;
         }
       }
     } else {
-      setSelectedNumber((prevNumber) =>
-        prevNumber === number ? null : number
-      );
+      setSelectedNumber(prevNumber => (prevNumber === number ? null : number));
     }
     setEraseMode(false);
   };
@@ -378,7 +1052,7 @@ const Sudoku: React.FC = () => {
 
   const handleShowCandidates = useCallback(() => {
     const newBoard = copyOfficialDraft(board);
-    updateBoard(newBoard, "复制官方草稿");
+    updateBoard(newBoard, '复制官方草稿');
     setOfficialDraftUsed(true);
   }, [board, updateBoard]);
 
@@ -390,21 +1064,21 @@ const Sudoku: React.FC = () => {
   const applyHintHighlight = (
     board: CellData[][],
     result: Result,
-    type: "position" | "prompt" | "both"
+    type: 'position' | 'prompt' | 'both',
   ) => {
-    const { position, target, prompt } = result;
+    const {position, target, prompt} = result;
     const newBoard = deepCopyBoard(board);
-    if (type === "position" || type === "both") {
-      position.forEach(({ row, col }: Position) => {
+    if (type === 'position' || type === 'both') {
+      position.forEach(({row, col}: Position) => {
         newBoard[row][col].highlights = newBoard[row][col].highlights || [];
-        newBoard[row][col].highlights.push("positionHighlight");
+        newBoard[row][col].highlights.push('positionHighlight');
         newBoard[row][col].highlightCandidates = target;
       });
     }
-    if (type === "prompt" || type === "both") {
-      prompt.forEach(({ row, col }: Position) => {
+    if (type === 'prompt' || type === 'both') {
+      prompt.forEach(({row, col}: Position) => {
         newBoard[row][col].highlights = newBoard[row][col].highlights || [];
-        newBoard[row][col].highlights.push("promptHighlight");
+        newBoard[row][col].highlights.push('promptHighlight');
         newBoard[row][col].highlightCandidates = target;
       });
     }
@@ -460,57 +1134,57 @@ const Sudoku: React.FC = () => {
   };
 
   const handleHintContent = (result: Result): string => {
-    const { position, target, method, prompt, isFill } = result;
-    let posStr = "";
-    let candStr = "";
-    let deleteStr = "";
+    const {position, target, method, prompt, isFill} = result;
+    let posStr = '';
+    let candStr = '';
+    let deleteStr = '';
     let promptCandidates = [];
     let uniquePromptCandidates = [];
     let diffCandidates = [];
     let boardWithHighlight = null;
-    let hintContent = "";
+    let hintContent = '';
     if (isFill) {
       setPrompts(target);
       switch (method) {
         case SOLUTION_METHODS.SINGLE_CANDIDATE:
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
           hintContent = `注意到单元格R${position[0].row + 1}C${
             position[0].col + 1
           }只剩${target.join(
-            ", "
-          )}一个候选数，所以可以确定该单元格的值为${target.join(", ")}`;
+            ', ',
+          )}一个候选数，所以可以确定该单元格的值为${target.join(', ')}`;
           break;
         case SOLUTION_METHODS.HIDDEN_SINGLE_ROW:
           setSelectedNumber(target[0]);
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
-          hintContent = `候选数${target.join(",")}在第${
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
+          hintContent = `候选数${target.join(',')}在第${
             position[0].row + 1
           }行中，只有一个候选方格，所以可以确定该单元格的值为${target.join(
-            ", "
+            ', ',
           )}`;
           break;
         case SOLUTION_METHODS.HIDDEN_SINGLE_COLUMN:
           setSelectedNumber(target[0]);
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
-          hintContent = `候选数${target.join(",")}在第${
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
+          hintContent = `候选数${target.join(',')}在第${
             position[0].col + 1
           }列中，只有一个候选方格，所以可以确定该单元格的值为${target.join(
-            ", "
+            ', ',
           )}`;
           break;
         case SOLUTION_METHODS.HIDDEN_SINGLE_BOX:
           setSelectedNumber(target[0]);
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
-          hintContent = `候选数${target.join(",")}在第${
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
+          hintContent = `候选数${target.join(',')}在第${
             Math.floor(position[0].row / 3) * 3 +
             Math.floor(position[0].col / 3) +
             1
           }宫中，只有一个候选方格，所以可以确定该单元格的值为${target.join(
-            ", "
+            ', ',
           )}`;
           break;
         case SOLUTION_METHODS.TRIAL_AND_ERROR:
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
           hintContent = `尝试向只有两个候选数的方格内填入${target[0]}，若后续无解，则说明填入${target[0]}是错误的，应填入另一个候选数`;
           break;
       }
@@ -519,7 +1193,7 @@ const Sudoku: React.FC = () => {
       switch (method) {
         case SOLUTION_METHODS.BLOCK_ELIMINATION_ROW:
           setPrompts(target);
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           if (prompt.length == 2) {
             posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
               prompt[1].row + 1
@@ -534,13 +1208,13 @@ const Sudoku: React.FC = () => {
             Math.floor(prompt[0].col / 3) +
             1
           }宫中，候选数${target.join(
-            ","
+            ',',
           )}只存在${posStr}中，无论存在哪个方格中，这一行上的其他位置都不应出现此候选数${target.join(
-            ","
+            ',',
           )}`;
           break;
         case SOLUTION_METHODS.BLOCK_ELIMINATION_COLUMN:
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           setPrompts(target);
           if (prompt.length == 2) {
             posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
@@ -556,14 +1230,14 @@ const Sudoku: React.FC = () => {
             Math.floor(prompt[0].col / 3) +
             1
           }宫中，候选数${target.join(
-            ","
+            ',',
           )}只存在${posStr}中，无论存在哪个方格中，这一列上的其他位置都不应出现此候选数${target.join(
-            ","
+            ',',
           )}`;
           break;
         case SOLUTION_METHODS.BLOCK_ELIMINATION_BOX_ROW:
           setPrompts(target);
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           if (prompt.length == 2) {
             posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
               prompt[1].row + 1
@@ -574,14 +1248,14 @@ const Sudoku: React.FC = () => {
             }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
           }
           hintContent = `在第${prompt[0].row + 1}行中，候选数${target.join(
-            ","
+            ',',
           )}只存在${posStr}中，无论存在哪个方格中，这一宫中的其他位置都不应出现此候选数${target.join(
-            ","
+            ',',
           )}`;
           break;
         case SOLUTION_METHODS.BLOCK_ELIMINATION_BOX_COLUMN:
           setPrompts(target);
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           if (prompt.length == 2) {
             posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
               prompt[1].row + 1
@@ -592,19 +1266,19 @@ const Sudoku: React.FC = () => {
             }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
           }
           hintContent = `在第${prompt[0].col + 1}列中，候选数${target.join(
-            ","
+            ',',
           )}只存在${posStr}中，无论存在哪个方格中，这一宫中的其他位置都不应出现此候选数${target.join(
-            ","
+            ',',
           )}`;
           break;
         case SOLUTION_METHODS.NAKED_PAIR_ROW:
           setPrompts(target);
           setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}`;
-          candStr = target.join(",");
+          candStr = target.join(',');
           hintContent = `在第${
             position[0].row + 1
           }行中，因为候选数${candStr}只能出现在${posStr}这两个方格中，所以此行其他位置都不应出现候选数${candStr}`;
@@ -612,11 +1286,11 @@ const Sudoku: React.FC = () => {
         case SOLUTION_METHODS.NAKED_PAIR_COLUMN:
           setPrompts(target);
           setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}`;
-          candStr = target.join(",");
+          candStr = target.join(',');
           hintContent = `在第${
             position[0].col + 1
           }列中，因为候选数${candStr}只能出现在${posStr}这两个方格中，所以此列其他位置都不应出现候选数${candStr}`;
@@ -624,11 +1298,11 @@ const Sudoku: React.FC = () => {
         case SOLUTION_METHODS.NAKED_PAIR_BOX:
           setPrompts(target);
           setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}`;
-          candStr = target.join(",");
+          candStr = target.join(',');
           hintContent = `在第${
             Math.floor(prompt[0].row / 3) * 3 +
             Math.floor(prompt[0].col / 3) +
@@ -638,11 +1312,11 @@ const Sudoku: React.FC = () => {
         case SOLUTION_METHODS.NAKED_TRIPLE_ROW1:
           setPrompts(target);
           setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(",");
+          candStr = target.join(',');
           hintContent = `在第${
             position[0].row + 1
           }行中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此行其他位置都不应出现候选数${candStr}`;
@@ -650,11 +1324,11 @@ const Sudoku: React.FC = () => {
         case SOLUTION_METHODS.NAKED_TRIPLE_COLUMN1:
           setPrompts(target);
           setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(",");
+          candStr = target.join(',');
           hintContent = `在第${
             position[0].col + 1
           }列中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此列其他位置都不应出现候选数${candStr}`;
@@ -662,11 +1336,11 @@ const Sudoku: React.FC = () => {
         case SOLUTION_METHODS.NAKED_TRIPLE_BOX1:
           setPrompts(target);
           setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(",");
+          candStr = target.join(',');
           hintContent = `在第${
             Math.floor(prompt[0].row / 3) * 3 +
             Math.floor(prompt[0].col / 3) +
@@ -676,11 +1350,11 @@ const Sudoku: React.FC = () => {
         case SOLUTION_METHODS.NAKED_TRIPLE_ROW2:
           setPrompts(target);
           setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(",");
+          candStr = target.join(',');
           hintContent = `在第${
             position[0].row + 1
           }行中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此行其他位置都不应出现候选数${candStr}`;
@@ -688,11 +1362,11 @@ const Sudoku: React.FC = () => {
         case SOLUTION_METHODS.NAKED_TRIPLE_COLUMN2:
           setPrompts(target);
           setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(",");
+          candStr = target.join(',');
           hintContent = `在第${
             position[0].col + 1
           }列中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此列其他位置都不应出现候选数${candStr}`;
@@ -700,11 +1374,11 @@ const Sudoku: React.FC = () => {
         case SOLUTION_METHODS.NAKED_TRIPLE_BOX2:
           setPrompts(target);
           setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(",");
+          candStr = target.join(',');
           hintContent = `在第${
             Math.floor(prompt[0].row / 3) * 3 +
             Math.floor(prompt[0].col / 3) +
@@ -712,17 +1386,15 @@ const Sudoku: React.FC = () => {
           }宫中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此宫其他位置都不应出现候选数${candStr}`;
           break;
         case SOLUTION_METHODS.HIDDEN_PAIR_ROW:
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
           promptCandidates = [
-            ...new Set(
-              prompt.flatMap((p) => board[p.row]?.[p.col]?.draft ?? [])
-            ),
+            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
           ];
           uniquePromptCandidates = promptCandidates.filter(
-            (cand) => !target.includes(cand)
+            cand => !target.includes(cand),
           );
           setPrompts(uniquePromptCandidates);
-          candStr = [...new Set(prompts)].join(",");
+          candStr = [...new Set(prompts)].join(',');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}`;
@@ -731,17 +1403,15 @@ const Sudoku: React.FC = () => {
           }行中，因为候选数${candStr}只出现在${posStr}这两个方格中，因此这两个方格不应出现其他候选数`;
           break;
         case SOLUTION_METHODS.HIDDEN_PAIR_COLUMN:
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
           promptCandidates = [
-            ...new Set(
-              prompt.flatMap((p) => board[p.row]?.[p.col]?.draft ?? [])
-            ),
+            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
           ];
           uniquePromptCandidates = promptCandidates.filter(
-            (cand) => !target.includes(cand)
+            cand => !target.includes(cand),
           );
           setPrompts(uniquePromptCandidates);
-          candStr = [...new Set(prompts)].join(",");
+          candStr = [...new Set(prompts)].join(',');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}`;
@@ -750,20 +1420,18 @@ const Sudoku: React.FC = () => {
           }列中，因为候选数${candStr}只出现在${posStr}这两个方格中，因此这两个方格不应出现其他候选数`;
           break;
         case SOLUTION_METHODS.HIDDEN_PAIR_BOX:
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
           promptCandidates = [
-            ...new Set(
-              prompt.flatMap((p) => board[p.row]?.[p.col]?.draft ?? [])
-            ),
+            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
           ];
           uniquePromptCandidates = promptCandidates.filter(
-            (cand) => !target.includes(cand)
+            cand => !target.includes(cand),
           );
           setPrompts(uniquePromptCandidates);
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}`;
-          candStr = [...new Set(prompts)].join(",");
+          candStr = [...new Set(prompts)].join(',');
           hintContent = `在第${
             Math.floor(prompt[0].row / 3) * 3 +
             Math.floor(prompt[0].col / 3) +
@@ -771,58 +1439,52 @@ const Sudoku: React.FC = () => {
           }宫中，因为候选数${candStr}只出现在${posStr}这两个方格中，因此这两个方格不应出现其他候选数`;
           break;
         case SOLUTION_METHODS.HIDDEN_TRIPLE_ROW1:
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
           promptCandidates = [
-            ...new Set(
-              prompt.flatMap((p) => board[p.row]?.[p.col]?.draft ?? [])
-            ),
+            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
           ];
           uniquePromptCandidates = promptCandidates.filter(
-            (cand) => !target.includes(cand)
+            cand => !target.includes(cand),
           );
           setPrompts(uniquePromptCandidates);
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = [...new Set(prompts)].join(",");
+          candStr = [...new Set(prompts)].join(',');
           hintContent = `在第${
             position[0].row + 1
           }行中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
           break;
         case SOLUTION_METHODS.HIDDEN_TRIPLE_COLUMN1:
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
           promptCandidates = [
-            ...new Set(
-              prompt.flatMap((p) => board[p.row]?.[p.col]?.draft ?? [])
-            ),
+            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
           ];
           uniquePromptCandidates = promptCandidates.filter(
-            (cand) => !target.includes(cand)
+            cand => !target.includes(cand),
           );
           setPrompts(uniquePromptCandidates);
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = [...new Set(prompts)].join(",");
+          candStr = [...new Set(prompts)].join(',');
           hintContent = `在第${
             position[0].col + 1
           }列中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
           break;
         case SOLUTION_METHODS.HIDDEN_TRIPLE_BOX1:
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
           promptCandidates = [
-            ...new Set(
-              prompt.flatMap((p) => board[p.row]?.[p.col]?.draft ?? [])
-            ),
+            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
           ];
           uniquePromptCandidates = promptCandidates.filter(
-            (cand) => !target.includes(cand)
+            cand => !target.includes(cand),
           );
           setPrompts(uniquePromptCandidates);
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = [...new Set(prompts)].join(",");
+          candStr = [...new Set(prompts)].join(',');
           hintContent = `在第${
             Math.floor(prompt[0].row / 3) * 3 +
             Math.floor(prompt[0].col / 3) +
@@ -830,58 +1492,52 @@ const Sudoku: React.FC = () => {
           }宫中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
           break;
         case SOLUTION_METHODS.HIDDEN_TRIPLE_ROW2:
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
           promptCandidates = [
-            ...new Set(
-              prompt.flatMap((p) => board[p.row]?.[p.col]?.draft ?? [])
-            ),
+            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
           ];
           uniquePromptCandidates = promptCandidates.filter(
-            (cand) => !target.includes(cand)
+            cand => !target.includes(cand),
           );
           setPrompts(uniquePromptCandidates);
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = [...new Set(prompts)].join(",");
+          candStr = [...new Set(prompts)].join(',');
           hintContent = `在第${
             position[0].row + 1
           }行中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
           break;
         case SOLUTION_METHODS.HIDDEN_TRIPLE_COLUMN2:
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
           promptCandidates = [
-            ...new Set(
-              prompt.flatMap((p) => board[p.row]?.[p.col]?.draft ?? [])
-            ),
+            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
           ];
           uniquePromptCandidates = promptCandidates.filter(
-            (cand) => !target.includes(cand)
+            cand => !target.includes(cand),
           );
           setPrompts(uniquePromptCandidates);
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = [...new Set(prompts)].join(",");
+          candStr = [...new Set(prompts)].join(',');
           hintContent = `在第${
             position[0].col + 1
           }列中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
           break;
         case SOLUTION_METHODS.HIDDEN_TRIPLE_BOX2:
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
           promptCandidates = [
-            ...new Set(
-              prompt.flatMap((p) => board[p.row]?.[p.col]?.draft ?? [])
-            ),
+            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
           ];
           uniquePromptCandidates = promptCandidates.filter(
-            (cand) => !target.includes(cand)
+            cand => !target.includes(cand),
           );
           setPrompts(uniquePromptCandidates);
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = [...new Set(prompts)].join(",");
+          candStr = [...new Set(prompts)].join(',');
           hintContent = `在第${
             Math.floor(prompt[0].row / 3) * 3 +
             Math.floor(prompt[0].col / 3) +
@@ -889,37 +1545,37 @@ const Sudoku: React.FC = () => {
           }宫中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
           break;
         case SOLUTION_METHODS.NAKED_QUADRUPLE_ROW:
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
             prompt[2].col + 1
           }、R${prompt[3].row + 1}C${prompt[3].col + 1}`;
-          candStr = [...new Set(target)].join(",");
+          candStr = [...new Set(target)].join(',');
           hintContent = `在第${
             position[0].row + 1
           }行中，因为候选数${candStr}只出现在${posStr}这四个方格中，因此这四个方格不应出现其他候选数`;
           break;
         case SOLUTION_METHODS.NAKED_QUADRUPLE_COLUMN:
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
             prompt[2].col + 1
           }、R${prompt[3].row + 1}C${prompt[3].col + 1}`;
-          candStr = [...new Set(target)].join(",");
+          candStr = [...new Set(target)].join(',');
           hintContent = `在第${
             position[0].col + 1
           }列中，因为候选数${candStr}只出现在${posStr}这四个方格中，因此这四个方格不应出现其他候选数`;
           break;
         case SOLUTION_METHODS.NAKED_QUADRUPLE_BOX:
-          boardWithHighlight = applyHintHighlight(board, result, "prompt");
+          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
             prompt[2].col + 1
           }、R${prompt[3].row + 1}C${prompt[3].col + 1}`;
-          candStr = [...new Set(target)].join(",");
+          candStr = [...new Set(target)].join(',');
           hintContent = `在第${
             Math.floor(prompt[0].row / 3) * 3 +
             Math.floor(prompt[0].col / 3) +
@@ -927,34 +1583,34 @@ const Sudoku: React.FC = () => {
           }宫中，因为候选数${candStr}只出现在${posStr}这四个方格中，因此这四个方格不应出现其他候选数`;
           break;
         case SOLUTION_METHODS.X_WING_ROW:
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           setPrompts(target);
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
             prompt[2].col + 1
           }、R${prompt[3].row + 1}C${prompt[3].col + 1}`;
-          candStr = target.join(",");
+          candStr = target.join(',');
           hintContent = `在${prompt[0].row + 1}、${
             prompt[2].row + 1
           }两行中，候选数${candStr}每行都有两个候选方格且他们的列号相同，在这四个候选方格内无论哪两个取值，都会导致这两列其他位置不应出现候选数${candStr}`;
           break;
         case SOLUTION_METHODS.X_WING_COLUMN:
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           setPrompts(target);
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
             prompt[2].col + 1
           }、R${prompt[3].row + 1}C${prompt[3].col + 1}`;
-          candStr = target.join(",");
+          candStr = target.join(',');
           hintContent = `在${prompt[0].row + 1}、${
             prompt[2].col + 1
           }两列中，候选数${candStr}每列都有两个候选方格且他们的行号相同，在这四个候选方格内无论哪两个取值，都会导致这两行其他位置不应出现候选数${candStr}`;
           break;
         case SOLUTION_METHODS.X_WING_VARIENT_COLUMN:
         case SOLUTION_METHODS.X_WING_VARIENT_ROW:
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           if (prompt.length === 5) {
             posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
               prompt[1].row + 1
@@ -972,7 +1628,7 @@ const Sudoku: React.FC = () => {
               prompt[4].row + 1
             }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1}`;
           }
-          candStr = target.join(",");
+          candStr = target.join(',');
           setPrompts(target);
           hintContent = `在${posStr}这${
             prompt.length
@@ -981,12 +1637,12 @@ const Sudoku: React.FC = () => {
           }C${position[0].col + 1}内不应出现候选数${candStr}`;
           break;
         case SOLUTION_METHODS.XY_WING:
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           setPrompts(target);
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(",");
+          candStr = target.join(',');
           if (position.length === 1) {
             hintContent = `无论${posStr}这三个候选方格内如何取值，R${
               position[0].row + 1
@@ -1005,7 +1661,7 @@ const Sudoku: React.FC = () => {
           }
           break;
         case SOLUTION_METHODS.XYZ_WING:
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           setPrompts(target);
           const candidateCounts = new Map();
           prompt.forEach(cell => {
@@ -1021,7 +1677,7 @@ const Sudoku: React.FC = () => {
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(",");
+          candStr = target.join(',');
           if (position.length === 1) {
             hintContent = `无论${posStr}这三个候选方格内如何取值，R${
               position[0].row + 1
@@ -1042,9 +1698,11 @@ const Sudoku: React.FC = () => {
         case SOLUTION_METHODS.EUREKA:
           setPositions(target);
           setPrompts(target);
-          const diffPositions = prompt.filter(p => !position.some(pos => pos.row === p.row && pos.col === p.col));
-          result.prompt=diffPositions          
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          const diffPositions = prompt.filter(
+            p => !position.some(pos => pos.row === p.row && pos.col === p.col),
+          );
+          result.prompt = diffPositions;
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
@@ -1064,7 +1722,7 @@ const Sudoku: React.FC = () => {
           }内不能同时出现候选数${target[0]}`;
           break;
         case SOLUTION_METHODS.SKYSCRAPER:
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           setPrompts(target);
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
@@ -1091,7 +1749,7 @@ const Sudoku: React.FC = () => {
           }取值为${target[0]}，${deleteStr}内都不能出现候选数${target[0]}`;
           break;
         case SOLUTION_METHODS.SWORDFISH_ROW:
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           if (prompt.length === 6) {
             posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
               prompt[1].row + 1
@@ -1135,13 +1793,13 @@ const Sudoku: React.FC = () => {
               prompt[7].row + 1
             }C${prompt[7].col + 1}、R${prompt[8].row + 1}C${prompt[8].col + 1}`;
           }
-          const columns = [...new Set(prompt.map((pos) => pos.col + 1))];
+          const columns = [...new Set(prompt.map(pos => pos.col + 1))];
           hintContent = `无论${posStr}这${prompt.length}个候选方格哪三个取${
             target[0]
-          }，第${columns.join("、")}列内都不能出现候选数${target[0]}`;
+          }，第${columns.join('、')}列内都不能出现候选数${target[0]}`;
           break;
         case SOLUTION_METHODS.SWORDFISH_COLUMN:
-          boardWithHighlight = applyHintHighlight(board, result, "both");
+          boardWithHighlight = applyHintHighlight(board, result, 'both');
           if (prompt.length === 6) {
             posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
               prompt[1].row + 1
@@ -1185,10 +1843,10 @@ const Sudoku: React.FC = () => {
               prompt[7].row + 1
             }C${prompt[7].col + 1}、R${prompt[8].row + 1}C${prompt[8].col + 1}`;
           }
-          const rows = [...new Set(prompt.map((pos) => pos.row + 1))];
+          const rows = [...new Set(prompt.map(pos => pos.row + 1))];
           hintContent = `无论${posStr}这${prompt.length}个候选方格哪三个取${
             target[0]
-          }，第${rows.join("、")}行内都不能出现候选数${target[0]}`;
+          }，第${rows.join('、')}行内都不能出现候选数${target[0]}`;
           break;
       }
     }
@@ -1198,7 +1856,7 @@ const Sudoku: React.FC = () => {
       `提示：${result.method}`,
       [],
       false,
-      false
+      false,
     );
 
     return hintContent;
@@ -1206,10 +1864,10 @@ const Sudoku: React.FC = () => {
 
   const handleApplyHint = () => {
     if (result) {
-      const { position, target, isFill } = result;
+      const {position, target, isFill} = result;
       const newBoard = deepCopyBoard(board);
 
-      position.forEach(({ row, col }) => {
+      position.forEach(({row, col}) => {
         if (isFill) {
           newBoard[row][col].value = target[0];
           newBoard[row][col].draft = [];
@@ -1217,16 +1875,16 @@ const Sudoku: React.FC = () => {
           // 更新受影响的单元格
           const affectedCells = updateRelatedCellsDraft(
             newBoard,
-            [{ row, col }],
+            [{row, col}],
             target[0],
-            getCandidates
+            getCandidates,
           );
 
           // 将受影响的单元格合并到 position 中
           position.push(...affectedCells);
         } else {
           newBoard[row][col].draft =
-            newBoard[row][col].draft?.filter((num) => !target.includes(num)) ??
+            newBoard[row][col].draft?.filter(num => !target.includes(num)) ??
             [];
         }
       });
@@ -1236,7 +1894,7 @@ const Sudoku: React.FC = () => {
 
       // 移除提示高亮
       const updatedBoard = removeHintHighlight(newBoard);
-      updateBoard(updatedBoard, "提示应用完成");
+      updateBoard(updatedBoard, '提示应用完成');
 
       setHintDrawerVisible(false);
       setResult(null); // 重置 result
@@ -1245,81 +1903,84 @@ const Sudoku: React.FC = () => {
 
   const handleCancelHint = () => {
     const updatedBoard = removeHintHighlight(board);
-    updateBoard(updatedBoard, "取消提示", [], false);
+    updateBoard(updatedBoard, '取消提示', [], false);
     setHintDrawerVisible(false);
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.gameInfo}>
-        <Text>错误次数：{errorCount}</Text>
-        <Text>难度：{DIFFICULTY.MEDIUM}</Text>
-        <Text>{time}</Text>
+        <Text style={styles.gameInfoText}>错误次数：{errorCount}</Text>
+        <Text style={styles.gameInfoText}>难度：{DIFFICULTY.MEDIUM}</Text>
+        <Text style={styles.gameInfoText}>{time}</Text>
       </View>
       <View style={styles.sudokuGrid}>
         {board.map((row, rowIndex) =>
           row.map((cell, colIndex) => (
             <TouchableOpacity
               key={`${rowIndex}-${colIndex}`}
-              onPress={(e) => handleCellChange(rowIndex, colIndex)}
-              onLongPress={(e) => {
+              onPress={e => handleCellChange(rowIndex, colIndex)}
+              onLongPress={e => {
                 handleCellChange(rowIndex, colIndex);
               }}
               style={[
                 styles.sudokuCell,
                 // 右边框：每3列添加粗边框
-                (colIndex + 1) % 3 === 0 && (colIndex + 1) % 9 !== 0 && styles.sudokuCellRightBorder,
+                (colIndex + 1) % 3 === 0 &&
+                  (colIndex + 1) % 9 !== 0 &&
+                  styles.sudokuCellRightBorder,
                 // 左边框：第4列和第7列添加粗边框
-                (colIndex % 3 === 0) && styles.sudokuCellLeftBorder,
+                colIndex % 3 === 0 && styles.sudokuCellLeftBorder,
                 // 底边框：第3行和第6行添加粗边框
-                (rowIndex + 1) % 3 === 0 && rowIndex !== 8 && styles.sudokuCellBottomBorder,
+                (rowIndex + 1) % 3 === 0 &&
+                  rowIndex !== 8 &&
+                  styles.sudokuCellBottomBorder,
                 // 上边框：第4行和第7行添加粗边框
-                (rowIndex % 3 === 0) && styles.sudokuCellTopBorder,
-                // 移除顶部边框：第一行
-                rowIndex === 0 && styles.sudokuCellTopNoBorder,
-                // 移除右边框：每行的最后一个单元格
-                (colIndex + 1) % 9 === 0 && styles.sudokuCellRightNoBorder,
-                // 移除底部边框：最后一行
-                rowIndex === 8 && styles.sudokuCellBottomNoBorder,
-                // 移除左边框：第一列
-                colIndex === 0 && styles.sudokuCellLeftNoBorder,
+                rowIndex % 3 === 0 && styles.sudokuCellTopBorder,
                 // 其他已有的样式
                 getCellClassName(board, rowIndex, colIndex, selectedNumber),
                 errorCells.some(
-                  (errorCell) =>
-                    errorCell.row === rowIndex && errorCell.col === colIndex
+                  errorCell =>
+                    errorCell.row === rowIndex && errorCell.col === colIndex,
                 ) && styles.errorCell,
                 selectionMode === 2 &&
                   selectedCell?.row === rowIndex &&
                   selectedCell?.col === colIndex &&
                   styles.selectedCell,
-                ...(cell.highlights?.map((highlight) => (styles as any)[highlight]) || []),
-              ]}
-            >
+                ...(cell.highlights?.map(
+                  highlight => (styles as any)[highlight],
+                ) || []),
+              ]}>
               {cell.value !== null ? (
-                <Text style={styles.cellValue}>{cell.value}</Text>
+                <Text style={[
+                  styles.cellValue,
+                  cell.isGiven ? styles.givenNumber : styles.userNumber 
+                ]}>
+                  {cell.value}
+                </Text>
               ) : cell.draft.length > 0 ? (
                 <View style={styles.draftGrid}>
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
                     <View
                       key={num}
-                      style={[
-                        styles.draftCell,
-                        cell.draft.includes(num) && styles.draftCellActive,
-                        prompts.includes(num) &&
-                          cell?.highlightCandidates?.length &&
-                          board[rowIndex][colIndex].highlights?.includes(
-                            'promptHighlight'
-                          ) &&
-                          styles.candidateHighlightHint,
-                        positions.includes(num) &&
-                          cell?.highlightCandidates?.length &&
-                          board[rowIndex][colIndex].highlights?.includes(
-                            'positionHighlight'
-                          ) &&
-                          styles.candidateHighlightDelete,
-                      ].filter(Boolean) as ViewStyle[]}
-                    >
+                      style={
+                        [
+                          styles.draftCell,
+                          cell.draft.includes(num) && styles.draftCellActive,
+                          prompts.includes(num) &&
+                            cell?.highlightCandidates?.length &&
+                            board[rowIndex][colIndex].highlights?.includes(
+                              'promptHighlight',
+                            ) &&
+                            styles.candidateHighlightHint,
+                          positions.includes(num) &&
+                            cell?.highlightCandidates?.length &&
+                            board[rowIndex][colIndex].highlights?.includes(
+                              'positionHighlight',
+                            ) &&
+                            styles.candidateHighlightDelete,
+                        ].filter(Boolean) as ViewStyle[]
+                      }>
                       {cell.draft.includes(num) && (
                         <Text style={styles.draftCellText}>{num}</Text>
                       )}
@@ -1328,66 +1989,112 @@ const Sudoku: React.FC = () => {
                 </View>
               ) : null}
             </TouchableOpacity>
-          ))
+          )),
         )}
       </View>
-      <View style={styles.selectMode}>
-        <Button
-          onPress={() => handleSelectionMode(1)}
-          type={selectionMode === 1 ? 'primary' : undefined}
-        >
-          选中模式1
-        </Button>
-        <Button
-          onPress={() => handleSelectionMode(2)}
-          type={selectionMode === 2 ? 'primary' : undefined}
-        >
-          选中模式2
-        </Button>
-      </View>
+      <View style={styles.selectMode}></View>
       <View style={styles.controlButtons}>
-        <Button onPress={handleUndo} disabled={currentStep === 0}>
-          撤销
-        </Button>
-        {/* <Button
-          onPress={handleRedo}
-          disabled={currentStep === history.length - 1}
-        >
-          回撤
-        </Button> */}
-        <Button
-          onPress={handleEraseMode}
-          type={selectionMode === 1 && eraseMode ? 'primary' : undefined}
-        >
-          擦除
-        </Button>
-        <Button
-          onPress={handleDraftMode}
-          type={draftMode ? 'primary' : undefined}
-        >
-          我的草稿
-        </Button>
-        <Button onPress={handleShowCandidates}>一键草稿</Button>
-        <Button onPress={handleHint}>提示</Button>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.circleButton}
+            onPress={handleUndo}
+            disabled={currentStep === 0}>
+            <Image
+              source={
+                currentStep === 0
+                  ? require('../assets/icon/undo.png')
+                  : require('../assets/icon/undo_active.png')
+              }
+              style={styles.buttonIcon}
+            />
+          </TouchableOpacity>
+          <Text style={styles.buttonText}>撤销</Text>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[
+              styles.circleButton,
+              selectionMode === 1 &&
+                eraseMode && {
+                  backgroundColor: '#e6f7ff',
+                  borderColor: '#1890ff',
+                },
+            ]}
+            onPress={handleEraseMode}>
+            <Image
+              source={
+                eraseMode
+                  ? require('../assets/icon/erase_active.png')
+                  : require('../assets/icon/erase.png')
+              }
+              style={styles.buttonIcon}
+            />
+          </TouchableOpacity>
+          <Text style={styles.buttonText}>擦除</Text>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[
+              styles.circleButton,
+              draftMode && {backgroundColor: '#e6f7ff', borderColor: '#1890ff'},
+            ]}
+            onPress={handleDraftMode}>
+            <Image
+              source={require('../assets/icon/draft.png')}
+              style={styles.buttonIcon}
+            />
+          </TouchableOpacity>
+          <Text style={styles.buttonText}>笔记</Text>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.circleButton}
+            onPress={handleShowCandidates}>
+            <Image
+              source={require('../assets/icon/auto.png')}
+              style={styles.buttonIcon}
+            />
+          </TouchableOpacity>
+          <Text style={styles.buttonText}>自动笔记</Text>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.circleButton} onPress={handleHint}>
+            <Image
+              source={require('../assets/icon/prompt.png')}
+              style={styles.buttonIcon}
+            />
+          </TouchableOpacity>
+          <Text style={styles.buttonText}>提示</Text>
+        </View>
       </View>
       <View style={styles.numberButtons}>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
-          <Button
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(number => (
+          <TouchableOpacity
             key={number}
             onPress={() => handleNumberSelect(number)}
-            type={
-              selectionMode === 1 && selectedNumber === number
-                ? 'primary'
-                : undefined
-            }
-            style={styles.numberButton}
-            disabled={!draftMode && remainingCounts[number - 1] === 0}
-          >
+            style={[
+              styles.numberButton,
+              selectionMode === 1 &&
+                selectedNumber === number && {
+                  backgroundColor: '#1890ff',
+                },
+            ]}
+            disabled={!draftMode && remainingCounts[number - 1] === 0}>
             <Text style={styles.selectedNumber}>{number}</Text>
-            <Text style={styles.remainingCount}>{remainingCounts[number - 1]}</Text>
-          </Button>
+            <Text style={styles.remainingCount}>
+              {remainingCounts[number - 1]}
+            </Text>
+          </TouchableOpacity>
         ))}
       </View>
+      <Switch
+        checked={selectionMode === 2}
+        onChange={checked => handleSelectionMode(checked ? 2 : 1)}
+      />
       {/* <Button style={styles.solveButton} onPress={solveSudoku}>
         求解数独
       </Button> */}
