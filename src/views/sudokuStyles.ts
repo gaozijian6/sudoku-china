@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 
 const sudokuStyles = StyleSheet.create({
   container: {
@@ -10,7 +10,7 @@ const sudokuStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: 360,
+    width: Dimensions.get('window').width * 0.95,
     marginBottom: 20,
     alignSelf: 'center',
     height: 40,
@@ -18,8 +18,8 @@ const sudokuStyles = StyleSheet.create({
     top: 10,
   },
   sudokuGrid: {
-    width: 365,
-    height: 365,
+    width: Dimensions.get('window').width * 0.95,
+    height: Dimensions.get('window').width * 0.95,
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignSelf: 'center',
@@ -30,8 +30,8 @@ const sudokuStyles = StyleSheet.create({
     color: 'rgb(59, 61, 99)',
   },
   sudokuCell: {
-    width: 40,
-    height: 40,
+    width: '11.11%',
+    height: '11.11%',
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -70,7 +70,7 @@ const sudokuStyles = StyleSheet.create({
     // 注意：React Native 不支持 :hover，需要通过 onPressIn 和 onPressOut 来模拟
   },
   cellValue: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
   },
   candidatesGrid: {
@@ -111,8 +111,7 @@ const sudokuStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  draftCellActive: {
-  },
+  draftCellActive: {},
   draftCellText: {
     fontSize: 8,
   },
@@ -120,10 +119,17 @@ const sudokuStyles = StyleSheet.create({
     borderWidth: 2,
     backgroundColor: 'rgb(204,223,253)',
   },
-  selectedNumber: {
+  selectedNumberButton: {
     fontSize: 30,
     fontWeight: 'bold',
     color: 'rgb(78,106,176)',
+  },
+  selectedNumber:{
+    backgroundColor: '#1890ff',
+    borderColor: '#1890ff',
+  },
+  selectedNumberText: {
+    color: '#fff',
   },
   candidateNumber: {
     backgroundColor: '#9bf9ab',
@@ -134,9 +140,9 @@ const sudokuStyles = StyleSheet.create({
   promptHighlight: {
     backgroundColor: '#9dc3ff',
   },
-  positionAndPromptHighlight: {
-    backgroundColor: '#f3f37f',
-  },
+  // positionAndPromptHighlight: {
+  //   backgroundColor: '#f3f37f',
+  // },
   selectMode: {
     marginTop: 20,
     flexDirection: 'row',
@@ -217,33 +223,117 @@ const sudokuStyles = StyleSheet.create({
     backgroundColor: '#ffd700',
   },
   candidateHighlightDelete: {
-    color: '#ffffff',
-    backgroundColor: '#ff0000',
+    backgroundColor: 'rgb(206, 71,100)',
     borderRadius: 8,
+  },
+  candidateHighlightDeleteText: {
+    color: '#ffffff',
   },
   candidateHighlightHint: {
-    color: '#ffffff',
-    backgroundColor: '#0000ff',
+    backgroundColor: 'rgb(77,104,182)',
     borderRadius: 8,
   },
+  candidateHighlightHintText: {
+    color: '#ffffff',
+  },
+  drawer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
   drawerContent: {
-    padding: 20,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 5,
+    paddingHorizontal: 20,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    backgroundColor: '#fff',
+    height: '40%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 15,
+    elevation: 24,
+  },
+  drawerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  drawerHandle: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
   },
   drawerTitle: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
+    color: '#333',
+    textAlign: 'center',
+    flex: 1,
   },
   drawerText: {
     fontSize: 16,
     marginBottom: 20,
+    color: '#000',
+    fontWeight: 'bold',
+    lineHeight: 24,
+    textAlign: 'center',
+    alignSelf: 'center',
+    width: '100%',
   },
   drawerButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
+    gap: 20,
+    marginTop: 10,
   },
   drawerButton: {
-    width: '40%',
+    width: 100,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  drawerButtonApply: {
+    backgroundColor: 'rgb(91,139,241)',
+  },
+  drawerButtonCancel: {
+    backgroundColor: 'rgb(239,239,249)',
+  },
+  drawerButtonTextApply: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '500',
+  },
+  drawerButtonTextCancel: {
+    fontSize: 16,
+    color: '#000',
+    fontWeight: '500',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    justifyContent: 'flex-end',
+  },
+  closeIconButton: {
+    position: 'absolute',
+    right: 0,
+  },
+  closeIcon: {
+    width: 20,
+    height: 20,
   },
 });
 
