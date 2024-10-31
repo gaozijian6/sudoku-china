@@ -17,6 +17,21 @@ const sudokuStyles = StyleSheet.create({
     position: 'relative',
     top: 10,
   },
+  leftText: {
+    width: 100,
+    alignItems: 'center', // 添加垂直居中
+    textAlign: 'center', // 添加文字居中
+  },
+  middleText: {
+    width: 100,
+    alignItems: 'center', // 添加垂直居中
+    textAlign: 'center', // 添加文字居中
+  },
+  rightText: {
+    width: 100,
+    alignItems: 'center', // 添加垂直居中
+    textAlign: 'center', // 添加文字居中
+  },
   sudokuGrid: {
     width: Dimensions.get('window').width * 0.95,
     height: Dimensions.get('window').width * 0.95,
@@ -131,6 +146,7 @@ const sudokuStyles = StyleSheet.create({
   selectedNumberText: {
     color: '#fff',
   },
+  // 候选数高亮
   candidateNumber: {
     backgroundColor: '#9bf9ab',
   },

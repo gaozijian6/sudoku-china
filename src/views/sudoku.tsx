@@ -6,9 +6,8 @@ import {
   ViewStyle,
   Image,
   Modal,
-  Button,
-  Switch,
   TextStyle,
+  Switch,
 } from 'react-native';
 import {
   useTimer,
@@ -48,7 +47,7 @@ import type {CellData, Position} from '../tools';
 import type {Result} from '../tools/solution';
 import {SOLUTION_METHODS, DIFFICULTY} from '../constans';
 import styles from './sudokuStyles';
-import BottomSheet from '@gorhom/bottom-sheet';
+// import { Switch } from 'antd-mobile'
 
 const Sudoku: React.FC = () => {
   const initialBoard = Array(9)
@@ -63,8 +62,12 @@ const Sudoku: React.FC = () => {
     currentStep,
     candidateMap,
     graph,
+    answerBoard,
   } = useSudokuBoard(initialBoard);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
+  const [lastSelectedNumber, setLastSelectedNumber] = useState<number | null>(
+    null,
+  );
   const [errorCount, setErrorCount] = useState<number>(0);
   const [eraseMode, setEraseMode] = useState<boolean>(false);
   const [draftMode, setDraftMode] = useState<boolean>(false);
@@ -77,7 +80,7 @@ const Sudoku: React.FC = () => {
   const [selectedCell, setSelectedCell] = useState<{
     row: number;
     col: number;
-  } | null>(null);
+  } | null>({row: 0, col: 0});
   const [selectionMode, setSelectionMode] = useState<1 | 2>(1);
   const [errorCells, setErrorCells] = useState<{row: number; col: number}[]>(
     [],
@@ -89,6 +92,7 @@ const Sudoku: React.FC = () => {
   const [result, setResult] = useState<Result | null>(null);
   const [prompts, setPrompts] = useState<number[]>([]);
   const [positions, setPositions] = useState<number[]>([]);
+  const [eraseEnabled, setEraseEnabled] = useState<boolean>(false);
 
   const generateBoard = () => {
     const initialBoard = Array(9)
@@ -117,702 +121,435 @@ const Sudoku: React.FC = () => {
 
     newBoard = [
       [
-          {
-              "value": 2,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": 3,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  7,
-                  8
-              ]
-          },
-          {
-              "value": 4,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  8,
-                  9
-              ]
-          },
-          {
-              "value": 5,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": 1,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  6,
-                  7,
-                  8,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  6,
-                  7,
-                  8,
-                  9
-              ]
-          }
+        {
+          value: 2,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: 3,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [7, 8],
+        },
+        {
+          value: 4,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [8, 9],
+        },
+        {
+          value: 5,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: 1,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [6, 7, 8, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [6, 7, 8, 9],
+        },
       ],
       [
-          {
-              "value": 4,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  7,
-                  8,
-                  9
-              ]
-          },
-          {
-              "value": 5,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  6,
-                  7,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  8,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  6,
-                  7,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  2,
-                  6,
-                  7,
-                  8,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  2,
-                  3,
-                  6,
-                  7,
-                  8,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  2,
-                  3,
-                  6,
-                  7,
-                  8,
-                  9
-              ]
-          }
+        {
+          value: 4,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 7, 8, 9],
+        },
+        {
+          value: 5,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 6, 7, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 8, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [6, 7, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [2, 6, 7, 8, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [2, 3, 6, 7, 8, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [2, 3, 6, 7, 8, 9],
+        },
       ],
       [
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  8,
-                  9
-              ]
-          },
-          {
-              "value": 6,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  7,
-                  8
-              ]
-          },
-          {
-              "value": 2,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": 3,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  7,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  4,
-                  7,
-                  8,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  7,
-                  8,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  4,
-                  5,
-                  7,
-                  8,
-                  9
-              ]
-          }
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 8, 9],
+        },
+        {
+          value: 6,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 7, 8],
+        },
+        {
+          value: 2,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: 3,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [7, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [4, 7, 8, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [7, 8, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [4, 5, 7, 8, 9],
+        },
       ],
       [
-          {
-              "value": 7,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  5,
-                  8,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  3,
-                  6,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  3,
-                  5,
-                  6
-              ]
-          },
-          {
-              "value": 2,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  3,
-                  6
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  6,
-                  8,
-                  9
-              ]
-          },
-          {
-              "value": 4,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": 1,
-              "isGiven": false,
-              "draft": []
-          }
+        {
+          value: 7,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [5, 8, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [3, 6, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [3, 5, 6],
+        },
+        {
+          value: 2,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [3, 6],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [6, 8, 9],
+        },
+        {
+          value: 4,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: 1,
+          isGiven: false,
+          draft: [],
+        },
       ],
       [
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  3,
-                  5,
-                  6,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  2,
-                  5,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  2,
-                  3,
-                  4,
-                  6
-              ]
-          },
-          {
-              "value": 8,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  4,
-                  5
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  3,
-                  4,
-                  6,
-                  7
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  2,
-                  6,
-                  7,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  2,
-                  3,
-                  6,
-                  7,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  2,
-                  3,
-                  6,
-                  7,
-                  9
-              ]
-          }
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 3, 5, 6, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 2, 5, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 2, 3, 4, 6],
+        },
+        {
+          value: 8,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 4, 5],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [3, 4, 6, 7],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [2, 6, 7, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [2, 3, 6, 7, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [2, 3, 6, 7, 9],
+        },
       ],
       [
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  3,
-                  6,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  2,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  2,
-                  3,
-                  4,
-                  6,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  3,
-                  6,
-                  7
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  4
-              ]
-          },
-          {
-              "value": 9,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": 5,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  2,
-                  3,
-                  6,
-                  7,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  2,
-                  3,
-                  6,
-                  7,
-                  8
-              ]
-          }
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 3, 6, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 2, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 2, 3, 4, 6, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 3, 6, 7],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 4],
+        },
+        {
+          value: 9,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: 5,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [2, 3, 6, 7, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [2, 3, 6, 7, 8],
+        },
       ],
       [
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  3,
-                  5,
-                  6,
-                  8
-              ]
-          },
-          {
-              "value": 4,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": 9,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  3,
-                  5
-              ]
-          },
-          {
-              "value": 7,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": 2,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  6,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  6,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  6,
-                  8
-              ]
-          }
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 3, 5, 6, 8],
+        },
+        {
+          value: 4,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: 9,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [3, 5],
+        },
+        {
+          value: 7,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: 2,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [6, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 6, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [6, 8],
+        },
       ],
       [
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  3,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  2,
-                  7,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  2,
-                  3,
-                  7,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  3,
-                  9
-              ]
-          },
-          {
-              "value": 6,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": 1,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  2,
-                  4,
-                  7,
-                  8,
-                  9
-              ]
-          },
-          {
-              "value": 5,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  2,
-                  4,
-                  7,
-                  8,
-                  9
-              ]
-          }
+        {
+          value: null,
+          isGiven: false,
+          draft: [3, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [2, 7, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [2, 3, 7, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [3, 9],
+        },
+        {
+          value: 6,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: 1,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [2, 4, 7, 8, 9],
+        },
+        {
+          value: 5,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [2, 4, 7, 8, 9],
+        },
       ],
       [
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  5,
-                  6,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  2,
-                  5,
-                  7,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  2,
-                  6,
-                  7,
-                  8
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  5,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  4,
-                  5,
-                  8,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  4,
-                  8
-              ]
-          },
-          {
-              "value": 3,
-              "isGiven": false,
-              "draft": []
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  1,
-                  2,
-                  6,
-                  7,
-                  8,
-                  9
-              ]
-          },
-          {
-              "value": null,
-              "isGiven": false,
-              "draft": [
-                  2,
-                  4,
-                  6,
-                  7,
-                  8,
-                  9
-              ]
-          }
-      ]
-  ]
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 5, 6, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 2, 5, 7, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 2, 6, 7, 8],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [5, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [4, 5, 8, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [4, 8],
+        },
+        {
+          value: 3,
+          isGiven: false,
+          draft: [],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [1, 2, 6, 7, 8, 9],
+        },
+        {
+          value: null,
+          isGiven: false,
+          draft: [2, 4, 6, 7, 8, 9],
+        },
+      ],
+    ];
 
     updateBoard(newBoard, '生成新棋盘');
 
     // 生成解决方案
     const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
     solve(solvedBoard);
-    console.log(currentStep);
   };
 
   useEffect(() => {
@@ -822,12 +559,6 @@ const Sudoku: React.FC = () => {
   useEffect(() => {
     updateRemainingCounts();
   }, [board]);
-
-  useEffect(() => {
-    if (selectionMode === 2 && !selectedCell) {
-      setSelectedCell({row: 0, col: 0});
-    }
-  }, [selectionMode, selectedCell]);
 
   const updateRemainingCounts = () => {
     const counts = Array(9).fill(9);
@@ -845,7 +576,6 @@ const Sudoku: React.FC = () => {
   const handleCellChange = (row: number, col: number) => {
     if (selectionMode === 2) {
       setSelectedCell({row, col});
-
       if (eraseMode && !board[row][col].isGiven) {
         const newBoard = deepCopyBoard(board);
         const cell = newBoard[row][col];
@@ -854,7 +584,6 @@ const Sudoku: React.FC = () => {
         cell.draft = [];
         updateBoard(newBoard, `擦除 (${row}, ${col})`);
       }
-
       return;
     }
 
@@ -866,8 +595,11 @@ const Sudoku: React.FC = () => {
     const cell = newBoard[row][col];
 
     // 处理擦除操作
-    if (eraseMode) {
-      if (cell.isGiven) {
+    if (eraseEnabled) {
+      if (
+        cell.isGiven ||
+        board[row][col].value === answerBoard[row][col].value
+      ) {
         return;
       }
 
@@ -947,8 +679,7 @@ const Sudoku: React.FC = () => {
     // 处理非草稿模式
     else if (selectedNumber) {
       // 验证填入的数字是否为有效候选数字
-      const candidates = getCandidates(newBoard, row, col);
-      if (candidates.includes(selectedNumber)) {
+      if (answerBoard[row][col].value == selectedNumber) {
         cell.value = selectedNumber;
         cell.draft = [];
 
@@ -964,6 +695,9 @@ const Sudoku: React.FC = () => {
           newBoard,
           `设置 (${row}, ${col}) 为 ${selectedNumber}`,
           affectedCells,
+          false,
+          true,
+          true,
         );
       } else {
         const currentTime = Date.now();
@@ -1061,7 +795,7 @@ const Sudoku: React.FC = () => {
         }
       }
     } else {
-      setSelectedNumber(prevNumber => (prevNumber === number ? null : number));
+      setSelectedNumber(number);
     }
     setEraseMode(false);
   };
@@ -1075,11 +809,6 @@ const Sudoku: React.FC = () => {
     updateBoard(newBoard, '复制官方草稿');
     setOfficialDraftUsed(true);
   }, [board, updateBoard]);
-
-  const handleSelectionMode = (mode: 1 | 2) => {
-    setSelectionMode(mode);
-    setSelectedNumber(null);
-  };
 
   const applyHintHighlight = (
     board: CellData[][],
@@ -1927,12 +1656,48 @@ const Sudoku: React.FC = () => {
     setHintDrawerVisible(false);
   };
 
+  // 切换模式回调函数
+  const handleSelectionModeChange = () => {
+    if (selectionMode === 1) {
+      setSelectionMode(2);
+    } else {
+      setSelectionMode(1);
+    }
+  };
+
+  useEffect(() => {
+    if (selectionMode === 1) {
+      setLastSelectedNumber(selectedNumber);
+      setSelectedNumber(lastSelectedNumber ?? 1);
+      setEraseEnabled(false);
+    } else {
+      setLastSelectedNumber(selectedNumber);
+      setSelectedNumber(null);
+    }
+  }, [selectionMode]);
+
+  useEffect(() => {
+
+    console.log(123);
+    
+    const {row, col} = selectedCell!;
+    if (board[row][col].value) {
+      setEraseEnabled(false);
+    } else {
+      setEraseEnabled(true);
+    }
+  }, [selectedCell]);
+
   return (
     <View style={styles.container}>
       <View style={styles.gameInfo}>
-        <Text style={styles.gameInfoText}>错误次数：{errorCount}</Text>
-        <Text style={styles.gameInfoText}>{DIFFICULTY.MEDIUM}</Text>
-        <Text style={styles.gameInfoText}>{time}</Text>
+        <Text style={[styles.gameInfoText, styles.leftText]}>
+          错误次数：{errorCount}
+        </Text>
+        <Text style={[styles.gameInfoText, styles.middleText]}>
+          {DIFFICULTY.MEDIUM}
+        </Text>
+        <Text style={[styles.gameInfoText, styles.rightText]}>{time}</Text>
       </View>
       <View style={styles.sudokuGrid}>
         {board.map((row, rowIndex) =>
@@ -2017,21 +1782,23 @@ const Sudoku: React.FC = () => {
                       }>
                       {cell.draft.includes(num) && (
                         <Text
-                          style={[
-                            styles.draftCellText,
-                            positions.includes(num) &&
-                              cell?.highlightCandidates?.length &&
-                              board[rowIndex][colIndex].highlights?.includes(
-                                'positionHighlight',
-                              ) &&
-                              styles.candidateHighlightDeleteText,
-                            prompts.includes(num) &&
-                              cell?.highlightCandidates?.length &&
-                              board[rowIndex][colIndex].highlights?.includes(
-                                'promptHighlight',
-                              ) &&
-                              styles.candidateHighlightHintText,
-                          ].filter(Boolean) as TextStyle[]}>
+                          style={
+                            [
+                              styles.draftCellText,
+                              positions.includes(num) &&
+                                cell?.highlightCandidates?.length &&
+                                board[rowIndex][colIndex].highlights?.includes(
+                                  'positionHighlight',
+                                ) &&
+                                styles.candidateHighlightDeleteText,
+                              prompts.includes(num) &&
+                                cell?.highlightCandidates?.length &&
+                                board[rowIndex][colIndex].highlights?.includes(
+                                  'promptHighlight',
+                                ) &&
+                                styles.candidateHighlightHintText,
+                            ].filter(Boolean) as TextStyle[]
+                          }>
                           {num}
                         </Text>
                       )}
@@ -2064,18 +1831,11 @@ const Sudoku: React.FC = () => {
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={[
-              styles.circleButton,
-              selectionMode === 1 &&
-                eraseMode && {
-                  backgroundColor: '#e6f7ff',
-                  borderColor: '#1890ff',
-                },
-            ]}
+            style={styles.circleButton}
             onPress={handleEraseMode}>
             <Image
               source={
-                eraseMode
+                eraseEnabled
                   ? require('../assets/icon/erase_active.png')
                   : require('../assets/icon/erase.png')
               }
@@ -2135,17 +1895,21 @@ const Sudoku: React.FC = () => {
                 },
             ]}
             disabled={!draftMode && remainingCounts[number - 1] === 0}>
-            <Text style={styles.selectedNumberButton}>{number}</Text>
-            <Text style={styles.remainingCount}>
+            <Text style={[styles.selectedNumberButton,selectionMode === 1 &&
+                selectedNumber === number && styles.selectedNumberText]}>{number}</Text>
+            <Text style={[styles.remainingCount,selectionMode === 1 &&
+                selectedNumber === number && styles.selectedNumberText]}>
               {remainingCounts[number - 1]}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
-      {/* <Switch
-        checked={selectionMode === 2}
-        onChange={checked => handleSelectionMode(checked ? 2 : 1)}
-      /> */}
+      <Switch
+        value={selectionMode === 2}
+        onValueChange={handleSelectionModeChange}
+        trackColor={{false: '#767577', true: '#81b0ff'}}
+        thumbColor={selectionMode === 2 ? '#1890ff' : '#f4f3f4'}
+      />
       {/* <TouchableOpacity style={styles.solveButton} onPress={solveSudoku}>
         求解数独
       </TouchableOpacity> */}
@@ -2156,9 +1920,9 @@ const Sudoku: React.FC = () => {
         onRequestClose={handleCancelHint}>
         <TouchableOpacity
           style={styles.modalOverlay}
-          activeOpacity={1} 
+          activeOpacity={1}
           onPress={handleCancelHint}>
-          <View 
+          <View
             style={styles.drawerContent}
             // 添加这个属性来阻止点击事件冒泡
             onStartShouldSetResponder={() => true}
