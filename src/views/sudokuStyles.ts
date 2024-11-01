@@ -111,6 +111,7 @@ const sudokuStyles = StyleSheet.create({
   },
   errorCell: {
     backgroundColor: '#ffccc7',
+    borderColor: '#ffccc7',
   },
   draftGrid: {
     flexDirection: 'row',

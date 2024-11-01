@@ -8,6 +8,7 @@ import {
   Modal,
   TextStyle,
   Switch,
+  Vibration,
 } from 'react-native';
 import {
   useTimer,
@@ -47,6 +48,7 @@ import type {CellData, Position} from '../tools';
 import type {Result} from '../tools/solution';
 import {SOLUTION_METHODS, DIFFICULTY} from '../constans';
 import styles from './sudokuStyles';
+import Sound from 'react-native-sound';
 
 const Sudoku: React.FC = () => {
   const initialBoard = Array(9)
@@ -62,6 +64,7 @@ const Sudoku: React.FC = () => {
     candidateMap,
     graph,
     answerBoard,
+    clearHistory,
   } = useSudokuBoard(initialBoard);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
   const [lastSelectedNumber, setLastSelectedNumber] = useState<number | null>(
@@ -73,12 +76,16 @@ const Sudoku: React.FC = () => {
     Array(9).fill(9),
   );
   const [lastErrorTime, setLastErrorTime] = useState<number | null>(null);
-  const errorCooldownPeriod = 1000; // 错误冷却时间，单位毫秒
+  const errorCooldownPeriod = 300; // 错误冷却时间，单位毫秒
   const time = useTimer();
   const [selectedCell, setSelectedCell] = useState<{
     row: number;
     col: number;
   } | null>({row: 0, col: 0});
+  const [lastSelectedCell, setLastSelectedCell] = useState<{
+    row: number;
+    col: number;
+  } | null>(null);
   const [selectionMode, setSelectionMode] = useState<1 | 2>(1);
   const [errorCells, setErrorCells] = useState<{row: number; col: number}[]>(
     [],
@@ -92,23 +99,14 @@ const Sudoku: React.FC = () => {
   const [positions, setPositions] = useState<number[]>([]);
   const [eraseEnabled, setEraseEnabled] = useState<boolean>(false);
   const [eraseIsClicked, setEraseIsClicked] = useState<boolean>(false);
+  const [errorSounds, setErrorSounds] = useState<Sound[]>([]);
+  const [successSounds, setSuccessSounds] = useState<Sound[]>([]);
+  const [switchSounds, setSwitchSounds] = useState<Sound[]>([]);
 
   const generateBoard = () => {
     const initialBoard = Array(9)
       .fill(null)
       .map(() => Array(9).fill(null));
-
-    // const initialBoard = [
-    //   [9,null,null,4,3,7,1,8,null],
-    //   [3,null,null,9,5,null,4,2,7],
-    //   [4,7,null,null,8,null,3,9,null],
-    //   [null,4,3,5,null,9,null,null,2],
-    //   [null,null,null,3,null,null,null,4,9],
-    //   [null,9,6,8,null,4,null,1,3],
-    //   [null,3,4,null,9,5,null,null,8],
-    //   [null,null,null,7,4,3,null,5,1],
-    //   [null,5,null,6,null,8,null,3,4],
-    // ];
 
     let newBoard: CellData[][] = initialBoard.map(row =>
       row.map(value => ({
@@ -555,10 +553,6 @@ const Sudoku: React.FC = () => {
     generateBoard();
   }, []);
 
-  useEffect(() => {
-    updateRemainingCounts();
-  }, [board]);
-
   const updateRemainingCounts = () => {
     const counts = Array(9).fill(9);
     board.forEach(row => {
@@ -568,30 +562,32 @@ const Sudoku: React.FC = () => {
         }
       });
     });
-    setRemainingCounts(counts);
+    // 只在计数确实发生变化时才更新状态
+    setRemainingCounts(prevCounts => {
+      if (JSON.stringify(prevCounts) !== JSON.stringify(counts)) {
+        return counts;
+      }
+      return prevCounts;
+    });
   };
 
-  // 擦除
   useEffect(() => {
-    if (selectionMode === 2) {
-      if (selectedCell) {
-        const {row, col} = selectedCell;
-        if (eraseEnabled && eraseIsClicked && board[row][col].value !== answerBoard[row][col].value) {
-          const newBoard = deepCopyBoard(board);
-          const cell = newBoard[row][col];
-          cell.value = null;
-          cell.draft = [];
-          updateBoard(newBoard, `擦除 (${row}, ${col})`);
-        }
-        setEraseIsClicked(false);
-      }
-    }
-  }, [eraseIsClicked]);
+    updateRemainingCounts();
+  }, [board]);
+
+  const handleErrorDraftAnimation = (conflictCells: Position[]) => {
+    setErrorCells(conflictCells);
+    setTimeout(() => setErrorCells([]), 300);
+    playSound(errorSounds);
+  };
 
   // 点击方格的回调函数
   const handleCellChange = (row: number, col: number) => {
     if (selectionMode === 2) {
       setSelectedCell({row, col});
+      if (board[row][col].value) {
+        setSelectedNumber(board[row][col].value);
+      }
       return;
     }
 
@@ -611,8 +607,7 @@ const Sudoku: React.FC = () => {
         selectedNumber,
       );
       if (conflictCells.length > 0) {
-        setErrorCells(conflictCells);
-        setTimeout(() => setErrorCells([]), 1000);
+        handleErrorDraftAnimation(conflictCells);
         return;
       }
 
@@ -640,27 +635,31 @@ const Sudoku: React.FC = () => {
           getCandidates,
         );
 
+        playSound(successSounds);
         updateBoard(
           newBoard,
           `设置 (${row}, ${col}) 为 ${selectedNumber}`,
           affectedCells,
-          false,
-          true,
-          true,
         );
+        clearHistory();
       } else {
-        const currentTime = Date.now();
-        if (
-          lastErrorTime === null ||
-          currentTime - lastErrorTime > errorCooldownPeriod
-        ) {
-          setErrorCount(prevCount => prevCount + 1);
-          setErrorCells([{row, col}]);
-          setLastErrorTime(currentTime);
-          setTimeout(() => setErrorCells([]), errorCooldownPeriod);
-        }
+        handleError(row, col);
         return;
       }
+    }
+  };
+
+  const handleError = (row: number, col: number) => {
+    playSound(errorSounds);
+    const currentTime = Date.now();
+    if (
+      lastErrorTime === null ||
+      currentTime - lastErrorTime > errorCooldownPeriod
+    ) {
+      setErrorCount(prevCount => prevCount + 1);
+      setErrorCells([{row, col}]);
+      setLastErrorTime(currentTime);
+      setTimeout(() => setErrorCells([]), errorCooldownPeriod);
     }
   };
 
@@ -669,27 +668,15 @@ const Sudoku: React.FC = () => {
     undo();
   };
 
-  // 回撤
-  const handleRedo = () => {
-    redo();
-  };
-
-  const solveSudoku = () => {
-    const solvedBoard = board.map(row => row.map(cell => ({...cell})));
-    if (solve(solvedBoard)) {
-      updateBoard(solvedBoard, '求解数独');
-    }
-    // message.info(`解的情况: ${checkSolutionStatus(solvedBoard)}`);
-  };
-
   const handleEraseMode = () => {
     setEraseIsClicked(true);
-    const {row, col} = selectedCell!;
-    handleCellChange(row, col);
   };
 
   // 选择数字
   const handleNumberSelect = (number: number) => {
+    if (number != selectedNumber) {
+      playSound(switchSounds);
+    }
     if (selectionMode === 2 && selectedCell) {
       const {row, col} = selectedCell;
       const cell = board[row][col];
@@ -709,8 +696,7 @@ const Sudoku: React.FC = () => {
           number,
         );
         if (conflictCells.length > 0) {
-          setErrorCells(conflictCells);
-          setTimeout(() => setErrorCells([]), 1000);
+          handleErrorDraftAnimation(conflictCells);
           return;
         }
 
@@ -723,12 +709,13 @@ const Sudoku: React.FC = () => {
         newCell.draft = Array.from(draftSet).sort((a, b) => a - b);
         updateBoard(newBoard, `设置 (${row}, ${col}) 草稿为 ${newCell.draft}`);
       } else {
-        const candidates = getCandidates(newBoard, row, col);
-        if (candidates.includes(number)) {
+        if (answerBoard[row][col].value == number) {
+          playSound(successSounds);
           newCell.value = number;
           newCell.draft = [];
           updateBoard(newBoard, `设置 (${row}, ${col}) 为 ${number}`);
         } else {
+          handleError(row, col);
           const currentTime = Date.now();
           if (
             lastErrorTime === null ||
@@ -744,16 +731,15 @@ const Sudoku: React.FC = () => {
       setSelectedNumber(number);
     }
   };
-
   const handleDraftMode = () => {
     setDraftMode(!draftMode);
   };
 
-  const handleShowCandidates = useCallback(() => {
+  const handleShowCandidates = () => {
     const newBoard = copyOfficialDraft(board);
     updateBoard(newBoard, '复制官方草稿');
     setOfficialDraftUsed(true);
-  }, [board, updateBoard]);
+  };
 
   const applyHintHighlight = (
     board: CellData[][],
@@ -1585,6 +1571,7 @@ const Sudoku: React.FC = () => {
 
       // 使用 updateBoard 函数更新棋盘
       updateBoard(newBoard, `应用提示：${result.method}`);
+      playSound(successSounds);
 
       // 移除提示高亮
       const updatedBoard = removeHintHighlight(newBoard);
@@ -1592,6 +1579,7 @@ const Sudoku: React.FC = () => {
 
       setHintDrawerVisible(false);
       setResult(null); // 重置 result
+      clearHistory();
     }
   };
 
@@ -1622,7 +1610,8 @@ const Sudoku: React.FC = () => {
   }, [selectionMode]);
 
   useEffect(() => {
-    const {row, col} = selectedCell!;
+    if (!selectedCell) return;
+    const {row, col} = selectedCell;
     if (selectionMode === 1) return;
     if (board[row][col].value) {
       setEraseEnabled(false);
@@ -1630,6 +1619,89 @@ const Sudoku: React.FC = () => {
       setEraseEnabled(true);
     }
   }, [selectedCell, selectionMode]);
+
+  useEffect(() => {
+    if (hintDrawerVisible) {
+      setLastSelectedCell(selectedCell);
+      setSelectedCell(null);
+    } else {
+      setSelectedCell(lastSelectedCell);
+    }
+  }, [hintDrawerVisible]);
+
+  useEffect(() => {
+    const initSounds = async () => {
+      // 创建多个音效实例
+      const errorInstances = await Promise.all(
+        Array(3).fill(0).map(() => createSound(require('../assets/audio/error.wav')))
+      );
+      const successInstances = await Promise.all(
+        Array(3).fill(0).map(() => createSound(require('../assets/audio/success.wav')))
+      );
+      const switchInstances = await Promise.all(
+        Array(3).fill(0).map(() => createSound(require('../assets/audio/switch.wav')))
+      );
+
+      setErrorSounds(errorInstances);
+      setSuccessSounds(successInstances);
+      setSwitchSounds(switchInstances);
+    };
+
+    initSounds();
+
+    return () => {
+      // 清理音效实例
+      errorSounds.forEach(sound => sound.release());
+      successSounds.forEach(sound => sound.release());
+      switchSounds.forEach(sound => sound.release());
+    };
+  }, []);
+
+  const createSound = (path: any): Promise<Sound> => {
+    return new Promise((resolve, reject) => {
+      const sound = new Sound(path, (error) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(sound);
+        }
+      });
+    });
+  };
+
+  // 播放音效的函数
+  const playSound = (sounds: Sound[]) => {
+    // 查找未在播放的音效实例
+    const availableSound = sounds.find(sound => !sound.isPlaying());
+    if (availableSound) {
+      availableSound.play(success => {
+        if (!success) {
+          console.log('播放音频失败');
+        }
+      });
+    }
+  };
+
+  // 擦除
+  useEffect(() => {
+    if (selectionMode === 2) {
+      if (selectedCell) {
+        const {row, col} = selectedCell;
+        if (
+          eraseEnabled &&
+          eraseIsClicked &&
+          board[row][col].value !== answerBoard[row][col].value
+        ) {
+          const newBoard = deepCopyBoard(board);
+          const cell = newBoard[row][col];
+          cell.value = null;
+          cell.draft = [];
+          updateBoard(newBoard, `擦除 (${row}, ${col})`);
+        }
+        setEraseIsClicked(false);
+      }
+    }
+  }, [eraseIsClicked]);
 
   return (
     <View style={styles.container}>
@@ -1673,14 +1745,14 @@ const Sudoku: React.FC = () => {
                   cell.value === selectedNumber &&
                   styles.selectedNumber,
                 getCellClassName(board, rowIndex, colIndex, selectedNumber),
-                errorCells.some(
-                  errorCell =>
-                    errorCell.row === rowIndex && errorCell.col === colIndex,
-                ) && styles.errorCell,
                 selectionMode === 2 &&
                   selectedCell?.row === rowIndex &&
                   selectedCell?.col === colIndex &&
                   styles.selectedCell,
+                errorCells.some(
+                  errorCell =>
+                    errorCell.row === rowIndex && errorCell.col === colIndex,
+                ) && styles.errorCell,
                 ...(cell.highlights?.map(
                   highlight => (styles as any)[highlight],
                 ) || []),
@@ -1789,11 +1861,17 @@ const Sudoku: React.FC = () => {
         </View>
 
         <View style={styles.buttonContainer}>
+          <View style={{position: 'absolute', right: -20, top: -10, zIndex: 1}}>
+            <Switch
+              value={draftMode}
+              onValueChange={handleDraftMode}
+              trackColor={{false: '#767577', true: '#81b0ff'}}
+              thumbColor={draftMode ? '#1890ff' : '#f4f3f4'}
+              style={{transform: [{scaleX: 0.6}, {scaleY: 0.6}]}}
+            />
+          </View>
           <TouchableOpacity
-            style={[
-              styles.circleButton,
-              draftMode && {backgroundColor: '#e6f7ff', borderColor: '#1890ff'},
-            ]}
+            style={[styles.circleButton]}
             onPressIn={handleDraftMode}>
             <Image
               source={require('../assets/icon/draft.png')}

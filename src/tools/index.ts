@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { isUnitStrongLink } from "./solution";
+import {useEffect, useState} from 'react';
+import {isUnitStrongLink} from './solution';
 
 export interface Position {
   row: number;
@@ -31,7 +31,7 @@ export const isValid = (
   board: CellData[][],
   row: number,
   col: number,
-  num: number
+  num: number,
 ): boolean => {
   // 检查行
   for (let x = 0; x < 9; x++) {
@@ -80,7 +80,7 @@ export const useTimer = () => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setSeconds((prevSeconds) => prevSeconds + 1);
+      setSeconds(prevSeconds => prevSeconds + 1);
     }, 1000);
 
     return () => clearInterval(timer);
@@ -89,9 +89,9 @@ export const useTimer = () => {
   const formatTime = (totalSeconds: number) => {
     const minutes = Math.floor(totalSeconds / 60);
     const remainingSeconds = totalSeconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds
       .toString()
-      .padStart(2, "0")}`;
+      .padStart(2, '0')}`;
   };
 
   return formatTime(seconds);
@@ -101,12 +101,12 @@ export const getCellClassName = (
   board: CellData[][],
   rowIndex: number,
   colIndex: number,
-  selectedNumber: number | null
+  selectedNumber: number | null,
 ) => {
   const cell = board[rowIndex][colIndex];
   const baseClass = `sudokuCell ${
-    cell.value === null ? "emptySudokuCell" : ""
-  } ${cell.isGiven ? "givenNumber" : ""}`;
+    cell.value === null ? 'emptySudokuCell' : ''
+  } ${cell.isGiven ? 'givenNumber' : ''}`;
 
   if (selectedNumber !== null) {
     if (cell.value === selectedNumber) {
@@ -121,8 +121,8 @@ export const getCellClassName = (
 
 // 检测数独解的情况
 export const checkSolutionStatus = (
-  board: CellData[][]
-): "无解" | "有唯一解" | "有多解" => {
+  board: CellData[][],
+): '无解' | '有唯一解' | '有多解' => {
   let solutionCount = 0;
   const emptyCells: [number, number][] = [];
 
@@ -157,11 +157,11 @@ export const checkSolutionStatus = (
   backtrack(0);
 
   if (solutionCount === 0) {
-    return "无解";
+    return '无解';
   } else if (solutionCount === 1) {
-    return "有唯一解";
+    return '有唯一解';
   } else {
-    return "有多解";
+    return '有多解';
   }
 };
 
@@ -169,21 +169,21 @@ export const checkNumberInRowColumnAndBox = (
   board: CellData[][],
   row: number,
   col: number,
-  num: number
-): { row: number; col: number }[] => {
-  const conflictCells: { row: number; col: number }[] = [];
+  num: number,
+): {row: number; col: number}[] => {
+  const conflictCells: {row: number; col: number}[] = [];
 
   // 检查行
   for (let i = 0; i < 9; i++) {
     if (board[row][i].value === num) {
-      conflictCells.push({ row, col: i });
+      conflictCells.push({row, col: i});
     }
   }
 
   // 检查列
   for (let i = 0; i < 9; i++) {
     if (board[i][col].value === num) {
-      conflictCells.push({ row: i, col });
+      conflictCells.push({row: i, col});
     }
   }
 
@@ -193,7 +193,7 @@ export const checkNumberInRowColumnAndBox = (
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
       if (board[boxRow + i][boxCol + j].value === num) {
-        conflictCells.push({ row: boxRow + i, col: boxCol + j });
+        conflictCells.push({row: boxRow + i, col: boxCol + j});
       }
     }
   }
@@ -204,21 +204,21 @@ export const checkNumberInRowColumnAndBox = (
 // 添加新的函数来更新相关单元格的草稿数字
 export const updateRelatedCellsDraft = (
   board: CellData[][],
-  position: { row: number; col: number }[],
+  position: {row: number; col: number}[],
   value: number,
   getCandidates: (board: CellData[][], row: number, col: number) => number[],
-  isUndo: boolean = false
+  isUndo: boolean = false,
 ) => {
-  const affectedCells: { row: number; col: number }[] = [];
+  const affectedCells: {row: number; col: number}[] = [];
 
   // 收集受影响的单元格
-  position.forEach(({ row, col }) => {
+  position.forEach(({row, col}) => {
     for (let i = 0; i < 9; i++) {
       if (i !== col && board[row][i].value === null) {
-        affectedCells.push({ row, col: i });
+        affectedCells.push({row, col: i});
       }
       if (i !== row && board[i][col].value === null) {
-        affectedCells.push({ row: i, col });
+        affectedCells.push({row: i, col});
       }
     }
 
@@ -227,7 +227,7 @@ export const updateRelatedCellsDraft = (
     for (let i = boxRow; i < boxRow + 3; i++) {
       for (let j = boxCol; j < boxCol + 3; j++) {
         if ((i !== row || j !== col) && board[i][j].value === null) {
-          affectedCells.push({ row: i, col: j });
+          affectedCells.push({row: i, col: j});
         }
       }
     }
@@ -235,14 +235,14 @@ export const updateRelatedCellsDraft = (
 
   // 去重受影响的单元格
   const uniqueAffectedCells = Array.from(
-    new Set(affectedCells.map((cell) => `${cell.row},${cell.col}`))
-  ).map((str) => {
-    const [row, col] = str.split(",");
-    return { row: Number(row), col: Number(col) };
+    new Set(affectedCells.map(cell => `${cell.row},${cell.col}`)),
+  ).map(str => {
+    const [row, col] = str.split(',');
+    return {row: Number(row), col: Number(col)};
   });
 
   // 更新受影响的单元格
-  uniqueAffectedCells.forEach(({ row, col }) => {
+  uniqueAffectedCells.forEach(({row, col}) => {
     const cell = board[row][col];
     const candidates = getCandidates(board, row, col);
     updateCellDraft(cell, value, candidates, isUndo);
@@ -255,7 +255,7 @@ const updateCellDraft = (
   cell: CellData,
   value: number,
   candidates: number[],
-  isUndo: boolean
+  isUndo: boolean,
 ) => {
   if (isUndo) {
     // 如果是撤销操作，添加候选数字
@@ -265,14 +265,14 @@ const updateCellDraft = (
     }
   } else {
     // 如果是填入数字操作，移除候选数字
-    cell.draft = cell.draft.filter((num) => num !== value);
+    cell.draft = cell.draft.filter(num => num !== value);
   }
 };
 
 export const getCandidates = (
   board: CellData[][],
   row: number,
-  col: number
+  col: number,
 ): number[] => {
   if (board[row][col].value !== null) return [];
   const candidates = [];
@@ -286,11 +286,11 @@ export const getCandidates = (
 
 // 深拷贝棋盘状态
 export const deepCopyBoard = (board: CellData[][]): CellData[][] => {
-  return board.map((row) =>
-    row.map((cell) => ({
+  return board.map(row =>
+    row.map(cell => ({
       ...cell,
       draft: [...cell.draft],
-    }))
+    })),
   );
 };
 
@@ -298,7 +298,7 @@ export const deepCopyBoard = (board: CellData[][]): CellData[][] => {
 interface BoardHistory {
   board: CellData[][];
   action: string;
-  affectedCells?: { row: number; col: number }[];
+  affectedCells?: {row: number; col: number}[];
   isOfficialDraft?: boolean;
 }
 
@@ -320,7 +320,7 @@ export interface CandidateMap {
 // 创建图结构
 export const createGraph = (
   board: CellData[][],
-  candidateMap: CandidateMap
+  candidateMap: CandidateMap,
 ): Graph => {
   const graph: Graph = {};
 
@@ -349,7 +349,7 @@ export const createGraph = (
           subGraph.push(current);
 
           for (let j = 0; j < candidates.length; j++) {
-            const position1 = { row: current.row, col: current.col };
+            const position1 = {row: current.row, col: current.col};
             const position2 = {
               row: candidates[j].row,
               col: candidates[j].col,
@@ -357,10 +357,12 @@ export const createGraph = (
             const key1 = `${position1.row},${position1.col}`;
             const key2 = `${position2.row},${position2.col}`;
 
-            if (isUnitStrongLink(board, position1, position2, num, candidateMap)) {
+            if (
+              isUnitStrongLink(board, position1, position2, num, candidateMap)
+            ) {
               let newNode = subGraph.find(
-                (node) =>
-                  node.row === position2.row && node.col === position2.col
+                node =>
+                  node.row === position2.row && node.col === position2.col,
               );
 
               if (!newNode) {
@@ -375,8 +377,8 @@ export const createGraph = (
 
               if (
                 !current.next.some(
-                  (node) =>
-                    node.row === newNode?.row && node.col === newNode?.col
+                  node =>
+                    node.row === newNode?.row && node.col === newNode?.col,
                 )
               ) {
                 current.next.push(newNode);
@@ -384,7 +386,7 @@ export const createGraph = (
 
               if (
                 !newNode.next.some(
-                  (node) => node.row === current.row && node.col === current.col
+                  node => node.row === current.row && node.col === current.col,
                 )
               ) {
                 newNode.next.push(current);
@@ -422,7 +424,7 @@ export const createGraph = (
               visitedNodes.add(nodeKey);
               nodeCount++;
 
-              currentNode?.next.forEach((nextNode) => {
+              currentNode?.next.forEach(nextNode => {
                 queue.push(nextNode);
               });
             }
@@ -436,7 +438,7 @@ export const createGraph = (
     }
 
     if (subGraphs.length > 0) {
-      graph[num] = subGraphs.map((subGraph) => subGraph[0]);
+      graph[num] = subGraphs.map(subGraph => subGraph[0]);
     }
   }
 
@@ -463,7 +465,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     return initialCandidateMap;
   });
   const [graph, setGraph] = useState<Graph>(() =>
-    createGraph(initialBoard, candidateMap)
+    createGraph(initialBoard, candidateMap),
   );
 
   const updateCandidateMap = (newBoard: CellData[][]) => {
@@ -488,12 +490,12 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
             candidates: cell.draft,
           };
 
-          cell.draft.forEach((num) => {
+          cell.draft.forEach(num => {
             const updateStats = (
               map: Map<number, CandidateStats>,
-              index: number
+              index: number,
             ) => {
-              const stats = map.get(index) ?? { count: 0, positions: [] };
+              const stats = map.get(index) ?? {count: 0, positions: []};
               stats.count++;
               stats.positions.push(candidate);
               map.set(index, stats);
@@ -514,40 +516,38 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
   const updateBoard = (
     newBoard: CellData[][],
     action: string,
-    affectedCells?: { row: number; col: number }[],
+    affectedCells?: {row: number; col: number}[],
     isOfficialDraft: boolean = false,
     isRecord: boolean = true,
-    isCorrectValue: boolean = false
   ) => {
     if (!isSolved) {
-      const solvedBoard = newBoard.map((row) => row.map((cell) => ({ ...cell })));
+      const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
       solve(solvedBoard);
       setAnswerBoard(solvedBoard);
       setIsSolved(true);
     }
-    
+
     if (isRecord) {
-      if (isCorrectValue) {
-        // 如果填入正确值，清空历史记录并只保存当前操作
-        setHistory([{
+      // 如果填入正确值，清空历史记录并只保存当前操作
+      setHistory([
+        {
           board: newBoard,
           action,
           affectedCells,
           isOfficialDraft,
-        }]);
-        setCurrentStep(0);
-      } else {
-        // 其他操作保持原有逻辑
-        const newHistory = history.slice(0, currentStep + 1);
-        newHistory.push({
-          board: newBoard,
-          action,
-          affectedCells,
-          isOfficialDraft,
-        });
-        setHistory(newHistory);
-        setCurrentStep(newHistory.length - 1);
-      }
+        },
+      ]);
+      setCurrentStep(0);
+      // 其他操作保持原有逻辑
+      const newHistory = history.slice(0, currentStep + 1);
+      newHistory.push({
+        board: newBoard,
+        action,
+        affectedCells,
+        isOfficialDraft,
+      });
+      setHistory(newHistory);
+      setCurrentStep(newHistory.length - 1);
     }
 
     setBoard(newBoard);
@@ -577,6 +577,21 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     }
   };
 
+  // 添加清空历史记录的函数
+  const clearHistory = () => {
+    // 保存当前棋盘状态作为唯一的历史记录
+    const newHistory = [
+      {
+        board: board,
+        action: '清空历史记录',
+        affectedCells: [],
+        isOfficialDraft: false,
+      },
+    ];
+    setHistory(newHistory);
+    setCurrentStep(0);
+  };
+
   return {
     board,
     updateBoard,
@@ -587,6 +602,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     candidateMap,
     graph,
     answerBoard,
+    clearHistory, // 导出新函数
   };
 };
 
@@ -596,7 +612,7 @@ export const copyOfficialDraft = (board: CellData[][]): CellData[][] => {
     row.map((cell, colIndex) => ({
       ...cell,
       draft: getCandidates(board, rowIndex, colIndex),
-    }))
+    })),
   );
 };
 
