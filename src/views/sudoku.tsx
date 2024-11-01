@@ -47,7 +47,6 @@ import type {CellData, Position} from '../tools';
 import type {Result} from '../tools/solution';
 import {SOLUTION_METHODS, DIFFICULTY} from '../constans';
 import styles from './sudokuStyles';
-// import { Switch } from 'antd-mobile'
 
 const Sudoku: React.FC = () => {
   const initialBoard = Array(9)
@@ -69,7 +68,6 @@ const Sudoku: React.FC = () => {
     null,
   );
   const [errorCount, setErrorCount] = useState<number>(0);
-  const [eraseMode, setEraseMode] = useState<boolean>(false);
   const [draftMode, setDraftMode] = useState<boolean>(false);
   const [remainingCounts, setRemainingCounts] = useState<number[]>(
     Array(9).fill(9),
@@ -93,6 +91,7 @@ const Sudoku: React.FC = () => {
   const [prompts, setPrompts] = useState<number[]>([]);
   const [positions, setPositions] = useState<number[]>([]);
   const [eraseEnabled, setEraseEnabled] = useState<boolean>(false);
+  const [eraseIsClicked, setEraseIsClicked] = useState<boolean>(false);
 
   const generateBoard = () => {
     const initialBoard = Array(9)
@@ -572,89 +571,39 @@ const Sudoku: React.FC = () => {
     setRemainingCounts(counts);
   };
 
+  // 擦除
+  useEffect(() => {
+    if (selectionMode === 2) {
+      if (selectedCell) {
+        const {row, col} = selectedCell;
+        if (eraseEnabled && eraseIsClicked && board[row][col].value !== answerBoard[row][col].value) {
+          const newBoard = deepCopyBoard(board);
+          const cell = newBoard[row][col];
+          cell.value = null;
+          cell.draft = [];
+          updateBoard(newBoard, `擦除 (${row}, ${col})`);
+        }
+        setEraseIsClicked(false);
+      }
+    }
+  }, [eraseIsClicked]);
+
   // 点击方格的回调函数
   const handleCellChange = (row: number, col: number) => {
     if (selectionMode === 2) {
       setSelectedCell({row, col});
-      if (eraseMode && !board[row][col].isGiven) {
-        const newBoard = deepCopyBoard(board);
-        const cell = newBoard[row][col];
-
-        cell.value = null;
-        cell.draft = [];
-        updateBoard(newBoard, `擦除 (${row}, ${col})`);
-      }
       return;
     }
 
-    if (board[row][col]?.isGiven) {
+    if (board[row][col].value) {
       return;
     }
 
     const newBoard = deepCopyBoard(board);
     const cell = newBoard[row][col];
 
-    // 处理擦除操作
-    if (eraseEnabled) {
-      if (
-        cell.isGiven ||
-        board[row][col].value === answerBoard[row][col].value
-      ) {
-        return;
-      }
-
-      if (cell.value !== null) {
-        // 如果单元格有值，擦除该值
-        const oldValue = cell.value;
-        cell.value = null;
-
-        // 只有在使用了一键草稿时才更新相关单元格的草稿数字
-        if (officialDraftUsed) {
-          const affectedCells = updateRelatedCellsDraft(
-            newBoard,
-            [{row, col}],
-            oldValue,
-            getCandidates,
-            true, // 添加 isUndo 参数
-          );
-          updateBoard(newBoard, `擦除 (${row}, ${col}) 的值`, affectedCells);
-        } else {
-          updateBoard(newBoard, `擦除 (${row}, ${col}) 的值`);
-        }
-      } else if (
-        draftMode &&
-        selectedNumber &&
-        cell.draft.includes(selectedNumber)
-      ) {
-        // 如果是草稿模式且有选中的数字，只擦除该候选数字
-        cell.draft = cell.draft.filter(num => num !== selectedNumber);
-        updateBoard(
-          newBoard,
-          `从 (${row}, ${col}) 擦除草稿数字 ${selectedNumber}`,
-        );
-      } else if (!draftMode && cell.draft.length > 0 && selectedNumber) {
-        // 如果不是草稿模式且有草稿数字，擦除对应候选字
-        if (cell.draft.includes(selectedNumber)) {
-          cell.draft = cell.draft.filter(num => num != selectedNumber);
-          updateBoard(
-            newBoard,
-            `擦除 (${row}, ${col}) 的草稿数字 ${selectedNumber}`,
-          );
-        } else {
-          cell.draft.push(selectedNumber);
-          cell.draft.sort((a, b) => a - b);
-          updateBoard(
-            newBoard,
-            `在 (${row}, ${col}) 的草稿中添加 ${selectedNumber}`,
-          );
-        }
-      } else {
-        return;
-      }
-      return;
-    }
     // 处理草稿模式
-    else if (draftMode && selectedNumber) {
+    if (draftMode && selectedNumber) {
       const conflictCells = checkNumberInRowColumnAndBox(
         newBoard,
         row,
@@ -734,12 +683,9 @@ const Sudoku: React.FC = () => {
   };
 
   const handleEraseMode = () => {
-    if (selectionMode === 1) {
-      setEraseMode(!eraseMode);
-    } else if (selectionMode === 2 && selectedCell) {
-      const {row, col} = selectedCell;
-      handleCellChange(row, col);
-    }
+    setEraseIsClicked(true);
+    const {row, col} = selectedCell!;
+    handleCellChange(row, col);
   };
 
   // 选择数字
@@ -797,7 +743,6 @@ const Sudoku: React.FC = () => {
     } else {
       setSelectedNumber(number);
     }
-    setEraseMode(false);
   };
 
   const handleDraftMode = () => {
@@ -1677,16 +1622,14 @@ const Sudoku: React.FC = () => {
   }, [selectionMode]);
 
   useEffect(() => {
-
-    console.log(123);
-    
     const {row, col} = selectedCell!;
+    if (selectionMode === 1) return;
     if (board[row][col].value) {
       setEraseEnabled(false);
     } else {
       setEraseEnabled(true);
     }
-  }, [selectedCell]);
+  }, [selectedCell, selectionMode]);
 
   return (
     <View style={styles.container}>
@@ -1704,7 +1647,7 @@ const Sudoku: React.FC = () => {
           row.map((cell, colIndex) => (
             <TouchableOpacity
               key={`${rowIndex}-${colIndex}`}
-              onPress={e => handleCellChange(rowIndex, colIndex)}
+              onPressIn={e => handleCellChange(rowIndex, colIndex)}
               onLongPress={e => {
                 handleCellChange(rowIndex, colIndex);
               }}
@@ -1815,7 +1758,7 @@ const Sudoku: React.FC = () => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.circleButton}
-            onPress={handleUndo}
+            onPressIn={handleUndo}
             disabled={currentStep === 0}>
             <Image
               source={
@@ -1832,7 +1775,7 @@ const Sudoku: React.FC = () => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.circleButton}
-            onPress={handleEraseMode}>
+            onPressIn={handleEraseMode}>
             <Image
               source={
                 eraseEnabled
@@ -1851,7 +1794,7 @@ const Sudoku: React.FC = () => {
               styles.circleButton,
               draftMode && {backgroundColor: '#e6f7ff', borderColor: '#1890ff'},
             ]}
-            onPress={handleDraftMode}>
+            onPressIn={handleDraftMode}>
             <Image
               source={require('../assets/icon/draft.png')}
               style={styles.buttonIcon}
@@ -1863,7 +1806,7 @@ const Sudoku: React.FC = () => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.circleButton}
-            onPress={handleShowCandidates}>
+            onPressIn={handleShowCandidates}>
             <Image
               source={require('../assets/icon/auto.png')}
               style={styles.buttonIcon}
@@ -1873,7 +1816,7 @@ const Sudoku: React.FC = () => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.circleButton} onPress={handleHint}>
+          <TouchableOpacity style={styles.circleButton} onPressIn={handleHint}>
             <Image
               source={require('../assets/icon/prompt.png')}
               style={styles.buttonIcon}
@@ -1886,7 +1829,7 @@ const Sudoku: React.FC = () => {
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(number => (
           <TouchableOpacity
             key={number}
-            onPress={() => handleNumberSelect(number)}
+            onPressIn={() => handleNumberSelect(number)}
             style={[
               styles.numberButton,
               selectionMode === 1 &&
@@ -1895,10 +1838,22 @@ const Sudoku: React.FC = () => {
                 },
             ]}
             disabled={!draftMode && remainingCounts[number - 1] === 0}>
-            <Text style={[styles.selectedNumberButton,selectionMode === 1 &&
-                selectedNumber === number && styles.selectedNumberText]}>{number}</Text>
-            <Text style={[styles.remainingCount,selectionMode === 1 &&
-                selectedNumber === number && styles.selectedNumberText]}>
+            <Text
+              style={[
+                styles.selectedNumberButton,
+                selectionMode === 1 &&
+                  selectedNumber === number &&
+                  styles.selectedNumberText,
+              ]}>
+              {number}
+            </Text>
+            <Text
+              style={[
+                styles.remainingCount,
+                selectionMode === 1 &&
+                  selectedNumber === number &&
+                  styles.selectedNumberText,
+              ]}>
               {remainingCounts[number - 1]}
             </Text>
           </TouchableOpacity>
@@ -1910,7 +1865,7 @@ const Sudoku: React.FC = () => {
         trackColor={{false: '#767577', true: '#81b0ff'}}
         thumbColor={selectionMode === 2 ? '#1890ff' : '#f4f3f4'}
       />
-      {/* <TouchableOpacity style={styles.solveButton} onPress={solveSudoku}>
+      {/* <TouchableOpacity style={styles.solveButton} onPressIn={solveSudoku}>
         求解数独
       </TouchableOpacity> */}
       <Modal
@@ -1921,7 +1876,7 @@ const Sudoku: React.FC = () => {
         <TouchableOpacity
           style={styles.modalOverlay}
           activeOpacity={1}
-          onPress={handleCancelHint}>
+          onPressIn={handleCancelHint}>
           <View
             style={styles.drawerContent}
             // 添加这个属性来阻止点击事件冒泡
@@ -1933,7 +1888,7 @@ const Sudoku: React.FC = () => {
               <View style={styles.drawerHeader}>
                 <Text style={styles.drawerTitle}>{hintMethod}</Text>
                 <TouchableOpacity
-                  onPress={handleCancelHint}
+                  onPressIn={handleCancelHint}
                   style={styles.closeIconButton}>
                   <Image
                     source={require('../assets/icon/close.png')}
@@ -1944,12 +1899,12 @@ const Sudoku: React.FC = () => {
               <Text style={styles.drawerText}>{hintContent}</Text>
               <View style={styles.drawerButtons}>
                 <TouchableOpacity
-                  onPress={handleApplyHint}
+                  onPressIn={handleApplyHint}
                   style={[styles.drawerButton, styles.drawerButtonApply]}>
                   <Text style={styles.drawerButtonTextApply}>应用</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={handleCancelHint}
+                  onPressIn={handleCancelHint}
                   style={[styles.drawerButton, styles.drawerButtonCancel]}>
                   <Text style={styles.drawerButtonTextCancel}>取消</Text>
                 </TouchableOpacity>
