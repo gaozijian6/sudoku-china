@@ -218,10 +218,21 @@ const sudokuStyles = StyleSheet.create({
     paddingBottom: 6,
     paddingTop: 4,
   },
+  numberButtonDisabled: {
+    backgroundColor: '#f5f5f5',
+    borderColor: '#d9d9d9',
+    opacity: 0,
+  },
+  selectedNumberButtonDisabled: {
+    color: 'rgba(0, 0, 0, 0.25)',
+  },
   remainingCount: {
     fontSize: 12,
     marginTop: 2,
     color: 'rgb(125,123,134)',
+  },
+  remainingCountDisabled: {
+    color: 'rgba(0, 0, 0, 0.25)',
   },
   solveButton: {
     marginTop: 20,

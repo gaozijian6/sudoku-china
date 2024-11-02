@@ -7,7 +7,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import TarBars from './src/views/components/tarBars';
+import TarBars from './src/components/tarBars';
 import {useRef, useState} from 'react';
 
 function App() {

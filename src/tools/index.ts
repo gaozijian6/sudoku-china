@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {isUnitStrongLink} from './solution';
 
 export interface Position {
@@ -26,6 +26,134 @@ export interface CellData {
 export interface Graph {
   [key: number]: GraphNode[];
 }
+
+// 创建图结构
+export const createGraph = (
+  board: CellData[][],
+  candidateMap: CandidateMap,
+): Graph => {
+  const graph: Graph = {};
+
+  for (let num = 1; num <= 9; num++) {
+    const candidates = candidateMap[num]?.all ?? [];
+    const subGraphs: GraphNode[][] = [];
+    const visited: Map<string, Set<string>> = new Map();
+
+    for (let i = 0; i < candidates.length; i++) {
+      const startKey = `${candidates[i].row},${candidates[i].col}`;
+      if (!visited.has(startKey)) {
+        const subGraph: GraphNode[] = [];
+        const queue: GraphNode[] = [
+          {
+            row: candidates[i].row,
+            col: candidates[i].col,
+            candidates: candidates[i].candidates,
+            next: [],
+          },
+        ];
+        visited.set(startKey, new Set());
+
+        while (queue.length > 0) {
+          const current = queue.shift()!;
+
+          subGraph.push(current);
+
+          for (let j = 0; j < candidates.length; j++) {
+            const position1 = {row: current.row, col: current.col};
+            const position2 = {
+              row: candidates[j].row,
+              col: candidates[j].col,
+            };
+            const key1 = `${position1.row},${position1.col}`;
+            const key2 = `${position2.row},${position2.col}`;
+
+            if (
+              isUnitStrongLink(board, position1, position2, num, candidateMap)
+            ) {
+              let newNode = subGraph.find(
+                node =>
+                  node.row === position2.row && node.col === position2.col,
+              );
+
+              if (!newNode) {
+                newNode = {
+                  row: position2.row,
+                  col: position2.col,
+                  candidates: candidates[j].candidates,
+                  next: [],
+                };
+                subGraph.push(newNode);
+              }
+
+              if (
+                !current.next.some(
+                  node =>
+                    node.row === newNode?.row && node.col === newNode?.col,
+                )
+              ) {
+                current.next.push(newNode);
+              }
+
+              if (
+                !newNode.next.some(
+                  node => node.row === current.row && node.col === current.col,
+                )
+              ) {
+                newNode.next.push(current);
+              }
+
+              if (!visited.has(key2) || !visited.get(key2)?.has(key1)) {
+                queue.push(newNode);
+
+                if (!visited.has(key2)) {
+                  visited.set(key2, new Set());
+                }
+                visited.get(key2)?.add(key1);
+              }
+
+              if (!visited.has(key1) || !visited.get(key1)?.has(key2)) {
+                if (!visited.has(key1)) {
+                  visited.set(key1, new Set());
+                }
+                visited.get(key1)?.add(key2);
+              }
+            }
+          }
+        }
+
+        if (subGraph.length) {
+          const visitedNodes = new Set<string>();
+          const queue = [subGraph[0]];
+          let nodeCount = 0;
+
+          while (queue.length > 0 && nodeCount < 3) {
+            const currentNode = queue.shift();
+            const nodeKey = `${currentNode?.row}-${currentNode?.col}`;
+
+            if (!visitedNodes.has(nodeKey)) {
+              visitedNodes.add(nodeKey);
+              nodeCount++;
+
+              currentNode?.next.forEach(nextNode => {
+                queue.push(nextNode);
+              });
+            }
+          }
+
+          if (nodeCount >= 3) {
+            subGraphs.push(subGraph);
+          }
+        }
+      }
+    }
+
+    if (subGraphs.length > 0) {
+      graph[num] = subGraphs.map(subGraph => subGraph[0]);
+    }
+  }
+
+  return graph;
+};
 
 export const isValid = (
   board: CellData[][],
@@ -76,25 +204,25 @@ export const solve = (board: CellData[][]): boolean => {
 };
 
 export const useTimer = () => {
-  const [seconds, setSeconds] = useState(0);
+  const [startTime] = useState(Date.now());
+  const [time, setTime] = useState('00:00');
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setSeconds(prevSeconds => prevSeconds + 1);
+      const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+      const minutes = Math.floor(elapsedSeconds / 60);
+      const seconds = elapsedSeconds % 60;
+      setTime(
+        `${minutes.toString().padStart(2, '0')}:${seconds
+          .toString()
+          .padStart(2, '0')}`,
+      );
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [startTime]);
 
-  const formatTime = (totalSeconds: number) => {
-    const minutes = Math.floor(totalSeconds / 60);
-    const remainingSeconds = totalSeconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds
-      .toString()
-      .padStart(2, '0')}`;
-  };
-
-  return formatTime(seconds);
+  return time;
 };
 
 export const getCellClassName = (
@@ -299,7 +427,6 @@ interface BoardHistory {
   board: CellData[][];
   action: string;
   affectedCells?: {row: number; col: number}[];
-  isOfficialDraft?: boolean;
 }
 
 export interface CandidateStats {
@@ -317,134 +444,6 @@ export interface CandidateMap {
   };
 }
 
-// 创建图结构
-export const createGraph = (
-  board: CellData[][],
-  candidateMap: CandidateMap,
-): Graph => {
-  const graph: Graph = {};
-
-  for (let num = 1; num <= 9; num++) {
-    const candidates = candidateMap[num]?.all ?? [];
-    const subGraphs: GraphNode[][] = [];
-    const visited: Map<string, Set<string>> = new Map();
-
-    for (let i = 0; i < candidates.length; i++) {
-      const startKey = `${candidates[i].row},${candidates[i].col}`;
-      if (!visited.has(startKey)) {
-        const subGraph: GraphNode[] = [];
-        const queue: GraphNode[] = [
-          {
-            row: candidates[i].row,
-            col: candidates[i].col,
-            candidates: candidates[i].candidates,
-            next: [],
-          },
-        ];
-        visited.set(startKey, new Set());
-
-        while (queue.length > 0) {
-          const current = queue.shift()!;
-
-          subGraph.push(current);
-
-          for (let j = 0; j < candidates.length; j++) {
-            const position1 = {row: current.row, col: current.col};
-            const position2 = {
-              row: candidates[j].row,
-              col: candidates[j].col,
-            };
-            const key1 = `${position1.row},${position1.col}`;
-            const key2 = `${position2.row},${position2.col}`;
-
-            if (
-              isUnitStrongLink(board, position1, position2, num, candidateMap)
-            ) {
-              let newNode = subGraph.find(
-                node =>
-                  node.row === position2.row && node.col === position2.col,
-              );
-
-              if (!newNode) {
-                newNode = {
-                  row: position2.row,
-                  col: position2.col,
-                  candidates: candidates[j].candidates,
-                  next: [],
-                };
-                subGraph.push(newNode);
-              }
-
-              if (
-                !current.next.some(
-                  node =>
-                    node.row === newNode?.row && node.col === newNode?.col,
-                )
-              ) {
-                current.next.push(newNode);
-              }
-
-              if (
-                !newNode.next.some(
-                  node => node.row === current.row && node.col === current.col,
-                )
-              ) {
-                newNode.next.push(current);
-              }
-
-              if (!visited.has(key2) || !visited.get(key2)?.has(key1)) {
-                queue.push(newNode);
-
-                if (!visited.has(key2)) {
-                  visited.set(key2, new Set());
-                }
-                visited.get(key2)?.add(key1);
-              }
-
-              if (!visited.has(key1) || !visited.get(key1)?.has(key2)) {
-                if (!visited.has(key1)) {
-                  visited.set(key1, new Set());
-                }
-                visited.get(key1)?.add(key2);
-              }
-            }
-          }
-        }
-
-        if (subGraph.length) {
-          const visitedNodes = new Set<string>();
-          const queue = [subGraph[0]];
-          let nodeCount = 0;
-
-          while (queue.length > 0 && nodeCount < 3) {
-            const currentNode = queue.shift();
-            const nodeKey = `${currentNode?.row}-${currentNode?.col}`;
-
-            if (!visitedNodes.has(nodeKey)) {
-              visitedNodes.add(nodeKey);
-              nodeCount++;
-
-              currentNode?.next.forEach(nextNode => {
-                queue.push(nextNode);
-              });
-            }
-          }
-
-          if (nodeCount >= 3) {
-            subGraphs.push(subGraph);
-          }
-        }
-      }
-    }
-
-    if (subGraphs.length > 0) {
-      graph[num] = subGraphs.map(subGraph => subGraph[0]);
-    }
-  }
-
-  return graph;
-};
-
 // 创建一个新的 hook 来管理棋盘状态和历史
 export const useSudokuBoard = (initialBoard: CellData[][]) => {
   const [board, setBoard] = useState<CellData[][]>(initialBoard);
@@ -452,6 +451,9 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
   const [isSolved, setIsSolved] = useState<boolean>(false);
   const [history, setHistory] = useState<BoardHistory[]>([]);
   const [currentStep, setCurrentStep] = useState<number>(0);
+  const [remainingCounts, setRemainingCounts] = useState<number[]>(
+    Array(9).fill(9),
+  );
   const [candidateMap, setCandidateMap] = useState<CandidateMap>(() => {
     const initialCandidateMap: CandidateMap = {};
     for (let num = 1; num <= 9; num++) {
@@ -467,8 +469,12 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
   const [graph, setGraph] = useState<Graph>(() =>
     createGraph(initialBoard, candidateMap),
   );
+  const [isClickAutoDraft, setIsClickAutoDraft] = useState<boolean>(false);
+  const [standardBoard, setStandardBoard] =
+    useState<CellData[][]>(initialBoard);
+  const [counts, setCounts] = useState<number>(0);
 
-  const updateCandidateMap = (newBoard: CellData[][]) => {
+  const updateCandidateMap = useCallback((newBoard: CellData[][]) => {
     const newCandidateMap: CandidateMap = {};
     for (let num = 1; num <= 9; num++) {
       newCandidateMap[num] = {
@@ -511,98 +517,113 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     });
 
     setCandidateMap(newCandidateMap);
-  };
+  }, []);
 
-  const updateBoard = (
-    newBoard: CellData[][],
-    action: string,
-    affectedCells?: {row: number; col: number}[],
-    isOfficialDraft: boolean = false,
-    isRecord: boolean = true,
-  ) => {
-    if (!isSolved) {
-      const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
-      solve(solvedBoard);
-      setAnswerBoard(solvedBoard);
-      setIsSolved(true);
-    }
+  const updateRemainingCounts = useCallback((board: CellData[][]) => {
+    const counts = Array(9).fill(9);
+    board.forEach(row => {
+      row.forEach(cell => {
+        if (cell.value) {
+          counts[cell.value - 1]--;
+        }
+      });
+    });
+    setRemainingCounts(counts);
+  }, []);
 
-    if (isRecord) {
-      // 如果填入正确值，清空历史记录并只保存当前操作
-      setHistory([
-        {
-          board: newBoard,
-          action,
-          affectedCells,
-          isOfficialDraft,
-        },
-      ]);
-      setCurrentStep(0);
+  const updateBoard = useCallback(
+    (
+      newBoard: CellData[][],
+      action: string,
+      affectedCells?: {row: number; col: number}[],
+    ) => {
+      if (!isSolved) {
+        const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
+        solve(solvedBoard);
+        setAnswerBoard(solvedBoard);
+        setIsSolved(true);
+        updateRemainingCounts(newBoard);
+        let filledCount = 0;
+        newBoard.forEach(row => {
+          row.forEach(cell => {
+            if (cell.value !== null) {
+              filledCount++;
+            }
+          });
+        });
+        setCounts(filledCount);
+      }
       // 其他操作保持原有逻辑
-      const newHistory = history.slice(0, currentStep + 1);
+      const newHistory = history.slice(0);
       newHistory.push({
         board: newBoard,
         action,
         affectedCells,
-        isOfficialDraft,
       });
       setHistory(newHistory);
       setCurrentStep(newHistory.length - 1);
-    }
+      setBoard(newBoard);
+      updateCandidateMap(newBoard);
+      setGraph(createGraph(newBoard, candidateMap));
+    },
+    [
+      candidateMap,
+      updateCandidateMap,
+      isSolved,
+      updateRemainingCounts,
+      history,
+      currentStep,
+      createGraph,
+    ],
+  );
 
-    setBoard(newBoard);
-    updateCandidateMap(newBoard);
-    setGraph(createGraph(newBoard, candidateMap));
-  };
+  useEffect(() => {
+    const newStandardBoard = copyOfficialDraft(board);
+    setStandardBoard(newStandardBoard);
+  }, [counts]);
 
-  const undo = () => {
+  const undo = useCallback(() => {
     if (currentStep > 0) {
       const newStep = currentStep - 1;
       const previousBoard = history[newStep].board;
+      history.pop();
       setCurrentStep(newStep);
       setBoard(previousBoard);
       updateCandidateMap(previousBoard);
       setGraph(createGraph(previousBoard, candidateMap));
     }
-  };
-
-  const redo = () => {
-    if (currentStep < history.length - 1) {
-      const newStep = currentStep + 1;
-      const nextBoard = history[newStep].board;
-      setCurrentStep(newStep);
-      setBoard(nextBoard);
-      updateCandidateMap(nextBoard);
-      setGraph(createGraph(nextBoard, candidateMap));
-    }
-  };
+  }, [history, candidateMap, updateCandidateMap, currentStep, createGraph]);
 
   // 添加清空历史记录的函数
-  const clearHistory = () => {
+  const clearHistory = useCallback(() => {
     // 保存当前棋盘状态作为唯一的历史记录
     const newHistory = [
       {
         board: board,
         action: '清空历史记录',
         affectedCells: [],
-        isOfficialDraft: false,
       },
     ];
     setHistory(newHistory);
     setCurrentStep(0);
-  };
+  }, [board]);
 
   return {
     board,
     updateBoard,
     undo,
-    redo,
     history,
     currentStep,
     candidateMap,
     graph,
     answerBoard,
     clearHistory, // 导出新函数
+    remainingCounts,
+    updateRemainingCounts,
+    setRemainingCounts,
+    isClickAutoDraft,
+    setIsClickAutoDraft,
+    standardBoard,
   };
 };
 
@@ -631,4 +652,3 @@ export const areCellsInSameUnit = (cell1: Position, cell2: Position) => {
 
   return sameRow || sameColumn || sameBox;
 };
-

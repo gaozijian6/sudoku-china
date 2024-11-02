@@ -26,34 +26,26 @@ export interface Result {
   box?: number;
 }
 
-// 检查候选数法
+// 补全候选数
 export const checkCandidate = (
   board: CellData[][],
   candidateMap: CandidateMap,
   graph: Graph,
-  answerBoard: CellData[][]
-): Result | null => {
+  answerBoard?: CellData[][]
+): void => {
   for (let row = 0; row < 9; row++) {
     for (let col = 0; col < 9; col++) {
       const cell = board[row]?.[col];
-      const answerCell = answerBoard[row]?.[col];
+      const answerCell = answerBoard![row]?.[col];
 
       if (cell?.value === null && answerCell?.value !== null) {
         const missingCandidate = answerCell.value;
         if (!cell.draft?.includes(missingCandidate)) {
-          return {
-            position: [{ row, col }],
-            prompt: [{ row, col }],
-            method: SOLUTION_METHODS.CHECK_CANDIDATE,
-            target: [missingCandidate],
-            isFill: false,
-          };
+          cell.draft?.push(missingCandidate);
         }
       }
     }
   }
-
-  return null;
 };
 
 // 唯一余数法

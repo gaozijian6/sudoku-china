@@ -43,13 +43,15 @@ import {
   swordfish,
   eureka,
   trialAndError,
+  checkCandidate,
 } from '../tools/solution';
 import type {CellData, Position} from '../tools';
 import type {Result} from '../tools/solution';
-import {SOLUTION_METHODS, DIFFICULTY} from '../constans';
+import {DIFFICULTY} from '../constans';
 import styles from './sudokuStyles';
 import Sound from 'react-native-sound';
-
+import {handleHintContent} from '../tools/handleHintContent';
+import mockBoard from './mock';
 const Sudoku: React.FC = () => {
   const initialBoard = Array(9)
     .fill(null)
@@ -58,13 +60,16 @@ const Sudoku: React.FC = () => {
     board,
     updateBoard,
     undo,
-    redo,
-    history,
     currentStep,
     candidateMap,
     graph,
     answerBoard,
     clearHistory,
+    remainingCounts,
+    setRemainingCounts,
+    isClickAutoDraft,
+    setIsClickAutoDraft,
+    standardBoard,
   } = useSudokuBoard(initialBoard);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
   const [lastSelectedNumber, setLastSelectedNumber] = useState<number | null>(
@@ -72,9 +77,7 @@ const Sudoku: React.FC = () => {
   );
   const [errorCount, setErrorCount] = useState<number>(0);
   const [draftMode, setDraftMode] = useState<boolean>(false);
-  const [remainingCounts, setRemainingCounts] = useState<number[]>(
-    Array(9).fill(9),
-  );
+
   const [lastErrorTime, setLastErrorTime] = useState<number | null>(null);
   const errorCooldownPeriod = 300; // 错误冷却时间，单位毫秒
   const time = useTimer();
@@ -90,7 +93,6 @@ const Sudoku: React.FC = () => {
   const [errorCells, setErrorCells] = useState<{row: number; col: number}[]>(
     [],
   );
-  const [officialDraftUsed, setOfficialDraftUsed] = useState<boolean>(false);
   const [hintDrawerVisible, setHintDrawerVisible] = useState<boolean>(false);
   const [hintContent, setHintContent] = useState<string>('');
   const [hintMethod, setHintMethod] = useState<string>('');
@@ -98,12 +100,12 @@ const Sudoku: React.FC = () => {
   const [prompts, setPrompts] = useState<number[]>([]);
   const [positions, setPositions] = useState<number[]>([]);
   const [eraseEnabled, setEraseEnabled] = useState<boolean>(false);
-  const [eraseIsClicked, setEraseIsClicked] = useState<boolean>(false);
   const [errorSounds, setErrorSounds] = useState<Sound[]>([]);
   const [successSounds, setSuccessSounds] = useState<Sound[]>([]);
   const [switchSounds, setSwitchSounds] = useState<Sound[]>([]);
+  const [eraseSounds, setEraseSounds] = useState<Sound[]>([]);
 
-  const generateBoard = () => {
+  const generateBoard = useCallback(() => {
     const initialBoard = Array(9)
       .fill(null)
       .map(() => Array(9).fill(null));
@@ -116,668 +118,373 @@ const Sudoku: React.FC = () => {
       })),
     );
 
-    newBoard = [
-      [
-        {
-          value: 2,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: 3,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [7, 8],
-        },
-        {
-          value: 4,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [8, 9],
-        },
-        {
-          value: 5,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: 1,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [6, 7, 8, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [6, 7, 8, 9],
-        },
-      ],
-      [
-        {
-          value: 4,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 7, 8, 9],
-        },
-        {
-          value: 5,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 6, 7, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 8, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [6, 7, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [2, 6, 7, 8, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [2, 3, 6, 7, 8, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [2, 3, 6, 7, 8, 9],
-        },
-      ],
-      [
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 8, 9],
-        },
-        {
-          value: 6,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 7, 8],
-        },
-        {
-          value: 2,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: 3,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [7, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [4, 7, 8, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [7, 8, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [4, 5, 7, 8, 9],
-        },
-      ],
-      [
-        {
-          value: 7,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [5, 8, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [3, 6, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [3, 5, 6],
-        },
-        {
-          value: 2,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [3, 6],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [6, 8, 9],
-        },
-        {
-          value: 4,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: 1,
-          isGiven: false,
-          draft: [],
-        },
-      ],
-      [
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 3, 5, 6, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 2, 5, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 2, 3, 4, 6],
-        },
-        {
-          value: 8,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 4, 5],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [3, 4, 6, 7],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [2, 6, 7, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [2, 3, 6, 7, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [2, 3, 6, 7, 9],
-        },
-      ],
-      [
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 3, 6, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 2, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 2, 3, 4, 6, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 3, 6, 7],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 4],
-        },
-        {
-          value: 9,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: 5,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [2, 3, 6, 7, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [2, 3, 6, 7, 8],
-        },
-      ],
-      [
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 3, 5, 6, 8],
-        },
-        {
-          value: 4,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: 9,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [3, 5],
-        },
-        {
-          value: 7,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: 2,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [6, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 6, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [6, 8],
-        },
-      ],
-      [
-        {
-          value: null,
-          isGiven: false,
-          draft: [3, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [2, 7, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [2, 3, 7, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [3, 9],
-        },
-        {
-          value: 6,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: 1,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [2, 4, 7, 8, 9],
-        },
-        {
-          value: 5,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [2, 4, 7, 8, 9],
-        },
-      ],
-      [
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 5, 6, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 2, 5, 7, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 2, 6, 7, 8],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [5, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [4, 5, 8, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [4, 8],
-        },
-        {
-          value: 3,
-          isGiven: false,
-          draft: [],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [1, 2, 6, 7, 8, 9],
-        },
-        {
-          value: null,
-          isGiven: false,
-          draft: [2, 4, 6, 7, 8, 9],
-        },
-      ],
-    ];
+    newBoard = mockBoard;
 
     updateBoard(newBoard, '生成新棋盘');
 
     // 生成解决方案
     const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
     solve(solvedBoard);
-  };
+  }, [updateBoard]);
 
   useEffect(() => {
     generateBoard();
   }, []);
 
-  const updateRemainingCounts = () => {
-    const counts = Array(9).fill(9);
-    board.forEach(row => {
-      row.forEach(cell => {
-        if (cell.value) {
-          counts[cell.value - 1]--;
+  // 播放音效的函数
+  const playSound = useCallback((sounds: Sound[]) => {
+    // 查找未在播放的音效实例
+    const availableSound = sounds.find(sound => !sound.isPlaying());
+    if (availableSound) {
+      availableSound.play(success => {
+        if (!success) {
+          console.log('播放音频失败');
         }
       });
-    });
-    // 只在计数确实发生变化时才更新状态
-    setRemainingCounts(prevCounts => {
-      if (JSON.stringify(prevCounts) !== JSON.stringify(counts)) {
-        return counts;
+    }
+  }, []);
+
+  const handleError = useCallback(
+    (row: number, col: number) => {
+      playSound(errorSounds);
+      const currentTime = Date.now();
+      if (
+        lastErrorTime === null ||
+        currentTime - lastErrorTime > errorCooldownPeriod
+      ) {
+        setErrorCount(prevCount => prevCount + 1);
+        setErrorCells([{row, col}]);
+        setLastErrorTime(currentTime);
+        setTimeout(() => setErrorCells([]), errorCooldownPeriod);
       }
-      return prevCounts;
-    });
-  };
+    },
+    [errorCooldownPeriod, lastErrorTime, playSound, errorSounds],
+  );
 
-  useEffect(() => {
-    updateRemainingCounts();
-  }, [board]);
-
-  const handleErrorDraftAnimation = (conflictCells: Position[]) => {
-    setErrorCells(conflictCells);
-    setTimeout(() => setErrorCells([]), 300);
-    playSound(errorSounds);
-  };
+  const handleErrorDraftAnimation = useCallback(
+    (conflictCells: Position[]) => {
+      setErrorCells(conflictCells);
+      setTimeout(() => setErrorCells([]), 300);
+      playSound(errorSounds);
+    },
+    [errorSounds, playSound],
+  );
 
   // 点击方格的回调函数
-  const handleCellChange = (row: number, col: number) => {
-    if (selectionMode === 2) {
-      setSelectedCell({row, col});
+  const handleCellChange = useCallback(
+    (row: number, col: number) => {
+      if (selectionMode === 2) {
+        setSelectedCell({row, col});
+        if (board[row][col].value) {
+          setSelectedNumber(board[row][col].value);
+        } else {
+          setSelectedNumber(null);
+        }
+        return;
+      }
+
       if (board[row][col].value) {
-        setSelectedNumber(board[row][col].value);
-      }
-      return;
-    }
-
-    if (board[row][col].value) {
-      return;
-    }
-
-    const newBoard = deepCopyBoard(board);
-    const cell = newBoard[row][col];
-
-    // 处理草稿模式
-    if (draftMode && selectedNumber) {
-      const conflictCells = checkNumberInRowColumnAndBox(
-        newBoard,
-        row,
-        col,
-        selectedNumber,
-      );
-      if (conflictCells.length > 0) {
-        handleErrorDraftAnimation(conflictCells);
-        return;
-      }
-
-      const draftSet = new Set(cell.draft);
-      if (draftSet.has(selectedNumber)) {
-        draftSet.delete(selectedNumber);
-      } else {
-        draftSet.add(selectedNumber);
-      }
-      cell.draft = Array.from(draftSet).sort((a, b) => a - b);
-      updateBoard(newBoard, `设置 (${row}, ${col}) 草稿为 ${cell.draft}`);
-    }
-    // 处理非草稿模式
-    else if (selectedNumber) {
-      // 验证填入的数字是否为有效候选数字
-      if (answerBoard[row][col].value == selectedNumber) {
-        cell.value = selectedNumber;
-        cell.draft = [];
-
-        // 更新相关单元格的草稿数字
-        const affectedCells = updateRelatedCellsDraft(
-          newBoard,
-          [{row, col}],
-          selectedNumber,
-          getCandidates,
-        );
-
-        playSound(successSounds);
-        updateBoard(
-          newBoard,
-          `设置 (${row}, ${col}) 为 ${selectedNumber}`,
-          affectedCells,
-        );
-        clearHistory();
-      } else {
-        handleError(row, col);
-        return;
-      }
-    }
-  };
-
-  const handleError = (row: number, col: number) => {
-    playSound(errorSounds);
-    const currentTime = Date.now();
-    if (
-      lastErrorTime === null ||
-      currentTime - lastErrorTime > errorCooldownPeriod
-    ) {
-      setErrorCount(prevCount => prevCount + 1);
-      setErrorCells([{row, col}]);
-      setLastErrorTime(currentTime);
-      setTimeout(() => setErrorCells([]), errorCooldownPeriod);
-    }
-  };
-
-  // 撤销
-  const handleUndo = () => {
-    undo();
-  };
-
-  const handleEraseMode = () => {
-    setEraseIsClicked(true);
-  };
-
-  // 选择数字
-  const handleNumberSelect = (number: number) => {
-    if (number != selectedNumber) {
-      playSound(switchSounds);
-    }
-    if (selectionMode === 2 && selectedCell) {
-      const {row, col} = selectedCell;
-      const cell = board[row][col];
-
-      if (cell.value !== null || cell.isGiven) {
         return;
       }
 
       const newBoard = deepCopyBoard(board);
-      const newCell = newBoard[row][col];
+      const cell = newBoard[row][col];
 
-      if (draftMode) {
+      // 处理草稿模式
+      if (draftMode && selectedNumber) {
         const conflictCells = checkNumberInRowColumnAndBox(
           newBoard,
           row,
           col,
-          number,
+          selectedNumber,
         );
         if (conflictCells.length > 0) {
           handleErrorDraftAnimation(conflictCells);
           return;
         }
 
-        const draftSet = new Set(newCell.draft);
-        if (draftSet.has(number)) {
-          draftSet.delete(number);
+        const draftSet = new Set(cell.draft);
+        if (draftSet.has(selectedNumber)) {
+          draftSet.delete(selectedNumber);
         } else {
-          draftSet.add(number);
+          draftSet.add(selectedNumber);
         }
-        newCell.draft = Array.from(draftSet).sort((a, b) => a - b);
-        updateBoard(newBoard, `设置 (${row}, ${col}) 草稿为 ${newCell.draft}`);
-      } else {
-        if (answerBoard[row][col].value == number) {
+        cell.draft = Array.from(draftSet).sort((a, b) => a - b);
+        updateBoard(newBoard, `设置 (${row}, ${col}) 草稿为 ${cell.draft}`);
+        playSound(switchSounds);
+      }
+      // 处理非草稿模式
+      else if (selectedNumber) {
+        // 验证填入的数字是否为有效候选数字
+        if (answerBoard[row][col].value == selectedNumber) {
+          cell.value = selectedNumber;
+          cell.draft = [];
+
+          // 更新相关单元格的草稿数字
+          const affectedCells = updateRelatedCellsDraft(
+            newBoard,
+            [{row, col}],
+            selectedNumber,
+            getCandidates,
+          );
+
           playSound(successSounds);
-          newCell.value = number;
-          newCell.draft = [];
-          updateBoard(newBoard, `设置 (${row}, ${col}) 为 ${number}`);
+          updateBoard(
+            newBoard,
+            `设置 (${row}, ${col}) 为 ${selectedNumber}`,
+            affectedCells,
+          );
+          clearHistory();
+          remainingCountsMinusOne(selectedNumber);
         } else {
           handleError(row, col);
-          const currentTime = Date.now();
-          if (
-            lastErrorTime === null ||
-            currentTime - lastErrorTime > errorCooldownPeriod
-          ) {
-            setErrorCount(prevCount => prevCount + 1);
-            setLastErrorTime(currentTime);
-          }
           return;
         }
       }
-    } else {
-      setSelectedNumber(number);
-    }
-  };
-  const handleDraftMode = () => {
-    setDraftMode(!draftMode);
-  };
+    },
+    [
+      selectionMode,
+      selectedNumber,
+      handleError,
+      handleErrorDraftAnimation,
+      board,
+      answerBoard,
+      playSound,
+      successSounds,
+      errorSounds,
+      clearHistory,
+      updateBoard,
+      draftMode,
+      updateRelatedCellsDraft,
+      getCandidates,
+    ],
+  );
 
-  const handleShowCandidates = () => {
-    const newBoard = copyOfficialDraft(board);
-    updateBoard(newBoard, '复制官方草稿');
-    setOfficialDraftUsed(true);
-  };
+  const jumpToNextNumber = useCallback(
+    (newCounts: number[]) => {
+      if (!selectedNumber || newCounts[selectedNumber - 1] !== 0) {
+        return;
+      }
 
-  const applyHintHighlight = (
-    board: CellData[][],
-    result: Result,
-    type: 'position' | 'prompt' | 'both',
-  ) => {
-    const {position, target, prompt} = result;
-    const newBoard = deepCopyBoard(board);
-    if (type === 'position' || type === 'both') {
-      position.forEach(({row, col}: Position) => {
-        newBoard[row][col].highlights = newBoard[row][col].highlights || [];
-        newBoard[row][col].highlights.push('positionHighlight');
-        newBoard[row][col].highlightCandidates = target;
-      });
-    }
-    if (type === 'prompt' || type === 'both') {
-      prompt.forEach(({row, col}: Position) => {
-        newBoard[row][col].highlights = newBoard[row][col].highlights || [];
-        newBoard[row][col].highlights.push('promptHighlight');
-        newBoard[row][col].highlightCandidates = target;
-      });
-    }
+      let nextNumber = selectedNumber;
+      do {
+        nextNumber = (nextNumber % 9) + 1;
+      } while (
+        newCounts[nextNumber - 1] === 0 &&
+        nextNumber !== selectedNumber
+      );
 
-    return newBoard;
-  };
+      handleNumberSelect(nextNumber);
+    },
+    [selectedNumber],
+  );
 
-  const removeHintHighlight = (board: CellData[][]) => {
-    const updatedBoard = deepCopyBoard(board);
-    for (let row = 0; row < 9; row++) {
-      for (let col = 0; col < 9; col++) {
-        delete updatedBoard[row][col].highlights;
-        delete updatedBoard[row][col].highlightCandidates;
+  // 撤销
+  const handleUndo = useCallback(() => {
+    undo();
+    playSound(switchSounds);
+  }, [undo, playSound, switchSounds]);
+
+  // 擦除
+  const handleErase = useCallback(() => {
+    if (selectedCell) {
+      const {row, col} = selectedCell;
+      if (
+        eraseEnabled &&
+        board[row][col].value !== answerBoard[row][col].value
+      ) {
+        playSound(eraseSounds);
+        const newBoard = deepCopyBoard(board);
+        const cell = newBoard[row][col];
+        cell.value = null;
+        cell.draft = [];
+        updateBoard(newBoard, `擦除 (${row}, ${col})`);
+        setEraseEnabled(false);
       }
     }
-    return updatedBoard;
-  };
+  }, [
+    eraseEnabled,
+    selectedCell,
+    playSound,
+    eraseSounds,
+    updateBoard,
+    answerBoard,
+  ]);
 
-  const handleHint = () => {
+  // 选择数字
+  const handleNumberSelect = useCallback(
+    (number: number) => {
+      if (!selectedCell) return;
+      if (selectionMode === 2) {
+        const {row, col} = selectedCell;
+        const cell = board[row][col];
+
+        if (cell.value) {
+          return;
+        }
+
+        const newBoard = deepCopyBoard(board);
+        const newCell = newBoard[row][col];
+
+        // 模式2下草稿模式
+        if (draftMode) {
+          const conflictCells = checkNumberInRowColumnAndBox(
+            newBoard,
+            row,
+            col,
+            number,
+          );
+
+          if (conflictCells.length > 0) {
+            handleErrorDraftAnimation(conflictCells);
+            return;
+          }
+
+          const draftSet = new Set(newCell.draft);
+          if (draftSet.has(number)) {
+            draftSet.delete(number);
+          } else {
+            draftSet.add(number);
+          }
+          newCell.draft = Array.from(draftSet).sort((a, b) => a - b);
+          playSound(switchSounds);
+
+          updateBoard(
+            newBoard,
+            `设置 (${row}, ${col}) 草稿为 ${newCell.draft}`,
+          );
+        } else {
+          if (answerBoard[row][col].value == number) {
+            playSound(successSounds);
+            newCell.value = number;
+            newCell.draft = [];
+            const affectedCells = updateRelatedCellsDraft(
+              newBoard,
+              [{row, col}],
+              number,
+              getCandidates,
+            );
+            updateBoard(
+              newBoard,
+              `设置 (${row}, ${col}) 为 ${number}`,
+              affectedCells,
+            );
+            clearHistory();
+            setEraseEnabled(false);
+            remainingCountsMinusOne(number);
+          } else {
+            handleError(row, col);
+            const currentTime = Date.now();
+            if (
+              lastErrorTime === null ||
+              currentTime - lastErrorTime > errorCooldownPeriod
+            ) {
+              setErrorCount(prevCount => prevCount + 1);
+              setLastErrorTime(currentTime);
+            }
+            return;
+          }
+        }
+      } else {
+        setSelectedNumber(number);
+        setLastSelectedNumber(number);
+        playSound(switchSounds);
+      }
+    },
+    [
+      board,
+      answerBoard,
+      draftMode,
+      selectionMode,
+      selectedNumber,
+      handleError,
+      handleErrorDraftAnimation,
+      playSound,
+      successSounds,
+      switchSounds,
+      errorSounds,
+      eraseSounds,
+      selectedCell,
+      updateBoard,
+      clearHistory,
+      getCandidates,
+      updateRelatedCellsDraft,
+    ],
+  );
+
+  const remainingCountsMinusOne = useCallback(
+    (number: number) => {
+      const newCounts = [...remainingCounts];
+      newCounts[number - 1] -= 1;
+      if (newCounts[selectedNumber! - 1] === 0) {
+        jumpToNextNumber(newCounts);
+      }
+      setRemainingCounts(newCounts);
+    },
+    [selectedNumber, jumpToNextNumber, remainingCounts],
+  );
+
+  const handleDraftMode = useCallback(() => {
+    setDraftMode(!draftMode);
+    playSound(switchSounds);
+  }, [draftMode, playSound, switchSounds]);
+
+  const handleShowCandidates = useCallback(() => {
+    setIsClickAutoDraft(true);
+    const newBoard = deepCopyBoard(standardBoard);
+    updateBoard(newBoard, '复制官方草稿');
+    playSound(switchSounds);
+  }, [standardBoard, playSound, switchSounds, updateBoard]);
+
+  const applyHintHighlight = useCallback(
+    (
+      board: CellData[][],
+      result: Result,
+      type: 'position' | 'prompt' | 'both',
+    ) => {
+      const {position, target, prompt} = result;
+      const newBoard = deepCopyBoard(board);
+      if (type === 'position' || type === 'both') {
+        position.forEach(({row, col}: Position) => {
+          newBoard[row][col].highlights = newBoard[row][col].highlights || [];
+          newBoard[row][col].highlights.push('positionHighlight');
+          newBoard[row][col].highlightCandidates = target;
+        });
+      }
+      if (type === 'prompt' || type === 'both') {
+        prompt.forEach(({row, col}: Position) => {
+          newBoard[row][col].highlights = newBoard[row][col].highlights || [];
+          newBoard[row][col].highlights.push('promptHighlight');
+          newBoard[row][col].highlightCandidates = target;
+        });
+      }
+
+      return newBoard;
+    },
+    [board, result, playSound, switchSounds],
+  );
+
+  const removeHintHighlight = useCallback(
+    (board: CellData[][]) => {
+      const updatedBoard = deepCopyBoard(board);
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          delete updatedBoard[row][col].highlights;
+          delete updatedBoard[row][col].highlightCandidates;
+        }
+      }
+      return updatedBoard;
+    },
+    [board, playSound, switchSounds],
+  );
+
+  const handleHint = useCallback(() => {
+    playSound(switchSounds);
+    if (isClickAutoDraft) {
+      checkCandidate(board, candidateMap, graph, answerBoard);
+    } else {
+      handleShowCandidates();
+    }
     const solveFunctions = [
       singleCandidate,
       hiddenSingle,
@@ -806,743 +513,27 @@ const Sudoku: React.FC = () => {
         setSelectedNumber(null);
         console.log(result);
         setHintMethod(result.method);
-        setHintContent(handleHintContent(result));
+        setHintContent(
+          handleHintContent(
+            result,
+            board,
+            prompts,
+            setPrompts,
+            setSelectedNumber,
+            setPositions,
+            applyHintHighlight,
+            updateBoard,
+          ),
+        );
         setHintDrawerVisible(true);
+        setLastSelectedCell(selectedCell);
+        setSelectedCell(null);
         break;
       }
     }
-  };
+  }, [board, candidateMap, graph]);
 
-  const handleHintContent = (result: Result): string => {
-    const {position, target, method, prompt, isFill} = result;
-    let posStr = '';
-    let candStr = '';
-    let deleteStr = '';
-    let promptCandidates = [];
-    let uniquePromptCandidates = [];
-    let diffCandidates = [];
-    let boardWithHighlight = null;
-    let hintContent = '';
-    if (isFill) {
-      setPrompts(target);
-      switch (method) {
-        case SOLUTION_METHODS.SINGLE_CANDIDATE:
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          hintContent = `注意到单元格R${position[0].row + 1}C${
-            position[0].col + 1
-          }只剩${target.join(
-            ', ',
-          )}一个候选数，所以可以确定该单元格的值为${target.join(', ')}`;
-          break;
-        case SOLUTION_METHODS.HIDDEN_SINGLE_ROW:
-          setSelectedNumber(target[0]);
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          hintContent = `候选数${target.join(',')}在第${
-            position[0].row + 1
-          }行中，只有一个候选方格，所以可以确定该单元格的值为${target.join(
-            ', ',
-          )}`;
-          break;
-        case SOLUTION_METHODS.HIDDEN_SINGLE_COLUMN:
-          setSelectedNumber(target[0]);
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          hintContent = `候选数${target.join(',')}在第${
-            position[0].col + 1
-          }列中，只有一个候选方格，所以可以确定该单元格的值为${target.join(
-            ', ',
-          )}`;
-          break;
-        case SOLUTION_METHODS.HIDDEN_SINGLE_BOX:
-          setSelectedNumber(target[0]);
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          hintContent = `候选数${target.join(',')}在第${
-            Math.floor(position[0].row / 3) * 3 +
-            Math.floor(position[0].col / 3) +
-            1
-          }宫中，只有一个候选方格，所以可以确定该单元格的值为${target.join(
-            ', ',
-          )}`;
-          break;
-        case SOLUTION_METHODS.TRIAL_AND_ERROR:
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          hintContent = `尝试向只有两个候选数的方格内填入${target[0]}，若后续无解，则说明填入${target[0]}是错误的，应填入另一个候选数`;
-          break;
-      }
-    } else {
-      setPositions(target);
-      switch (method) {
-        case SOLUTION_METHODS.BLOCK_ELIMINATION_ROW:
-          setPrompts(target);
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          if (prompt.length == 2) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}`;
-          } else if (prompt.length == 3) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          }
-          hintContent = `在第${
-            Math.floor(prompt[0].row / 3) * 3 +
-            Math.floor(prompt[0].col / 3) +
-            1
-          }宫中，候选数${target.join(
-            ',',
-          )}只存在${posStr}中，无论存在哪个方格中，这一行上的其他位置都不应出现此候选数${target.join(
-            ',',
-          )}`;
-          break;
-        case SOLUTION_METHODS.BLOCK_ELIMINATION_COLUMN:
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          setPrompts(target);
-          if (prompt.length == 2) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}`;
-          } else if (prompt.length == 3) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          }
-          hintContent = `在第${
-            Math.floor(prompt[0].row / 3) * 3 +
-            Math.floor(prompt[0].col / 3) +
-            1
-          }宫中，候选数${target.join(
-            ',',
-          )}只存在${posStr}中，无论存在哪个方格中，这一列上的其他位置都不应出现此候选数${target.join(
-            ',',
-          )}`;
-          break;
-        case SOLUTION_METHODS.BLOCK_ELIMINATION_BOX_ROW:
-          setPrompts(target);
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          if (prompt.length == 2) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}`;
-          } else if (prompt.length == 3) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          }
-          hintContent = `在第${prompt[0].row + 1}行中，候选数${target.join(
-            ',',
-          )}只存在${posStr}中，无论存在哪个方格中，这一宫中的其他位置都不应出现此候选数${target.join(
-            ',',
-          )}`;
-          break;
-        case SOLUTION_METHODS.BLOCK_ELIMINATION_BOX_COLUMN:
-          setPrompts(target);
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          if (prompt.length == 2) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}`;
-          } else if (prompt.length == 3) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          }
-          hintContent = `在第${prompt[0].col + 1}列中，候选数${target.join(
-            ',',
-          )}只存在${posStr}中，无论存在哪个方格中，这一宫中的其他位置都不应出现此候选数${target.join(
-            ',',
-          )}`;
-          break;
-        case SOLUTION_METHODS.NAKED_PAIR_ROW:
-          setPrompts(target);
-          setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
-          candStr = target.join(',');
-          hintContent = `在第${
-            position[0].row + 1
-          }行中，因为候选数${candStr}只能出现在${posStr}这两个方格中，所以此行其他位置都不应出现候选数${candStr}`;
-          break;
-        case SOLUTION_METHODS.NAKED_PAIR_COLUMN:
-          setPrompts(target);
-          setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
-          candStr = target.join(',');
-          hintContent = `在第${
-            position[0].col + 1
-          }列中，因为候选数${candStr}只能出现在${posStr}这两个方格中，所以此列其他位置都不应出现候选数${candStr}`;
-          break;
-        case SOLUTION_METHODS.NAKED_PAIR_BOX:
-          setPrompts(target);
-          setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
-          candStr = target.join(',');
-          hintContent = `在第${
-            Math.floor(prompt[0].row / 3) * 3 +
-            Math.floor(prompt[0].col / 3) +
-            1
-          }宫中，因为候选数${candStr}只能出现在${posStr}这两个方格中，所以此宫其他位置都不应出现候选数${candStr}`;
-          break;
-        case SOLUTION_METHODS.NAKED_TRIPLE_ROW1:
-          setPrompts(target);
-          setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(',');
-          hintContent = `在第${
-            position[0].row + 1
-          }行中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此行其他位置都不应出现候选数${candStr}`;
-          break;
-        case SOLUTION_METHODS.NAKED_TRIPLE_COLUMN1:
-          setPrompts(target);
-          setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(',');
-          hintContent = `在第${
-            position[0].col + 1
-          }列中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此列其他位置都不应出现候选数${candStr}`;
-          break;
-        case SOLUTION_METHODS.NAKED_TRIPLE_BOX1:
-          setPrompts(target);
-          setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(',');
-          hintContent = `在第${
-            Math.floor(prompt[0].row / 3) * 3 +
-            Math.floor(prompt[0].col / 3) +
-            1
-          }宫中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此宫其他位置都不应出现候选数${candStr}`;
-          break;
-        case SOLUTION_METHODS.NAKED_TRIPLE_ROW2:
-          setPrompts(target);
-          setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(',');
-          hintContent = `在第${
-            position[0].row + 1
-          }行中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此行其他位置都不应出现候选数${candStr}`;
-          break;
-        case SOLUTION_METHODS.NAKED_TRIPLE_COLUMN2:
-          setPrompts(target);
-          setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(',');
-          hintContent = `在第${
-            position[0].col + 1
-          }列中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此列其他位置都不应出现候选数${candStr}`;
-          break;
-        case SOLUTION_METHODS.NAKED_TRIPLE_BOX2:
-          setPrompts(target);
-          setPositions(target);
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(',');
-          hintContent = `在第${
-            Math.floor(prompt[0].row / 3) * 3 +
-            Math.floor(prompt[0].col / 3) +
-            1
-          }宫中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此宫其他位置都不应出现候选数${candStr}`;
-          break;
-        case SOLUTION_METHODS.HIDDEN_PAIR_ROW:
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          promptCandidates = [
-            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
-          ];
-          uniquePromptCandidates = promptCandidates.filter(
-            cand => !target.includes(cand),
-          );
-          setPrompts(uniquePromptCandidates);
-          candStr = [...new Set(prompts)].join(',');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
-          hintContent = `在第${
-            position[0].row + 1
-          }行中，因为候选数${candStr}只出现在${posStr}这两个方格中，因此这两个方格不应出现其他候选数`;
-          break;
-        case SOLUTION_METHODS.HIDDEN_PAIR_COLUMN:
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          promptCandidates = [
-            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
-          ];
-          uniquePromptCandidates = promptCandidates.filter(
-            cand => !target.includes(cand),
-          );
-          setPrompts(uniquePromptCandidates);
-          candStr = [...new Set(prompts)].join(',');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
-          hintContent = `在第${
-            position[0].col + 1
-          }列中，因为候选数${candStr}只出现在${posStr}这两个方格中，因此这两个方格不应出现其他候选数`;
-          break;
-        case SOLUTION_METHODS.HIDDEN_PAIR_BOX:
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          promptCandidates = [
-            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
-          ];
-          uniquePromptCandidates = promptCandidates.filter(
-            cand => !target.includes(cand),
-          );
-          setPrompts(uniquePromptCandidates);
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
-          candStr = [...new Set(prompts)].join(',');
-          hintContent = `在第${
-            Math.floor(prompt[0].row / 3) * 3 +
-            Math.floor(prompt[0].col / 3) +
-            1
-          }宫中，因为候选数${candStr}只出现在${posStr}这两个方格中，因此这两个方格不应出现其他候选数`;
-          break;
-        case SOLUTION_METHODS.HIDDEN_TRIPLE_ROW1:
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          promptCandidates = [
-            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
-          ];
-          uniquePromptCandidates = promptCandidates.filter(
-            cand => !target.includes(cand),
-          );
-          setPrompts(uniquePromptCandidates);
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = [...new Set(prompts)].join(',');
-          hintContent = `在第${
-            position[0].row + 1
-          }行中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
-          break;
-        case SOLUTION_METHODS.HIDDEN_TRIPLE_COLUMN1:
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          promptCandidates = [
-            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
-          ];
-          uniquePromptCandidates = promptCandidates.filter(
-            cand => !target.includes(cand),
-          );
-          setPrompts(uniquePromptCandidates);
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = [...new Set(prompts)].join(',');
-          hintContent = `在第${
-            position[0].col + 1
-          }列中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
-          break;
-        case SOLUTION_METHODS.HIDDEN_TRIPLE_BOX1:
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          promptCandidates = [
-            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
-          ];
-          uniquePromptCandidates = promptCandidates.filter(
-            cand => !target.includes(cand),
-          );
-          setPrompts(uniquePromptCandidates);
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = [...new Set(prompts)].join(',');
-          hintContent = `在第${
-            Math.floor(prompt[0].row / 3) * 3 +
-            Math.floor(prompt[0].col / 3) +
-            1
-          }宫中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
-          break;
-        case SOLUTION_METHODS.HIDDEN_TRIPLE_ROW2:
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          promptCandidates = [
-            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
-          ];
-          uniquePromptCandidates = promptCandidates.filter(
-            cand => !target.includes(cand),
-          );
-          setPrompts(uniquePromptCandidates);
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = [...new Set(prompts)].join(',');
-          hintContent = `在第${
-            position[0].row + 1
-          }行中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
-          break;
-        case SOLUTION_METHODS.HIDDEN_TRIPLE_COLUMN2:
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          promptCandidates = [
-            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
-          ];
-          uniquePromptCandidates = promptCandidates.filter(
-            cand => !target.includes(cand),
-          );
-          setPrompts(uniquePromptCandidates);
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = [...new Set(prompts)].join(',');
-          hintContent = `在第${
-            position[0].col + 1
-          }列中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
-          break;
-        case SOLUTION_METHODS.HIDDEN_TRIPLE_BOX2:
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          promptCandidates = [
-            ...new Set(prompt.flatMap(p => board[p.row]?.[p.col]?.draft ?? [])),
-          ];
-          uniquePromptCandidates = promptCandidates.filter(
-            cand => !target.includes(cand),
-          );
-          setPrompts(uniquePromptCandidates);
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = [...new Set(prompts)].join(',');
-          hintContent = `在第${
-            Math.floor(prompt[0].row / 3) * 3 +
-            Math.floor(prompt[0].col / 3) +
-            1
-          }宫中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
-          break;
-        case SOLUTION_METHODS.NAKED_QUADRUPLE_ROW:
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}`;
-          candStr = [...new Set(target)].join(',');
-          hintContent = `在第${
-            position[0].row + 1
-          }行中，因为候选数${candStr}只出现在${posStr}这四个方格中，因此这四个方格不应出现其他候选数`;
-          break;
-        case SOLUTION_METHODS.NAKED_QUADRUPLE_COLUMN:
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}`;
-          candStr = [...new Set(target)].join(',');
-          hintContent = `在第${
-            position[0].col + 1
-          }列中，因为候选数${candStr}只出现在${posStr}这四个方格中，因此这四个方格不应出现其他候选数`;
-          break;
-        case SOLUTION_METHODS.NAKED_QUADRUPLE_BOX:
-          boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}`;
-          candStr = [...new Set(target)].join(',');
-          hintContent = `在第${
-            Math.floor(prompt[0].row / 3) * 3 +
-            Math.floor(prompt[0].col / 3) +
-            1
-          }宫中，因为候选数${candStr}只出现在${posStr}这四个方格中，因此这四个方格不应出现其他候选数`;
-          break;
-        case SOLUTION_METHODS.X_WING_ROW:
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          setPrompts(target);
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}`;
-          candStr = target.join(',');
-          hintContent = `在${prompt[0].row + 1}、${
-            prompt[2].row + 1
-          }两行中，候选数${candStr}每行都有两个候选方格且他们的列号相同，在这四个候选方格内无论哪两个取值，都会导致这两列其他位置不应出现候选数${candStr}`;
-          break;
-        case SOLUTION_METHODS.X_WING_COLUMN:
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          setPrompts(target);
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}`;
-          candStr = target.join(',');
-          hintContent = `在${prompt[0].row + 1}、${
-            prompt[2].col + 1
-          }两列中，候选数${candStr}每列都有两个候选方格且他们的行号相同，在这四个候选方格内无论哪两个取值，都会导致这两行其他位置不应出现候选数${candStr}`;
-          break;
-        case SOLUTION_METHODS.X_WING_VARIENT_COLUMN:
-        case SOLUTION_METHODS.X_WING_VARIENT_ROW:
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          if (prompt.length === 5) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}`;
-          } else if (prompt.length === 6) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1}`;
-          }
-          candStr = target.join(',');
-          setPrompts(target);
-          hintContent = `在${posStr}这${
-            prompt.length
-          }个候选方格内无论哪两个取${candStr}，都会导致R${
-            position[0].row + 1
-          }C${position[0].col + 1}内不应出现候选数${candStr}`;
-          break;
-        case SOLUTION_METHODS.XY_WING:
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          setPrompts(target);
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(',');
-          if (position.length === 1) {
-            hintContent = `无论${posStr}这三个候选方格内如何取值，R${
-              position[0].row + 1
-            }C${position[0].col + 1}内都不能出现候选数${target[0]}`;
-          }
-          if (position.length === 1) {
-            hintContent = `无论${posStr}这三个候选方格内如何取值，R${
-              position[0].row + 1
-            }C${position[0].col + 1}内都不能出现候选数${target[0]}`;
-          } else if (position.length === 2) {
-            hintContent = `无论${posStr}这三个候选方格内如何取值，R${
-              position[0].row + 1
-            }C${position[0].col + 1}、R${position[1].row + 1}C${
-              position[1].col + 1
-            }内都不能出现候选数${target[0]}`;
-          }
-          break;
-        case SOLUTION_METHODS.XYZ_WING:
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          setPrompts(target);
-          const candidateCounts = new Map();
-          prompt.forEach(cell => {
-            const candidates = board[cell.row][cell.col].draft;
-            candidates.forEach(num => {
-              candidateCounts.set(num, (candidateCounts.get(num) || 0) + 1);
-            });
-          });
-          const twiceAppearingCandidates = Array.from(candidateCounts.keys())
-            .filter(num => candidateCounts.get(num) === 2)
-            .map(Number);
-          setPositions(twiceAppearingCandidates);
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr = target.join(',');
-          if (position.length === 1) {
-            hintContent = `无论${posStr}这三个候选方格内如何取值，R${
-              position[0].row + 1
-            }C${position[0].col + 1}内都不能出现候选数${target[0]}`;
-          }
-          if (position.length === 1) {
-            hintContent = `无论${posStr}这三个候选方格内如何取值，R${
-              position[0].row + 1
-            }C${position[0].col + 1}内都不能出现候选数${target[0]}`;
-          } else if (position.length === 2) {
-            hintContent = `无论${posStr}这三个候选方格内如何取值，R${
-              position[0].row + 1
-            }C${position[0].col + 1}、R${position[1].row + 1}C${
-              position[1].col + 1
-            }内都不能出现候选数${target[0]}`;
-          }
-          break;
-        case SOLUTION_METHODS.EUREKA:
-          setPositions(target);
-          setPrompts(target);
-          const diffPositions = prompt.filter(
-            p => !position.some(pos => pos.row === p.row && pos.col === p.col),
-          );
-          result.prompt = diffPositions;
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}`;
-
-          hintContent = `${posStr}五个方格构成互斥环，假设候选数${
-            target[0]
-          }只能出现在这五个方格中，则始终会导致有两个互为强连接的候选方格矛盾。因此R${
-            position[0].row + 1
-          }C${position[0].col + 1}、R${position[1].row + 1}C${
-            position[1].col + 1
-          }、R${position[2].row + 1}C${
-            position[2].col + 1
-          }内不能同时出现候选数${target[0]}`;
-          break;
-        case SOLUTION_METHODS.SKYSCRAPER:
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          setPrompts(target);
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}`;
-          if (position.length === 1) {
-            deleteStr = `R${position[0].row + 1}C${position[0].col + 1}`;
-          } else if (position.length === 2) {
-            deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
-              position[1].row + 1
-            }C${position[1].col + 1}`;
-          } else if (position.length === 3) {
-            deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
-              position[1].row + 1
-            }C${position[1].col + 1}、R${position[2].row + 1}C${
-              position[2].col + 1
-            }`;
-          }
-          hintContent = `${posStr}四个方格构成共轭链，无论R${
-            prompt[0].row + 1
-          }C${prompt[0].col + 1}还是R${prompt[3].row + 1}C${
-            prompt[3].col + 1
-          }取值为${target[0]}，${deleteStr}内都不能出现候选数${target[0]}`;
-          break;
-        case SOLUTION_METHODS.SWORDFISH_ROW:
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          if (prompt.length === 6) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1}`;
-          } else if (prompt.length === 7) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-              prompt[5].col + 1
-            }、R${prompt[6].row + 1}C${prompt[6].col + 1}`;
-          } else if (prompt.length === 8) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-              prompt[5].col + 1
-            }、R${prompt[6].row + 1}C${prompt[6].col + 1}、R${
-              prompt[7].row + 1
-            }C${prompt[7].col + 1}`;
-          } else if (prompt.length === 9) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-              prompt[5].col + 1
-            }、R${prompt[6].row + 1}C${prompt[6].col + 1}、R${
-              prompt[7].row + 1
-            }C${prompt[7].col + 1}、R${prompt[8].row + 1}C${prompt[8].col + 1}`;
-          }
-          const columns = [...new Set(prompt.map(pos => pos.col + 1))];
-          hintContent = `无论${posStr}这${prompt.length}个候选方格哪三个取${
-            target[0]
-          }，第${columns.join('、')}列内都不能出现候选数${target[0]}`;
-          break;
-        case SOLUTION_METHODS.SWORDFISH_COLUMN:
-          boardWithHighlight = applyHintHighlight(board, result, 'both');
-          if (prompt.length === 6) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1}`;
-          } else if (prompt.length === 7) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-              prompt[5].col + 1
-            }、R${prompt[6].row + 1}C${prompt[6].col + 1}`;
-          } else if (prompt.length === 8) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-              prompt[5].col + 1
-            }、R${prompt[6].row + 1}C${prompt[6].col + 1}、R${
-              prompt[7].row + 1
-            }C${prompt[7].col + 1}`;
-          } else if (prompt.length === 9) {
-            posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-              prompt[5].col + 1
-            }、R${prompt[6].row + 1}C${prompt[6].col + 1}、R${
-              prompt[7].row + 1
-            }C${prompt[7].col + 1}、R${prompt[8].row + 1}C${prompt[8].col + 1}`;
-          }
-          const rows = [...new Set(prompt.map(pos => pos.row + 1))];
-          hintContent = `无论${posStr}这${prompt.length}个候选方格哪三个取${
-            target[0]
-          }，第${rows.join('、')}行内都不能出现候选数${target[0]}`;
-          break;
-      }
-    }
-
-    updateBoard(
-      boardWithHighlight!,
-      `提示：${result.method}`,
-      [],
-      false,
-      false,
-    );
-
-    return hintContent;
-  };
-
-  const handleApplyHint = () => {
+  const handleApplyHint = useCallback(() => {
     if (result) {
       const {position, target, isFill} = result;
       const newBoard = deepCopyBoard(board);
@@ -1571,41 +562,45 @@ const Sudoku: React.FC = () => {
 
       // 使用 updateBoard 函数更新棋盘
       updateBoard(newBoard, `应用提示：${result.method}`);
-      playSound(successSounds);
+      if (isFill) {
+        playSound(successSounds);
+      } else {
+        playSound(eraseSounds);
+      }
 
       // 移除提示高亮
       const updatedBoard = removeHintHighlight(newBoard);
       updateBoard(updatedBoard, '提示应用完成');
 
       setHintDrawerVisible(false);
+      setSelectedCell(lastSelectedCell);
       setResult(null); // 重置 result
       clearHistory();
+      if (isFill) {
+        remainingCountsMinusOne(target[0]);
+      }
     }
-  };
+  }, [board, result]);
 
-  const handleCancelHint = () => {
+  const handleCancelHint = useCallback(() => {
     const updatedBoard = removeHintHighlight(board);
-    updateBoard(updatedBoard, '取消提示', [], false);
+    updateBoard(updatedBoard, '取消提示', []);
     setHintDrawerVisible(false);
-  };
+    setSelectedCell(lastSelectedCell);
+  }, [board]);
 
   // 切换模式回调函数
-  const handleSelectionModeChange = () => {
+  const handleSelectionModeChange = useCallback(() => {
+    playSound(switchSounds);
     if (selectionMode === 1) {
       setSelectionMode(2);
+      setSelectedNumber(null);
     } else {
       setSelectionMode(1);
-    }
-  };
-
-  useEffect(() => {
-    if (selectionMode === 1) {
-      setLastSelectedNumber(selectedNumber);
-      setSelectedNumber(lastSelectedNumber ?? 1);
+      if (lastSelectedNumber) {
+        setSelectedNumber(lastSelectedNumber);
+      }
       setEraseEnabled(false);
-    } else {
-      setLastSelectedNumber(selectedNumber);
-      setSelectedNumber(null);
     }
   }, [selectionMode]);
 
@@ -1613,7 +608,7 @@ const Sudoku: React.FC = () => {
     if (!selectedCell) return;
     const {row, col} = selectedCell;
     if (selectionMode === 1) return;
-    if (board[row][col].value) {
+    if (board[row][col].value || board[row][col].draft.length === 0) {
       setEraseEnabled(false);
     } else {
       setEraseEnabled(true);
@@ -1621,30 +616,33 @@ const Sudoku: React.FC = () => {
   }, [selectedCell, selectionMode]);
 
   useEffect(() => {
-    if (hintDrawerVisible) {
-      setLastSelectedCell(selectedCell);
-      setSelectedCell(null);
-    } else {
-      setSelectedCell(lastSelectedCell);
-    }
-  }, [hintDrawerVisible]);
-
-  useEffect(() => {
     const initSounds = async () => {
       // 创建多个音效实例
       const errorInstances = await Promise.all(
-        Array(3).fill(0).map(() => createSound(require('../assets/audio/error.wav')))
+        Array(3)
+          .fill(0)
+          .map(() => createSound(require('../assets/audio/error.wav'))),
       );
       const successInstances = await Promise.all(
-        Array(3).fill(0).map(() => createSound(require('../assets/audio/success.wav')))
+        Array(3)
+          .fill(0)
+          .map(() => createSound(require('../assets/audio/success.wav'))),
       );
       const switchInstances = await Promise.all(
-        Array(3).fill(0).map(() => createSound(require('../assets/audio/switch.wav')))
+        Array(3)
+          .fill(0)
+          .map(() => createSound(require('../assets/audio/switch.wav'))),
+      );
+      const eraseInstances = await Promise.all(
+        Array(3)
+          .fill(0)
+          .map(() => createSound(require('../assets/audio/erase.wav'))),
       );
 
       setErrorSounds(errorInstances);
       setSuccessSounds(successInstances);
       setSwitchSounds(switchInstances);
+      setEraseSounds(eraseInstances);
     };
 
     initSounds();
@@ -1654,12 +652,13 @@ const Sudoku: React.FC = () => {
       errorSounds.forEach(sound => sound.release());
       successSounds.forEach(sound => sound.release());
       switchSounds.forEach(sound => sound.release());
+      eraseSounds.forEach(sound => sound.release());
     };
   }, []);
 
-  const createSound = (path: any): Promise<Sound> => {
+  const createSound = useCallback((path: any): Promise<Sound> => {
     return new Promise((resolve, reject) => {
-      const sound = new Sound(path, (error) => {
+      const sound = new Sound(path, error => {
         if (error) {
           reject(error);
         } else {
@@ -1667,41 +666,7 @@ const Sudoku: React.FC = () => {
         }
       });
     });
-  };
-
-  // 播放音效的函数
-  const playSound = (sounds: Sound[]) => {
-    // 查找未在播放的音效实例
-    const availableSound = sounds.find(sound => !sound.isPlaying());
-    if (availableSound) {
-      availableSound.play(success => {
-        if (!success) {
-          console.log('播放音频失败');
-        }
-      });
-    }
-  };
-
-  // 擦除
-  useEffect(() => {
-    if (selectionMode === 2) {
-      if (selectedCell) {
-        const {row, col} = selectedCell;
-        if (
-          eraseEnabled &&
-          eraseIsClicked &&
-          board[row][col].value !== answerBoard[row][col].value
-        ) {
-          const newBoard = deepCopyBoard(board);
-          const cell = newBoard[row][col];
-          cell.value = null;
-          cell.draft = [];
-          updateBoard(newBoard, `擦除 (${row}, ${col})`);
-        }
-        setEraseIsClicked(false);
-      }
-    }
-  }, [eraseIsClicked]);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -1845,9 +810,7 @@ const Sudoku: React.FC = () => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.circleButton}
-            onPressIn={handleEraseMode}>
+          <TouchableOpacity style={styles.circleButton} onPressIn={handleErase}>
             <Image
               source={
                 eraseEnabled
@@ -1864,7 +827,6 @@ const Sudoku: React.FC = () => {
           <View style={{position: 'absolute', right: -20, top: -10, zIndex: 1}}>
             <Switch
               value={draftMode}
-              onValueChange={handleDraftMode}
               trackColor={{false: '#767577', true: '#81b0ff'}}
               thumbColor={draftMode ? '#1890ff' : '#f4f3f4'}
               style={{transform: [{scaleX: 0.6}, {scaleY: 0.6}]}}
@@ -1910,6 +872,7 @@ const Sudoku: React.FC = () => {
             onPressIn={() => handleNumberSelect(number)}
             style={[
               styles.numberButton,
+              remainingCounts[number - 1] === 0 && styles.numberButtonDisabled, // 禁用状态
               selectionMode === 1 &&
                 selectedNumber === number && {
                   backgroundColor: '#1890ff',
@@ -1919,6 +882,9 @@ const Sudoku: React.FC = () => {
             <Text
               style={[
                 styles.selectedNumberButton,
+                !draftMode &&
+                  remainingCounts[number - 1] === 0 &&
+                  styles.selectedNumberButtonDisabled, // 禁用状态
                 selectionMode === 1 &&
                   selectedNumber === number &&
                   styles.selectedNumberText,
@@ -1928,6 +894,9 @@ const Sudoku: React.FC = () => {
             <Text
               style={[
                 styles.remainingCount,
+                !draftMode &&
+                  remainingCounts[number - 1] === 0 &&
+                  styles.remainingCountDisabled, // 禁用状态
                 selectionMode === 1 &&
                   selectedNumber === number &&
                   styles.selectedNumberText,
@@ -1949,12 +918,8 @@ const Sudoku: React.FC = () => {
       <Modal
         animationType="slide"
         transparent={true}
-        visible={hintDrawerVisible}
-        onRequestClose={handleCancelHint}>
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPressIn={handleCancelHint}>
+        visible={hintDrawerVisible}>
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1}>
           <View
             style={styles.drawerContent}
             // 添加这个属性来阻止点击事件冒泡
