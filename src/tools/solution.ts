@@ -25,27 +25,43 @@ export interface Result {
   col?: number;
   box?: number;
 }
-
+ 
 // 补全候选数
 export const checkCandidate = (
   board: CellData[][],
-  candidateMap: CandidateMap,
-  graph: Graph,
-  answerBoard?: CellData[][]
-): void => {
+  standardBoard: CellData[][],
+): any => {
+  const position: Candidate[] = [];
+
   for (let row = 0; row < 9; row++) {
     for (let col = 0; col < 9; col++) {
       const cell = board[row]?.[col];
-      const answerCell = answerBoard![row]?.[col];
+      const standardCell = standardBoard[row]?.[col];
 
-      if (cell?.value === null && answerCell?.value !== null) {
-        const missingCandidate = answerCell.value;
-        if (!cell.draft?.includes(missingCandidate)) {
-          cell.draft?.push(missingCandidate);
+      if (cell?.value === null && standardCell?.value === null) {
+        const candidates: number[] = [];
+        standardCell.draft?.forEach(num => {
+          if (!cell.draft?.includes(num)) {
+            candidates.push(num);
+          }
+        });
+        if (candidates.length > 0) {
+          position.push({row, col, candidates});
         }
       }
     }
   }
+
+  if (position.length > 0) {
+    return {
+      position,
+      prompt: position,
+      method: '补全候选数',
+      isFill: false
+    };
+  }
+
+  return null;
 };
 
 // 唯一余数法

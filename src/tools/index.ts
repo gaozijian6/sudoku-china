@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useState} from 'react';
-import {isUnitStrongLink} from './solution';
+import {isUnitStrongLink, checkCandidate} from './solution';
 
 export interface Position {
   row: number;
@@ -242,10 +242,26 @@ export const getCellClassName = (
     } else if (cell.value === null && cell.draft.includes(selectedNumber)) {
       return `${baseClass} candidateNumber`;
     }
-  }
+  }  
 
   return baseClass;
 };
+  
+export const checkDraftIsValid = (board: CellData[][], answerBoard: CellData[][]) => {
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      const cell = board[row]?.[col];
+      const answerCell = answerBoard[row]?.[col];
+      
+      if (cell?.value === null && answerCell?.value !== null) {
+        if (!cell.draft?.includes(answerCell.value)) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
 
 // 检测数独解的情况
 export const checkSolutionStatus = (
@@ -469,10 +485,8 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
   const [graph, setGraph] = useState<Graph>(() =>
     createGraph(initialBoard, candidateMap),
   );
-  const [isClickAutoDraft, setIsClickAutoDraft] = useState<boolean>(false);
-  const [standardBoard, setStandardBoard] =
-    useState<CellData[][]>(initialBoard);
   const [counts, setCounts] = useState<number>(0);
+  const [standradBoard, setStandradBoard] = useState<CellData[][]>(initialBoard);
 
   const updateCandidateMap = useCallback((newBoard: CellData[][]) => {
     const newCandidateMap: CandidateMap = {};
@@ -530,7 +544,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     });
     setRemainingCounts(counts);
   }, []);
-
+ 
   const updateBoard = useCallback(
     (
       newBoard: CellData[][],
@@ -578,8 +592,8 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
   );
 
   useEffect(() => {
-    const newStandardBoard = copyOfficialDraft(board);
-    setStandardBoard(newStandardBoard);
+    const newBoard = deepCopyBoard(board);
+    setStandradBoard(copyOfficialDraft(newBoard));
   }, [counts]);
 
   const undo = useCallback(() => {
@@ -608,6 +622,19 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     setCurrentStep(0);
   }, [board]);
 
+  // 复制官方草稿
+  const copyOfficialDraft = useCallback(
+    (board: CellData[][]): CellData[][] => {
+      return board.map((row, rowIndex) =>
+        row.map((cell, colIndex) => ({
+          ...cell,
+          draft: getCandidates(board, rowIndex, colIndex),
+        })),
+      );
+    },
+    [candidateMap, graph, answerBoard],
+  );
+
   return {
     board,
     updateBoard,
@@ -621,20 +648,8 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     remainingCounts,
     updateRemainingCounts,
     setRemainingCounts,
-    isClickAutoDraft,
-    setIsClickAutoDraft,
-    standardBoard,
+    copyOfficialDraft,
   };
-};
-
-// 复制官方草稿
-export const copyOfficialDraft = (board: CellData[][]): CellData[][] => {
-  return board.map((row, rowIndex) =>
-    row.map((cell, colIndex) => ({
-      ...cell,
-      draft: getCandidates(board, rowIndex, colIndex),
-    })),
-  );
 };
 
 // 检查两个格子是否在同一宫或行或列

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useRef} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ import {
   getCandidates,
   useSudokuBoard,
   deepCopyBoard,
-  copyOfficialDraft,
+  checkDraftIsValid,
 } from '../tools';
 import {
   hiddenSingle,
@@ -67,9 +67,7 @@ const Sudoku: React.FC = () => {
     clearHistory,
     remainingCounts,
     setRemainingCounts,
-    isClickAutoDraft,
-    setIsClickAutoDraft,
-    standardBoard,
+    copyOfficialDraft,
   } = useSudokuBoard(initialBoard);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
   const [lastSelectedNumber, setLastSelectedNumber] = useState<number | null>(
@@ -133,14 +131,22 @@ const Sudoku: React.FC = () => {
 
   // 播放音效的函数
   const playSound = useCallback((sounds: Sound[]) => {
-    // 查找未在播放的音效实例
+    if (!sounds || sounds.length === 0) {
+      console.log('音效还未加载完成');
+      return;
+    }
+
     const availableSound = sounds.find(sound => !sound.isPlaying());
+    console.log('可用音效:', availableSound);
+
     if (availableSound) {
       availableSound.play(success => {
         if (!success) {
           console.log('播放音频失败');
         }
       });
+    } else {
+      console.log('没有可用的音效实例');
     }
   }, []);
 
@@ -430,11 +436,18 @@ const Sudoku: React.FC = () => {
   }, [draftMode, playSound, switchSounds]);
 
   const handleShowCandidates = useCallback(() => {
-    setIsClickAutoDraft(true);
-    const newBoard = deepCopyBoard(standardBoard);
-    updateBoard(newBoard, '复制官方草稿');
+    
     playSound(switchSounds);
-  }, [standardBoard, playSound, switchSounds, updateBoard]);
+    const newBoard = deepCopyBoard(board);
+    updateBoard(copyOfficialDraft(newBoard), '复制官方草稿');
+
+    const startTime = performance.now();
+    // 使用 requestAnimationFrame 确保在下一帧渲染完成后测量时间
+    requestAnimationFrame(() => {
+      const endTime = performance.now();
+      console.log(`自动笔记功能总耗时: ${endTime - startTime}ms`);
+    });
+  }, [playSound, switchSounds, updateBoard, board, copyOfficialDraft]);
 
   const applyHintHighlight = useCallback(
     (
@@ -479,11 +492,9 @@ const Sudoku: React.FC = () => {
   );
 
   const handleHint = useCallback(() => {
-    playSound(switchSounds);
-    if (isClickAutoDraft) {
-      checkCandidate(board, candidateMap, graph, answerBoard);
-    } else {
+    if (!checkDraftIsValid(board, answerBoard)) {
       handleShowCandidates();
+      return;
     }
     const solveFunctions = [
       singleCandidate,
@@ -505,7 +516,6 @@ const Sudoku: React.FC = () => {
       trialAndError,
     ];
     let result = null;
-
     for (const solveFunction of solveFunctions) {
       result = solveFunction(board, candidateMap, graph);
       if (result) {
@@ -617,42 +627,53 @@ const Sudoku: React.FC = () => {
 
   useEffect(() => {
     const initSounds = async () => {
-      // 创建多个音效实例
-      const errorInstances = await Promise.all(
-        Array(3)
-          .fill(0)
-          .map(() => createSound(require('../assets/audio/error.wav'))),
-      );
-      const successInstances = await Promise.all(
-        Array(3)
-          .fill(0)
-          .map(() => createSound(require('../assets/audio/success.wav'))),
-      );
-      const switchInstances = await Promise.all(
-        Array(3)
-          .fill(0)
-          .map(() => createSound(require('../assets/audio/switch.wav'))),
-      );
-      const eraseInstances = await Promise.all(
-        Array(3)
-          .fill(0)
-          .map(() => createSound(require('../assets/audio/erase.wav'))),
-      );
+      try {
+        // 创建多个音效实例
+        const errorInstances = await Promise.all(
+          Array(3)
+            .fill(0)
+            .map(() => createSound(require('../assets/audio/error.wav'))),
+        );
+        const successInstances = await Promise.all(
+          Array(3)
+            .fill(0)
+            .map(() => createSound(require('../assets/audio/success.wav'))),
+        );
+        const switchInstances = await Promise.all(
+          Array(3)
+            .fill(0)
+            .map(() => createSound(require('../assets/audio/switch.wav'))),
+        );
+        const eraseInstances = await Promise.all(
+          Array(3)
+            .fill(0)
+            .map(() => createSound(require('../assets/audio/erase.wav'))),
+        );
 
-      setErrorSounds(errorInstances);
-      setSuccessSounds(successInstances);
-      setSwitchSounds(switchInstances);
-      setEraseSounds(eraseInstances);
+        console.log('音效加载完成');
+        setErrorSounds(errorInstances);
+        setSuccessSounds(successInstances);
+        setSwitchSounds(switchInstances);
+        setEraseSounds(eraseInstances);
+      } catch (error) {
+        console.error('音效加载失败:', error);
+      }
     };
 
     initSounds();
 
     return () => {
       // 清理音效实例
-      errorSounds.forEach(sound => sound.release());
-      successSounds.forEach(sound => sound.release());
-      switchSounds.forEach(sound => sound.release());
-      eraseSounds.forEach(sound => sound.release());
+      [
+        ...errorSounds,
+        ...successSounds,
+        ...switchSounds,
+        ...eraseSounds,
+      ].forEach(sound => {
+        if (sound) {
+          sound.release();
+        }
+      });
     };
   }, []);
 
