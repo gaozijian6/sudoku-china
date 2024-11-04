@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useState} from 'react';
-import {isUnitStrongLink, checkCandidate} from './solution';
+import {isUnitStrongLink} from './solution';
 
 export interface Position {
   row: number;
@@ -580,15 +580,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
       updateCandidateMap(newBoard);
       setGraph(createGraph(newBoard, candidateMap));
     },
-    [
-      candidateMap,
-      updateCandidateMap,
-      isSolved,
-      updateRemainingCounts,
-      history,
-      currentStep,
-      createGraph,
-    ],
+    [candidateMap, updateCandidateMap, isSolved, updateRemainingCounts, history],
   );
 
   useEffect(() => {
@@ -606,7 +598,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
       updateCandidateMap(previousBoard);
       setGraph(createGraph(previousBoard, candidateMap));
     }
-  }, [history, candidateMap, updateCandidateMap, currentStep, createGraph]);
+  }, [history, candidateMap, updateCandidateMap, currentStep]);
 
   // 添加清空历史记录的函数
   const clearHistory = useCallback(() => {
@@ -632,7 +624,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
         })),
       );
     },
-    [candidateMap, graph, answerBoard],
+    [],
   );
 
   return {

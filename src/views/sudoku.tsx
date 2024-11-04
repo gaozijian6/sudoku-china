@@ -8,13 +8,11 @@ import {
   Modal,
   TextStyle,
   Switch,
-  Vibration,
 } from 'react-native';
 import {
   useTimer,
   solve,
   getCellClassName,
-  checkSolutionStatus,
   checkNumberInRowColumnAndBox,
   updateRelatedCellsDraft,
   getCandidates,
@@ -31,9 +29,6 @@ import {
   xWing,
   xWingVarient,
   xyWing,
-  xyzWing,
-  findStrongLink,
-  checkStrongLinkParity,
   skyscraper,
   hiddenTriple1,
   nakedTriple1,
@@ -43,7 +38,6 @@ import {
   swordfish,
   eureka,
   trialAndError,
-  checkCandidate,
 } from '../tools/solution';
 import type {CellData, Position} from '../tools';
 import type {Result} from '../tools/solution';
@@ -250,19 +244,18 @@ const Sudoku: React.FC = () => {
     },
     [
       selectionMode,
-      selectedNumber,
-      handleError,
-      handleErrorDraftAnimation,
       board,
-      answerBoard,
-      playSound,
-      successSounds,
-      errorSounds,
-      clearHistory,
-      updateBoard,
       draftMode,
-      updateRelatedCellsDraft,
-      getCandidates,
+      selectedNumber,
+      updateBoard,
+      playSound,
+      switchSounds,
+      handleErrorDraftAnimation,
+      answerBoard,
+      successSounds,
+      clearHistory,
+      remainingCountsMinusOne,
+      handleError,
     ],
   );
 
@@ -282,7 +275,7 @@ const Sudoku: React.FC = () => {
 
       handleNumberSelect(nextNumber);
     },
-    [selectedNumber],
+    [handleNumberSelect, selectedNumber],
   );
 
   // 撤销
@@ -309,12 +302,13 @@ const Sudoku: React.FC = () => {
       }
     }
   }, [
-    eraseEnabled,
     selectedCell,
+    eraseEnabled,
+    board,
+    answerBoard,
     playSound,
     eraseSounds,
     updateBoard,
-    answerBoard,
   ]);
 
   // 选择数字
@@ -398,23 +392,20 @@ const Sudoku: React.FC = () => {
       }
     },
     [
-      board,
-      answerBoard,
-      draftMode,
-      selectionMode,
-      selectedNumber,
-      handleError,
-      handleErrorDraftAnimation,
-      playSound,
-      successSounds,
-      switchSounds,
-      errorSounds,
-      eraseSounds,
       selectedCell,
+      selectionMode,
+      board,
+      draftMode,
+      playSound,
+      switchSounds,
       updateBoard,
+      handleErrorDraftAnimation,
+      answerBoard,
+      successSounds,
       clearHistory,
-      getCandidates,
-      updateRelatedCellsDraft,
+      remainingCountsMinusOne,
+      handleError,
+      lastErrorTime,
     ],
   );
 
@@ -427,7 +418,7 @@ const Sudoku: React.FC = () => {
       }
       setRemainingCounts(newCounts);
     },
-    [selectedNumber, jumpToNextNumber, remainingCounts],
+    [remainingCounts, selectedNumber, setRemainingCounts, jumpToNextNumber],
   );
 
   const handleDraftMode = useCallback(() => {
@@ -436,13 +427,12 @@ const Sudoku: React.FC = () => {
   }, [draftMode, playSound, switchSounds]);
 
   const handleShowCandidates = useCallback(() => {
-    
     playSound(switchSounds);
     const newBoard = deepCopyBoard(board);
     updateBoard(copyOfficialDraft(newBoard), '复制官方草稿');
 
     const startTime = performance.now();
-    // 使用 requestAnimationFrame 确保在下一帧渲染完成后测量时间
+
     requestAnimationFrame(() => {
       const endTime = performance.now();
       console.log(`自动笔记功能总耗时: ${endTime - startTime}ms`);
@@ -474,7 +464,7 @@ const Sudoku: React.FC = () => {
 
       return newBoard;
     },
-    [board, result, playSound, switchSounds],
+    [],
   );
 
   const removeHintHighlight = useCallback(
@@ -488,7 +478,7 @@ const Sudoku: React.FC = () => {
       }
       return updatedBoard;
     },
-    [board, playSound, switchSounds],
+    [],
   );
 
   const handleHint = useCallback(() => {
@@ -541,7 +531,7 @@ const Sudoku: React.FC = () => {
         break;
       }
     }
-  }, [board, candidateMap, graph]);
+  }, [answerBoard, applyHintHighlight, board, candidateMap, graph, handleShowCandidates, prompts, selectedCell, updateBoard]);
 
   const handleApplyHint = useCallback(() => {
     if (result) {
@@ -590,14 +580,14 @@ const Sudoku: React.FC = () => {
         remainingCountsMinusOne(target[0]);
       }
     }
-  }, [board, result]);
+  }, [board, clearHistory, eraseSounds, lastSelectedCell, playSound, remainingCountsMinusOne, removeHintHighlight, result, successSounds, updateBoard]);
 
   const handleCancelHint = useCallback(() => {
     const updatedBoard = removeHintHighlight(board);
     updateBoard(updatedBoard, '取消提示', []);
     setHintDrawerVisible(false);
     setSelectedCell(lastSelectedCell);
-  }, [board]);
+  }, [board, lastSelectedCell, removeHintHighlight, updateBoard]);
 
   // 切换模式回调函数
   const handleSelectionModeChange = useCallback(() => {
@@ -612,7 +602,7 @@ const Sudoku: React.FC = () => {
       }
       setEraseEnabled(false);
     }
-  }, [selectionMode]);
+  }, [lastSelectedNumber, playSound, selectionMode, switchSounds]);
 
   useEffect(() => {
     if (!selectedCell) return;
@@ -705,8 +695,8 @@ const Sudoku: React.FC = () => {
           row.map((cell, colIndex) => (
             <TouchableOpacity
               key={`${rowIndex}-${colIndex}`}
-              onPressIn={e => handleCellChange(rowIndex, colIndex)}
-              onLongPress={e => {
+              onPressIn={() => handleCellChange(rowIndex, colIndex)}
+              onLongPress={() => {
                 handleCellChange(rowIndex, colIndex);
               }}
               style={[
@@ -740,7 +730,7 @@ const Sudoku: React.FC = () => {
                     errorCell.row === rowIndex && errorCell.col === colIndex,
                 ) && styles.errorCell,
                 ...(cell.highlights?.map(
-                  highlight => (styles as any)[highlight],
+                  highlight => styles[highlight as keyof typeof styles],
                 ) || []),
               ]}>
               {cell.value !== null ? (
