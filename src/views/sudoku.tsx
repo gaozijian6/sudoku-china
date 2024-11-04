@@ -170,7 +170,6 @@ const Sudoku: React.FC = () => {
     [errorSounds, playSound],
   );
 
-
   // 撤销
   const handleUndo = useCallback(() => {
     undo();
@@ -194,7 +193,15 @@ const Sudoku: React.FC = () => {
         setEraseEnabled(false);
       }
     }
-  }, [selectedCell, eraseEnabled, board, answerBoard, playSound, eraseSounds, updateBoard]);
+  }, [
+    selectedCell,
+    eraseEnabled,
+    board,
+    answerBoard,
+    playSound,
+    eraseSounds,
+    updateBoard,
+  ]);
 
   const jumpToNextNumber = useCallback(
     (newCounts: number[]): void => {
@@ -226,7 +233,6 @@ const Sudoku: React.FC = () => {
     },
     [remainingCounts, selectedNumber, setRemainingCounts, jumpToNextNumber],
   );
-
 
   // 选择数字
   const handleNumberSelect = useCallback(
@@ -326,7 +332,6 @@ const Sudoku: React.FC = () => {
     ],
   );
 
-
   const handleDraftMode = useCallback(() => {
     setDraftMode(!draftMode);
     playSound(switchSounds);
@@ -370,22 +375,19 @@ const Sudoku: React.FC = () => {
 
       return newBoard;
     },
-    [board, result, playSound, switchSounds],
-  );
-
-  const removeHintHighlight = useCallback(
-    (board: CellData[][]) => {
-      const updatedBoard = deepCopyBoard(board);
-      for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-          delete updatedBoard[row][col].highlights;
-          delete updatedBoard[row][col].highlightCandidates;
-        }
-      }
-      return updatedBoard;
-    },
     [],
   );
+
+  const removeHintHighlight = useCallback((board: CellData[][]) => {
+    const updatedBoard = deepCopyBoard(board);
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        delete updatedBoard[row][col].highlights;
+        delete updatedBoard[row][col].highlightCandidates;
+      }
+    }
+    return updatedBoard;
+  }, []);
 
   const handleHint = useCallback(() => {
     if (!checkDraftIsValid(board, answerBoard)) {
@@ -437,7 +439,17 @@ const Sudoku: React.FC = () => {
         break;
       }
     }
-  }, [answerBoard, applyHintHighlight, board, candidateMap, graph, handleShowCandidates, prompts, selectedCell, updateBoard]);
+  }, [
+    answerBoard,
+    applyHintHighlight,
+    board,
+    candidateMap,
+    graph,
+    handleShowCandidates,
+    prompts,
+    selectedCell,
+    updateBoard,
+  ]);
 
   const handleApplyHint = useCallback(() => {
     if (result) {
@@ -486,9 +498,19 @@ const Sudoku: React.FC = () => {
         remainingCountsMinusOne(target[0]);
       }
     }
-  }, [board, result]);
+  }, [
+    board,
+    clearHistory,
+    eraseSounds,
+    lastSelectedCell,
+    playSound,
+    remainingCountsMinusOne,
+    removeHintHighlight,
+    result,
+    successSounds,
+    updateBoard,
+  ]);
 
-  
   // 点击方格的回调函数
   const handleCellChange = useCallback(
     (row: number, col: number) => {
@@ -578,7 +600,6 @@ const Sudoku: React.FC = () => {
     ],
   );
 
-
   const handleCancelHint = useCallback(() => {
     const updatedBoard = removeHintHighlight(board);
     updateBoard(updatedBoard, '取消提示', []);
@@ -611,6 +632,19 @@ const Sudoku: React.FC = () => {
       setEraseEnabled(true);
     }
   }, [board, selectedCell, selectionMode]);
+
+  
+  const createSound = useCallback((path: any): Promise<Sound> => {
+    return new Promise((resolve, reject) => {
+      const sound = new Sound(path, error => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(sound);
+        }
+      });
+    });
+  }, []);
 
   useEffect(() => {
     const initSounds = async () => {
@@ -662,19 +696,8 @@ const Sudoku: React.FC = () => {
         }
       });
     };
-  }, []);
+  }, [createSound, eraseSounds, errorSounds, successSounds, switchSounds]);
 
-  const createSound = useCallback((path: any): Promise<Sound> => {
-    return new Promise((resolve, reject) => {
-      const sound = new Sound(path, error => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(sound);
-        }
-      });
-    });
-  }, []);
 
   return (
     <View style={styles.container}>
