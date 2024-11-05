@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, memo} from 'react';
 import {
   View,
   Text,
@@ -38,6 +38,7 @@ import {
   swordfish,
   eureka,
   trialAndError,
+  findDifferenceDraft,
 } from '../tools/solution';
 import type {CellData, Position} from '../tools';
 import type {Result} from '../tools/solution';
@@ -46,6 +47,10 @@ import styles from './sudokuStyles';
 import Sound from 'react-native-sound';
 import {handleHintContent} from '../tools/handleHintContent';
 import mockBoard from './mock';
+import Cell from '../components/SudokuCell';
+import Buttons from '../components/Buttons';
+
+
 const Sudoku: React.FC = () => {
   const initialBoard = Array(9)
     .fill(null)
@@ -62,6 +67,7 @@ const Sudoku: React.FC = () => {
     remainingCounts,
     setRemainingCounts,
     copyOfficialDraft,
+    setBoard,
   } = useSudokuBoard(initialBoard);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
   const [lastSelectedNumber, setLastSelectedNumber] = useState<number | null>(
@@ -72,7 +78,7 @@ const Sudoku: React.FC = () => {
 
   const [lastErrorTime, setLastErrorTime] = useState<number | null>(null);
   const errorCooldownPeriod = 300; // 错误冷却时间，单位毫秒
-  const time = useTimer();
+  // const time = useTimer();
   const [selectedCell, setSelectedCell] = useState<{
     row: number;
     col: number;
@@ -96,6 +102,7 @@ const Sudoku: React.FC = () => {
   const [successSounds, setSuccessSounds] = useState<Sound[]>([]);
   const [switchSounds, setSwitchSounds] = useState<Sound[]>([]);
   const [eraseSounds, setEraseSounds] = useState<Sound[]>([]);
+  const [isClickAutoNote, setIsClickAutoNote] = useState<boolean>(false);
 
   const generateBoard = useCallback(() => {
     const initialBoard = Array(9)
@@ -123,6 +130,8 @@ const Sudoku: React.FC = () => {
     generateBoard();
   }, []);
 
+  console.log(123);
+
   // 播放音效的函数
   const playSound = useCallback((sounds: Sound[]) => {
     if (!sounds || sounds.length === 0) {
@@ -131,8 +140,6 @@ const Sudoku: React.FC = () => {
     }
 
     const availableSound = sounds.find(sound => !sound.isPlaying());
-    console.log('可用音效:', availableSound);
-
     if (availableSound) {
       availableSound.play(success => {
         if (!success) {
@@ -169,6 +176,15 @@ const Sudoku: React.FC = () => {
     },
     [errorSounds, playSound],
   );
+
+  const remainingCountsMinusOne = (number: number) => {
+    const newCounts = [...remainingCounts];
+    newCounts[number - 1] -= 1;
+    if (newCounts[selectedNumber! - 1] === 0) {
+      jumpToNextNumber(newCounts);
+    }
+    setRemainingCounts(newCounts);
+  };
 
   // 点击方格的回调函数
   const handleCellChange = useCallback(
@@ -257,25 +273,6 @@ const Sudoku: React.FC = () => {
       remainingCountsMinusOne,
       handleError,
     ],
-  );
-
-  const jumpToNextNumber = useCallback(
-    (newCounts: number[]) => {
-      if (!selectedNumber || newCounts[selectedNumber - 1] !== 0) {
-        return;
-      }
-
-      let nextNumber = selectedNumber;
-      do {
-        nextNumber = (nextNumber % 9) + 1;
-      } while (
-        newCounts[nextNumber - 1] === 0 &&
-        nextNumber !== selectedNumber
-      );
-
-      handleNumberSelect(nextNumber);
-    },
-    [handleNumberSelect, selectedNumber],
   );
 
   // 撤销
@@ -409,16 +406,23 @@ const Sudoku: React.FC = () => {
     ],
   );
 
-  const remainingCountsMinusOne = useCallback(
-    (number: number) => {
-      const newCounts = [...remainingCounts];
-      newCounts[number - 1] -= 1;
-      if (newCounts[selectedNumber! - 1] === 0) {
-        jumpToNextNumber(newCounts);
+  const jumpToNextNumber = useCallback(
+    (newCounts: number[]) => {
+      if (!selectedNumber || newCounts[selectedNumber - 1] !== 0) {
+        return;
       }
-      setRemainingCounts(newCounts);
+
+      let nextNumber = selectedNumber;
+      do {
+        nextNumber = (nextNumber % 9) + 1;
+      } while (
+        newCounts[nextNumber - 1] === 0 &&
+        nextNumber !== selectedNumber
+      );
+
+      handleNumberSelect(nextNumber);
     },
-    [remainingCounts, selectedNumber, setRemainingCounts, jumpToNextNumber],
+    [handleNumberSelect, selectedNumber],
   );
 
   const handleDraftMode = useCallback(() => {
@@ -428,15 +432,441 @@ const Sudoku: React.FC = () => {
 
   const handleShowCandidates = useCallback(() => {
     playSound(switchSounds);
+    setIsClickAutoNote(true);
     const newBoard = deepCopyBoard(board);
     updateBoard(copyOfficialDraft(newBoard), '复制官方草稿');
+    // setBoard([
+    //   [
+    //     {
+    //       value: 2,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [3, 6, 8, 9],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [3, 6, 7, 8, 9],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [4, 6, 9],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [4, 5, 6, 7, 8],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [4, 5, 8, 9],
+    //     },
+    //     {
+    //       value: 1,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [5, 6, 7, 9],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [5, 6, 8, 9],
+    //     },
+    //   ],
+    //   [
+    //     {
+    //       value: 4,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 6, 8, 9],
+    //     },
+    //     {
+    //       value: 5,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 6, 9],
+    //     },
+    //     {
+    //       value: 3,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 8, 9],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [6, 7, 8, 9],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [6, 7, 9],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [2, 6, 8, 9],
+    //     },
+    //   ],
+    //   [
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 6, 7],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 6, 8, 9],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 6, 7, 8, 9],
+    //     },
+    //     {
+    //       value: 2,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 5, 6, 7, 8],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 5, 8, 9],
+    //     },
+    //     {
+    //       value: 3,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [5, 6, 7, 9],
+    //     },
+    //     {
+    //       value: 4,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //   ],
+    //   [
+    //     {
+    //       value: 8,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 2, 3, 4, 6, 9],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 2, 3, 4, 6, 7, 9],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 3, 4, 6],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 2, 4, 6],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 3, 4],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [5, 6, 9],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 4, 5, 6, 9],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 5, 6, 9],
+    //     },
+    //   ],
+    //   [
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 6],
+    //     },
+    //     {
+    //       value: 5,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 4, 6, 9],
+    //     },
+    //     {
+    //       value: 8,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 4, 6],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 4],
+    //     },
+    //     {
+    //       value: 2,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: 3,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: 7,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //   ],
+    //   [
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 6],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 2, 3, 4, 6],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 2, 3, 4, 6],
+    //     },
+    //     {
+    //       value: 5,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: 9,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: 7,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [6, 8],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 4, 6],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 6, 8],
+    //     },
+    //   ],
+    //   [
+    //     {
+    //       value: 3,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: 7,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 2, 8],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 9],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 5, 8],
+    //     },
+    //     {
+    //       value: 6,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: 4,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 5, 9],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 5, 9],
+    //     },
+    //   ],
+    //   [
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 5, 6],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 4, 6],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 4, 6],
+    //     },
+    //     {
+    //       value: 7,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 4, 5],
+    //     },
+    //     {
+    //       value: 2,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [5, 6, 9],
+    //     },
+    //     {
+    //       value: 8,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 3, 5, 6, 9],
+    //     },
+    //   ],
+    //   [
+    //     {
+    //       value: 9,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 4, 6, 8],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 4, 6, 8],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 3, 4],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 4, 5, 8],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 3, 4, 5, 8],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [5, 6, 7],
+    //     },
+    //     {
+    //       value: 2,
+    //       isGiven: false,
+    //       draft: [],
+    //     },
+    //     {
+    //       value: null,
+    //       isGiven: false,
+    //       draft: [1, 3, 5, 6],
+    //     },
+    //   ],
+    // ]);
 
-    const startTime = performance.now();
+    // const startTime = performance.now();
 
-    requestAnimationFrame(() => {
-      const endTime = performance.now();
-      console.log(`自动笔记功能总耗时: ${endTime - startTime}ms`);
-    });
+    // requestAnimationFrame(() => {
+    //   const endTime = performance.now();
+    //   console.log(`自动笔记功能总耗时: ${endTime - startTime}ms`);
+    // });
   }, [playSound, switchSounds, updateBoard, board, copyOfficialDraft]);
 
   const applyHintHighlight = useCallback(
@@ -467,23 +897,27 @@ const Sudoku: React.FC = () => {
     [],
   );
 
-  const removeHintHighlight = useCallback(
-    (board: CellData[][]) => {
-      const updatedBoard = deepCopyBoard(board);
-      for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-          delete updatedBoard[row][col].highlights;
-          delete updatedBoard[row][col].highlightCandidates;
-        }
+  const removeHintHighlight = useCallback((board: CellData[][]) => {
+    const updatedBoard = deepCopyBoard(board);
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        delete updatedBoard[row][col].highlights;
+        delete updatedBoard[row][col].highlightCandidates;
       }
-      return updatedBoard;
-    },
-    [],
-  );
+    }
+    return updatedBoard;
+  }, []);
 
   const handleHint = useCallback(() => {
-    if (!checkDraftIsValid(board, answerBoard)) {
+    if (!isClickAutoNote) {
       handleShowCandidates();
+    } else if (!checkDraftIsValid(board, answerBoard)) {
+      const beforeBoard = deepCopyBoard(board);
+      handleShowCandidates();
+      const afterBoard = deepCopyBoard(board);
+      const differences = findDifferenceDraft(beforeBoard, afterBoard);
+      updateBoard(afterBoard, '自动笔记', differences);
+      setHintContent('笔记有错误，请先修正');
       return;
     }
     const solveFunctions = [
@@ -511,7 +945,6 @@ const Sudoku: React.FC = () => {
       if (result) {
         setResult(result);
         setSelectedNumber(null);
-        console.log(result);
         setHintMethod(result.method);
         setHintContent(
           handleHintContent(
@@ -531,7 +964,18 @@ const Sudoku: React.FC = () => {
         break;
       }
     }
-  }, [answerBoard, applyHintHighlight, board, candidateMap, graph, handleShowCandidates, prompts, selectedCell, updateBoard]);
+  }, [
+    answerBoard,
+    applyHintHighlight,
+    board,
+    candidateMap,
+    graph,
+    handleShowCandidates,
+    isClickAutoNote,
+    prompts,
+    selectedCell,
+    updateBoard,
+  ]);
 
   const handleApplyHint = useCallback(() => {
     if (result) {
@@ -580,7 +1024,18 @@ const Sudoku: React.FC = () => {
         remainingCountsMinusOne(target[0]);
       }
     }
-  }, [board, clearHistory, eraseSounds, lastSelectedCell, playSound, remainingCountsMinusOne, removeHintHighlight, result, successSounds, updateBoard]);
+  }, [
+    board,
+    clearHistory,
+    eraseSounds,
+    lastSelectedCell,
+    playSound,
+    remainingCountsMinusOne,
+    removeHintHighlight,
+    result,
+    successSounds,
+    updateBoard,
+  ]);
 
   const handleCancelHint = useCallback(() => {
     const updatedBoard = removeHintHighlight(board);
@@ -640,7 +1095,6 @@ const Sudoku: React.FC = () => {
             .map(() => createSound(require('../assets/audio/erase.wav'))),
         );
 
-        console.log('音效加载完成');
         setErrorSounds(errorInstances);
         setSuccessSounds(successInstances);
         setSwitchSounds(switchInstances);
@@ -688,116 +1142,25 @@ const Sudoku: React.FC = () => {
         <Text style={[styles.gameInfoText, styles.middleText]}>
           {DIFFICULTY.MEDIUM}
         </Text>
-        <Text style={[styles.gameInfoText, styles.rightText]}>{time}</Text>
+        {/* <Text style={[styles.gameInfoText, styles.rightText]}>{time}</Text> */}
       </View>
       <View style={styles.sudokuGrid}>
         {board.map((row, rowIndex) =>
           row.map((cell, colIndex) => (
-            <TouchableOpacity
+            <Cell
               key={`${rowIndex}-${colIndex}`}
-              onPressIn={() => handleCellChange(rowIndex, colIndex)}
-              onLongPress={() => {
-                handleCellChange(rowIndex, colIndex);
-              }}
-              style={[
-                styles.sudokuCell,
-                // 右边框：每3列添加粗边框
-                (colIndex + 1) % 3 === 0 &&
-                  (colIndex + 1) % 9 !== 0 &&
-                  styles.sudokuCellRightBorder,
-                // 左边框：第4列和第7列添加粗边框
-                colIndex % 3 === 0 && styles.sudokuCellLeftBorder,
-                // 底边框：第3行和第6行添加粗边框
-                (rowIndex + 1) % 3 === 0 &&
-                  rowIndex !== 8 &&
-                  styles.sudokuCellBottomBorder,
-                // 上边框：第4行和第7行添加粗边框
-                rowIndex % 3 === 0 && styles.sudokuCellTopBorder,
-                // 其他已有的样式
-                cell.draft.length > 0 &&
-                  cell.draft.includes(selectedNumber ?? 0) &&
-                  styles.candidateNumber,
-                selectedNumber &&
-                  cell.value === selectedNumber &&
-                  styles.selectedNumber,
-                getCellClassName(board, rowIndex, colIndex, selectedNumber),
-                selectionMode === 2 &&
-                  selectedCell?.row === rowIndex &&
-                  selectedCell?.col === colIndex &&
-                  styles.selectedCell,
-                errorCells.some(
-                  errorCell =>
-                    errorCell.row === rowIndex && errorCell.col === colIndex,
-                ) && styles.errorCell,
-                ...(cell.highlights?.map(
-                  highlight => styles[highlight as keyof typeof styles],
-                ) || []),
-              ]}>
-              {cell.value !== null ? (
-                <Text
-                  style={
-                    [
-                      styles.cellValue,
-                      cell.isGiven ? styles.givenNumber : styles.userNumber,
-                      selectedNumber && cell.value === selectedNumber
-                        ? styles.selectedNumberText
-                        : null,
-                    ].filter(Boolean) as TextStyle[]
-                  }>
-                  {cell.value}
-                </Text>
-              ) : cell.draft.length > 0 ? (
-                <View style={styles.draftGrid}>
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
-                    <View
-                      key={num}
-                      style={
-                        [
-                          styles.draftCell,
-                          cell.draft.includes(num) && styles.draftCellActive,
-                          prompts.includes(num) &&
-                            cell?.highlightCandidates?.length &&
-                            board[rowIndex][colIndex].highlights?.includes(
-                              'promptHighlight',
-                            ) &&
-                            board[rowIndex][colIndex].draft.includes(num) &&
-                            styles.candidateHighlightHint,
-                          positions.includes(num) &&
-                            cell?.highlightCandidates?.length &&
-                            board[rowIndex][colIndex].highlights?.includes(
-                              'positionHighlight',
-                            ) &&
-                            board[rowIndex][colIndex].draft.includes(num) &&
-                            styles.candidateHighlightDelete,
-                        ].filter(Boolean) as ViewStyle[]
-                      }>
-                      {cell.draft.includes(num) && (
-                        <Text
-                          style={
-                            [
-                              styles.draftCellText,
-                              positions.includes(num) &&
-                                cell?.highlightCandidates?.length &&
-                                board[rowIndex][colIndex].highlights?.includes(
-                                  'positionHighlight',
-                                ) &&
-                                styles.candidateHighlightDeleteText,
-                              prompts.includes(num) &&
-                                cell?.highlightCandidates?.length &&
-                                board[rowIndex][colIndex].highlights?.includes(
-                                  'promptHighlight',
-                                ) &&
-                                styles.candidateHighlightHintText,
-                            ].filter(Boolean) as TextStyle[]
-                          }>
-                          {num}
-                        </Text>
-                      )}
-                    </View>
-                  ))}
-                </View>
-              ) : null}
-            </TouchableOpacity>
+              cell={cell}
+              rowIndex={rowIndex}
+              colIndex={colIndex}
+              handleCellChange={handleCellChange}
+              selectedNumber={selectedNumber}
+              selectionMode={selectionMode}
+              selectedCell={selectedCell}
+              errorCells={errorCells}
+              board={board}
+              prompts={prompts}
+              positions={positions}
+            />
           )),
         )}
       </View>
@@ -876,47 +1239,14 @@ const Sudoku: React.FC = () => {
           <Text style={styles.buttonText}>提示</Text>
         </View>
       </View>
-      <View style={styles.numberButtons}>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(number => (
-          <TouchableOpacity
-            key={number}
-            onPressIn={() => handleNumberSelect(number)}
-            style={[
-              styles.numberButton,
-              remainingCounts[number - 1] === 0 && styles.numberButtonDisabled, // 禁用状态
-              selectionMode === 1 &&
-                selectedNumber === number && {
-                  backgroundColor: '#1890ff',
-                },
-            ]}
-            disabled={!draftMode && remainingCounts[number - 1] === 0}>
-            <Text
-              style={[
-                styles.selectedNumberButton,
-                !draftMode &&
-                  remainingCounts[number - 1] === 0 &&
-                  styles.selectedNumberButtonDisabled, // 禁用状态
-                selectionMode === 1 &&
-                  selectedNumber === number &&
-                  styles.selectedNumberText,
-              ]}>
-              {number}
-            </Text>
-            <Text
-              style={[
-                styles.remainingCount,
-                !draftMode &&
-                  remainingCounts[number - 1] === 0 &&
-                  styles.remainingCountDisabled, // 禁用状态
-                selectionMode === 1 &&
-                  selectedNumber === number &&
-                  styles.selectedNumberText,
-              ]}>
-              {remainingCounts[number - 1]}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <Buttons
+        handleNumberSelect={handleNumberSelect}
+        remainingCounts={remainingCounts}
+        selectionMode={selectionMode}
+        selectedNumber={selectedNumber}
+        draftMode={draftMode}
+      />
+
       <Switch
         value={selectionMode === 2}
         onValueChange={handleSelectionModeChange}

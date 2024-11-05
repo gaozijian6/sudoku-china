@@ -14,10 +14,15 @@ export interface GraphNode extends Candidate {
   next: GraphNode[];
 }
 
+export interface Draft {
+  value: number;
+  isShow: boolean;
+}
+
 export interface CellData {
   value: number | null;
   isGiven: boolean;
-  draft: number[]; // 添加草稿数字数组
+  draft: Draft[]; // 添加草稿数字数组
   highlightError?: string;
   highlights?: string[];
   highlightCandidates?: number[];
@@ -417,12 +422,12 @@ export const getCandidates = (
   board: CellData[][],
   row: number,
   col: number,
-): number[] => {
+): Draft[] => {
   if (board[row][col].value !== null) return [];
-  const candidates = [];
+  const candidates: Draft[] = [];
   for (let num = 1; num <= 9; num++) {
     if (isValid(board, row, col, num)) {
-      candidates.push(num);
+      candidates.push({value: num, isShow: false});
     }
   }
   return candidates;
@@ -641,6 +646,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     updateRemainingCounts,
     setRemainingCounts,
     copyOfficialDraft,
+    setBoard
   };
 };
 
