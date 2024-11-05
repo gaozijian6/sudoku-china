@@ -121,7 +121,7 @@ const Sudoku: React.FC = () => {
 
   useEffect(() => {
     generateBoard();
-  }, []);
+  }, [generateBoard]);
 
   // 播放音效的函数
   const playSound = useCallback((sounds: Sound[]) => {
@@ -170,114 +170,6 @@ const Sudoku: React.FC = () => {
     [errorSounds, playSound],
   );
 
-  // 点击方格的回调函数
-  const handleCellChange = useCallback(
-    (row: number, col: number) => {
-      if (selectionMode === 2) {
-        setSelectedCell({row, col});
-        if (board[row][col].value) {
-          setSelectedNumber(board[row][col].value);
-        } else {
-          setSelectedNumber(null);
-        }
-        return;
-      }
-
-      if (board[row][col].value) {
-        return;
-      }
-
-      const newBoard = deepCopyBoard(board);
-      const cell = newBoard[row][col];
-
-      // 处理草稿模式
-      if (draftMode && selectedNumber) {
-        const conflictCells = checkNumberInRowColumnAndBox(
-          newBoard,
-          row,
-          col,
-          selectedNumber,
-        );
-        if (conflictCells.length > 0) {
-          handleErrorDraftAnimation(conflictCells);
-          return;
-        }
-
-        const draftSet = new Set(cell.draft);
-        if (draftSet.has(selectedNumber)) {
-          draftSet.delete(selectedNumber);
-        } else {
-          draftSet.add(selectedNumber);
-        }
-        cell.draft = Array.from(draftSet).sort((a, b) => a - b);
-        updateBoard(newBoard, `设置 (${row}, ${col}) 草稿为 ${cell.draft}`);
-        playSound(switchSounds);
-      }
-      // 处理非草稿模式
-      else if (selectedNumber) {
-        // 验证填入的数字是否为有效候选数字
-        if (answerBoard[row][col].value == selectedNumber) {
-          cell.value = selectedNumber;
-          cell.draft = [];
-
-          // 更新相关单元格的草稿数字
-          const affectedCells = updateRelatedCellsDraft(
-            newBoard,
-            [{row, col}],
-            selectedNumber,
-            getCandidates,
-          );
-
-          playSound(successSounds);
-          updateBoard(
-            newBoard,
-            `设置 (${row}, ${col}) 为 ${selectedNumber}`,
-            affectedCells,
-          );
-          clearHistory();
-          remainingCountsMinusOne(selectedNumber);
-        } else {
-          handleError(row, col);
-          return;
-        }
-      }
-    },
-    [
-      selectionMode,
-      board,
-      draftMode,
-      selectedNumber,
-      updateBoard,
-      playSound,
-      switchSounds,
-      handleErrorDraftAnimation,
-      answerBoard,
-      successSounds,
-      clearHistory,
-      remainingCountsMinusOne,
-      handleError,
-    ],
-  );
-
-  const jumpToNextNumber = useCallback(
-    (newCounts: number[]) => {
-      if (!selectedNumber || newCounts[selectedNumber - 1] !== 0) {
-        return;
-      }
-
-      let nextNumber = selectedNumber;
-      do {
-        nextNumber = (nextNumber % 9) + 1;
-      } while (
-        newCounts[nextNumber - 1] === 0 &&
-        nextNumber !== selectedNumber
-      );
-
-      handleNumberSelect(nextNumber);
-    },
-    [handleNumberSelect, selectedNumber],
-  );
-
   // 撤销
   const handleUndo = useCallback(() => {
     undo();
@@ -310,6 +202,37 @@ const Sudoku: React.FC = () => {
     eraseSounds,
     updateBoard,
   ]);
+
+  const jumpToNextNumber = useCallback(
+    (newCounts: number[]): void => {
+      if (!selectedNumber || newCounts[selectedNumber - 1] !== 0) {
+        return;
+      }
+
+      let nextNumber = selectedNumber;
+      do {
+        nextNumber = (nextNumber % 9) + 1;
+      } while (
+        newCounts[nextNumber - 1] === 0 &&
+        nextNumber !== selectedNumber
+      );
+
+      handleNumberSelect(nextNumber);
+    },
+    [handleNumberSelect, selectedNumber],
+  );
+
+  const remainingCountsMinusOne = useCallback(
+    (number: number): void => {
+      const newCounts = [...remainingCounts];
+      newCounts[number - 1] -= 1;
+      if (newCounts[selectedNumber! - 1] === 0) {
+        jumpToNextNumber(newCounts);
+      }
+      setRemainingCounts(newCounts);
+    },
+    [remainingCounts, selectedNumber, setRemainingCounts, jumpToNextNumber],
+  );
 
   // 选择数字
   const handleNumberSelect = useCallback(
@@ -409,18 +332,6 @@ const Sudoku: React.FC = () => {
     ],
   );
 
-  const remainingCountsMinusOne = useCallback(
-    (number: number) => {
-      const newCounts = [...remainingCounts];
-      newCounts[number - 1] -= 1;
-      if (newCounts[selectedNumber! - 1] === 0) {
-        jumpToNextNumber(newCounts);
-      }
-      setRemainingCounts(newCounts);
-    },
-    [remainingCounts, selectedNumber, setRemainingCounts, jumpToNextNumber],
-  );
-
   const handleDraftMode = useCallback(() => {
     setDraftMode(!draftMode);
     playSound(switchSounds);
@@ -467,20 +378,16 @@ const Sudoku: React.FC = () => {
     [],
   );
 
-  const removeHintHighlight = useCallback(
-    (board: CellData[][]) => {
-      const updatedBoard = deepCopyBoard(board);
-      for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-          delete updatedBoard[row][col].highlights;
-          delete updatedBoard[row][col].highlightCandidates;
-        }
+  const removeHintHighlight = useCallback((board: CellData[][]) => {
+    const updatedBoard = deepCopyBoard(board);
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        delete updatedBoard[row][col].highlights;
+        delete updatedBoard[row][col].highlightCandidates;
       }
       return updatedBoard;
-    },
-    [],
-  );
-
+    }
+  }, []);
   const handleHint = useCallback(() => {
     if (!checkDraftIsValid(board, answerBoard)) {
       handleShowCandidates();
@@ -531,7 +438,17 @@ const Sudoku: React.FC = () => {
         break;
       }
     }
-  }, [answerBoard, applyHintHighlight, board, candidateMap, graph, handleShowCandidates, prompts, selectedCell, updateBoard]);
+  }, [
+    answerBoard,
+    applyHintHighlight,
+    board,
+    candidateMap,
+    graph,
+    handleShowCandidates,
+    prompts,
+    selectedCell,
+    updateBoard,
+  ]);
 
   const handleApplyHint = useCallback(() => {
     if (result) {
@@ -580,7 +497,107 @@ const Sudoku: React.FC = () => {
         remainingCountsMinusOne(target[0]);
       }
     }
-  }, [board, clearHistory, eraseSounds, lastSelectedCell, playSound, remainingCountsMinusOne, removeHintHighlight, result, successSounds, updateBoard]);
+  }, [
+    board,
+    clearHistory,
+    eraseSounds,
+    lastSelectedCell,
+    playSound,
+    remainingCountsMinusOne,
+    removeHintHighlight,
+    result,
+    successSounds,
+    updateBoard,
+  ]);
+
+  // 点击方格的回调函数
+  const handleCellChange = useCallback(
+    (row: number, col: number) => {
+      if (selectionMode === 2) {
+        setSelectedCell({row, col});
+        if (board[row][col].value) {
+          setSelectedNumber(board[row][col].value);
+        } else {
+          setSelectedNumber(null);
+        }
+        return;
+      }
+
+      if (board[row][col].value) {
+        return;
+      }
+
+      const newBoard = deepCopyBoard(board);
+      const cell = newBoard[row][col];
+
+      // 处理草稿模式
+      if (draftMode && selectedNumber) {
+        const conflictCells = checkNumberInRowColumnAndBox(
+          newBoard,
+          row,
+          col,
+          selectedNumber,
+        );
+        if (conflictCells.length > 0) {
+          handleErrorDraftAnimation(conflictCells);
+          return;
+        }
+
+        const draftSet = new Set(cell.draft);
+        if (draftSet.has(selectedNumber)) {
+          draftSet.delete(selectedNumber);
+        } else {
+          draftSet.add(selectedNumber);
+        }
+        cell.draft = Array.from(draftSet).sort((a, b) => a - b);
+        updateBoard(newBoard, `设置 (${row}, ${col}) 草稿为 ${cell.draft}`);
+        playSound(switchSounds);
+      }
+      // 处理非草稿模式
+      else if (selectedNumber) {
+        // 验证填入的数字是否为有效候选数字
+        if (answerBoard[row][col].value == selectedNumber) {
+          cell.value = selectedNumber;
+          cell.draft = [];
+
+          // 更新相关单元格的草稿数字
+          const affectedCells = updateRelatedCellsDraft(
+            newBoard,
+            [{row, col}],
+            selectedNumber,
+            getCandidates,
+          );
+
+          playSound(successSounds);
+          updateBoard(
+            newBoard,
+            `设置 (${row}, ${col}) 为 ${selectedNumber}`,
+            affectedCells,
+          );
+          clearHistory();
+          remainingCountsMinusOne(selectedNumber);
+        } else {
+          handleError(row, col);
+          return;
+        }
+      }
+    },
+    [
+      selectionMode,
+      selectedNumber,
+      handleError,
+      handleErrorDraftAnimation,
+      board,
+      answerBoard,
+      playSound,
+      successSounds,
+      clearHistory,
+      updateBoard,
+      draftMode,
+      remainingCountsMinusOne,
+      switchSounds,
+    ],
+  );
 
   const handleCancelHint = useCallback(() => {
     const updatedBoard = removeHintHighlight(board);
@@ -613,7 +630,20 @@ const Sudoku: React.FC = () => {
     } else {
       setEraseEnabled(true);
     }
-  }, [selectedCell, selectionMode]);
+  }, [board, selectedCell, selectionMode]);
+
+  
+  const createSound = useCallback((path: any): Promise<Sound> => {
+    return new Promise((resolve, reject) => {
+      const sound = new Sound(path, error => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(sound);
+        }
+      });
+    });
+  }, []);
 
   useEffect(() => {
     const initSounds = async () => {
@@ -665,19 +695,8 @@ const Sudoku: React.FC = () => {
         }
       });
     };
-  }, []);
+  }, [createSound, eraseSounds, errorSounds, successSounds, switchSounds]);
 
-  const createSound = useCallback((path: any): Promise<Sound> => {
-    return new Promise((resolve, reject) => {
-      const sound = new Sound(path, error => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(sound);
-        }
-      });
-    });
-  }, []);
 
   return (
     <View style={styles.container}>
