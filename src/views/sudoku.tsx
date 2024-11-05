@@ -549,7 +549,7 @@ const Sudoku: React.FC = () => {
 
   useEffect(() => {
     generateBoard();
-  }, []);
+  }, [generateBoard]);
 
   // 播放音效的函数
   const playSound = useCallback((sounds: Sound[]) => {
@@ -726,6 +726,37 @@ const Sudoku: React.FC = () => {
     eraseSounds,
     updateBoard,
   ]);
+
+  const jumpToNextNumber = useCallback(
+    (newCounts: number[]): void => {
+      if (!selectedNumber || newCounts[selectedNumber - 1] !== 0) {
+        return;
+      }
+
+      let nextNumber = selectedNumber;
+      do {
+        nextNumber = (nextNumber % 9) + 1;
+      } while (
+        newCounts[nextNumber - 1] === 0 &&
+        nextNumber !== selectedNumber
+      );
+
+      handleNumberSelect(nextNumber);
+    },
+    [handleNumberSelect, selectedNumber],
+  );
+
+  const remainingCountsMinusOne = useCallback(
+    (number: number): void => {
+      const newCounts = [...remainingCounts];
+      newCounts[number - 1] -= 1;
+      if (newCounts[selectedNumber! - 1] === 0) {
+        jumpToNextNumber(newCounts);
+      }
+      setRemainingCounts(newCounts);
+    },
+    [remainingCounts, selectedNumber, setRemainingCounts, jumpToNextNumber],
+  );
 
   // 选择数字
   const handleNumberSelect = useCallback(
@@ -1062,7 +1093,20 @@ const Sudoku: React.FC = () => {
     } else {
       setEraseEnabled(true);
     }
-  }, [selectedCell, selectionMode]);
+  }, [board, selectedCell, selectionMode]);
+
+  
+  const createSound = useCallback((path: any): Promise<Sound> => {
+    return new Promise((resolve, reject) => {
+      const sound = new Sound(path, error => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(sound);
+        }
+      });
+    });
+  }, []);
 
   useEffect(() => {
     const initSounds = async () => {
@@ -1113,19 +1157,8 @@ const Sudoku: React.FC = () => {
         }
       });
     };
-  }, []);
+  }, [createSound, eraseSounds, errorSounds, successSounds, switchSounds]);
 
-  const createSound = useCallback((path: any): Promise<Sound> => {
-    return new Promise((resolve, reject) => {
-      const sound = new Sound(path, error => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(sound);
-        }
-      });
-    });
-  }, []);
 
   return (
     <View style={styles.container}>

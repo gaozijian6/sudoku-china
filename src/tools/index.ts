@@ -581,7 +581,13 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
       updateCandidateMap(newBoard);
       setGraph(createGraph(newBoard, candidateMap));
     },
-    [candidateMap, updateCandidateMap, isSolved, updateRemainingCounts, history],
+    [
+      candidateMap,
+      updateCandidateMap,
+      isSolved,
+      updateRemainingCounts,
+      history,
+    ],
   );
 
   useEffect(() => {
