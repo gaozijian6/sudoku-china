@@ -1,8 +1,9 @@
 import type {CellData} from '../tools';
-import {memo} from 'react';
+import {memo, useState} from 'react';
 import {TouchableOpacity, Text, View, TextStyle} from 'react-native';
 import styles from '../views/sudokuStyles';
 import {getCellClassName} from '../tools';
+
 const Cell = memo(
   ({
     cell,
@@ -16,6 +17,7 @@ const Cell = memo(
     board,
     prompts,
     positions,
+    resultBoard,
   }: {
     cell: CellData;
     rowIndex: number;
@@ -28,6 +30,7 @@ const Cell = memo(
     board: CellData[][];
     prompts: number[];
     positions: number[];
+    resultBoard: CellData[][];
   }) => {
     return (
       <TouchableOpacity
@@ -83,68 +86,71 @@ const Cell = memo(
             }>
             {cell.value}
           </Text>
-        ) : cell.draft.length > 0 ? (
-          <View
-            style={[
-              styles.draftGrid,
-            ]}>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(
-              num =>
-                cell.draft.includes(num) && (
-                  <Text
-                    key={num}
-                    style={
-                      [
-                        styles.draftCell,
-                        styles.draftCellText,
-                        {
-                          width: '33.33%', 
-                          height: '33.33%', 
-                          textAlign: 'center',
-                          position: 'absolute',
-                          left: `${((num - 1) % 3) * 33.33}%`,
-                          top: `${Math.floor((num - 1) / 3) * 33.33 + 3}%`
-                        },
-                        cell.draft.includes(num) && styles.draftCellActive,
-                        prompts.includes(num) &&
-                          cell?.highlightCandidates?.length &&
-                          board[rowIndex][colIndex].highlights?.includes(
-                            'promptHighlight',
-                          ) &&
-                          board[rowIndex][colIndex].draft.includes(num) &&
-                          styles.candidateHighlightHint,
-                        positions.includes(num) &&
-                          cell?.highlightCandidates?.length &&
-                          board[rowIndex][colIndex].highlights?.includes(
-                            'positionHighlight',
-                          ) &&
-                          board[rowIndex][colIndex].draft.includes(num) &&
-                          styles.candidateHighlightDelete,
-                        positions.includes(num) &&
-                          cell?.highlightCandidates?.length &&
-                          board[rowIndex][colIndex].highlights?.includes(
-                            'positionHighlight',
-                          ) &&
-                          styles.candidateHighlightDeleteText,
-                        prompts.includes(num) &&
-                          cell?.highlightCandidates?.length &&
-                          board[rowIndex][colIndex].highlights?.includes(
-                            'promptHighlight',
-                          ) &&
-                          styles.candidateHighlightHintText,
-                      ].filter(Boolean) as TextStyle[]
-                    }>
-                    {num}
-                  </Text>
-                )
-            )}
+        ) : (
+          <View style={[styles.draftGrid]}>
+            {resultBoard[rowIndex][colIndex].draft?.map((num: number) => (
+              <Text
+                key={num}
+                style={
+                  [
+                    styles.draftCell,
+                    styles.draftCellText,
+                    {
+                      width: '33.33%',
+                      height: '33.33%',
+                      textAlign: 'center',
+                      position: 'absolute',
+                      left: `${((num - 1) % 3) * 33.33}%`,
+                      top: `${Math.floor((num - 1) / 3) * 33.33 + 3}%`,
+                    },
+                    {opacity: cell.draft.includes(num) ? 1 : 0},
+                    cell.draft.includes(num) && styles.draftCellActive,
+                    prompts.includes(num) &&
+                      cell?.highlightCandidates?.length &&
+                      board[rowIndex][colIndex].highlights?.includes(
+                        'promptHighlight',
+                      ) &&
+                      board[rowIndex][colIndex].draft.includes(num) &&
+                      styles.candidateHighlightHint,
+                    positions.includes(num) &&
+                      cell?.highlightCandidates?.length &&
+                      board[rowIndex][colIndex].highlights?.includes(
+                        'positionHighlight',
+                      ) &&
+                      board[rowIndex][colIndex].draft.includes(num) &&
+                      styles.candidateHighlightDelete,
+                    positions.includes(num) &&
+                      cell?.highlightCandidates?.length &&
+                      board[rowIndex][colIndex].highlights?.includes(
+                        'positionHighlight',
+                      ) &&
+                      styles.candidateHighlightDeleteText,
+                    prompts.includes(num) &&
+                      cell?.highlightCandidates?.length &&
+                      board[rowIndex][colIndex].highlights?.includes(
+                        'promptHighlight',
+                      ) &&
+                      styles.candidateHighlightHintText,
+                  ].filter(Boolean) as TextStyle[]
+                }>
+                {num}
+              </Text>
+            ))}
           </View>
-        ) : null}
+        )}
       </TouchableOpacity>
     );
   },
   (prevProps, nextProps) => {
-    if (
+    if (prevProps.cell.value !== null) {
+      return (
+        prevProps.cell.value === nextProps.cell.value &&
+        prevProps.selectedNumber === nextProps.selectedNumber &&
+        prevProps.errorCells.length === nextProps.errorCells.length
+      );
+    }
+
+    return (
       prevProps.cell.value === nextProps.cell.value &&
       prevProps.cell.draft.length === nextProps.cell.draft.length &&
       prevProps.cell.highlights?.length === nextProps.cell.highlights?.length &&
@@ -160,10 +166,7 @@ const Cell = memo(
       prevProps.prompts.length === nextProps.prompts.length &&
       prevProps.positions.length === nextProps.positions.length &&
       prevProps.handleCellChange === nextProps.handleCellChange
-    ) {
-      return true;
-    }
-    return false;
+    );
   },
 );
 
