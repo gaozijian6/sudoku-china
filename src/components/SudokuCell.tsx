@@ -1,6 +1,6 @@
+import React, {memo} from 'react';
 import type {CellData} from '../tools';
-import {memo, useState} from 'react';
-import {TouchableOpacity, Text, View, TextStyle} from 'react-native';
+import {Text, View, TextStyle, Pressable} from 'react-native';
 import styles from '../views/sudokuStyles';
 import {getCellClassName} from '../tools';
 
@@ -33,12 +33,9 @@ const Cell = memo(
     resultBoard: CellData[][];
   }) => {
     return (
-      <TouchableOpacity
+      <Pressable
         key={`${rowIndex}-${colIndex}`}
         onPressIn={() => handleCellChange(rowIndex, colIndex)}
-        onLongPress={() => {
-          handleCellChange(rowIndex, colIndex);
-        }}
         style={[
           styles.sudokuCell,
           // 右边框：每3列添加粗边框
@@ -96,12 +93,8 @@ const Cell = memo(
                     styles.draftCell,
                     styles.draftCellText,
                     {
-                      width: '33.33%',
-                      height: '33.33%',
-                      textAlign: 'center',
-                      position: 'absolute',
-                      left: `${((num - 1) % 3) * 33.33}%`,
-                      top: `${Math.floor((num - 1) / 3) * 33.33 + 3}%`,
+                      left: `${((num - 1) % 3) * 33.33+2}%`,
+                      top: `${Math.floor((num - 1) / 3) * 33.33 + 2}%`,
                     },
                     {opacity: cell.draft.includes(num) ? 1 : 0},
                     cell.draft.includes(num) && styles.draftCellActive,
@@ -138,7 +131,7 @@ const Cell = memo(
             ))}
           </View>
         )}
-      </TouchableOpacity>
+      </Pressable>
     );
   },
   (prevProps, nextProps) => {

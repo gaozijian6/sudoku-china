@@ -130,6 +130,10 @@ const sudokuStyles = StyleSheet.create({
   draftCellActive: {},
   draftCellText: {
     fontSize: 8,
+    width: '33.33%',
+    height: '33.33%',
+    textAlign: 'center',
+    position: 'absolute',
   },
   selectedCell: {
     borderWidth: 2,
@@ -362,6 +366,15 @@ const sudokuStyles = StyleSheet.create({
   closeIcon: {
     width: 20,
     height: 20,
+  },
+  draftModeSwitch: {
+    position: 'absolute',
+    right: -20,
+    top: -10,
+    zIndex: 1,
+  },
+  draftModeSwitchStyle: {
+    transform: [{scaleX: 0.6}, {scaleY: 0.6}],
   },
 });
 

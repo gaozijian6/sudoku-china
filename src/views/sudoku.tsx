@@ -1,14 +1,6 @@
-import React, {useState, useEffect, useCallback, memo} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
+import {View, Text, Image, Modal, Switch, Pressable} from 'react-native';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  Modal,
-  Switch,
-} from 'react-native';
-import {
-  // useTimer,
   solve,
   checkNumberInRowColumnAndBox,
   updateRelatedCellsDraft,
@@ -46,7 +38,11 @@ import {handleHintContent} from '../tools/handleHintContent';
 import mockBoard from './mock';
 import Cell from '../components/SudokuCell';
 import Buttons from '../components/Buttons';
-
+import Timer from '../components/Timer';
+import errorSound from '../assets/audio/error.wav';
+import successSound from '../assets/audio/success.wav';
+import switchSound from '../assets/audio/switch.wav';
+import eraseSound from '../assets/audio/erase.wav';
 
 const Sudoku: React.FC = () => {
   const initialBoard = Array(9)
@@ -64,6 +60,7 @@ const Sudoku: React.FC = () => {
     remainingCounts,
     setRemainingCounts,
     copyOfficialDraft,
+    standradBoard,
   } = useSudokuBoard(initialBoard);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
   const [lastSelectedNumber, setLastSelectedNumber] = useState<number | null>(
@@ -74,7 +71,6 @@ const Sudoku: React.FC = () => {
 
   const [lastErrorTime, setLastErrorTime] = useState<number | null>(null);
   const errorCooldownPeriod = 300; // 错误冷却时间，单位毫秒
-  // const time = useTimer();
   const [selectedCell, setSelectedCell] = useState<{
     row: number;
     col: number;
@@ -99,431 +95,6 @@ const Sudoku: React.FC = () => {
   const [switchSounds, setSwitchSounds] = useState<Sound[]>([]);
   const [eraseSounds, setEraseSounds] = useState<Sound[]>([]);
   const [isClickAutoNote, setIsClickAutoNote] = useState<boolean>(false);
-  const [resultBoard, setResultBoard] = useState<CellData[][]>([
-    [
-      {
-        value: 2,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [3, 6, 8, 9],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [3, 6, 7, 8, 9],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [4, 6, 9],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [4, 5, 6, 7, 8],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [4, 5, 8, 9],
-      },
-      {
-        value: 1,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [5, 6, 7, 9],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [5, 6, 8, 9],
-      },
-    ],
-    [
-      {
-        value: 4,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 6, 8, 9],
-      },
-      {
-        value: 5,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 6, 9],
-      },
-      {
-        value: 3,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 8, 9],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [6, 7, 8, 9],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [6, 7, 9],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [2, 6, 8, 9],
-      },
-    ],
-    [
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 6, 7],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 6, 8, 9],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 6, 7, 8, 9],
-      },
-      {
-        value: 2,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 5, 6, 7, 8],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 5, 8, 9],
-      },
-      {
-        value: 3,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [5, 6, 7, 9],
-      },
-      {
-        value: 4,
-        isGiven: false,
-        draft: [],
-      },
-    ],
-    [
-      {
-        value: 8,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 2, 3, 4, 6, 9],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 2, 3, 4, 6, 7, 9],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 3, 4, 6],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 2, 4, 6],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 3, 4],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [5, 6, 9],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 4, 5, 6, 9],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 5, 6, 9],
-      },
-    ],
-    [
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 6],
-      },
-      {
-        value: 5,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 4, 6, 9],
-      },
-      {
-        value: 8,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 4, 6],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 4],
-      },
-      {
-        value: 2,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 3,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 7,
-        isGiven: false,
-        draft: [],
-      },
-    ],
-    [
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 6],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 2, 3, 4, 6],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 2, 3, 4, 6],
-      },
-      {
-        value: 5,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 9,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 7,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [6, 8],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 4, 6],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 6, 8],
-      },
-    ],
-    [
-      {
-        value: 3,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 7,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 2, 8],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 9],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 5, 8],
-      },
-      {
-        value: 6,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 4,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 5, 9],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 5, 9],
-      },
-    ],
-    [
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 5, 6],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 4, 6],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 4, 6],
-      },
-      {
-        value: 7,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 4, 5],
-      },
-      {
-        value: 2,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [5, 6, 9],
-      },
-      {
-        value: 8,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 3, 5, 6, 9],
-      },
-    ],
-    [
-      {
-        value: 9,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 4, 6, 8],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 4, 6, 8],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 3, 4],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 4, 5, 8],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 3, 4, 5, 8],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [5, 6, 7],
-      },
-      {
-        value: 2,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [1, 3, 5, 6],
-      },
-    ],
-  ]);
 
   const generateBoard = useCallback(() => {
     const initialBoard = Array(9)
@@ -549,25 +120,31 @@ const Sudoku: React.FC = () => {
 
   useEffect(() => {
     generateBoard();
-  }, [generateBoard]);
+  }, []);
 
   // 播放音效的函数
   const playSound = useCallback((sounds: Sound[]) => {
-    if (!sounds || sounds.length === 0) {
+    if (!sounds?.length) {
       console.log('音效还未加载完成');
       return;
     }
 
-    const availableSound = sounds.find(sound => !sound.isPlaying());
-    if (availableSound) {
-      availableSound.play(success => {
-        if (!success) {
-          console.log('播放音频失败');
-        }
-      });
-    } else {
-      console.log('没有可用的音效实例');
+    const availableSound = sounds.find(sound => 
+      sound?.isPlaying?.() === false
+    );
+
+    if (!availableSound) {
+      console.log(
+        '没有可用的音效实例,当前正在播放的实例数:',
+        sounds.filter(s => s?.isPlaying()).length,
+      );
+      return;
     }
+
+    availableSound.play(success => {
+      !success && console.log('播放音频失败:', availableSound.isPlaying());
+    });
+
   }, []);
 
   const handleError = useCallback(
@@ -727,36 +304,6 @@ const Sudoku: React.FC = () => {
     updateBoard,
   ]);
 
-  const jumpToNextNumber = useCallback(
-    (newCounts: number[]): void => {
-      if (!selectedNumber || newCounts[selectedNumber - 1] !== 0) {
-        return;
-      }
-
-      let nextNumber = selectedNumber;
-      do {
-        nextNumber = (nextNumber % 9) + 1;
-      } while (
-        newCounts[nextNumber - 1] === 0 &&
-        nextNumber !== selectedNumber
-      );
-
-      handleNumberSelect(nextNumber);
-    },
-    [handleNumberSelect, selectedNumber],
-  );
-
-  const remainingCountsMinusOne = useCallback(
-    (number: number): void => {
-      const newCounts = [...remainingCounts];
-      newCounts[number - 1] -= 1;
-      if (newCounts[selectedNumber! - 1] === 0) {
-        jumpToNextNumber(newCounts);
-      }
-      setRemainingCounts(newCounts);
-    },
-    [remainingCounts, selectedNumber, setRemainingCounts, jumpToNextNumber],
-  );
 
   // 选择数字
   const handleNumberSelect = useCallback(
@@ -833,9 +380,9 @@ const Sudoku: React.FC = () => {
           }
         }
       } else {
+        playSound(switchSounds);
         setSelectedNumber(number);
         setLastSelectedNumber(number);
-        playSound(switchSounds);
       }
     },
     [
@@ -856,8 +403,9 @@ const Sudoku: React.FC = () => {
     ],
   );
 
+  
   const jumpToNextNumber = useCallback(
-    (newCounts: number[]) => {
+    (newCounts: number[]): void => {
       if (!selectedNumber || newCounts[selectedNumber - 1] !== 0) {
         return;
       }
@@ -880,18 +428,16 @@ const Sudoku: React.FC = () => {
     playSound(switchSounds);
   }, [draftMode, playSound, switchSounds]);
 
+  const handleDraftModeChange = useCallback((value: boolean) => {
+    setDraftMode(value);
+    playSound(switchSounds);
+  }, [playSound, switchSounds]);
+
   const handleShowCandidates = useCallback(() => {
     playSound(switchSounds);
     setIsClickAutoNote(true);
     const newBoard = deepCopyBoard(board);
     updateBoard(copyOfficialDraft(newBoard), '复制官方草稿');
-
-    // const startTime = performance.now();
-
-    // requestAnimationFrame(() => {
-    //   const endTime = performance.now();
-    //   console.log(`自动笔记功能总耗时: ${endTime - startTime}ms`);
-    // });
   }, [playSound, switchSounds, updateBoard, board, copyOfficialDraft]);
 
   const applyHintHighlight = useCallback(
@@ -964,7 +510,7 @@ const Sudoku: React.FC = () => {
       swordfish,
       trialAndError,
     ];
-    let result = null;
+    let result: Result | null = null;
     for (const solveFunction of solveFunctions) {
       result = solveFunction(board, candidateMap, graph);
       if (result) {
@@ -1095,13 +641,17 @@ const Sudoku: React.FC = () => {
     }
   }, [board, selectedCell, selectionMode]);
 
-  
-  const createSound = useCallback((path: any): Promise<Sound> => {
+  // 创建音效实例时增加错误处理
+  const createSound = useCallback((path: unknown): Promise<Sound> => {
     return new Promise((resolve, reject) => {
       const sound = new Sound(path, error => {
         if (error) {
+          console.log('加载音效失败:', error);
           reject(error);
         } else {
+          // 加载成功后设置基础配置
+          sound.setVolume(1.0);
+          sound.setNumberOfLoops(0);
           resolve(sound);
         }
       });
@@ -1115,22 +665,22 @@ const Sudoku: React.FC = () => {
         const errorInstances = await Promise.all(
           Array(3)
             .fill(0)
-            .map(() => createSound(require('../assets/audio/error.wav'))),
+            .map(() => createSound(errorSound)),
         );
         const successInstances = await Promise.all(
           Array(3)
             .fill(0)
-            .map(() => createSound(require('../assets/audio/success.wav'))),
+            .map(() => createSound(successSound)),
         );
         const switchInstances = await Promise.all(
           Array(3)
             .fill(0)
-            .map(() => createSound(require('../assets/audio/switch.wav'))),
+            .map(() => createSound(switchSound)),
         );
         const eraseInstances = await Promise.all(
           Array(3)
             .fill(0)
-            .map(() => createSound(require('../assets/audio/erase.wav'))),
+            .map(() => createSound(eraseSound)),
         );
 
         setErrorSounds(errorInstances);
@@ -1157,8 +707,7 @@ const Sudoku: React.FC = () => {
         }
       });
     };
-  }, [createSound, eraseSounds, errorSounds, successSounds, switchSounds]);
-
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -1169,7 +718,7 @@ const Sudoku: React.FC = () => {
         <Text style={[styles.gameInfoText, styles.middleText]}>
           {DIFFICULTY.MEDIUM}
         </Text>
-        {/* <Text style={[styles.gameInfoText, styles.rightText]}>{time}</Text> */}
+        {/* <Timer /> */}
       </View>
       <View style={styles.sudokuGrid}>
         {board.map((row, rowIndex) =>
@@ -1187,85 +736,71 @@ const Sudoku: React.FC = () => {
               board={board}
               prompts={prompts}
               positions={positions}
-              resultBoard={resultBoard}
+              resultBoard={standradBoard}
             />
           )),
         )}
       </View>
       <View style={styles.selectMode}></View>
       <View style={styles.controlButtons}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.circleButton}
-            onPressIn={handleUndo}
-            disabled={currentStep === 0}>
-            <Image
-              source={
-                currentStep === 0
-                  ? require('../assets/icon/undo.png')
-                  : require('../assets/icon/undo_active.png')
-              }
-              style={styles.buttonIcon}
-            />
-          </TouchableOpacity>
+        <Pressable
+          style={[styles.buttonContainer]}
+          onPressIn={handleUndo}
+          disabled={currentStep === 0}>
+          <Image
+            source={
+              currentStep === 0
+                ? require('../assets/icon/undo.png')
+                : require('../assets/icon/undo_active.png')
+            }
+            style={styles.buttonIcon}
+          />
           <Text style={styles.buttonText}>撤销</Text>
-        </View>
+        </Pressable>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.circleButton} onPressIn={handleErase}>
-            <Image
-              source={
-                eraseEnabled
-                  ? require('../assets/icon/erase_active.png')
-                  : require('../assets/icon/erase.png')
-              }
-              style={styles.buttonIcon}
-            />
-          </TouchableOpacity>
+        <Pressable style={[styles.buttonContainer]} onPressIn={handleErase}>
+          <Image
+            source={
+              eraseEnabled
+                ? require('../assets/icon/erase_active.png')
+                : require('../assets/icon/erase.png')
+            }
+            style={styles.buttonIcon}
+          />
           <Text style={styles.buttonText}>擦除</Text>
-        </View>
+        </Pressable>
 
-        <View style={styles.buttonContainer}>
-          <View style={{position: 'absolute', right: -20, top: -10, zIndex: 1}}>
-            <Switch
-              value={draftMode}
-              trackColor={{false: '#767577', true: '#81b0ff'}}
-              thumbColor={draftMode ? '#1890ff' : '#f4f3f4'}
-              style={{transform: [{scaleX: 0.6}, {scaleY: 0.6}]}}
-            />
-          </View>
-          <TouchableOpacity
-            style={[styles.circleButton]}
-            onPressIn={handleDraftMode}>
-            <Image
-              source={require('../assets/icon/draft.png')}
-              style={styles.buttonIcon}
-            />
-          </TouchableOpacity>
+        <Pressable style={[styles.buttonContainer]} onPressIn={handleDraftMode}>
+          <Switch
+            value={draftMode}
+            thumbColor={draftMode ? '#1890ff' : '#f4f3f4'}
+            style={[styles.draftModeSwitchStyle, styles.draftModeSwitch, {right: -25}]}
+            onValueChange={handleDraftModeChange}
+          />
+          <Image
+            source={require('../assets/icon/draft.png')}
+            style={styles.buttonIcon}
+          />
           <Text style={styles.buttonText}>笔记</Text>
-        </View>
+        </Pressable>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.circleButton}
-            onPressIn={handleShowCandidates}>
-            <Image
-              source={require('../assets/icon/auto.png')}
-              style={styles.buttonIcon}
-            />
-          </TouchableOpacity>
+        <Pressable
+          style={[styles.buttonContainer]}
+          onPressIn={handleShowCandidates}>
+          <Image
+            source={require('../assets/icon/auto.png')}
+            style={styles.buttonIcon}
+          />
           <Text style={styles.buttonText}>自动笔记</Text>
-        </View>
+        </Pressable>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.circleButton} onPressIn={handleHint}>
-            <Image
-              source={require('../assets/icon/prompt.png')}
-              style={styles.buttonIcon}
-            />
-          </TouchableOpacity>
+        <Pressable style={[styles.buttonContainer]} onPressIn={handleHint}>
+          <Image
+            source={require('../assets/icon/prompt.png')}
+            style={styles.buttonIcon}
+          />
           <Text style={styles.buttonText}>提示</Text>
-        </View>
+        </Pressable>
       </View>
       <Buttons
         handleNumberSelect={handleNumberSelect}
@@ -1281,14 +816,11 @@ const Sudoku: React.FC = () => {
         trackColor={{false: '#767577', true: '#81b0ff'}}
         thumbColor={selectionMode === 2 ? '#1890ff' : '#f4f3f4'}
       />
-      {/* <TouchableOpacity style={styles.solveButton} onPressIn={solveSudoku}>
-        求解数独
-      </TouchableOpacity> */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={hintDrawerVisible}>
-        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1}>
+        <Pressable style={styles.modalOverlay}>
           <View
             style={styles.drawerContent}
             // 添加这个属性来阻止点击事件冒泡
@@ -1299,31 +831,31 @@ const Sudoku: React.FC = () => {
             <View>
               <View style={styles.drawerHeader}>
                 <Text style={styles.drawerTitle}>{hintMethod}</Text>
-                <TouchableOpacity
+                <Pressable
                   onPressIn={handleCancelHint}
                   style={styles.closeIconButton}>
                   <Image
                     source={require('../assets/icon/close.png')}
                     style={styles.closeIcon}
                   />
-                </TouchableOpacity>
+                </Pressable>
               </View>
               <Text style={styles.drawerText}>{hintContent}</Text>
               <View style={styles.drawerButtons}>
-                <TouchableOpacity
+                <Pressable
                   onPressIn={handleApplyHint}
                   style={[styles.drawerButton, styles.drawerButtonApply]}>
                   <Text style={styles.drawerButtonTextApply}>应用</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+                </Pressable>
+                <Pressable
                   onPressIn={handleCancelHint}
                   style={[styles.drawerButton, styles.drawerButtonCancel]}>
                   <Text style={styles.drawerButtonTextCancel}>取消</Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             </View>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       </Modal>
     </View>
   );

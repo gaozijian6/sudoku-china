@@ -1,5 +1,5 @@
-import {memo} from 'react';
-import {TouchableOpacity, Text, View} from 'react-native';
+import React, {memo} from 'react';
+import {Text, View, Pressable} from 'react-native';
 import styles from '../views/sudokuStyles';
 
 const Buttons = memo(
@@ -19,7 +19,7 @@ const Buttons = memo(
     return (
       <View style={styles.numberButtons}>
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(number => (
-          <TouchableOpacity
+          <Pressable
             key={number}
             onPressIn={() => handleNumberSelect(number)}
             style={[
@@ -55,7 +55,7 @@ const Buttons = memo(
               ]}>
               {remainingCounts[number - 1]}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
     );
@@ -65,7 +65,8 @@ const Buttons = memo(
       prevProps.remainingCounts.length === nextProps.remainingCounts.length &&
       prevProps.selectedNumber === nextProps.selectedNumber &&
       prevProps.draftMode === nextProps.draftMode &&
-      prevProps.selectionMode === nextProps.selectionMode
+      prevProps.selectionMode === nextProps.selectionMode &&
+      prevProps.handleNumberSelect === nextProps.handleNumberSelect
     ) {
       return true;
     }

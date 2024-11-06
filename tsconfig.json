@@ -2,5 +2,8 @@
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
     "jsx": "react-native"
-  }
+  },
+  "files": [
+    "src/types/audio.d.ts"
+  ]
 }
