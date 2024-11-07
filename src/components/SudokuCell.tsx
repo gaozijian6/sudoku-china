@@ -3,7 +3,7 @@ import type {CellData} from '../tools';
 import {Text, TextStyle, Pressable} from 'react-native';
 import styles from '../views/sudokuStyles';
 import {getCellClassName} from '../tools';
-
+import type {DifferenceMap} from '../tools/solution';
 const Cell = memo(
   ({
     cell,
@@ -18,6 +18,7 @@ const Cell = memo(
     prompts,
     positions,
     resultBoard,
+    differenceMap,
   }: {
     cell: CellData;
     rowIndex: number;
@@ -31,6 +32,7 @@ const Cell = memo(
     prompts: number[];
     positions: number[];
     resultBoard: CellData[][];
+    differenceMap: DifferenceMap;
   }) => {
     return (
       <Pressable
@@ -123,6 +125,10 @@ const Cell = memo(
                       'promptHighlight',
                     ) &&
                     styles.candidateHighlightHintText,
+                  differenceMap[`${rowIndex},${colIndex}`]?.includes(num) &&
+                    styles.candidateHighlightHint,
+                  differenceMap[`${rowIndex},${colIndex}`]?.includes(num) &&
+                    styles.candidateHighlightHintText,
                 ].filter(Boolean) as TextStyle[]
               }>
               {num}
@@ -156,7 +162,8 @@ const Cell = memo(
       prevProps.errorCells.length === nextProps.errorCells.length &&
       prevProps.prompts.length === nextProps.prompts.length &&
       prevProps.positions.length === nextProps.positions.length &&
-      prevProps.handleCellChange === nextProps.handleCellChange
+      prevProps.handleCellChange === nextProps.handleCellChange &&
+      prevProps.differenceMap === nextProps.differenceMap
     );
   },
 );

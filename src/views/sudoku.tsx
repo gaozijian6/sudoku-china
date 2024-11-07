@@ -30,7 +30,7 @@ import {
   findDifferenceDraft,
 } from '../tools/solution';
 import type {CellData, Position} from '../tools';
-import type {Result} from '../tools/solution';
+import type {DifferenceMap, Result} from '../tools/solution';
 import {DIFFICULTY} from '../constans';
 import styles from './sudokuStyles';
 import Sound from 'react-native-sound';
@@ -59,9 +59,9 @@ const Sudoku: React.FC = () => {
     clearHistory,
     remainingCounts,
     setRemainingCounts,
-    copyOfficialDraft,
     standradBoard,
     history,
+    setBoard,
   } = useSudokuBoard(initialBoard);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
   const lastSelectedNumber = useRef<number | null>(null);
@@ -94,7 +94,7 @@ const Sudoku: React.FC = () => {
   const switchSoundsRef = useRef<Sound[]>([]);
   const eraseSoundsRef = useRef<Sound[]>([]);
   const isClickAutoNote = useRef<boolean>(false);
-
+  const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
   const generateBoard = useCallback(() => {
     const initialBoard = Array(9)
       .fill(null)
@@ -267,8 +267,9 @@ const Sudoku: React.FC = () => {
 
   // 撤销
   const handleUndo = useCallback(() => {
-    const lastAction = history[currentStep - 1]?.action;
-
+    console.log(history);
+    
+    const lastAction = history[currentStep]?.action;
     if (lastAction === '复制官方草稿') {
       isClickAutoNote.current = false;
     }
@@ -298,8 +299,8 @@ const Sudoku: React.FC = () => {
   // 选择数字
   const handleNumberSelect = useCallback(
     (number: number) => {
-      if (!selectedCell) return;
       if (selectionMode === 2) {
+        if (!selectedCell) return;
         const {row, col} = selectedCell;
         const cell = board[row][col];
 
@@ -425,9 +426,8 @@ const Sudoku: React.FC = () => {
   const handleShowCandidates = useCallback(() => {
     playSound(switchSoundsRef);
     isClickAutoNote.current = true;
-    const newBoard = deepCopyBoard(board);
-    updateBoard(copyOfficialDraft(newBoard), '复制官方草稿');
-  }, [playSound, updateBoard, board, copyOfficialDraft]);
+    updateBoard(deepCopyBoard(standradBoard), '复制官方草稿');
+  }, [playSound, updateBoard, standradBoard]);
 
   const applyHintHighlight = useCallback(
     (
@@ -468,77 +468,91 @@ const Sudoku: React.FC = () => {
     return updatedBoard;
   }, []);
 
-  const handleHint = useCallback(() => {
-    if (!isClickAutoNote.current) {
-      handleShowCandidates();
-    } else if (!checkDraftIsValid(board, answerBoard)) {
-      const beforeBoard = deepCopyBoard(board);
-      handleShowCandidates();
-      const afterBoard = deepCopyBoard(board);
-      const differences = findDifferenceDraft(beforeBoard, afterBoard);
-      updateBoard(afterBoard, '自动笔记', differences);
-      setHintDrawerVisible(true);
-      setHintContent('笔记有错误，请先修正');
-      return;
-    }
-    const solveFunctions = [
-      singleCandidate,
-      hiddenSingle,
-      blockElimination,
-      nakedPair,
-      nakedTriple1,
-      nakedTriple2,
-      hiddenPair,
-      hiddenTriple1,
-      hiddenTriple2,
-      xWing,
-      xWingVarient,
-      xyWing,
-      nakedQuadruple,
-      eureka,
-      skyscraper,
-      swordfish,
-      trialAndError,
-    ];
-    let result: Result | null = null;
-    for (const solveFunction of solveFunctions) {
-      result = solveFunction(board, candidateMap, graph);
-      if (result) {
-        setResult(result);
-        setSelectedNumber(null);
-        setHintMethod(result.method);
-        setHintContent(
-          handleHintContent(
-            result,
-            board,
-            prompts,
-            setPrompts,
-            setSelectedNumber,
-            setPositions,
-            applyHintHighlight,
-            updateBoard,
-          ),
-        );
+  const handleHint = useCallback(
+    async (board: CellData[][]) => {
+      if (!isClickAutoNote.current) {
+        handleShowCandidates();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log(board);
+        
+        const currentBoard = deepCopyBoard(board);
+        handleHint(currentBoard);
+        return;
+      } else if (!checkDraftIsValid(board, answerBoard)) {
+        const differenceMap = findDifferenceDraft(board, standradBoard);
+        setDifferenceMap(differenceMap);
         setHintDrawerVisible(true);
-        lastSelectedCell.current = selectedCell;
-        setSelectedCell(null);
-        break;
+        setHintMethod('');
+        setHintContent('笔记有错误，请先修正');
+        return;
       }
-    }
-  }, [
-    answerBoard,
-    applyHintHighlight,
-    board,
-    candidateMap,
-    graph,
-    handleShowCandidates,
-    prompts,
-    selectedCell,
-    updateBoard,
-  ]);
+      const solveFunctions = [
+        singleCandidate,
+        hiddenSingle,
+        blockElimination,
+        nakedPair,
+        nakedTriple1,
+        nakedTriple2,
+        hiddenPair,
+        hiddenTriple1,
+        hiddenTriple2,
+        xWing,
+        xWingVarient,
+        xyWing,
+        nakedQuadruple,
+        eureka,
+        skyscraper,
+        swordfish,
+        trialAndError,
+      ];
+      let result: Result | null = null;
+      for (const solveFunction of solveFunctions) {
+        result = solveFunction(board, candidateMap, graph);
+        if (result) {
+          setResult(result);
+          setSelectedNumber(null);
+          setHintMethod(result.method);
+          setHintContent(
+            handleHintContent(
+              result,
+              board,
+              prompts,
+              setPrompts,
+              setSelectedNumber,
+              setPositions,
+              applyHintHighlight,
+              updateBoard,
+            ),
+          );
+          setHintDrawerVisible(true);
+          lastSelectedCell.current = selectedCell;
+          setSelectedCell(null);
+          break;
+        }
+      }
+    },
+    [
+      answerBoard,
+      standradBoard,
+      handleShowCandidates,
+      candidateMap,
+      graph,
+      prompts,
+      applyHintHighlight,
+      updateBoard,
+      selectedCell,
+    ],
+  );
 
   const handleApplyHint = useCallback(() => {
-    if (result) {
+    if (Object.keys(differenceMap).length > 0) {
+      setDifferenceMap({});
+      const newBoard = deepCopyBoard(standradBoard);
+      handleHint(newBoard);
+      isClickAutoNote.current = true;
+      playSound(switchSoundsRef);
+      return;
+    } else if (result) {
       const {position, target, isFill} = result;
       const newBoard = deepCopyBoard(board);
 
@@ -587,14 +601,19 @@ const Sudoku: React.FC = () => {
   }, [
     board,
     clearHistory,
+    differenceMap,
+    handleHint,
     playSound,
     remainingCountsMinusOne,
     removeHintHighlight,
     result,
+    selectedCell,
+    standradBoard,
     updateBoard,
   ]);
 
   const handleCancelHint = useCallback(() => {
+    setDifferenceMap({});
     const updatedBoard = removeHintHighlight(board);
     updateBoard(updatedBoard, '取消提示', []);
     setHintDrawerVisible(false);
@@ -715,6 +734,7 @@ const Sudoku: React.FC = () => {
               prompts={prompts}
               positions={positions}
               resultBoard={standradBoard}
+              differenceMap={differenceMap}
             />
           )),
         )}
@@ -776,7 +796,9 @@ const Sudoku: React.FC = () => {
           <Text style={styles.buttonText}>自动笔记</Text>
         </Pressable>
 
-        <Pressable style={[styles.buttonContainer]} onPressIn={handleHint}>
+        <Pressable
+          style={[styles.buttonContainer]}
+          onPressIn={() => handleHint(board)}>
           <Image
             source={require('../assets/icon/prompt.png')}
             style={styles.buttonIcon}
@@ -791,7 +813,6 @@ const Sudoku: React.FC = () => {
         selectedNumber={selectedNumber}
         draftMode={draftMode}
       />
-
       <Switch
         value={selectionMode === 2}
         onValueChange={handleSelectionModeChange}

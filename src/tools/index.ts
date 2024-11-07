@@ -555,6 +555,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
       action: string,
       affectedCells?: {row: number; col: number}[],
     ) => {
+      
       if (!isSolved) {
         const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
         solve(solvedBoard);
@@ -578,6 +579,8 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
         action,
         affectedCells,
       });
+      console.log('newHistory', newHistory);
+      
       setHistory(newHistory);
       setCurrentStep(newHistory.length - 1);
       setBoard(newBoard);
@@ -610,10 +613,10 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
 
   const undo = useCallback(() => {
     if (currentStep > 0) {
-      const newStep = currentStep - 1;
-      const previousBoard = history[newStep].board;
-      history.pop();
-      setCurrentStep(newStep);
+      const previousBoard = history[currentStep - 1].board;
+      const newHistory = history.slice(0, currentStep);
+      setHistory(newHistory);
+      setCurrentStep(currentStep - 1);
       setBoard(previousBoard);
       updateCandidateMap(previousBoard);
       setGraph(createGraph(previousBoard, candidateMap));

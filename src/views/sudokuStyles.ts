@@ -259,9 +259,11 @@ const sudokuStyles = StyleSheet.create({
   candidateHighlightHint: {
     backgroundColor: 'rgb(77,104,182)',
     borderRadius: 8,
+    opacity: 1,
   },
   candidateHighlightHintText: {
     color: '#ffffff',
+    opacity: 1,
   },
   drawer: {
     position: 'absolute',

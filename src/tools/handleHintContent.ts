@@ -716,7 +716,7 @@ export const handleHintContent = (
   }
 
   setSelectedNumber(target[0]);
-  updateBoard(boardWithHighlight!, `提示：${result.method}`, [], false, false);
+  updateBoard(boardWithHighlight!, `提示：${result.method}`, []);
 
   return hintContent;
 };

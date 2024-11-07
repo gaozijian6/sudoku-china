@@ -26,11 +26,15 @@ export interface Result {
   box?: number;
 }
 
+export interface DifferenceMap {
+  [key: string]: number[];
+}
+
 export const findDifferenceDraft = (
   beforeBoard: CellData[][],
   afterBoard: CellData[][],
-): Candidate[] => {
-  const differences: Candidate[] = [];
+): DifferenceMap => {
+  const differenceMap: DifferenceMap = {};
   for (let row = 0; row < 9; row++) {
     for (let col = 0; col < 9; col++) {
       const beforeDraft = beforeBoard[row]?.[col]?.draft || [];
@@ -44,11 +48,11 @@ export const findDifferenceDraft = (
         }
       });
       if (newCandidates.length > 0) {
-        differences.push({row, col, candidates: newCandidates});
+        differenceMap[`${row},${col}`] = newCandidates;
       }
     }
   }
-  return differences;
+  return differenceMap;
 };
 // 唯一余数法
 export const singleCandidate = (
