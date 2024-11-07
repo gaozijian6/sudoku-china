@@ -116,10 +116,6 @@ const sudokuStyles = StyleSheet.create({
   draftGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    width: '100%',
-    height: '100%',
-    justifyContent: 'space-evenly',
-    alignContent: 'space-evenly',
   },
   draftCell: {
     width: '33.33%',
@@ -127,7 +123,6 @@ const sudokuStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  draftCellActive: {},
   draftCellText: {
     fontSize: 8,
     width: '33.33%',

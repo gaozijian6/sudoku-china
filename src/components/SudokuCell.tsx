@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
 import type {CellData} from '../tools';
-import {Text, View, TextStyle, Pressable} from 'react-native';
+import {Text, TextStyle, Pressable} from 'react-native';
 import styles from '../views/sudokuStyles';
 import {getCellClassName} from '../tools';
 
@@ -38,6 +38,7 @@ const Cell = memo(
         onPressIn={() => handleCellChange(rowIndex, colIndex)}
         style={[
           styles.sudokuCell,
+          cell.value === null && styles.draftGrid,
           // 右边框：每3列添加粗边框
           (colIndex + 1) % 3 === 0 &&
             (colIndex + 1) % 9 !== 0 &&
@@ -84,52 +85,49 @@ const Cell = memo(
             {cell.value}
           </Text>
         ) : (
-          <View style={[styles.draftGrid]}>
-            {resultBoard[rowIndex][colIndex].draft?.map((num: number) => (
-              <Text
-                key={num}
-                style={
-                  [
-                    styles.draftCell,
-                    styles.draftCellText,
-                    {
-                      left: `${((num - 1) % 3) * 33.33+2}%`,
-                      top: `${Math.floor((num - 1) / 3) * 33.33 + 2}%`,
-                    },
-                    {opacity: cell.draft.includes(num) ? 1 : 0},
-                    cell.draft.includes(num) && styles.draftCellActive,
-                    prompts.includes(num) &&
-                      cell?.highlightCandidates?.length &&
-                      board[rowIndex][colIndex].highlights?.includes(
-                        'promptHighlight',
-                      ) &&
-                      board[rowIndex][colIndex].draft.includes(num) &&
-                      styles.candidateHighlightHint,
-                    positions.includes(num) &&
-                      cell?.highlightCandidates?.length &&
-                      board[rowIndex][colIndex].highlights?.includes(
-                        'positionHighlight',
-                      ) &&
-                      board[rowIndex][colIndex].draft.includes(num) &&
-                      styles.candidateHighlightDelete,
-                    positions.includes(num) &&
-                      cell?.highlightCandidates?.length &&
-                      board[rowIndex][colIndex].highlights?.includes(
-                        'positionHighlight',
-                      ) &&
-                      styles.candidateHighlightDeleteText,
-                    prompts.includes(num) &&
-                      cell?.highlightCandidates?.length &&
-                      board[rowIndex][colIndex].highlights?.includes(
-                        'promptHighlight',
-                      ) &&
-                      styles.candidateHighlightHintText,
-                  ].filter(Boolean) as TextStyle[]
-                }>
-                {num}
-              </Text>
-            ))}
-          </View>
+          resultBoard[rowIndex][colIndex].draft?.map((num: number) => (
+            <Text
+              key={num}
+              style={
+                [
+                  styles.draftCell,
+                  styles.draftCellText,
+                  {
+                    left: `${((num - 1) % 3) * 33.33+2}%`,
+                    top: `${Math.floor((num - 1) / 3) * 33.33 + 2}%`,
+                  },
+                  {opacity: cell.draft.includes(num) ? 1 : 0},
+                  prompts.includes(num) &&
+                    cell?.highlightCandidates?.length &&
+                    board[rowIndex][colIndex].highlights?.includes(
+                      'promptHighlight',
+                    ) &&
+                    board[rowIndex][colIndex].draft.includes(num) &&
+                    styles.candidateHighlightHint,
+                  positions.includes(num) &&
+                    cell?.highlightCandidates?.length &&
+                    board[rowIndex][colIndex].highlights?.includes(
+                      'positionHighlight',
+                    ) &&
+                    board[rowIndex][colIndex].draft.includes(num) &&
+                    styles.candidateHighlightDelete,
+                  positions.includes(num) &&
+                    cell?.highlightCandidates?.length &&
+                    board[rowIndex][colIndex].highlights?.includes(
+                      'positionHighlight',
+                    ) &&
+                    styles.candidateHighlightDeleteText,
+                  prompts.includes(num) &&
+                    cell?.highlightCandidates?.length &&
+                    board[rowIndex][colIndex].highlights?.includes(
+                      'promptHighlight',
+                    ) &&
+                    styles.candidateHighlightHintText,
+                ].filter(Boolean) as TextStyle[]
+              }>
+              {num}
+            </Text>
+          ))
         )}
       </Pressable>
     );

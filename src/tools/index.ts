@@ -643,7 +643,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     candidateMap,
     graph,
     answerBoard,
-    clearHistory, // 导出新函数
+    clearHistory,
     remainingCounts,
     updateRemainingCounts,
     setRemainingCounts,

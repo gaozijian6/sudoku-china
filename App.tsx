@@ -2,13 +2,9 @@ import Sudoku from './src/views/sudoku';
 import {
   StatusBar,
   SafeAreaView,
-  Pressable,
-  Text,
-  StyleSheet,
-  View,
 } from 'react-native';
 import TarBars from './src/components/tarBars';
-import {useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 
 function App() {
   const [isHome, setIsHome] = useState(false);
@@ -21,13 +17,5 @@ function App() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: 100,
-    height: 200,
-    backgroundColor: 'red',
-  },
-});
 
 export default App;
