@@ -12,6 +12,7 @@ import {
   isRowFull,
   isColumnFull,
   isBoxFull,
+  isSameBoard,
 } from '../tools';
 import {
   hiddenSingle,
@@ -468,9 +469,12 @@ const Sudoku: React.FC = () => {
 
   const handleShowCandidates = useCallback(() => {
     playSound(switchSoundsRef);
+    if (isSameBoard(board, standradBoard)) {
+      return;
+    }
     isClickAutoNote.current = true;
     updateBoard(deepCopyBoard(standradBoard), '复制官方草稿', false);
-  }, [playSound, updateBoard, standradBoard]);
+  }, [board, standradBoard, playSound, updateBoard]);
 
   const applyHintHighlight = useCallback(
     (

@@ -504,6 +504,17 @@ export interface CandidateMap {
   };
 }
 
+export const isSameBoard = (board1: CellData[][], board2: CellData[][]) => {
+  return board1.every((row, rowIndex) =>
+    row.every(
+      (cell, colIndex) =>
+        cell.value === board2[rowIndex][colIndex].value &&
+        cell.draft.length === board2[rowIndex][colIndex].draft.length &&
+        cell.draft.every(num => board2[rowIndex][colIndex].draft.includes(num)),
+    ),
+  );
+};
+
 // 创建一个新的 hook 来管理棋盘状态和历史
 export const useSudokuBoard = (initialBoard: CellData[][]) => {
   const [board, setBoard] = useState<CellData[][]>(initialBoard);
