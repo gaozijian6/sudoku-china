@@ -553,7 +553,6 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
       {
         board: board,
         action: '清空历史记录',
-        affectedCells: [],
       },
     ];
     history.current = newHistory;
@@ -607,7 +606,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
       }
       if (isFill) {
         clearHistory();
-        setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
+        setStandradBoard
       }
 
       setBoard(newBoard);

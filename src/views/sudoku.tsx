@@ -135,7 +135,7 @@ const Sudoku: React.FC = () => {
 
     newBoard = mockBoard;
 
-    updateBoard(newBoard, '生成新棋盘', undefined, true);
+    updateBoard(newBoard, '生成新棋盘', true);
 
     // 生成解决方案
     const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
@@ -246,7 +246,6 @@ const Sudoku: React.FC = () => {
         updateBoard(
           newBoard,
           `设置 (${row}, ${col}) 草稿为 ${cell.draft}`,
-          undefined,
           false,
         );
         playSound(switchSoundsRef);
@@ -259,7 +258,7 @@ const Sudoku: React.FC = () => {
           cell.draft = [];
 
           // 更新相关单元格的草稿数字
-          const affectedCells = updateRelatedCellsDraft(
+          updateRelatedCellsDraft(
             newBoard,
             [{row, col}],
             selectedNumber,
@@ -270,7 +269,6 @@ const Sudoku: React.FC = () => {
           updateBoard(
             newBoard,
             `设置 (${row}, ${col}) 为 ${selectedNumber}`,
-            affectedCells,
             true,
           );
           remainingCountsMinusOne(selectedNumber);
@@ -317,7 +315,7 @@ const Sudoku: React.FC = () => {
         const cell = newBoard[row][col];
         cell.value = null;
         cell.draft = [];
-        updateBoard(newBoard, `擦除 (${row}, ${col})`, undefined, false);
+        updateBoard(newBoard, `擦除 (${row}, ${col})`, false);
         setEraseEnabled(false);
       }
     }
@@ -364,7 +362,6 @@ const Sudoku: React.FC = () => {
           updateBoard(
             newBoard,
             `设置 (${row}, ${col}) 草稿为 ${newCell.draft}`,
-            undefined,
             false,
           );
         } else {
@@ -372,7 +369,7 @@ const Sudoku: React.FC = () => {
             playSound(successSoundsRef);
             newCell.value = number;
             newCell.draft = [];
-            const affectedCells = updateRelatedCellsDraft(
+            updateRelatedCellsDraft(
               newBoard,
               [{row, col}],
               number,
@@ -381,7 +378,6 @@ const Sudoku: React.FC = () => {
             updateBoard(
               newBoard,
               `设置 (${row}, ${col}) 为 ${number}`,
-              affectedCells,
               true,
             );
             setEraseEnabled(false);
@@ -454,7 +450,7 @@ const Sudoku: React.FC = () => {
   const handleShowCandidates = useCallback(() => {
     playSound(switchSoundsRef);
     isClickAutoNote.current = true;
-    updateBoard(deepCopyBoard(standradBoard), '复制官方草稿', undefined, false);
+    updateBoard(deepCopyBoard(standradBoard), '复制官方草稿', false);
   }, [playSound, updateBoard, standradBoard]);
 
   const applyHintHighlight = useCallback(
@@ -585,7 +581,7 @@ const Sudoku: React.FC = () => {
       });
 
       // 使用 updateBoard 函数更新棋盘
-      updateBoard(newBoard, `应用提示：${result.method}`, undefined, false);
+      updateBoard(newBoard, `应用提示：${result.method}`, false);
       if (isFill) {
         playSound(successSoundsRef);
         setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
@@ -595,7 +591,7 @@ const Sudoku: React.FC = () => {
 
       // 移除提示高亮
       const updatedBoard = removeHintHighlight(newBoard);
-      updateBoard(updatedBoard, '提示应用完成', undefined, false);
+      updateBoard(updatedBoard, '提示应用完成', false);
 
       setHintDrawerVisible(false);
       lastSelectedCell.current = selectedCell;
@@ -621,7 +617,7 @@ const Sudoku: React.FC = () => {
   const handleCancelHint = useCallback(() => {
     setDifferenceMap({});
     const updatedBoard = removeHintHighlight(board);
-    updateBoard(updatedBoard, '取消提示', [], false);
+    updateBoard(updatedBoard, '取消提示', false);
     setHintDrawerVisible(false);
     setSelectedCell(lastSelectedCell.current);
   }, [board, removeHintHighlight, updateBoard]);
