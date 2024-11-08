@@ -441,11 +441,20 @@ export const deepCopyBoard = (board: CellData[][]): CellData[][] => {
   );
 };
 
+// 复制官方草稿
+export const copyOfficialDraft = (board: CellData[][]): CellData[][] => {
+  return board.map((row, rowIndex) =>
+    row.map((cell, colIndex) => ({
+      ...cell,
+      draft: getCandidates(board, rowIndex, colIndex),
+    })),
+  );
+};
+
 // 记录操作历史的接口
 interface BoardHistory {
   board: CellData[][];
   action: string;
-  affectedCells?: {row: number; col: number}[];
 }
 
 export interface CandidateStats {
@@ -488,7 +497,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
   const [graph, setGraph] = useState<Graph>(() =>
     createGraph(initialBoard, candidateMap),
   );
-  const [counts, setCounts] = useState<number>(0);
+  const counts = useRef<number>(0);
   const [standradBoard, setStandradBoard] =
     useState<CellData[][]>(initialBoard);
 
@@ -537,6 +546,20 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     setCandidateMap(newCandidateMap);
   }, []);
 
+  // 添加清空历史记录的函数
+  const clearHistory = useCallback(() => {
+    // 保存当前棋盘状态作为唯一的历史记录
+    const newHistory = [
+      {
+        board: board,
+        action: '清空历史记录',
+        affectedCells: [],
+      },
+    ];
+    history.current = newHistory;
+    setCurrentStep(0);
+  }, [board]);
+
   const updateRemainingCounts = useCallback((board: CellData[][]) => {
     const counts = Array(9).fill(9);
     board.forEach(row => {
@@ -550,10 +573,10 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
   }, []);
 
   const updateBoard = useCallback(
-     (
+    (
       newBoard: CellData[][],
       action: string,
-      affectedCells?: {row: number; col: number}[],
+      isFill: boolean,
     ) => {
       if (!isSolved.current) {
         const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
@@ -569,43 +592,30 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
             }
           });
         });
-        setCounts(filledCount);
+        counts.current = filledCount;
+        setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
       }
-      const newHistory = history.current.slice(0);
-      newHistory.push({
-        board: newBoard,
-        action,
-        affectedCells,
-      });
-      console.log('newHistory', newHistory);
+      if (!action.startsWith('取消') && !action.startsWith('提示')) {
+        const newHistory = history.current.slice(0);
+        newHistory.push({
+          board: newBoard,
+          action,
+        });
 
-      history.current = newHistory;
-      setCurrentStep(newHistory.length - 1);
+        history.current = newHistory;
+        setCurrentStep(newHistory.length - 1);
+      }
+      if (isFill) {
+        clearHistory();
+        setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
+      }
+
       setBoard(newBoard);
       updateCandidateMap(newBoard);
       setGraph(createGraph(newBoard, candidateMap));
     },
-    [
-      candidateMap,
-      updateCandidateMap,
-      updateRemainingCounts,
-    ],
+    [candidateMap, clearHistory, updateCandidateMap, updateRemainingCounts],
   );
-
-  // 复制官方草稿
-  const copyOfficialDraft = useCallback((board: CellData[][]): CellData[][] => {
-    return board.map((row, rowIndex) =>
-      row.map((cell, colIndex) => ({
-        ...cell,
-        draft: getCandidates(board, rowIndex, colIndex),
-      })),
-    );
-  }, []);
-
-  useEffect(() => {
-    const newBoard = deepCopyBoard(board);
-    setStandradBoard(copyOfficialDraft(newBoard));
-  }, [counts]);
 
   const undo = useCallback(() => {
     if (currentStep > 0) {
@@ -618,20 +628,6 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
       setGraph(createGraph(previousBoard, candidateMap));
     }
   }, [candidateMap, updateCandidateMap, currentStep]);
-
-  // 添加清空历史记录的函数
-  const clearHistory = useCallback(() => {
-    // 保存当前棋盘状态作为唯一的历史记录
-    const newHistory = [
-      {
-        board: board,
-        action: '清空历史记录',
-        affectedCells: [],
-      },
-    ];
-    history.current = newHistory;
-    setCurrentStep(0);
-  }, [board]);
 
   return {
     board,
@@ -649,6 +645,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     copyOfficialDraft,
     setBoard,
     standradBoard,
+    setStandradBoard,
   };
 };
 
