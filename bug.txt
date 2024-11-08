@@ -1,1 +1,1 @@
-点击提示再点击取消，再撤销，isClickAutoNote应为false
+测试对usestate绑定的变量直接修改
