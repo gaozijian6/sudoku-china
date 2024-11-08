@@ -9,6 +9,9 @@ import {
   deepCopyBoard,
   checkDraftIsValid,
   copyOfficialDraft,
+  isRowFull,
+  isColumnFull,
+  isBoxFull,
 } from '../tools';
 import {
   hiddenSingle,
@@ -44,6 +47,7 @@ import errorSound from '../assets/audio/error.wav';
 import successSound from '../assets/audio/success.wav';
 import switchSound from '../assets/audio/switch.wav';
 import eraseSound from '../assets/audio/erase.wav';
+import successSound2 from '../assets/audio/success2.wav';
 
 const Sudoku: React.FC = () => {
   const initialBoard = Array(9)
@@ -93,6 +97,7 @@ const Sudoku: React.FC = () => {
   const successSoundsRef = useRef<Sound[]>([]);
   const switchSoundsRef = useRef<Sound[]>([]);
   const eraseSoundsRef = useRef<Sound[]>([]);
+  const successSoundsRef2 = useRef<Sound[]>([]);
   const isClickAutoNote = useRef<boolean>(false);
   const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
   const solveFunctions = useRef<
@@ -135,7 +140,7 @@ const Sudoku: React.FC = () => {
 
     newBoard = mockBoard;
 
-    updateBoard(newBoard, '生成新棋盘', true);
+    updateBoard(newBoard, '生成新棋盘', false);
 
     // 生成解决方案
     const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
@@ -167,6 +172,22 @@ const Sudoku: React.FC = () => {
       !success && console.log('播放音频失败:', availableSound.isPlaying());
     });
   }, []);
+
+  const playSuccessSound = useCallback(
+    (board: CellData[][], row: number, col: number) => {
+      if (
+        isRowFull(board, row) ||
+        isColumnFull(board, col) ||
+        isBoxFull(board, Math.floor(row / 3) * 3 + Math.floor(col / 3)) ||
+        remainingCounts[answerBoard.current[row][col].value! - 1] === 1
+      ) {
+        playSound(successSoundsRef2);
+      } else {
+        playSound(successSoundsRef);
+      }
+    },
+    [answerBoard, playSound, remainingCounts],
+  );
 
   const handleError = useCallback(
     (row: number, col: number) => {
@@ -265,7 +286,7 @@ const Sudoku: React.FC = () => {
             getCandidates,
           );
 
-          playSound(successSoundsRef);
+          playSuccessSound(newBoard, row, col);
           updateBoard(
             newBoard,
             `设置 (${row}, ${col}) 为 ${selectedNumber}`,
@@ -287,6 +308,7 @@ const Sudoku: React.FC = () => {
       playSound,
       handleErrorDraftAnimation,
       answerBoard,
+      playSuccessSound,
       remainingCountsMinusOne,
       handleError,
     ],
@@ -366,7 +388,7 @@ const Sudoku: React.FC = () => {
           );
         } else {
           if (answerBoard.current[row][col].value == number) {
-            playSound(successSoundsRef);
+            playSuccessSound(newBoard, row, col);
             newCell.value = number;
             newCell.draft = [];
             updateRelatedCellsDraft(
@@ -375,11 +397,7 @@ const Sudoku: React.FC = () => {
               number,
               getCandidates,
             );
-            updateBoard(
-              newBoard,
-              `设置 (${row}, ${col}) 为 ${number}`,
-              true,
-            );
+            updateBoard(newBoard, `设置 (${row}, ${col}) 为 ${number}`, true);
             setEraseEnabled(false);
             remainingCountsMinusOne(number);
           } else {
@@ -412,6 +430,7 @@ const Sudoku: React.FC = () => {
       answerBoard,
       remainingCountsMinusOne,
       handleError,
+      playSuccessSound,
     ],
   );
 
@@ -583,28 +602,27 @@ const Sudoku: React.FC = () => {
       // 使用 updateBoard 函数更新棋盘
       updateBoard(newBoard, `应用提示：${result.method}`, false);
       if (isFill) {
-        playSound(successSoundsRef);
+        playSuccessSound(newBoard, position[0].row, position[0].col);
         setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
+        remainingCountsMinusOne(target[0]);
       } else {
         playSound(eraseSoundsRef);
       }
 
       // 移除提示高亮
       const updatedBoard = removeHintHighlight(newBoard);
-      updateBoard(updatedBoard, '提示应用完成', false);
+      updateBoard(updatedBoard, '提示应用完成', isFill);
 
       setHintDrawerVisible(false);
       lastSelectedCell.current = selectedCell;
       setResult(null); // 重置 result
-      if (isFill) {
-        remainingCountsMinusOne(target[0]);
-      }
     }
   }, [
     board,
     differenceMap,
     handleHint,
     playSound,
+    playSuccessSound,
     remainingCountsMinusOne,
     removeHintHighlight,
     result,
@@ -688,6 +706,11 @@ const Sudoku: React.FC = () => {
             .fill(0)
             .map(() => createSound(eraseSound)),
         );
+        successSoundsRef2.current = await Promise.all(
+          Array(3)
+            .fill(0)
+            .map(() => createSound(successSound2)),
+        );
       } catch (error) {
         console.error('音效加载失败:', error);
       }
@@ -702,6 +725,7 @@ const Sudoku: React.FC = () => {
         ...(successSoundsRef.current || []),
         ...(switchSoundsRef.current || []),
         ...(eraseSoundsRef.current || []),
+        ...(successSoundsRef2.current || []),
       ].forEach(sound => {
         sound?.release();
       });

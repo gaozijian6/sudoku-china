@@ -373,6 +373,7 @@ const sudokuStyles = StyleSheet.create({
   draftModeSwitchStyle: {
     transform: [{scaleX: 0.6}, {scaleY: 0.6}],
   },
+  
 });
 
 export default sudokuStyles;

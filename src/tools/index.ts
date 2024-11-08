@@ -155,6 +155,22 @@ export const createGraph = (
   return graph;
 };
 
+// 检查两个格子是否在同一宫或行或列
+export const areCellsInSameUnit = (cell1: Position, cell2: Position) => {
+  // 检查是否在同一行
+  const sameRow = cell1.row === cell2.row;
+
+  // 检查是否在同一列
+  const sameColumn = cell1.col === cell2.col;
+
+  // 检查是否在同一宫
+  const sameBox =
+    Math.floor(cell1.row / 3) === Math.floor(cell2.row / 3) &&
+    Math.floor(cell1.col / 3) === Math.floor(cell2.col / 3);
+
+  return sameRow || sameColumn || sameBox;
+};
+
 export const isValid = (
   board: CellData[][],
   row: number,
@@ -201,6 +217,22 @@ export const solve = (board: CellData[][]): boolean => {
     }
   }
   return true;
+};
+
+export const isRowFull = (board: CellData[][], row: number) => {
+  return board[row].every(cell => cell.value !== null);
+};
+
+export const isColumnFull = (board: CellData[][], col: number) => {
+  return board.every(row => row[col].value !== null);
+};
+
+export const isBoxFull = (board: CellData[][], box: number) => {
+  const startRow = Math.floor(box / 3) * 3;
+  const startCol = (box % 3) * 3;
+  return Array.from({length: 3}, (_, i) =>
+    Array.from({length: 3}, (_, j) => board[startRow + i][startCol + j]),
+  ).every(row => row.every(cell => cell.value !== null));
 };
 
 export const useTimer = () => {
@@ -572,11 +604,13 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
   }, []);
 
   const updateBoard = useCallback(
-    (
-      newBoard: CellData[][],
-      action: string,
-      isFill: boolean,
-    ) => {
+    (newBoard: CellData[][], action: string, isFill: boolean) => {
+      if (
+        history.current.length > 0 &&
+        history.current[currentStep]?.action === action
+      ) {
+        return;
+      }
       if (!isSolved.current) {
         const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
         solve(solvedBoard);
@@ -606,14 +640,20 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
       }
       if (isFill) {
         clearHistory();
-        setStandradBoard
+        setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
       }
 
       setBoard(newBoard);
       updateCandidateMap(newBoard);
       setGraph(createGraph(newBoard, candidateMap));
     },
-    [candidateMap, clearHistory, updateCandidateMap, updateRemainingCounts],
+    [
+      candidateMap,
+      clearHistory,
+      currentStep,
+      updateCandidateMap,
+      updateRemainingCounts,
+    ],
   );
 
   const undo = useCallback(() => {
@@ -646,20 +686,4 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     standradBoard,
     setStandradBoard,
   };
-};
-
-// 检查两个格子是否在同一宫或行或列
-export const areCellsInSameUnit = (cell1: Position, cell2: Position) => {
-  // 检查是否在同一行
-  const sameRow = cell1.row === cell2.row;
-
-  // 检查是否在同一列
-  const sameColumn = cell1.col === cell2.col;
-
-  // 检查是否在同一宫
-  const sameBox =
-    Math.floor(cell1.row / 3) === Math.floor(cell2.row / 3) &&
-    Math.floor(cell1.col / 3) === Math.floor(cell2.col / 3);
-
-  return sameRow || sameColumn || sameBox;
 };
