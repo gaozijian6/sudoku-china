@@ -579,17 +579,17 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
   }, []);
 
   // 添加清空历史记录的函数
-  const clearHistory = useCallback(() => {
+  const clearHistory = useCallback((board: CellData[][]) => {
     // 保存当前棋盘状态作为唯一的历史记录
     const newHistory = [
       {
-        board: board,
+        board,
         action: '清空历史记录',
       },
     ];
     history.current = newHistory;
     setCurrentStep(0);
-  }, [board]);
+  }, []);
 
   const updateRemainingCounts = useCallback((board: CellData[][]) => {
     const counts = Array(9).fill(9);
@@ -639,7 +639,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
         setCurrentStep(newHistory.length - 1);
       }
       if (isFill) {
-        clearHistory();
+        clearHistory(newBoard);
         setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
       }
 
@@ -657,6 +657,8 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
   );
 
   const undo = useCallback(() => {
+    console.log(history.current);
+    
     if (currentStep > 0) {
       const previousBoard = history.current[currentStep - 1].board;
       const newHistory = history.current.slice(0, currentStep);
