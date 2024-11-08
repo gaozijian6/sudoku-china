@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {isUnitStrongLink} from './solution';
 
 export interface Position {
@@ -466,9 +466,9 @@ export interface CandidateMap {
 // 创建一个新的 hook 来管理棋盘状态和历史
 export const useSudokuBoard = (initialBoard: CellData[][]) => {
   const [board, setBoard] = useState<CellData[][]>(initialBoard);
-  const [answerBoard, setAnswerBoard] = useState<CellData[][]>(initialBoard);
-  const [isSolved, setIsSolved] = useState<boolean>(false);
-  const [history, setHistory] = useState<BoardHistory[]>([]);
+  const answerBoard = useRef<CellData[][]>(initialBoard);
+  const isSolved = useRef<boolean>(false);
+  const history = useRef<BoardHistory[]>([]);
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [remainingCounts, setRemainingCounts] = useState<number[]>(
     Array(9).fill(9),
@@ -550,17 +550,16 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
   }, []);
 
   const updateBoard = useCallback(
-    (
+     (
       newBoard: CellData[][],
       action: string,
       affectedCells?: {row: number; col: number}[],
     ) => {
-      
-      if (!isSolved) {
+      if (!isSolved.current) {
         const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
         solve(solvedBoard);
-        setAnswerBoard(solvedBoard);
-        setIsSolved(true);
+        answerBoard.current = solvedBoard;
+        isSolved.current = true;
         updateRemainingCounts(newBoard);
         let filledCount = 0;
         newBoard.forEach(row => {
@@ -572,16 +571,15 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
         });
         setCounts(filledCount);
       }
-      // 其他操作保持原有逻辑
-      const newHistory = history.slice(0);
+      const newHistory = history.current.slice(0);
       newHistory.push({
         board: newBoard,
         action,
         affectedCells,
       });
       console.log('newHistory', newHistory);
-      
-      setHistory(newHistory);
+
+      history.current = newHistory;
       setCurrentStep(newHistory.length - 1);
       setBoard(newBoard);
       updateCandidateMap(newBoard);
@@ -590,9 +588,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     [
       candidateMap,
       updateCandidateMap,
-      isSolved,
       updateRemainingCounts,
-      history,
     ],
   );
 
@@ -613,15 +609,15 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
 
   const undo = useCallback(() => {
     if (currentStep > 0) {
-      const previousBoard = history[currentStep - 1].board;
-      const newHistory = history.slice(0, currentStep);
-      setHistory(newHistory);
+      const previousBoard = history.current[currentStep - 1].board;
+      const newHistory = history.current.slice(0, currentStep);
+      history.current = newHistory;
       setCurrentStep(currentStep - 1);
       setBoard(previousBoard);
       updateCandidateMap(previousBoard);
       setGraph(createGraph(previousBoard, candidateMap));
     }
-  }, [history, candidateMap, updateCandidateMap, currentStep]);
+  }, [candidateMap, updateCandidateMap, currentStep]);
 
   // 添加清空历史记录的函数
   const clearHistory = useCallback(() => {
@@ -633,7 +629,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
         affectedCells: [],
       },
     ];
-    setHistory(newHistory);
+    history.current = newHistory;
     setCurrentStep(0);
   }, [board]);
 

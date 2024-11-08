@@ -29,7 +29,7 @@ import {
   trialAndError,
   findDifferenceDraft,
 } from '../tools/solution';
-import type {CellData, Position} from '../tools';
+import type {CandidateMap, CellData, Graph, Position} from '../tools';
 import type {DifferenceMap, Result} from '../tools/solution';
 import {DIFFICULTY} from '../constans';
 import styles from './sudokuStyles';
@@ -61,7 +61,6 @@ const Sudoku: React.FC = () => {
     setRemainingCounts,
     standradBoard,
     history,
-    setBoard,
   } = useSudokuBoard(initialBoard);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
   const lastSelectedNumber = useRef<number | null>(null);
@@ -95,6 +94,31 @@ const Sudoku: React.FC = () => {
   const eraseSoundsRef = useRef<Sound[]>([]);
   const isClickAutoNote = useRef<boolean>(false);
   const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
+  const solveFunctions = useRef<
+    ((
+      board: CellData[][],
+      candidateMap: CandidateMap,
+      graph: Graph,
+    ) => Result | null)[]
+  >([
+    singleCandidate,
+    hiddenSingle,
+    blockElimination,
+    nakedPair,
+    nakedTriple1,
+    nakedTriple2,
+    hiddenPair,
+    hiddenTriple1,
+    hiddenTriple2,
+    xWing,
+    xWingVarient,
+    xyWing,
+    nakedQuadruple,
+    eureka,
+    skyscraper,
+    swordfish,
+    trialAndError,
+  ]);
   const generateBoard = useCallback(() => {
     const initialBoard = Array(9)
       .fill(null)
@@ -224,7 +248,7 @@ const Sudoku: React.FC = () => {
       // 处理非草稿模式
       else if (selectedNumber) {
         // 验证填入的数字是否为有效候选数字
-        if (answerBoard[row][col].value == selectedNumber) {
+        if (answerBoard.current[row][col].value == selectedNumber) {
           cell.value = selectedNumber;
           cell.draft = [];
 
@@ -267,9 +291,7 @@ const Sudoku: React.FC = () => {
 
   // 撤销
   const handleUndo = useCallback(() => {
-    console.log(history);
-    
-    const lastAction = history[currentStep]?.action;
+    const lastAction = history.current[currentStep]?.action;
     if (lastAction === '复制官方草稿') {
       isClickAutoNote.current = false;
     }
@@ -283,7 +305,7 @@ const Sudoku: React.FC = () => {
       const {row, col} = selectedCell;
       if (
         eraseEnabled &&
-        board[row][col].value !== answerBoard[row][col].value
+        board[row][col].value !== answerBoard.current[row][col].value
       ) {
         playSound(eraseSoundsRef);
         const newBoard = deepCopyBoard(board);
@@ -339,7 +361,7 @@ const Sudoku: React.FC = () => {
             `设置 (${row}, ${col}) 草稿为 ${newCell.draft}`,
           );
         } else {
-          if (answerBoard[row][col].value == number) {
+          if (answerBoard.current[row][col].value == number) {
             playSound(successSoundsRef);
             newCell.value = number;
             newCell.draft = [];
@@ -471,14 +493,11 @@ const Sudoku: React.FC = () => {
   const handleHint = useCallback(
     async (board: CellData[][]) => {
       if (!isClickAutoNote.current) {
+        const currentBoard = deepCopyBoard(standradBoard);
         handleShowCandidates();
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        console.log(board);
-        
-        const currentBoard = deepCopyBoard(board);
         handleHint(currentBoard);
         return;
-      } else if (!checkDraftIsValid(board, answerBoard)) {
+      } else if (!checkDraftIsValid(board, answerBoard.current)) {
         const differenceMap = findDifferenceDraft(board, standradBoard);
         setDifferenceMap(differenceMap);
         setHintDrawerVisible(true);
@@ -486,27 +505,8 @@ const Sudoku: React.FC = () => {
         setHintContent('笔记有错误，请先修正');
         return;
       }
-      const solveFunctions = [
-        singleCandidate,
-        hiddenSingle,
-        blockElimination,
-        nakedPair,
-        nakedTriple1,
-        nakedTriple2,
-        hiddenPair,
-        hiddenTriple1,
-        hiddenTriple2,
-        xWing,
-        xWingVarient,
-        xyWing,
-        nakedQuadruple,
-        eureka,
-        skyscraper,
-        swordfish,
-        trialAndError,
-      ];
       let result: Result | null = null;
-      for (const solveFunction of solveFunctions) {
+      for (const solveFunction of solveFunctions.current) {
         result = solveFunction(board, candidateMap, graph);
         if (result) {
           setResult(result);
