@@ -1,6 +1,6 @@
 import React, {memo, useRef, useEffect, useCallback} from 'react';
 import type {CellData} from '../tools';
-import {Text, TextStyle, Pressable, Animated} from 'react-native';
+import {Text, TextStyle, Pressable, Animated, Easing} from 'react-native';
 import styles from '../views/sudokuStyles';
 import {getCellClassName} from '../tools';
 import type {DifferenceMap} from '../tools/solution';
@@ -35,43 +35,74 @@ const Cell = memo(
     resultBoard: CellData[][];
     differenceMap: DifferenceMap;
   }) => {
-    const bfs = useCallback((board: CellData[][], row: number, col: number) => {
-      const queue = [{row, col}];
-      const visited = new Set();
-      const directions = [
-        [-1, 0], // 上
-        [1, 0],  // 下 
-        [0, -1], // 左
-        [0, 1]   // 右
-      ];
-      
-      while(queue.length > 0) {
-        const {row: curRow, col: curCol} = queue.shift()!;
-        const key = `${curRow},${curCol}`;
-        
-        if(visited.has(key)) continue;
-        visited.add(key);
-        
-        for(const [dx, dy] of directions) {
-          const newRow = curRow + dx;
-          const newCol = curCol + dy;
-          
-          if(newRow >= 0 && newRow < 9 && newCol >= 0 && newCol < 9) {
-            queue.push({row: newRow, col: newCol});
-          }
-        }
+    const animatedColor = useRef(new Animated.Value(1)).current;
+    const backgroundColor = animatedColor.interpolate({
+      inputRange: [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+      ],
+      outputRange: [
+        '#ffffff',
+        'rgb(226,235,250)',
+        'rgb(228,234,250)',
+        'rgb(212,228,251)',
+        'rgb(198,221,253)',
+        'rgb(197,222,251)',
+        'rgb(185,213,250)',
+        'rgb(185,212,251)',
+        'rgb(167,205,252)',
+        'rgb(166,200,255)',
+        'rgb(167,200,255)',
+        'rgb(167,205,255)',
+        'rgb(167,205,255)',
+        'rgb(174,206,248)',
+        'rgb(176,208,252)',
+        'rgb(185,210,250)',
+        'rgb(184,210,252)',
+        'rgb(190,213,253)',
+        'rgb(192,216,251)',
+        'rgb(192,216,251)',
+        'rgb(197,219,253)',
+        'rgb(199,221,250)',
+        'rgb(210,224,249)',
+        'rgb(210,223,251)',
+        'rgb(211,225,252)',
+        'rgb(206,222,246)',
+        'rgb(216,228,249)',
+        'rgb(215,226,249)',
+        'rgb(216,228,251)',
+        'rgb(224,233,246)',
+        'rgb(224,233,247)',
+        'rgb(225,231,250)',
+        'rgb(230,235,249)',
+        'rgb(229,234,249)',
+        'rgb(239,242,250)',
+        '#ffffff',
+      ],
+    });
+
+    const animation = useCallback(() => {
+      if (cell.isAnimated) {
+        Animated.sequence([
+          Animated.delay(cell.animationDelay || 0),
+          Animated.timing(animatedColor, {
+            toValue: 36,
+            duration: 600,
+            useNativeDriver: false,
+          }),
+        ]).start();
       }
-      return Array.from(visited).map((pos) => {
-        const [r, c] = (pos as string).split(',').map(Number);
-        return {row: r, col: c};
-      });
-    }, []);
+    }, [animatedColor, cell.isAnimated, cell.animationDelay]);
+
+    useEffect(() => {
+      animation();
+    }, [board]);
+
     return (
       <Pressable
         key={`${rowIndex}-${colIndex}`}
         onPressIn={() => {
           handleCellChange(rowIndex, colIndex);
-          bfs(board, rowIndex, colIndex);
         }}
         style={[
           styles.sudokuCell,
@@ -108,7 +139,7 @@ const Cell = memo(
             highlight => styles[highlight as keyof typeof styles],
           ) || []),
         ]}>
-        <Animated.View style={styles.candidatesGrid}>
+        <Animated.View style={[styles.candidatesGrid, {backgroundColor}]}>
           {cell.value !== null ? (
             <Text
               style={
@@ -124,7 +155,7 @@ const Cell = memo(
                     width: '100%',
                     height: '100%',
                     lineHeight: 40, // 根据实际cell高度调整
-                  }
+                  },
                 ].filter(Boolean) as TextStyle[]
               }>
               {cell.value}
@@ -187,7 +218,9 @@ const Cell = memo(
       return (
         prevProps.cell.value === nextProps.cell.value &&
         prevProps.selectedNumber === nextProps.selectedNumber &&
-        prevProps.errorCells.length === nextProps.errorCells.length
+        prevProps.errorCells.length === nextProps.errorCells.length &&
+        prevProps.selectedCell?.row === nextProps.selectedCell?.row &&
+        prevProps.selectedCell?.col === nextProps.selectedCell?.col
       );
     }
 

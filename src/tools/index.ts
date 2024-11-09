@@ -21,6 +21,8 @@ export interface CellData {
   highlightError?: string;
   highlights?: string[];
   highlightCandidates?: number[];
+  isAnimated?: boolean;
+  animationDelay?: number;
 }
 
 export interface Graph {
@@ -669,7 +671,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
 
   const undo = useCallback(() => {
     console.log(history.current);
-    
+
     if (currentStep > 0) {
       const previousBoard = history.current[currentStep - 1].board;
       const newHistory = history.current.slice(0, currentStep);

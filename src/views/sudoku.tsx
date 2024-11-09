@@ -225,9 +225,76 @@ const Sudoku: React.FC = () => {
     setRemainingCounts(newCounts);
   };
 
+  
+  const bfs = useCallback(
+    (board: CellData[][], row: number, col: number) => {
+      const visited = Array(9)
+        .fill(0)
+        .map(() => Array(9).fill(false));
+      const queue: Position[] = [{row, col}];
+      visited[row][col] = true;
+      let level = 0;
+      const newBoard = deepCopyBoard(board);
+
+      while(queue.length > 0) {
+        const size = queue.length;
+        
+        for (let i = 0; i < size; i++) {
+          const {row: r, col: c} = queue.shift()!;
+          const directions = [
+            [-1, 0],
+            [1, 0],
+            [0, -1],
+            [0, 1],
+          ];
+
+          for (const [dr, dc] of directions) {
+            const newRow = r + dr;
+            const newCol = c + dc;
+
+            if (
+              newRow >= 0 &&
+              newRow < 9 &&
+              newCol >= 0 &&
+              newCol < 9 &&
+              !visited[newRow][newCol]
+            ) {
+              visited[newRow][newCol] = true;
+              queue.push({row: newRow, col: newCol});
+
+              newBoard[newRow][newCol].isAnimated = true;
+              newBoard[newRow][newCol].animationDelay = level * 45;
+            }
+          }
+        }
+        level++;
+      }
+
+      updateBoard(newBoard, 'BFS遍历', false);
+
+      // 清理动画标记
+      setTimeout(() => {
+        const finalBoard = deepCopyBoard(board);
+        for(let i = 0; i < 9; i++) {
+          for(let j = 0; j < 9; j++) {
+            finalBoard[i][j].isAnimated = undefined;
+            finalBoard[i][j].animationDelay = undefined;
+          }
+        }
+        updateBoard(finalBoard, 'BFS遍历结束', false);
+      }, 0 ); // 等待所有动画完成后再清理
+    },
+    [updateBoard],
+  );
+
+
   // 点击方格的回调函数
   const handleCellChange = useCallback(
     (row: number, col: number) => {
+      if(!board[row][col].value) {
+        console.log('bfs');
+        bfs(board, row, col);
+      }
       if (selectionMode === 2) {
         setSelectedCell({row, col});
         if (board[row][col].value) {
@@ -301,8 +368,9 @@ const Sudoku: React.FC = () => {
       }
     },
     [
-      selectionMode,
+      bfs,
       board,
+      selectionMode,
       draftMode,
       selectedNumber,
       updateBoard,
