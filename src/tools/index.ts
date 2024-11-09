@@ -235,26 +235,39 @@ export const isBoxFull = (board: CellData[][], box: number) => {
   ).every(row => row.every(cell => cell.value !== null));
 };
 
-export const useTimer = () => {
-  const [startTime] = useState(Date.now());
+export const useTimer = (difficulty: string) => {
+  const [startTime, setStartTime] = useState<number | null>(null);
   const [time, setTime] = useState('00:00');
+  const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-      const minutes = Math.floor(elapsedSeconds / 60);
-      const seconds = elapsedSeconds % 60;
-      setTime(
-        `${minutes.toString().padStart(2, '0')}:${seconds
-          .toString()
-          .padStart(2, '0')}`,
-      );
-    }, 1000);
+    if (difficulty) {
+      setStartTime(Date.now());
+      setIsRunning(true);
+    }
+  }, [difficulty]);
 
-    return () => clearInterval(timer);
-  }, [startTime]);
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    
+    if (isRunning && startTime) {
+      timer = setInterval(() => {
+        const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+        const minutes = Math.floor(elapsedSeconds / 60);
+        const seconds = elapsedSeconds % 60;
+        const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        setTime(timeString);
+      }, 1000);
+    }
 
-  return time;
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [isRunning, startTime]);
+
+  return {time, setIsRunning};
 };
 
 export const getCellClassName = (

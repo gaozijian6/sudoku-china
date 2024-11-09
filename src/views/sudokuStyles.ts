@@ -5,6 +5,9 @@ const sudokuStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
+    position: 'absolute' as const,
+    top: 80,
+    left: 0,
   },
   gameInfo: {
     flexDirection: 'row',

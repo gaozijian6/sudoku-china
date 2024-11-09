@@ -49,6 +49,7 @@ import successSound from '../assets/audio/success.wav';
 import switchSound from '../assets/audio/switch.wav';
 import eraseSound from '../assets/audio/erase.wav';
 import successSound2 from '../assets/audio/success2.wav';
+import successSound3 from '../assets/audio/success3.wav';
 
 interface SudokuProps {
   setSuccessResult: (
@@ -56,10 +57,11 @@ interface SudokuProps {
     errorCount: number,
     hintCount: number,
   ) => void;
+  difficulty: string;
 }
 
 const Sudoku: React.FC<SudokuProps> = memo(
-  ({setSuccessResult}) => {
+  ({setSuccessResult, difficulty}) => {
     const initialBoard = Array(9)
       .fill(null)
       .map(() => Array(9).fill({value: null, isGiven: false, draft: []}));
@@ -109,6 +111,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
     const switchSoundsRef = useRef<Sound[]>([]);
     const eraseSoundsRef = useRef<Sound[]>([]);
     const successSoundsRef2 = useRef<Sound[]>([]);
+    const successSoundsRef3 = useRef<Sound[]>([]);
     const isClickAutoNote = useRef<boolean>(false);
     const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
     const hintCount = useRef<number>(0);
@@ -203,6 +206,12 @@ const Sudoku: React.FC<SudokuProps> = memo(
       },
       [answerBoard, playSound, remainingCounts],
     );
+
+    const playVictorySound = useCallback(() => {
+      setTimeout(() => {
+        playSound(successSoundsRef3);
+      }, 300);
+    }, [playSound]);
 
     const handleError = useCallback(
       (row: number, col: number) => {
@@ -490,6 +499,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
     );
 
     const handleShowCandidates = useCallback(() => {
+      console.log(board);
+
       playSound(switchSoundsRef);
       if (isSameBoard(board, standradBoard)) {
         return;
@@ -738,6 +749,11 @@ const Sudoku: React.FC<SudokuProps> = memo(
               .fill(0)
               .map(() => createSound(successSound2)),
           );
+          successSoundsRef3.current = await Promise.all(
+            Array(1)
+              .fill(0)
+              .map(() => createSound(successSound3)),
+          );
         } catch (error) {
           console.error('音效加载失败:', error);
         }
@@ -753,6 +769,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           ...(switchSoundsRef.current || []),
           ...(eraseSoundsRef.current || []),
           ...(successSoundsRef2.current || []),
+          ...(successSoundsRef3.current || []),
         ].forEach(sound => {
           sound?.release();
         });
@@ -776,7 +793,12 @@ const Sudoku: React.FC<SudokuProps> = memo(
           <Text style={[styles.gameInfoText, styles.middleText]}>
             {DIFFICULTY.MEDIUM}
           </Text>
-          <Timer setTimeFunction={setTimeFunction} counts={counts} />
+          <Timer
+            setTimeFunction={setTimeFunction}
+            counts={counts}
+            playVictorySound={playVictorySound}
+            difficulty={difficulty}
+          />
         </View>
         <View style={styles.sudokuGrid}>
           {board.map((row, rowIndex) =>
@@ -927,7 +949,10 @@ const Sudoku: React.FC<SudokuProps> = memo(
     );
   },
   (prevProps, nextProps) => {
-    return prevProps.setSuccessResult === nextProps.setSuccessResult;
+    return (
+      prevProps.setSuccessResult === nextProps.setSuccessResult &&
+      prevProps.difficulty === nextProps.difficulty
+    );
   },
 );
 

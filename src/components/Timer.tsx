@@ -6,24 +6,24 @@ import {useTimer} from '../tools';
 interface TimerProps {
   setTimeFunction: (time: string) => void;
   counts: number;
+  playVictorySound: () => void;
+  difficulty: string;
 }
 
 export default React.memo(
-  function Timer({setTimeFunction, counts}: TimerProps) {
-    const time = useTimer();
+  function Timer({setTimeFunction, counts, playVictorySound, difficulty}: TimerProps) {
+    const {time, setIsRunning} = useTimer(difficulty);
 
     useEffect(() => {
       if (counts === 81) {
-        setTimeFunction(time);
+        setTimeout(() => {
+          setIsRunning(false);
+          setTimeFunction(time);
+          playVictorySound();
+        }, 100);
       }
-    }, [counts]);
+    }, [counts, setIsRunning, setTimeFunction, time, playVictorySound]);
 
     return <Text style={[styles.gameInfoText, styles.rightText]}>{time}</Text>;
-  },
-  (prevProps, nextProps) => {
-    return (
-      prevProps.counts === nextProps.counts &&
-      prevProps.setTimeFunction === nextProps.setTimeFunction
-    );
-  },
+  }
 );
