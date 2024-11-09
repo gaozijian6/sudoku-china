@@ -21,8 +21,6 @@ export interface CellData {
   highlightError?: string;
   highlights?: string[];
   highlightCandidates?: number[];
-  isAnimated?: boolean;
-  animationDelay?: number;
 }
 
 export interface Graph {
@@ -518,7 +516,9 @@ export const isSameBoard = (board1: CellData[][], board2: CellData[][]) => {
 };
 
 // 创建一个新的 hook 来管理棋盘状态和历史
-export const useSudokuBoard = (initialBoard: CellData[][]) => {
+export const useSudokuBoard = (
+  initialBoard: CellData[][],
+) => {
   const [board, setBoard] = useState<CellData[][]>(initialBoard);
   const answerBoard = useRef<CellData[][]>(initialBoard);
   const isSolved = useRef<boolean>(false);
@@ -542,7 +542,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
   const [graph, setGraph] = useState<Graph>(() =>
     createGraph(initialBoard, candidateMap),
   );
-  const counts = useRef<number>(0);
+  const [counts, setCounts] = useState<number>(0);
   const [standradBoard, setStandradBoard] =
     useState<CellData[][]>(initialBoard);
 
@@ -638,7 +638,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
             }
           });
         });
-        counts.current = filledCount;
+        setCounts(filledCount);
         setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
       }
       if (!action.startsWith('取消') && !action.startsWith('提示')) {
@@ -654,6 +654,9 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
       if (isFill) {
         clearHistory(newBoard);
         setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
+        setCounts(counts + 1);
+        console.log('counts', counts+1);
+        
       }
 
       setBoard(newBoard);
@@ -663,6 +666,7 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     [
       candidateMap,
       clearHistory,
+      counts,
       currentStep,
       updateCandidateMap,
       updateRemainingCounts,
@@ -670,8 +674,6 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
   );
 
   const undo = useCallback(() => {
-    console.log(history.current);
-
     if (currentStep > 0) {
       const previousBoard = history.current[currentStep - 1].board;
       const newHistory = history.current.slice(0, currentStep);
@@ -700,5 +702,6 @@ export const useSudokuBoard = (initialBoard: CellData[][]) => {
     setBoard,
     standradBoard,
     setStandradBoard,
+    counts,
   };
 };
