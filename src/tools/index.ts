@@ -235,10 +235,12 @@ export const isBoxFull = (board: CellData[][], box: number) => {
   ).every(row => row.every(cell => cell.value !== null));
 };
 
-export const useTimer = (difficulty: string) => {
+export const useTimer = (difficulty: string, pauseVisible: boolean) => {
   const [startTime, setStartTime] = useState<number | null>(null);
   const [time, setTime] = useState('00:00');
   const [isRunning, setIsRunning] = useState(false);
+  const [pauseTime, setPauseTime] = useState<number | null>(null);
+  const [totalPausedTime, setTotalPausedTime] = useState(0);
 
   useEffect(() => {
     if (difficulty) {
@@ -248,11 +250,22 @@ export const useTimer = (difficulty: string) => {
   }, [difficulty]);
 
   useEffect(() => {
+    if (pauseVisible) {
+      setPauseTime(Date.now());
+      setIsRunning(false);
+    } else if (pauseTime) {
+      setTotalPausedTime(prev => prev + (Date.now() - pauseTime));
+      setPauseTime(null);
+      setIsRunning(true);
+    }
+  }, [pauseVisible]);
+
+  useEffect(() => {
     let timer: NodeJS.Timeout;
     
     if (isRunning && startTime) {
       timer = setInterval(() => {
-        const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+        const elapsedSeconds = Math.floor((Date.now() - startTime - totalPausedTime) / 1000);
         const minutes = Math.floor(elapsedSeconds / 60);
         const seconds = elapsedSeconds % 60;
         const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
@@ -265,7 +278,7 @@ export const useTimer = (difficulty: string) => {
         clearInterval(timer);
       }
     };
-  }, [isRunning, startTime]);
+  }, [isRunning, startTime, totalPausedTime]);
 
   return {time, setIsRunning};
 };
@@ -631,6 +644,8 @@ export const useSudokuBoard = (
 
   const updateBoard = useCallback(
     (newBoard: CellData[][], action: string, isFill: boolean) => {
+      console.log('action1');
+      
       if (
         history.current.length > 0 &&
         history.current[currentStep]?.action === action
@@ -668,11 +683,11 @@ export const useSudokuBoard = (
         clearHistory(newBoard);
         setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
         setCounts(counts + 1);
-        console.log('counts', counts+1);
-        
       }
 
       setBoard(newBoard);
+      console.log('newBoard', newBoard);
+      
       updateCandidateMap(newBoard);
       setGraph(createGraph(newBoard, candidateMap));
     },

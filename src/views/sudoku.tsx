@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback, useRef, memo} from 'react';
-import {View, Text, Image, Modal, Switch, Pressable} from 'react-native';
+import {View, Text, Image, Modal, Switch, Pressable, Animated} from 'react-native';
 import {
   solve,
   checkNumberInRowColumnAndBox,
@@ -50,6 +50,11 @@ import switchSound from '../assets/audio/switch.wav';
 import eraseSound from '../assets/audio/erase.wav';
 import successSound2 from '../assets/audio/success2.wav';
 import successSound3 from '../assets/audio/success3.wav';
+import easyBoard from './easy';
+import middleBoard from './middle';
+import hardBoard from './hard';
+import extremeBoard from './extreme';
+import PauseOverlay from '../components/PauseOverlay';
 
 interface SudokuProps {
   setSuccessResult: (
@@ -58,10 +63,13 @@ interface SudokuProps {
     hintCount: number,
   ) => void;
   difficulty: string;
+  pauseVisible: boolean;
+  tooglePause: () => void;
+  isHome: boolean;
 }
 
 const Sudoku: React.FC<SudokuProps> = memo(
-  ({setSuccessResult, difficulty}) => {
+  ({setSuccessResult, difficulty, pauseVisible, tooglePause, isHome}) => {
     const initialBoard = Array(9)
       .fill(null)
       .map(() => Array(9).fill({value: null, isGiven: false, draft: []}));
@@ -116,6 +124,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
     const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
     const hintCount = useRef<number>(0);
     const time = useRef<string>('00:00');
+    const startTime = useRef<number>(0);
     const solveFunctions = useRef<
       ((
         board: CellData[][],
@@ -141,31 +150,56 @@ const Sudoku: React.FC<SudokuProps> = memo(
       swordfish,
       trialAndError,
     ]);
-    const generateBoard = useCallback(() => {
-      const initialBoard = Array(9)
-        .fill(null)
-        .map(() => Array(9).fill(null));
+    const generateBoard = useCallback(
+      (difficulty: string) => {
+        if (!difficulty) {
+          return;
+        }
+        const initialBoard = Array(9)
+          .fill(null)
+          .map(() => Array(9).fill(null));
 
-      let newBoard: CellData[][] = initialBoard.map(row =>
-        row.map(value => ({
-          value,
-          isGiven: value !== null,
-          draft: [],
-        })),
-      );
+        let newBoard: CellData[][] = initialBoard.map(row =>
+          row.map(value => ({
+            value,
+            isGiven: value !== null,
+            draft: [],
+          })),
+        );
 
-      newBoard = mockBoard;
+        switch (difficulty) {
+          case DIFFICULTY.EASY:
+            newBoard = deepCopyBoard(easyBoard);
+            break;
+          case DIFFICULTY.MEDIUM:
+            newBoard = deepCopyBoard(middleBoard);
+            break;
+          case DIFFICULTY.HARD:
+            newBoard = deepCopyBoard(hardBoard);
+            break;
+          case DIFFICULTY.EXTREME:
+            newBoard = deepCopyBoard(extremeBoard);
+            break;
+        }
 
-      updateBoard(newBoard, '生成新棋盘', false);
+        updateBoard(newBoard, '生成新棋盘', false);
 
-      // 生成解决方案
-      const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
-      solve(solvedBoard);
-    }, [updateBoard]);
+        // 生成解决方案
+        const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
+        solve(solvedBoard);
+      },
+      [updateBoard],
+    );
 
     useEffect(() => {
-      generateBoard();
-    }, []);
+      startTime.current = Date.now();
+      generateBoard(difficulty);
+    }, [difficulty]);
+    useEffect(() => {
+      const endTime = Date.now();
+      const elapsedTime = endTime - startTime.current;
+      console.log('elapsedTime', elapsedTime);
+    }, [board]);
 
     // 播放音效的函数
     const playSound = useCallback((soundsRef: React.RefObject<Sound[]>) => {
@@ -784,8 +818,38 @@ const Sudoku: React.FC<SudokuProps> = memo(
       [errorCount, setSuccessResult],
     );
 
+    const slideAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+      Animated.spring(slideAnim, {
+        toValue: isHome ? 1 : 0,
+        useNativeDriver: true,
+        tension: 20,
+        friction: 8,
+        velocity: 0.5,
+      }).start();
+    }, [isHome]);
+
     return (
-      <View style={styles.container}>
+      <Animated.View 
+        style={[
+          styles.container,
+          {
+            transform: [
+              {
+                translateX: slideAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 800]
+                })
+              }
+            ],
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            zIndex: 5
+          }
+        ]}
+      >
         <View style={styles.gameInfo}>
           <Text style={[styles.gameInfoText, styles.leftText]}>
             错误次数：{errorCount}
@@ -798,6 +862,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
             counts={counts}
             playVictorySound={playVictorySound}
             difficulty={difficulty}
+            pauseVisible={pauseVisible}
           />
         </View>
         <View style={styles.sudokuGrid}>
@@ -945,13 +1010,17 @@ const Sudoku: React.FC<SudokuProps> = memo(
             </View>
           </Pressable>
         </Modal>
-      </View>
+        <PauseOverlay tooglePause={tooglePause} visible={pauseVisible} />
+      </Animated.View>
     );
   },
   (prevProps, nextProps) => {
     return (
       prevProps.setSuccessResult === nextProps.setSuccessResult &&
-      prevProps.difficulty === nextProps.difficulty
+      prevProps.difficulty === nextProps.difficulty &&
+      prevProps.pauseVisible === nextProps.pauseVisible &&
+      prevProps.tooglePause === nextProps.tooglePause &&
+      prevProps.isHome === nextProps.isHome
     );
   },
 );

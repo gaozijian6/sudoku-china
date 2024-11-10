@@ -1,7 +1,7 @@
-import Sudoku from './src/views/sudoku';
+import React, {useCallback, useState} from 'react';
 import {StatusBar, SafeAreaView, StyleSheet} from 'react-native';
 import TarBars from './src/components/tarBars';
-import React, {useCallback, useState} from 'react';
+import Sudoku from './src/views/sudoku';
 import ResultView from './src/components/ResultOverlay';
 import Home from './src/views/Home';
 
@@ -9,6 +9,7 @@ function App() {
   const [isHome, setIsHome] = useState(true);
   const [difficulty, setDifficulty] = useState('');
   const [resultVisible, setResultVisible] = useState(false);
+  const [pauseVisible, setPauseVisible] = useState(false);
   const [time, setTime] = useState('00:00');
   const [errorCount, setErrorCount] = useState(0);
   const [hintCount, setHintCount] = useState(0);
@@ -23,20 +24,30 @@ function App() {
     [],
   );
 
+  const tooglePause = useCallback(() => {
+    setPauseVisible(!pauseVisible);
+  }, [pauseVisible]);
+
   return (
     <>
       <SafeAreaView style={styles.container}>
         <StatusBar
           translucent
           backgroundColor={
-            resultVisible
+            resultVisible || pauseVisible
               ? styles.background1.backgroundColor
               : styles.background2.backgroundColor
           }
         />
-        <TarBars isHome={isHome} />
-        <Sudoku setSuccessResult={setSuccessResult} difficulty={difficulty} style={{opacity: isHome ? 0 : 1, zIndex: isHome ? 0 : 1}} />
-        <Home setIsHome={setIsHome} setDifficulty={setDifficulty} style={{opacity: isHome ? 1 : 0, zIndex: isHome ? 1 : 0}} />
+        <TarBars isHome={isHome} tooglePause={tooglePause} setIsHome={setIsHome} />
+        <Sudoku
+          setSuccessResult={setSuccessResult}
+          difficulty={difficulty}
+          pauseVisible={pauseVisible}
+          tooglePause={tooglePause}
+          isHome={isHome}
+        />
+        <Home setIsHome={setIsHome} setDifficulty={setDifficulty} />
       </SafeAreaView>
       {resultVisible && (
         <ResultView
@@ -62,5 +73,4 @@ const styles = StyleSheet.create({
   background2: {
     backgroundColor: 'rgba(91,139,241,1)',
   },
-
 });

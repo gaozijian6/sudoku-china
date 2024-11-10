@@ -11,9 +11,10 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({setIsHome, setDifficulty, style}) => {
   const [showLevel, setShowLevel] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
+  const selectedLevel = useRef<string>('');
 
   const handleLevelSelect = (level: string) => {
-    setDifficulty(level);
+    selectedLevel.current = level;
     Animated.spring(slideAnim, {
       toValue: 1,
       useNativeDriver: true,
@@ -21,6 +22,7 @@ const Home: React.FC<HomeProps> = ({setIsHome, setDifficulty, style}) => {
       friction: 8,
       velocity: 0.5,
     }).start(() => {
+      setDifficulty(selectedLevel.current);
       setIsHome(false);
       setShowLevel(false);
     });
@@ -39,7 +41,11 @@ const Home: React.FC<HomeProps> = ({setIsHome, setDifficulty, style}) => {
                 outputRange: [0, 800]
               })
             }
-          ]
+          ],
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          zIndex: 10
         }
       ]}
     >

@@ -8,22 +8,27 @@ interface TimerProps {
   counts: number;
   playVictorySound: () => void;
   difficulty: string;
+  pauseVisible: boolean;
 }
 
-export default React.memo(
-  function Timer({setTimeFunction, counts, playVictorySound, difficulty}: TimerProps) {
-    const {time, setIsRunning} = useTimer(difficulty);
+export default React.memo(function Timer({
+  setTimeFunction,
+  counts,
+  playVictorySound,
+  difficulty,
+  pauseVisible,
+}: TimerProps) {
+  const {time, setIsRunning} = useTimer(difficulty, pauseVisible);
 
-    useEffect(() => {
-      if (counts === 81) {
-        setTimeout(() => {
-          setIsRunning(false);
-          setTimeFunction(time);
-          playVictorySound();
-        }, 100);
-      }
-    }, [counts, setIsRunning, setTimeFunction, time, playVictorySound]);
+  useEffect(() => {
+    if (counts === 81) {
+      setTimeout(() => {
+        setIsRunning(false);
+        setTimeFunction(time);
+        playVictorySound();
+      }, 100);
+    }
+  }, [counts, setIsRunning, setTimeFunction, time, playVictorySound]);
 
-    return <Text style={[styles.gameInfoText, styles.rightText]}>{time}</Text>;
-  }
-);
+  return <Text style={[styles.gameInfoText, styles.rightText]}>{time}</Text>;
+});

@@ -35,7 +35,6 @@ const Cell = memo(
     resultBoard: CellData[][];
     differenceMap: DifferenceMap;
   }) => {
-
     return (
       <Pressable
         key={`${rowIndex}-${colIndex}`}
@@ -176,7 +175,8 @@ const Cell = memo(
       prevProps.prompts.length === nextProps.prompts.length &&
       prevProps.positions.length === nextProps.positions.length &&
       prevProps.handleCellChange === nextProps.handleCellChange &&
-      prevProps.differenceMap === nextProps.differenceMap
+      prevProps.differenceMap === nextProps.differenceMap &&
+      prevProps.board === nextProps.board
     );
   },
 );
