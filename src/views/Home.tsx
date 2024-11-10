@@ -1,54 +1,34 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, Pressable, Animated } from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, Pressable, StatusBar} from 'react-native';
 import Level from './Level';
+import TarBarsHome from '../components/tarBarsHome';
 
 interface HomeProps {
   setIsHome: (value: boolean) => void;
   setDifficulty: (value: string) => void;
-  style?: any;
 }
 
-const Home: React.FC<HomeProps> = ({setIsHome, setDifficulty, style}) => {
+const Home: React.FC<HomeProps> = ({setIsHome, setDifficulty}) => {
   const [showLevel, setShowLevel] = useState(false);
-  const slideAnim = useRef(new Animated.Value(0)).current;
-  const selectedLevel = useRef<string>('');
-
   const handleLevelSelect = (level: string) => {
-    selectedLevel.current = level;
-    Animated.spring(slideAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-      tension: 20,
-      friction: 8,
-      velocity: 0.5,
-    }).start(() => {
-      setDifficulty(selectedLevel.current);
-      setIsHome(false);
-      setShowLevel(false);
-    });
+    setDifficulty(level);
+    setIsHome(false);
+    setShowLevel(false);
   };
 
   return (
-    <Animated.View 
+    <View 
       style={[
         styles.container,
-        style,
         {
-          transform: [
-            {
-              translateY: slideAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 800]
-              })
-            }
-          ],
           position: 'absolute',
           width: '100%',
           height: '100%',
-          zIndex: 10
+          zIndex: 1,
         }
       ]}
     >
+      <TarBarsHome />
       <View style={styles.buttonContainer}>
         <Pressable style={styles.startButton} onPress={() => setShowLevel(true)}>
           <Text style={styles.startButtonText}>开始</Text>
@@ -66,7 +46,7 @@ const Home: React.FC<HomeProps> = ({setIsHome, setDifficulty, style}) => {
           onLevelSelect={handleLevelSelect} 
         />
       )}
-    </Animated.View>
+    </View>
   );
 };
 
@@ -77,7 +57,7 @@ const styles = {
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
     position: 'absolute' as const,
-    top: 80,
+    top: StatusBar.currentHeight || 0,
     left: 0,
     width: '100%',
     height: '100%',

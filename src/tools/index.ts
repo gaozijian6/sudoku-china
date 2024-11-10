@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {isUnitStrongLink} from './solution';
+import initialBoard from '../views/initialBoard';
 
 export interface Position {
   row: number;
@@ -262,13 +263,17 @@ export const useTimer = (difficulty: string, pauseVisible: boolean) => {
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    
+
     if (isRunning && startTime) {
       timer = setInterval(() => {
-        const elapsedSeconds = Math.floor((Date.now() - startTime - totalPausedTime) / 1000);
+        const elapsedSeconds = Math.floor(
+          (Date.now() - startTime - totalPausedTime) / 1000,
+        );
         const minutes = Math.floor(elapsedSeconds / 60);
         const seconds = elapsedSeconds % 60;
-        const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        const timeString = `${minutes.toString().padStart(2, '0')}:${seconds
+          .toString()
+          .padStart(2, '0')}`;
         setTime(timeString);
       }, 1000);
     }
@@ -280,7 +285,7 @@ export const useTimer = (difficulty: string, pauseVisible: boolean) => {
     };
   }, [isRunning, startTime, totalPausedTime]);
 
-  return {time, setIsRunning};
+  return {time, setIsRunning, setTime};
 };
 
 export const getCellClassName = (
@@ -542,12 +547,9 @@ export const isSameBoard = (board1: CellData[][], board2: CellData[][]) => {
 };
 
 // 创建一个新的 hook 来管理棋盘状态和历史
-export const useSudokuBoard = (
-  initialBoard: CellData[][],
-) => {
+export const useSudokuBoard = () => {
   const [board, setBoard] = useState<CellData[][]>(initialBoard);
   const answerBoard = useRef<CellData[][]>(initialBoard);
-  const isSolved = useRef<boolean>(false);
   const history = useRef<BoardHistory[]>([]);
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [remainingCounts, setRemainingCounts] = useState<number[]>(
@@ -565,12 +567,35 @@ export const useSudokuBoard = (
     }
     return initialCandidateMap;
   });
-  const [graph, setGraph] = useState<Graph>(() =>
+  const [graph, setGraph] = useState<Graph>(
     createGraph(initialBoard, candidateMap),
   );
   const [counts, setCounts] = useState<number>(0);
   const [standradBoard, setStandradBoard] =
     useState<CellData[][]>(initialBoard);
+
+  const resetSudokuBoard = useCallback(() => {
+    setBoard(initialBoard);
+    answerBoard.current = initialBoard;
+    history.current = [];
+    setCurrentStep(0);
+    setRemainingCounts(Array(9).fill(9));
+    setCandidateMap(() => {
+      const initialCandidateMap: CandidateMap = {};
+      for (let num = 1; num <= 9; num++) {
+        initialCandidateMap[num] = {
+          row: new Map(),
+          col: new Map(),
+          box: new Map(),
+          all: [],
+        };
+      }
+      return initialCandidateMap;
+    });
+    setGraph(createGraph(initialBoard, candidateMap));
+    setCounts(0);
+    setStandradBoard(initialBoard);
+  }, [candidateMap]);
 
   const updateCandidateMap = useCallback((newBoard: CellData[][]) => {
     const newCandidateMap: CandidateMap = {};
@@ -644,30 +669,11 @@ export const useSudokuBoard = (
 
   const updateBoard = useCallback(
     (newBoard: CellData[][], action: string, isFill: boolean) => {
-      console.log('action1');
-      
       if (
         history.current.length > 0 &&
         history.current[currentStep]?.action === action
       ) {
         return;
-      }
-      if (!isSolved.current) {
-        const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
-        solve(solvedBoard);
-        answerBoard.current = solvedBoard;
-        isSolved.current = true;
-        updateRemainingCounts(newBoard);
-        let filledCount = 0;
-        newBoard.forEach(row => {
-          row.forEach(cell => {
-            if (cell.value !== null) {
-              filledCount++;
-            }
-          });
-        });
-        setCounts(filledCount);
-        setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
       }
       if (!action.startsWith('取消') && !action.startsWith('提示')) {
         const newHistory = history.current.slice(0);
@@ -686,19 +692,10 @@ export const useSudokuBoard = (
       }
 
       setBoard(newBoard);
-      console.log('newBoard', newBoard);
-      
       updateCandidateMap(newBoard);
       setGraph(createGraph(newBoard, candidateMap));
     },
-    [
-      candidateMap,
-      clearHistory,
-      counts,
-      currentStep,
-      updateCandidateMap,
-      updateRemainingCounts,
-    ],
+    [candidateMap, clearHistory, counts, currentStep, updateCandidateMap],
   );
 
   const undo = useCallback(() => {
@@ -712,6 +709,25 @@ export const useSudokuBoard = (
       setGraph(createGraph(previousBoard, candidateMap));
     }
   }, [candidateMap, updateCandidateMap, currentStep]);
+
+  const initializeBoard = useCallback(
+    (
+      mockBoard: CellData[][],
+      mockStandardBoard: CellData[][],
+      mockAnswerBoard: CellData[][],
+      mockRemainingCounts: number[],
+      mockCounts: number,
+    ) => {
+      updateBoard(deepCopyBoard(mockBoard), '生成新棋盘', false);
+      requestAnimationFrame(() => {
+        setStandradBoard(deepCopyBoard(mockStandardBoard));
+        setRemainingCounts([...mockRemainingCounts]);
+        setCounts(mockCounts);
+      });
+      answerBoard.current = deepCopyBoard(mockAnswerBoard);
+    },
+    [updateBoard],
+  );
 
   return {
     board,
@@ -731,5 +747,8 @@ export const useSudokuBoard = (
     standradBoard,
     setStandradBoard,
     counts,
+    resetSudokuBoard,
+    setCounts,
+    initializeBoard,
   };
 };

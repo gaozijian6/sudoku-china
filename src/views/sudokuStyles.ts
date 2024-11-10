@@ -1,4 +1,4 @@
-import {Dimensions, StyleSheet} from 'react-native';
+import {Dimensions, StatusBar, StyleSheet} from 'react-native';
 
 const sudokuStyles = StyleSheet.create({
   container: {
@@ -6,8 +6,9 @@ const sudokuStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     position: 'absolute' as const,
-    top: 80,
+    top: StatusBar.currentHeight || 0,
     left: 0,
+    // backgroundColor: 'red',
   },
   gameInfo: {
     flexDirection: 'row',

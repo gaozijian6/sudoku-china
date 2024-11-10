@@ -1,7 +1,14 @@
 import React, {useState, useEffect, useCallback, useRef, memo} from 'react';
-import {View, Text, Image, Modal, Switch, Pressable, Animated} from 'react-native';
 import {
-  solve,
+  View,
+  Text,
+  Image,
+  Modal,
+  Switch,
+  Pressable,
+  Animated,
+} from 'react-native';
+import {
   checkNumberInRowColumnAndBox,
   updateRelatedCellsDraft,
   getCandidates,
@@ -40,7 +47,6 @@ import {DIFFICULTY} from '../constans';
 import styles from './sudokuStyles';
 import Sound from 'react-native-sound';
 import {handleHintContent} from '../tools/handleHintContent';
-import mockBoard from './mock';
 import Cell from '../components/SudokuCell';
 import Buttons from '../components/Buttons';
 import Timer from '../components/Timer';
@@ -50,11 +56,24 @@ import switchSound from '../assets/audio/switch.wav';
 import eraseSound from '../assets/audio/erase.wav';
 import successSound2 from '../assets/audio/success2.wav';
 import successSound3 from '../assets/audio/success3.wav';
-import easyBoard from './easy';
+import {
+  mockBoard1,
+  mockStandardBoard1,
+  mockAnswerBoard1,
+  mockRemainingCounts1,
+  mockCounts1,
+} from './easy';
 import middleBoard from './middle';
-import hardBoard from './hard';
+import {
+  mockBoard3,
+  mockStandardBoard3,
+  mockAnswerBoard3,
+  mockRemainingCounts3,
+  mockCounts3,
+} from './hard';
 import extremeBoard from './extreme';
 import PauseOverlay from '../components/PauseOverlay';
+import TarBarsSudoku from '../components/tarBarsSudoku';
 
 interface SudokuProps {
   setSuccessResult: (
@@ -63,16 +82,23 @@ interface SudokuProps {
     hintCount: number,
   ) => void;
   difficulty: string;
+  setDifficulty: (value: string) => void;
   pauseVisible: boolean;
   tooglePause: () => void;
   isHome: boolean;
+  setIsHome: (value: boolean) => void;
 }
 
 const Sudoku: React.FC<SudokuProps> = memo(
-  ({setSuccessResult, difficulty, pauseVisible, tooglePause, isHome}) => {
-    const initialBoard = Array(9)
-      .fill(null)
-      .map(() => Array(9).fill({value: null, isGiven: false, draft: []}));
+  ({
+    setSuccessResult,
+    difficulty,
+    setDifficulty,
+    pauseVisible,
+    tooglePause,
+    isHome,
+    setIsHome,
+  }) => {
     const {
       board,
       updateBoard,
@@ -87,12 +113,13 @@ const Sudoku: React.FC<SudokuProps> = memo(
       history,
       setStandradBoard,
       counts,
-    } = useSudokuBoard(initialBoard);
+      resetSudokuBoard,
+      initializeBoard,
+    } = useSudokuBoard();
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
     const [errorCount, setErrorCount] = useState<number>(0);
     const [draftMode, setDraftMode] = useState<boolean>(false);
-
     const lastErrorTime = useRef<number | null>(null);
     const errorCooldownPeriod = useRef<number>(300);
     const [selectedCell, setSelectedCell] = useState<{
@@ -150,45 +177,72 @@ const Sudoku: React.FC<SudokuProps> = memo(
       swordfish,
       trialAndError,
     ]);
+    const resetSudoku = useCallback(() => {
+      setSelectedNumber(1);
+      lastSelectedNumber.current = null;
+      setErrorCount(0);
+      setDraftMode(false);
+      lastErrorTime.current = null;
+      setSelectedCell({row: 0, col: 0});
+      lastSelectedCell.current = null;
+      setSelectionMode(1);
+      setErrorCells([]);
+      setHintDrawerVisible(false);
+      setHintContent('');
+      setHintMethod('');
+      setResult(null);
+      setPrompts([]);
+      setPositions([]);
+      setEraseEnabled(false);
+      isClickAutoNote.current = false;
+      setDifferenceMap({});
+      hintCount.current = 0;
+      time.current = '00:00';
+      startTime.current = 0;
+      resetSudokuBoard();
+    }, [resetSudokuBoard]);
+
+    useEffect(() => {
+      if (!isHome) {
+        resetSudoku();
+      }
+    }, [isHome]);
+
     const generateBoard = useCallback(
       (difficulty: string) => {
         if (!difficulty) {
           return;
         }
-        const initialBoard = Array(9)
-          .fill(null)
-          .map(() => Array(9).fill(null));
-
-        let newBoard: CellData[][] = initialBoard.map(row =>
-          row.map(value => ({
-            value,
-            isGiven: value !== null,
-            draft: [],
-          })),
-        );
-
         switch (difficulty) {
           case DIFFICULTY.EASY:
-            newBoard = deepCopyBoard(easyBoard);
+            initializeBoard(
+              mockBoard1,
+              mockStandardBoard1,
+              mockAnswerBoard1,
+              mockRemainingCounts1,
+              mockCounts1,
+            );
             break;
           case DIFFICULTY.MEDIUM:
-            newBoard = deepCopyBoard(middleBoard);
+            // newBoard = deepCopyBoard(middleBoard);
             break;
           case DIFFICULTY.HARD:
-            newBoard = deepCopyBoard(hardBoard);
+            initializeBoard(
+              mockBoard3,
+              mockStandardBoard3,
+              mockAnswerBoard3,
+              mockRemainingCounts3,
+              mockCounts3,
+            );
             break;
           case DIFFICULTY.EXTREME:
-            newBoard = deepCopyBoard(extremeBoard);
+            // newBoard = deepCopyBoard(extremeBoard);
             break;
         }
 
-        updateBoard(newBoard, '生成新棋盘', false);
-
-        // 生成解决方案
-        const solvedBoard = newBoard.map(row => row.map(cell => ({...cell})));
-        solve(solvedBoard);
+        // updateBoard(newBoard, '生成新棋盘', false);
       },
-      [updateBoard],
+      [initializeBoard],
     );
 
     useEffect(() => {
@@ -533,8 +587,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
     );
 
     const handleShowCandidates = useCallback(() => {
-      console.log(board);
-
       playSound(switchSoundsRef);
       if (isSameBoard(board, standradBoard)) {
         return;
@@ -818,11 +870,11 @@ const Sudoku: React.FC<SudokuProps> = memo(
       [errorCount, setSuccessResult],
     );
 
-    const slideAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(800)).current;
 
     useEffect(() => {
       Animated.spring(slideAnim, {
-        toValue: isHome ? 1 : 0,
+        toValue: isHome ? 800 : 0,
         useNativeDriver: true,
         tension: 20,
         friction: 8,
@@ -830,32 +882,38 @@ const Sudoku: React.FC<SudokuProps> = memo(
       }).start();
     }, [isHome]);
 
+    const handleBack = useCallback(() => {
+      setIsHome(true);
+    }, [setIsHome]);
+
     return (
-      <Animated.View 
+      <Animated.View
         style={[
           styles.container,
           {
             transform: [
               {
-                translateX: slideAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 800]
-                })
-              }
+                translateX: slideAnim,
+              },
             ],
             position: 'absolute',
             width: '100%',
             height: '100%',
-            zIndex: 5
-          }
-        ]}
-      >
+            zIndex: 5,
+          },
+        ]}>
+        <TarBarsSudoku
+          onBack={handleBack}
+          tooglePause={tooglePause}
+          setDifficulty={setDifficulty}
+          setIsHome={setIsHome}
+        />
         <View style={styles.gameInfo}>
           <Text style={[styles.gameInfoText, styles.leftText]}>
             错误次数：{errorCount}
           </Text>
           <Text style={[styles.gameInfoText, styles.middleText]}>
-            {DIFFICULTY.MEDIUM}
+            {difficulty}
           </Text>
           <Timer
             setTimeFunction={setTimeFunction}
@@ -866,7 +924,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           />
         </View>
         <View style={styles.sudokuGrid}>
-          {board.map((row, rowIndex) =>
+          {board?.map((row, rowIndex) =>
             row.map((cell, colIndex) => (
               <Cell
                 key={`${rowIndex}-${colIndex}`}
@@ -1012,15 +1070,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
         </Modal>
         <PauseOverlay tooglePause={tooglePause} visible={pauseVisible} />
       </Animated.View>
-    );
-  },
-  (prevProps, nextProps) => {
-    return (
-      prevProps.setSuccessResult === nextProps.setSuccessResult &&
-      prevProps.difficulty === nextProps.difficulty &&
-      prevProps.pauseVisible === nextProps.pauseVisible &&
-      prevProps.tooglePause === nextProps.tooglePause &&
-      prevProps.isHome === nextProps.isHome
     );
   },
 );

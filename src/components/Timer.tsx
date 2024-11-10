@@ -18,7 +18,7 @@ export default React.memo(function Timer({
   difficulty,
   pauseVisible,
 }: TimerProps) {
-  const {time, setIsRunning} = useTimer(difficulty, pauseVisible);
+  const {time, setIsRunning, setTime} = useTimer(difficulty, pauseVisible);
 
   useEffect(() => {
     if (counts === 81) {
@@ -29,6 +29,12 @@ export default React.memo(function Timer({
       }, 100);
     }
   }, [counts, setIsRunning, setTimeFunction, time, playVictorySound]);
+
+  useEffect(() => {
+    if (difficulty) {
+      setTime('00:00');
+    }
+  }, [difficulty]);
 
   return <Text style={[styles.gameInfoText, styles.rightText]}>{time}</Text>;
 });
