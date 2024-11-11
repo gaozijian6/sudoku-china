@@ -540,15 +540,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
         return;
       }
       isClickAutoNote.current = true;
-      startTime.current = Date.now();
       updateBoard(deepCopyBoard(standradBoard), '复制官方草稿', false);
     }, [isInitialized, board, standradBoard, updateBoard]);
-
-    useEffect(() => {
-      const endTime = Date.now();
-      const time = endTime - startTime.current;
-      console.log(time);
-    }, [board]);
 
     const applyHintHighlight = useCallback(
       (
