@@ -355,11 +355,6 @@ const sudokuStyles = StyleSheet.create({
     color: '#000',
     fontWeight: '500',
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'transparent',
-    justifyContent: 'flex-end',
-  },
   closeIconButton: {
     position: 'absolute',
     right: 0,

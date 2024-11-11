@@ -1,6 +1,8 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {isUnitStrongLink} from './solution';
 import initialBoard from '../views/initialBoard';
+import {flushSync} from 'react-dom';
+import {InteractionManager} from 'react-native';
 
 export interface Position {
   row: number;
@@ -549,6 +551,7 @@ export const isSameBoard = (board1: CellData[][], board2: CellData[][]) => {
 // 创建一个新的 hook 来管理棋盘状态和历史
 export const useSudokuBoard = () => {
   const [board, setBoard] = useState<CellData[][]>(initialBoard);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const answerBoard = useRef<CellData[][]>(initialBoard);
   const history = useRef<BoardHistory[]>([]);
   const [currentStep, setCurrentStep] = useState<number>(0);
@@ -595,6 +598,7 @@ export const useSudokuBoard = () => {
     setGraph(createGraph(initialBoard, candidateMap));
     setCounts(0);
     setStandradBoard(initialBoard);
+    setIsInitialized(false);
   }, [candidateMap]);
 
   const updateCandidateMap = useCallback((newBoard: CellData[][]) => {
@@ -692,8 +696,10 @@ export const useSudokuBoard = () => {
       }
 
       setBoard(newBoard);
-      updateCandidateMap(newBoard);
-      setGraph(createGraph(newBoard, candidateMap));
+      setTimeout(() => {
+        updateCandidateMap(newBoard);
+        setGraph(createGraph(newBoard, candidateMap));
+      }, 0);
     },
     [candidateMap, clearHistory, counts, currentStep, updateCandidateMap],
   );
@@ -719,12 +725,13 @@ export const useSudokuBoard = () => {
       mockCounts: number,
     ) => {
       updateBoard(deepCopyBoard(mockBoard), '生成新棋盘', false);
-      requestAnimationFrame(() => {
-        setStandradBoard(deepCopyBoard(mockStandardBoard));
-        setRemainingCounts([...mockRemainingCounts]);
-        setCounts(mockCounts);
-      });
+      setRemainingCounts([...mockRemainingCounts]);
+      setCounts(mockCounts);
       answerBoard.current = deepCopyBoard(mockAnswerBoard);
+      setTimeout(() => {
+        setStandradBoard(deepCopyBoard(mockStandardBoard));
+        setIsInitialized(true);
+      }, 600);
     },
     [updateBoard],
   );
@@ -750,5 +757,6 @@ export const useSudokuBoard = () => {
     resetSudokuBoard,
     setCounts,
     initializeBoard,
+    isInitialized,
   };
 };

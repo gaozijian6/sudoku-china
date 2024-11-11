@@ -6,11 +6,13 @@ import TarBarsHome from '../components/tarBarsHome';
 interface HomeProps {
   setIsHome: (value: boolean) => void;
   setDifficulty: (value: string) => void;
+  openSudoku: () => void;
 }
 
-const Home: React.FC<HomeProps> = ({setIsHome, setDifficulty}) => {
+const Home: React.FC<HomeProps> = ({setIsHome, setDifficulty, openSudoku}) => {
   const [showLevel, setShowLevel] = useState(false);
   const handleLevelSelect = (level: string) => {
+    openSudoku();
     setDifficulty(level);
     setIsHome(false);
     setShowLevel(false);

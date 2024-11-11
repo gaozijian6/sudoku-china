@@ -1,6 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Pressable, Animated } from 'react-native';
-import { DIFFICULTY } from '../constans';
+import React, {useState, useEffect, useRef} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Animated,
+} from 'react-native';
+import {DIFFICULTY} from '../constans';
 
 interface LevelCardProps {
   level: string;
@@ -8,13 +14,10 @@ interface LevelCardProps {
   style?: any;
 }
 
-const LevelCard: React.FC<LevelCardProps> = ({ level, onPressIn, style }) => (
-  <TouchableOpacity 
-    onPressIn={onPressIn}
-    style={style}
-  >
+const LevelCard: React.FC<LevelCardProps> = ({level, onPressIn, style}) => (
+  <Pressable onPressIn={onPressIn} style={style}>
     <Text style={styles.cardText}>{level}</Text>
-  </TouchableOpacity>
+  </Pressable>
 );
 
 interface LevelProps {
@@ -40,8 +43,8 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
           toValue: 1,
           useNativeDriver: true,
           friction: 8,
-          tension: 40
-        })
+          tension: 40,
+        }),
       ]).start();
     } else {
       Animated.parallel([
@@ -53,8 +56,8 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
         Animated.timing(scaleAnim, {
           toValue: 0,
           duration: 200,
-          useNativeDriver: true
-        })
+          useNativeDriver: true,
+        }),
       ]).start();
     }
   }, [visible]);
@@ -76,8 +79,8 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
         useNativeDriver: true,
         friction: 12,
         tension: 40,
-        velocity: 0.4
-      })
+        velocity: 0.4,
+      }),
     ]).start(() => {
       onClose();
       setShowShadow(true);
@@ -85,48 +88,46 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
   };
 
   return (
-    <Animated.View 
+    <Animated.View
       style={[
         styles.overlay,
         {
           opacity: fadeAnim,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)'
-        }
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        },
       ]}
-      onTouchEnd={handleClose}
-    >
-      <Animated.View 
+      onTouchEnd={handleClose}>
+      <Animated.View
         style={[
           styles.container,
           {
-            transform: [{scale: scaleAnim}]
-          }
+            transform: [{scale: scaleAnim}],
+          },
         ]}
-        onTouchEnd={e => e.stopPropagation()}
-      >
+        onTouchEnd={e => e.stopPropagation()}>
         <View style={styles.header}>
           <Text style={styles.title}>选择难度</Text>
           <Pressable onPress={handleClose} style={styles.closeButton}>
             <Text style={styles.closeIcon}>×</Text>
           </Pressable>
         </View>
-        <LevelCard 
-          level={DIFFICULTY.EASY} 
+        <LevelCard
+          level={DIFFICULTY.EASY}
           onPressIn={() => handleLevelSelect(DIFFICULTY.EASY)}
           style={showShadow ? styles.card : styles.cardNoShadow}
         />
-        <LevelCard 
-          level={DIFFICULTY.MEDIUM} 
+        <LevelCard
+          level={DIFFICULTY.MEDIUM}
           onPressIn={() => handleLevelSelect(DIFFICULTY.MEDIUM)}
           style={showShadow ? styles.card : styles.cardNoShadow}
         />
-        <LevelCard 
-          level={DIFFICULTY.HARD} 
+        <LevelCard
+          level={DIFFICULTY.HARD}
           onPressIn={() => handleLevelSelect(DIFFICULTY.HARD)}
           style={showShadow ? styles.card : styles.cardNoShadow}
         />
-        <LevelCard 
-          level={DIFFICULTY.EXTREME} 
+        <LevelCard
+          level={DIFFICULTY.EXTREME}
           onPressIn={() => handleLevelSelect(DIFFICULTY.EXTREME)}
           style={showShadow ? styles.card : styles.cardNoShadow}
         />
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 30,
-    color: '#333'
+    color: '#333',
   },
   card: {
     width: '100%',
@@ -172,11 +173,11 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   cardText: {
     fontSize: 18,
-    color: '#333'
+    color: '#333',
   },
   header: {
     flexDirection: 'row',
@@ -202,7 +203,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 8,
     marginBottom: 15,
-    alignItems: 'center'
+    alignItems: 'center',
   },
 });
 
