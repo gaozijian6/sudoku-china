@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {View, Text, Pressable, StatusBar} from 'react-native';
 import Level from './Level';
 import TarBarsHome from '../components/tarBarsHome';
+import { playSound } from '../tools/Sound';
 
 interface HomeProps {
   setIsHome: (value: boolean) => void;

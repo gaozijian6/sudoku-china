@@ -111,7 +111,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       standradBoard,
       history,
       setStandradBoard,
-      counts,
       resetSudokuBoard,
       initializeBoard,
       isInitialized,
