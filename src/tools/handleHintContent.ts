@@ -528,6 +528,7 @@ export const handleHintContent = (
         break;
       case SOLUTION_METHODS.XYZ_WING:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
+        setPositions(target);
         setPrompts(target);
         const candidateCounts = new Map();
         prompt.forEach(cell => {
@@ -536,19 +537,10 @@ export const handleHintContent = (
             candidateCounts.set(num, (candidateCounts.get(num) || 0) + 1);
           });
         });
-        const twiceAppearingCandidates = Array.from(candidateCounts.keys())
-          .filter(num => candidateCounts.get(num) === 2)
-          .map(Number);
-        setPositions(twiceAppearingCandidates);
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = target.join(',');
-        if (position.length === 1) {
-          hintContent = `无论${posStr}这三个候选方格内如何取值，R${
-            position[0].row + 1
-          }C${position[0].col + 1}内都不能出现候选数${target[0]}`;
-        }
         if (position.length === 1) {
           hintContent = `无论${posStr}这三个候选方格内如何取值，R${
             position[0].row + 1
