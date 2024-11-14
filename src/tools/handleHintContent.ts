@@ -553,30 +553,6 @@ export const handleHintContent = (
           }内都不能出现候选数${target[0]}`;
         }
         break;
-      case SOLUTION_METHODS.EUREKA:
-        setPositions(target);
-        setPrompts(target);
-        const diffPositions = prompt.filter(
-          p => !position.some(pos => pos.row === p.row && pos.col === p.col),
-        );
-        result.prompt = diffPositions;
-        boardWithHighlight = applyHintHighlight(board, result, 'both');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
-          prompt[3].row + 1
-        }C${prompt[3].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
-
-        hintContent = `${posStr}五个方格构成互斥环，假设候选数${
-          target[0]
-        }只能出现在这五个方格中，则始终会导致有两个互为强连接的候选方格矛盾。因此R${
-          position[0].row + 1
-        }C${position[0].col + 1}、R${position[1].row + 1}C${
-          position[1].col + 1
-        }、R${position[2].row + 1}C${position[2].col + 1}内不能同时出现候选数${
-          target[0]
-        }`;
-        break;
       case SOLUTION_METHODS.SKYSCRAPER:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         setPrompts(target);

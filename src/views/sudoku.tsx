@@ -37,7 +37,6 @@ import {
   hiddenTriple2,
   nakedQuadruple,
   swordfish,
-  eureka,
   trialAndError,
   findDifferenceDraft,
 } from '../tools/solution';
@@ -166,7 +165,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       xWingVarient,
       xyWing,
       nakedQuadruple,
-      eureka,
       skyscraper,
       swordfish,
       trialAndError,
