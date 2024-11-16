@@ -2,15 +2,16 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { signInWithGoogle } from '../utils/auth';
 
-const Login = () => {
+interface LoginProps {
+  setIsLoggedIn: (value: boolean) => void;
+}
+
+const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
   const handleGoogleLogin = async () => {
-    try {
-      const user = await signInWithGoogle();
-      console.log('登录成功:', user);
-      // 登录成功后的处理,比如:
-      // navigation.navigate('Home');
-    } catch (err) {
-      console.log('登录失败:', err);
+    const user = await signInWithGoogle();
+    console.log(user);
+    if(user) {
+      setIsLoggedIn(true);
     }
   };
 

@@ -49,6 +49,7 @@ import Cell from '../components/SudokuCell';
 import Buttons from '../components/Buttons';
 import Timer from '../components/Timer';
 import {playSound} from '../tools/Sound';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
   mockBoard1,
@@ -83,6 +84,8 @@ interface SudokuProps {
   isHome: boolean;
   setIsHome: (value: boolean) => void;
   closeSudoku: () => void;
+  isSound: boolean;
+  openSetting: () => void;
 }
 
 const Sudoku: React.FC<SudokuProps> = memo(
@@ -96,6 +99,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
     isHome,
     setIsHome,
     closeSudoku,
+    isSound,
+    openSetting,
   }) => {
     const {
       board,
@@ -113,6 +118,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       resetSudokuBoard,
       initializeBoard,
       isInitialized,
+      saveSudokuData
     } = useSudokuBoard();
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
@@ -194,6 +200,34 @@ const Sudoku: React.FC<SudokuProps> = memo(
       resetSudokuBoard();
     }, [resetSudokuBoard]);
 
+    const saveData = useCallback(() => {
+      const sudokuData = {
+        board,
+        lastSelectedNumber: lastSelectedNumber.current,
+        errorCount,
+        draftMode,
+        lastErrorTime: lastErrorTime.current,
+        selectedCell: selectedCell,
+        lastSelectedCell: lastSelectedCell.current,
+        selectionMode,
+        errorCells,
+        hintDrawerVisible, 
+        hintContent,
+        hintMethod,
+        result,
+        prompts,
+        positions,
+        eraseEnabled,
+        isClickAutoNote: isClickAutoNote.current,
+        differenceMap,
+        hintCount: hintCount.current,
+        time: time.current,
+        startTime: startTime.current,
+      };
+      AsyncStorage.setItem('sudokuData1', JSON.stringify(sudokuData));
+      saveSudokuData();
+    }, []);
+
     useEffect(() => {
       if (!isHome) {
         resetSudoku();
@@ -244,22 +278,22 @@ const Sudoku: React.FC<SudokuProps> = memo(
           isBoxFull(board, Math.floor(row / 3) * 3 + Math.floor(col / 3)) ||
           remainingCounts[answerBoard.current[row][col].value! - 1] === 1
         ) {
-          playSound('success2');
+          playSound('success2', isSound);
         } else {
-          playSound('success');
+          playSound('success', isSound);
         }
       },
-      [answerBoard, remainingCounts],
+      [answerBoard, isSound, remainingCounts],
     );
 
     const playVictorySound = useCallback(() => {
       setTimeout(() => {
-        playSound('success3');
+        playSound('success3', isSound);
       }, 300);
-    }, []);
+    }, [isSound]);
 
     const handleError = useCallback((row: number, col: number) => {
-      playSound('error');
+      playSound('error', isSound);
       const currentTime = Date.now();
       if (
         lastErrorTime.current === null ||
@@ -276,9 +310,9 @@ const Sudoku: React.FC<SudokuProps> = memo(
       (conflictCells: Position[]) => {
         setErrorCells(conflictCells);
         setTimeout(() => setErrorCells([]), 300);
-        playSound('error');
+        playSound('error', isSound);
       },
-      [],
+      [isSound],
     );
 
     const remainingCountsMinusOne = (number: number) => {
@@ -335,7 +369,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
             `设置 (${row}, ${col}) 草稿为 ${cell.draft}`,
             false,
           );
-          playSound('switch');
+          playSound('switch', isSound);
         }
         // 处理非草稿模式
         else if (selectedNumber) {
@@ -371,6 +405,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         draftMode,
         selectedNumber,
         updateBoard,
+        isSound,
         handleErrorDraftAnimation,
         answerBoard,
         playSuccessSound,
@@ -386,8 +421,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
         isClickAutoNote.current = false;
       }
       undo();
-      playSound('switch');
-    }, [history, currentStep, undo]);
+      playSound('switch', isSound);
+    }, [history, currentStep, undo, isSound]);
 
     // 擦除
     const handleErase = useCallback(() => {
@@ -397,7 +432,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           eraseEnabled &&
           board[row][col].value !== answerBoard.current[row][col].value
         ) {
-          playSound('erase');
+          playSound('erase', isSound);
           const newBoard = deepCopyBoard(board);
           const cell = newBoard[row][col];
           cell.value = null;
@@ -406,7 +441,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           setEraseEnabled(false);
         }
       }
-    }, [selectedCell, eraseEnabled, board, answerBoard, updateBoard]);
+    }, [selectedCell, eraseEnabled, board, answerBoard, updateBoard, isSound]);
 
     // 选择数字
     const handleNumberSelect = useCallback(
@@ -444,7 +479,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
               draftSet.add(number);
             }
             newCell.draft = Array.from(draftSet).sort((a, b) => a - b);
-            playSound('switch');
+            playSound('switch', isSound);
 
             updateBoard(
               newBoard,
@@ -480,7 +515,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
             }
           }
         } else {
-          playSound('switch');
+          playSound('switch', isSound);
           setSelectedNumber(number);
           lastSelectedNumber.current = number;
         }
@@ -490,6 +525,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         selectedCell,
         board,
         draftMode,
+        isSound,
         updateBoard,
         handleErrorDraftAnimation,
         answerBoard,
@@ -520,25 +556,28 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
     const handleDraftMode = useCallback(() => {
       setDraftMode(!draftMode);
-      playSound('switch');
-    }, [draftMode]);
+      playSound('switch', isSound);
+    }, [draftMode, isSound]);
 
-    const handleDraftModeChange = useCallback((value: boolean) => {
-      setDraftMode(value);
-      playSound('switch');
-    }, []);
+    const handleDraftModeChange = useCallback(
+      (value: boolean) => {
+        setDraftMode(value);
+        playSound('switch', isSound);
+      },
+      [isSound],
+    );
 
     const handleShowCandidates = useCallback(() => {
       if (!isInitialized) {
         return;
       }
-      playSound('switch');
+      playSound('switch', isSound);
       if (isSameBoard(board, standradBoard)) {
         return;
       }
       isClickAutoNote.current = true;
       updateBoard(deepCopyBoard(standradBoard), '复制官方草稿', false);
-    }, [isInitialized, board, standradBoard, updateBoard]);
+    }, [isInitialized, board, standradBoard, updateBoard, isSound]);
 
     const applyHintHighlight = useCallback(
       (
@@ -639,7 +678,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         const newBoard = deepCopyBoard(standradBoard);
         handleHint(newBoard);
         isClickAutoNote.current = true;
-        playSound('switch');
+        playSound('switch', isSound);
         return;
       } else if (result) {
         const {position, target, isFill} = result;
@@ -674,7 +713,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
           remainingCountsMinusOne(target[0]);
         } else {
-          playSound('erase');
+          playSound('erase', isSound);
         }
 
         // 移除提示高亮
@@ -689,6 +728,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       board,
       differenceMap,
       handleHint,
+      isSound,
       playSuccessSound,
       remainingCountsMinusOne,
       removeHintHighlight,
@@ -709,7 +749,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
     // 切换模式回调函数
     const handleSelectionModeChange = useCallback(() => {
-      playSound('switch');
+      playSound('switch', isSound);
       if (selectionMode === 1) {
         setSelectionMode(2);
         setSelectedNumber(null);
@@ -720,7 +760,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         }
         setEraseEnabled(false);
       }
-    }, [selectionMode]);
+    }, [isSound, selectionMode]);
 
     useEffect(() => {
       if (!selectedCell) return;
@@ -766,11 +806,17 @@ const Sudoku: React.FC<SudokuProps> = memo(
           tooglePause={tooglePause}
           setDifficulty={setDifficulty}
           setIsHome={setIsHome}
+          openSetting={openSetting}
+          saveData={saveData}
         />
         <View style={styles.gameInfo}>
-          <Text style={[styles.gameInfoText, styles.leftText]}>
-            错误次数：{errorCount}
-          </Text>
+          <View style={styles.gameInfoError}>
+            <Image
+              source={require('../assets/icon/error.png')}
+              style={styles.errorIcon}
+            />
+            <Text style={styles.gameInfoTextError}>{errorCount}</Text>
+          </View>
           <Text style={[styles.gameInfoText, styles.middleText]}>
             {difficulty}
           </Text>

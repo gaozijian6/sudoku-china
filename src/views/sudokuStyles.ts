@@ -19,7 +19,7 @@ const sudokuStyles = StyleSheet.create({
     alignSelf: 'center',
     height: 40,
     position: 'relative',
-    top: 10,
+    top: 25,
   },
   leftText: {
     width: 100,
@@ -372,7 +372,22 @@ const sudokuStyles = StyleSheet.create({
   draftModeSwitchStyle: {
     transform: [{scaleX: 0.6}, {scaleY: 0.6}],
   },
-  
+  gameInfoError: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 30,
+    justifyContent: 'space-between',
+  },
+  errorIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 5,
+    resizeMode: 'contain',
+  },
+  gameInfoTextError: {
+    fontSize: 16,
+    color: 'rgb(59, 61, 99)',
+  },
 });
 
 export default sudokuStyles;

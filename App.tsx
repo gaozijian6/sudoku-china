@@ -3,6 +3,9 @@ import {StatusBar, SafeAreaView, StyleSheet, Animated} from 'react-native';
 import Sudoku from './src/views/sudoku';
 import ResultView from './src/components/ResultOverlay';
 import Home from './src/views/Home';
+import Login from './src/views/Login';
+import Setting from './src/views/setting';
+import {initSounds} from './src/tools/Sound';
 
 function App() {
   const [isHome, setIsHome] = useState(true);
@@ -12,7 +15,11 @@ function App() {
   const [time, setTime] = useState('00:00');
   const [errorCount, setErrorCount] = useState(0);
   const [hintCount, setHintCount] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const slideAnim = useRef(new Animated.Value(800)).current;
+  const [settingVisible, setSettingVisible] = useState(false);
+  const [settingSlideAnim] = useState(new Animated.Value(800));
+  const [isSound, setIsSound] = useState(true);
 
   const setSuccessResult = useCallback(
     (time: string, errorCount: number, hintCount: number) => {
@@ -48,6 +55,34 @@ function App() {
     }).start();
   }, [slideAnim]);
 
+  const openSetting = useCallback(() => {
+    Animated.spring(settingSlideAnim, {
+      toValue: 0,
+      useNativeDriver: true,
+      tension: 20,
+      friction: 8,
+      velocity: 0.5,
+    }).start();
+  }, [settingSlideAnim]);
+
+  const closeSetting = useCallback(() => {
+    Animated.spring(settingSlideAnim, {
+      toValue: 800,
+      useNativeDriver: true,
+      tension: 20,
+      friction: 8,
+      velocity: 0.5,
+    }).start();
+  }, [settingSlideAnim]);
+
+  const toogleSound = useCallback(() => {
+    setIsSound(!isSound);
+  }, [isSound]);
+
+  useEffect(() => {
+    initSounds();
+  }, []);
+
   return (
     <>
       <SafeAreaView style={styles.container}>
@@ -59,22 +94,38 @@ function App() {
               : styles.background2.backgroundColor
           }
         />
-        <Home
-          setIsHome={setIsHome}
-          setDifficulty={setDifficulty}
-          openSudoku={openSudoku}
-        />
-        <Sudoku
-          slideAnim={slideAnim}
-          setSuccessResult={setSuccessResult}
-          difficulty={difficulty}
-          setDifficulty={setDifficulty}
-          pauseVisible={pauseVisible}
-          tooglePause={tooglePause}
-          isHome={isHome}
-          setIsHome={setIsHome}
-          closeSudoku={closeSudoku}
-        />
+        {/* {!isLoggedIn ? (
+          <Login setIsLoggedIn={setIsLoggedIn} />
+        ) : ( */}
+        <>
+          <Home
+            setIsHome={setIsHome}
+            setDifficulty={setDifficulty}
+            openSudoku={openSudoku}
+            openSetting={openSetting}
+            isSound={isSound}
+          />
+          <Sudoku
+            slideAnim={slideAnim}
+            setSuccessResult={setSuccessResult}
+            difficulty={difficulty}
+            setDifficulty={setDifficulty}
+            pauseVisible={pauseVisible}
+            tooglePause={tooglePause}
+            isHome={isHome}
+            setIsHome={setIsHome}
+            closeSudoku={closeSudoku}
+            isSound={isSound}
+            openSetting={openSetting}
+          />
+          <Setting
+            slideAnim={settingSlideAnim}
+            closeSetting={closeSetting}
+            toogleSound={toogleSound}
+            isSound={isSound}
+          />
+        </>
+        {/* )} */}
       </SafeAreaView>
       {resultVisible && (
         <ResultView

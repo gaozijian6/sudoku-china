@@ -41,7 +41,7 @@ const createSound = (path: unknown): Promise<Sound> => {
   });
 };
 
-const initSounds = async () => {
+export const initSounds = async () => {
   soundRefs.errorSoundsRef.current = await Promise.all(
     Array(3).fill(0).map(() => createSound(errorSound))
   );
@@ -62,10 +62,10 @@ const initSounds = async () => {
   );
 };
 
-// 初始化音效
-initSounds();
-
-export const playSound = (type: SoundType) => {
+export const playSound = (type: SoundType, isSound: boolean) => {
+  if (!isSound) {
+    return;
+  }
   const soundRefMap = {
     error: soundRefs.errorSoundsRef,
     success: soundRefs.successSoundsRef,

@@ -3,6 +3,7 @@ import {isUnitStrongLink} from './solution';
 import initialBoard from '../views/initialBoard';
 import {flushSync} from 'react-dom';
 import {InteractionManager} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface Position {
   row: number;
@@ -671,6 +672,21 @@ export const useSudokuBoard = () => {
     setRemainingCounts(counts);
   }, []);
 
+  const saveSudokuData = useCallback(() => {
+    const sudokuData = {
+      board,
+      answerBoard: answerBoard.current,
+      history: history.current,
+      currentStep,
+      remainingCounts,
+      candidateMap,
+      graph,
+      counts,
+      standradBoard,
+    };
+    AsyncStorage.setItem('sudokuData2', JSON.stringify(sudokuData));
+  }, []);
+
   const updateBoard = useCallback(
     (newBoard: CellData[][], action: string, isFill: boolean) => {
       if (
@@ -758,5 +774,6 @@ export const useSudokuBoard = () => {
     setCounts,
     initializeBoard,
     isInitialized,
+    saveSudokuData,
   };
 };
