@@ -1,14 +1,15 @@
 import React, {useEffect} from 'react';
 import {Text} from 'react-native';
 import styles from '../views/sudokuStyles';
-import {useTimer} from '../tools';
+import {useTimer} from '../tools/useTimer';
+import {useSudokuStore} from '../store';
 
 interface TimerProps {
   setTimeFunction: (time: string) => void;
   counts: number;
   playVictorySound: () => void;
   difficulty: string;
-  pauseVisible: boolean;
+  timeOffset: number;
 }
 
 export default React.memo(function Timer({
@@ -16,9 +17,9 @@ export default React.memo(function Timer({
   counts,
   playVictorySound,
   difficulty,
-  pauseVisible,
 }: TimerProps) {
-  const {time, setIsRunning, setTime} = useTimer(difficulty, pauseVisible);
+  const {pauseVisible} = useSudokuStore();
+  const {time, setIsRunning} = useTimer(difficulty, pauseVisible);
 
   useEffect(() => {
     if (counts === 81) {
@@ -29,12 +30,6 @@ export default React.memo(function Timer({
       }, 100);
     }
   }, [counts, setIsRunning, setTimeFunction, time, playVictorySound]);
-
-  useEffect(() => {
-    if (difficulty) {
-      setTime('00:00');
-    }
-  }, [difficulty]);
 
   return <Text style={[styles.gameInfoText, styles.rightText]}>{time}</Text>;
 });

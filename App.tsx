@@ -6,34 +6,13 @@ import Home from './src/views/Home';
 import Login from './src/views/Login';
 import Setting from './src/views/setting';
 import {initSounds} from './src/tools/Sound';
+import {useSudokuStore} from './src/store';
 
 function App() {
-  const [isHome, setIsHome] = useState(true);
-  const [difficulty, setDifficulty] = useState('');
-  const [resultVisible, setResultVisible] = useState(false);
-  const [pauseVisible, setPauseVisible] = useState(false);
-  const [time, setTime] = useState('00:00');
-  const [errorCount, setErrorCount] = useState(0);
-  const [hintCount, setHintCount] = useState(0);
+  const {resultVisible, pauseVisible} = useSudokuStore();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const slideAnim = useRef(new Animated.Value(800)).current;
-  const [settingVisible, setSettingVisible] = useState(false);
   const [settingSlideAnim] = useState(new Animated.Value(800));
-  const [isSound, setIsSound] = useState(true);
-
-  const setSuccessResult = useCallback(
-    (time: string, errorCount: number, hintCount: number) => {
-      setResultVisible(true);
-      setTime(time);
-      setErrorCount(errorCount);
-      setHintCount(hintCount);
-    },
-    [],
-  );
-
-  const tooglePause = useCallback(() => {
-    setPauseVisible(!pauseVisible);
-  }, [pauseVisible]);
 
   const openSudoku = useCallback(() => {
     Animated.spring(slideAnim, {
@@ -75,10 +54,6 @@ function App() {
     }).start();
   }, [settingSlideAnim]);
 
-  const toogleSound = useCallback(() => {
-    setIsSound(!isSound);
-  }, [isSound]);
-
   useEffect(() => {
     initSounds();
   }, []);
@@ -94,47 +69,21 @@ function App() {
               : styles.background2.backgroundColor
           }
         />
-        {/* {!isLoggedIn ? (
+        {isLoggedIn ? (
           <Login setIsLoggedIn={setIsLoggedIn} />
-        ) : ( */}
+        ) : (
         <>
-          <Home
-            setIsHome={setIsHome}
-            setDifficulty={setDifficulty}
-            openSudoku={openSudoku}
-            openSetting={openSetting}
-            isSound={isSound}
-          />
+          <Home openSudoku={openSudoku} openSetting={openSetting} />
           <Sudoku
             slideAnim={slideAnim}
-            setSuccessResult={setSuccessResult}
-            difficulty={difficulty}
-            setDifficulty={setDifficulty}
-            pauseVisible={pauseVisible}
-            tooglePause={tooglePause}
-            isHome={isHome}
-            setIsHome={setIsHome}
             closeSudoku={closeSudoku}
-            isSound={isSound}
             openSetting={openSetting}
           />
-          <Setting
-            slideAnim={settingSlideAnim}
-            closeSetting={closeSetting}
-            toogleSound={toogleSound}
-            isSound={isSound}
-          />
-        </>
-        {/* )} */}
+          <Setting slideAnim={settingSlideAnim} closeSetting={closeSetting} />
+          </>
+        )}
       </SafeAreaView>
-      {resultVisible && (
-        <ResultView
-          time={time}
-          errorCount={errorCount}
-          hintCount={hintCount}
-          onNext={() => {}}
-        />
-      )}
+      {resultVisible && <ResultView onNext={() => {}} />}
     </>
   );
 }

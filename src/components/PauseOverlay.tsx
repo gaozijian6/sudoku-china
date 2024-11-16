@@ -1,15 +1,14 @@
 import React from 'react';
 import {StyleSheet, Image, Pressable, Modal} from 'react-native';
+import {useSudokuStore} from '../store';
 
-interface PauseOverlayProps {
-  tooglePause: () => void;
-  visible: boolean;
-}
-
-const PauseOverlay: React.FC<PauseOverlayProps> = ({tooglePause, visible}) => {
+const PauseOverlay: React.FC = () => {
+  const {setPauseVisible, pauseVisible} = useSudokuStore();
   return (
-    <Modal animationType="none" transparent={true} visible={visible}>
-      <Pressable style={styles.overlay} onPressIn={tooglePause}>
+    <Modal animationType="none" transparent={true} visible={pauseVisible}>
+      <Pressable
+        style={styles.overlay}
+        onPressIn={() => setPauseVisible(!pauseVisible)}>
         <Image
           source={require('../assets/icon/pause2.png')}
           style={styles.pauseIcon}

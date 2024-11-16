@@ -1,16 +1,14 @@
 import React, { useEffect } from 'react';
 import {View, Text, Pressable, StyleSheet, Animated} from 'react-native';
+import {useSudokuStore} from '../store';
 
 interface ResultProps {
-  time: string;
-  errorCount: number;
-  hintCount: number;
   onNext: () => void;
 }
 
-const ResultView: React.FC<ResultProps> = ({time, errorCount, hintCount, onNext}) => {
+const ResultView: React.FC<ResultProps> = ({onNext}) => {
   const scaleAnim = new Animated.Value(0);
-
+  const {time, errorCount, hintCount} = useSudokuStore();
   useEffect(() => {
     Animated.spring(scaleAnim, {
       toValue: 1,

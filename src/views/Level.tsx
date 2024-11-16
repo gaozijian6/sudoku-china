@@ -1,12 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Animated,
-} from 'react-native';
+import {View, Text, StyleSheet, Pressable, Animated} from 'react-native';
 import {DIFFICULTY} from '../constans';
+import {useSudokuStore} from '../store';
 
 interface LevelCardProps {
   level: string;
@@ -30,6 +25,7 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [showShadow, setShowShadow] = useState(true);
+  const {setIsContinue} = useSudokuStore();
 
   useEffect(() => {
     if (visible) {
@@ -64,6 +60,7 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
 
   const handleLevelSelect = (level: string) => {
     onLevelSelect(level);
+    setIsContinue(false);
   };
 
   const handleClose = () => {

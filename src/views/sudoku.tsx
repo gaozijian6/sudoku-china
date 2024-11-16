@@ -50,6 +50,7 @@ import Buttons from '../components/Buttons';
 import Timer from '../components/Timer';
 import {playSound} from '../tools/Sound';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useSudokuStore} from '../store';
 
 import {
   mockBoard1,
@@ -69,37 +70,19 @@ import {
 import extremeBoard from './extreme';
 import PauseOverlay from '../components/PauseOverlay';
 import TarBarsSudoku from '../components/tarBarsSudoku';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase/config';
 
 interface SudokuProps {
   slideAnim: Animated.Value;
-  setSuccessResult: (
-    time: string,
-    errorCount: number,
-    hintCount: number,
-  ) => void;
-  difficulty: string;
-  setDifficulty: (value: string) => void;
-  pauseVisible: boolean;
-  tooglePause: () => void;
-  isHome: boolean;
-  setIsHome: (value: boolean) => void;
   closeSudoku: () => void;
-  isSound: boolean;
   openSetting: () => void;
 }
 
 const Sudoku: React.FC<SudokuProps> = memo(
   ({
     slideAnim,
-    setSuccessResult,
-    difficulty,
-    setDifficulty,
-    pauseVisible,
-    tooglePause,
-    isHome,
-    setIsHome,
     closeSudoku,
-    isSound,
     openSetting,
   }) => {
     const {
@@ -118,11 +101,13 @@ const Sudoku: React.FC<SudokuProps> = memo(
       resetSudokuBoard,
       initializeBoard,
       isInitialized,
-      saveSudokuData
+      saveSudokuData,
+      loadSavedData2,
+      counts,
+      initializeBoard2,
     } = useSudokuBoard();
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
-    const [errorCount, setErrorCount] = useState<number>(0);
     const [draftMode, setDraftMode] = useState<boolean>(false);
     const lastErrorTime = useRef<number | null>(null);
     const errorCooldownPeriod = useRef<number>(300);
@@ -175,6 +160,17 @@ const Sudoku: React.FC<SudokuProps> = memo(
       swordfish,
       trialAndError,
     ]);
+    const {
+      isContinue,
+      difficulty,
+      isHome,
+      setResultVisible,
+      setTime,
+      errorCount,
+      setErrorCount,
+      setHintCount,
+      isSound,
+    } = useSudokuStore();
     const resetSudoku = useCallback(() => {
       setSelectedNumber(1);
       lastSelectedNumber.current = null;
@@ -198,11 +194,10 @@ const Sudoku: React.FC<SudokuProps> = memo(
       time.current = '00:00';
       startTime.current = 0;
       resetSudokuBoard();
-    }, [resetSudokuBoard]);
+    }, [resetSudokuBoard, setErrorCount]);
 
     const saveData = useCallback(() => {
       const sudokuData = {
-        board,
         lastSelectedNumber: lastSelectedNumber.current,
         errorCount,
         draftMode,
@@ -211,7 +206,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         lastSelectedCell: lastSelectedCell.current,
         selectionMode,
         errorCells,
-        hintDrawerVisible, 
+        hintDrawerVisible,
         hintContent,
         hintMethod,
         result,
@@ -224,50 +219,114 @@ const Sudoku: React.FC<SudokuProps> = memo(
         time: time.current,
         startTime: startTime.current,
       };
+
       AsyncStorage.setItem('sudokuData1', JSON.stringify(sudokuData));
       saveSudokuData();
-    }, []);
+    }, [
+      differenceMap,
+      draftMode,
+      eraseEnabled,
+      errorCells,
+      errorCount,
+      hintContent,
+      hintDrawerVisible,
+      hintMethod,
+      positions,
+      prompts,
+      result,
+      saveSudokuData,
+      selectedCell,
+      selectionMode,
+    ]);
 
     useEffect(() => {
-      if (!isHome) {
+      if (!isHome && !isContinue) {
         resetSudoku();
       }
-    }, [isHome]);
+    }, [isHome, isContinue]);
+
+    useEffect(() => {
+      if (isContinue) {
+        loadSavedData();
+        loadSavedData2();
+      }
+    }, [isContinue]);
 
     useEffect(() => {
       generateBoard(difficulty);
     }, [difficulty]);
 
+    const setSuccessResult = useCallback(
+      (time: string, errorCount: number, hintCount: number) => {
+        setResultVisible(true);
+        setTime(time);
+        setErrorCount(errorCount);
+        setHintCount(hintCount);
+      },
+      [setResultVisible, setTime, setErrorCount, setHintCount],
+    );
+
+    const loadSavedData = useCallback(async () => {
+      const sudokuData = await AsyncStorage.getItem('sudokuData1');
+      if (sudokuData) {
+        const data = JSON.parse(sudokuData);
+        lastSelectedNumber.current = data.lastSelectedNumber;
+        setErrorCount(data.errorCount);
+        setDraftMode(data.draftMode);
+        lastErrorTime.current = data.lastErrorTime;
+        setSelectedCell(data.selectedCell);
+        lastSelectedCell.current = data.lastSelectedCell;
+        setSelectionMode(data.selectionMode);
+        setErrorCells(data.errorCells);
+        setHintDrawerVisible(data.hintDrawerVisible);
+        setHintContent(data.hintContent);
+        setHintMethod(data.hintMethod);
+        setResult(data.result);
+        setPrompts(data.prompts);
+        setPositions(data.positions);
+        setEraseEnabled(data.eraseEnabled);
+        isClickAutoNote.current = data.isClickAutoNote;
+        setDifferenceMap(data.differenceMap);
+        hintCount.current = data.hintCount;
+        time.current = data.time;
+        startTime.current = data.startTime;
+      }
+    }, [setErrorCount]);
+
+    const handleGetEasy = useCallback(async () => {
+      const easyBank = collection(db, 'easyBank');
+      const querySnapshot = await getDocs(easyBank);
+      initializeBoard2(
+        querySnapshot.docs[0].data().puzzle,
+        querySnapshot.docs[0].data().answer,
+      );
+    }, [initializeBoard2]);
+
+    const handleGetExtreme = useCallback(async () => {
+      const extremeBank = collection(db, 'extremeBank');
+      const querySnapshot = await getDocs(extremeBank);
+      initializeBoard2(
+        querySnapshot.docs[0].data().puzzle,
+        querySnapshot.docs[0].data().answer,
+      );
+    }, [initializeBoard2]);
+
     const generateBoard = useCallback(
       (difficulty: string) => {
         switch (difficulty) {
           case DIFFICULTY.EASY:
-            initializeBoard(
-              mockBoard1,
-              mockStandardBoard1,
-              mockAnswerBoard1,
-              mockRemainingCounts1,
-              mockCounts1,
-            );
+            handleGetEasy();
             break;
           case DIFFICULTY.MEDIUM:
-            // newBoard = deepCopyBoard(middleBoard);
             break;
           case DIFFICULTY.HARD:
-            initializeBoard(
-              mockBoard3,
-              mockStandardBoard3,
-              mockAnswerBoard3,
-              mockRemainingCounts3,
-              mockCounts3,
-            );
             break;
           case DIFFICULTY.EXTREME:
-            // newBoard = deepCopyBoard(extremeBoard);
+            handleGetExtreme();
             break;
         }
       },
-      [initializeBoard],
+      [handleGetEasy, handleGetExtreme],
     );
 
     const playSuccessSound = useCallback(
@@ -292,19 +351,22 @@ const Sudoku: React.FC<SudokuProps> = memo(
       }, 300);
     }, [isSound]);
 
-    const handleError = useCallback((row: number, col: number) => {
-      playSound('error', isSound);
-      const currentTime = Date.now();
-      if (
-        lastErrorTime.current === null ||
-        currentTime - lastErrorTime.current > errorCooldownPeriod.current
-      ) {
-        setErrorCount(prevCount => prevCount + 1);
-        setErrorCells([{row, col}]);
-        lastErrorTime.current = currentTime;
-        setTimeout(() => setErrorCells([]), errorCooldownPeriod.current);
-      }
-    }, []);
+    const handleError = useCallback(
+      (row: number, col: number) => {
+        playSound('error', isSound);
+        const currentTime = Date.now();
+        if (
+          lastErrorTime.current === null ||
+          currentTime - lastErrorTime.current > errorCooldownPeriod.current
+        ) {
+          setErrorCount(errorCount + 1);
+          setErrorCells([{row, col}]);
+          lastErrorTime.current = currentTime;
+          setTimeout(() => setErrorCells([]), errorCooldownPeriod.current);
+        }
+      },
+      [errorCount, isSound, setErrorCount],
+    );
 
     const handleErrorDraftAnimation = useCallback(
       (conflictCells: Position[]) => {
@@ -508,7 +570,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
                 currentTime - lastErrorTime.current >
                   errorCooldownPeriod.current
               ) {
-                setErrorCount(prevCount => prevCount + 1);
+                setErrorCount(errorCount + 1);
                 lastErrorTime.current = currentTime;
               }
               return;
@@ -532,6 +594,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
         playSuccessSound,
         remainingCountsMinusOne,
         handleError,
+        setErrorCount,
+        errorCount,
       ],
     );
 
@@ -803,9 +867,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
         ]}>
         <TarBarsSudoku
           onBack={handleBack}
-          tooglePause={tooglePause}
-          setDifficulty={setDifficulty}
-          setIsHome={setIsHome}
           openSetting={openSetting}
           saveData={saveData}
         />
@@ -825,7 +886,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
             counts={counts}
             playVictorySound={playVictorySound}
             difficulty={difficulty}
-            pauseVisible={pauseVisible}
           /> */}
         </View>
         <View style={styles.sudokuGrid}>
@@ -971,7 +1031,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
             </>
           </View>
         </Modal>
-        <PauseOverlay tooglePause={tooglePause} visible={pauseVisible} />
+        <PauseOverlay />
       </Animated.View>
     );
   },

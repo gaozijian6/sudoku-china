@@ -86,6 +86,7 @@ android {
         versionCode 1
         versionName "1.0"
         resValue "string", "google_web_client_id", "153933768237-ahlldb4iucnds60dv8rk5arnpbu2prb7.apps.googleusercontent.com"
+        multiDexEnabled true
     }
     signingConfigs {
         debug {
@@ -116,12 +117,19 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore")
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
     }
+
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation platform('com.google.firebase:firebase-bom:32.7.4')
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-analytics'
 }
 
 project.ext.react = [

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,20 +9,22 @@ import {
   Animated,
   StatusBar,
 } from 'react-native';
+import {useSudokuStore} from '../store';
 
 interface SettingProps {
   slideAnim: Animated.Value;
   closeSetting: () => void;
-  toogleSound: () => void;
-  isSound: boolean;
 }
 
 const Setting: React.FC<SettingProps> = ({
   slideAnim,
   closeSetting,
-  toogleSound,
-  isSound,
 }) => {
+  const {isSound, setIsSound} = useSudokuStore();
+
+  const toogleSound = useCallback(() => {
+    setIsSound(!isSound);
+  }, [isSound, setIsSound]);
   return (
     <Animated.View
       style={[

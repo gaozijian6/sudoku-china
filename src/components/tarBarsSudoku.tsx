@@ -1,28 +1,24 @@
 import React, {FC, useCallback} from 'react';
 import {Text, StyleSheet, View, Image, Pressable} from 'react-native';
+import {useSudokuStore} from '../store';
 
 interface TarBarsSudokuProps {
   onBack: () => void;
-  tooglePause: () => void;
-  setDifficulty: (value: string) => void;
-  setIsHome: (value: boolean) => void;
   openSetting: () => void;
   saveData: () => void;
 }
 
 const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
   onBack,
-  tooglePause,
-  setDifficulty,
-  setIsHome,
   openSetting,
   saveData,
 }) => {
+  const {setIsHome, setDifficulty, setPauseVisible, pauseVisible} = useSudokuStore();
   const backToHome = useCallback(() => {
+    saveData();
     setDifficulty('');
     setIsHome(true);
     onBack();
-    saveData();
   }, [setDifficulty, setIsHome, onBack, saveData]);
 
   return (
@@ -38,7 +34,11 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
           <Text style={styles.sudoku}>sudoku</Text>
         </View>
         <View style={styles.rightSection}>
-          <Pressable style={styles.pauseIconContainer} onPressIn={tooglePause}>
+          <Pressable
+            style={styles.pauseIconContainer}
+            onPressIn={() => {
+              setPauseVisible(!pauseVisible);
+            }}>
             <Image
               source={require('../assets/icon/pause.png')}
               style={styles.pauseIcon}

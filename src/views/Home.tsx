@@ -9,23 +9,19 @@ import {
 } from 'react-native';
 import Level from './Level';
 import {playSound} from '../tools/Sound';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useSudokuStore} from '../store';
+
 
 interface HomeProps {
-  setIsHome: (value: boolean) => void;
-  setDifficulty: (value: string) => void;
   openSudoku: () => void;
   openSetting: () => void;
-  isSound: boolean;
 }
 
 const Home: React.FC<HomeProps> = ({
-  setIsHome,
-  setDifficulty,
   openSudoku,
   openSetting,
-  isSound,
 }) => {
+  const {setIsContinue, setDifficulty, setIsHome, isSound} = useSudokuStore();
   const [showLevel, setShowLevel] = useState(false);
   const handleLevelSelect = (level: string) => {
     openSudoku();
@@ -41,6 +37,7 @@ const Home: React.FC<HomeProps> = ({
 
   const handleContinue = () => {
     playSound('switch', isSound);
+    setIsContinue(true);
     openSudoku();
     setIsHome(false);
   };
