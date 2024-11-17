@@ -53,6 +53,7 @@ export const STRONG_LINK_TYPE = {
 };
 
 export const DIFFICULTY = {
+  ENTRY: "入门",
   EASY: "简单",
   MEDIUM: "中等",
   HARD: "困难",

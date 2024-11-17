@@ -7,12 +7,45 @@ import Login from './src/views/Login';
 import Setting from './src/views/setting';
 import {initSounds} from './src/tools/Sound';
 import {useSudokuStore} from './src/store';
+import { getDocs, query, limit, startAt } from 'firebase/firestore';
+import { db } from './src/firebase/config';
+import { collection } from 'firebase/firestore';
+
+interface SudokuBank {
+  id: string;
+  puzzle: string;
+  answer: string;
+}
 
 function App() {
-  const {resultVisible, pauseVisible} = useSudokuStore();
+  const {resultVisible, pauseVisible, setEasyBank} = useSudokuStore();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const slideAnim = useRef(new Animated.Value(800)).current;
   const [settingSlideAnim] = useState(new Animated.Value(800));
+
+  const getEasyBank = useCallback(async () => {
+    const easyBank = collection(db, 'easyBank');
+    const random = Math.floor(Math.random() * 2);
+    console.log('随机数:', random);
+    
+    console.log('开始查询...');
+    const q = query(easyBank, limit(1), startAt(random));
+    console.log('查询对象创建成功');
+    
+    const snapshot = await getDocs(q);
+    console.log('查询结果:', snapshot?.empty ? '无数据' : '有数据', '文档数量:', snapshot?.docs?.length);
+    
+    if (snapshot?.docs?.length > 0) {
+        const doc = snapshot.docs[0];
+        console.log('文档数据:', JSON.stringify(doc.data(), null, 2));
+        setEasyBank([{
+            id: doc.id,
+            ...doc.data()
+        }] as SudokuBank[]);
+    } else {
+        console.log('未找到数据');
+    }
+  }, [setEasyBank]);
 
   const openSudoku = useCallback(() => {
     Animated.spring(slideAnim, {
@@ -73,7 +106,7 @@ function App() {
           <Login setIsLoggedIn={setIsLoggedIn} />
         ) : (
         <>
-          <Home openSudoku={openSudoku} openSetting={openSetting} />
+          <Home openSudoku={openSudoku} openSetting={openSetting} getEasyBank={getEasyBank} />
           <Sudoku
             slideAnim={slideAnim}
             closeSudoku={closeSudoku}

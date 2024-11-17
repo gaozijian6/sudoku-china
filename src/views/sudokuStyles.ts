@@ -181,6 +181,7 @@ const sudokuStyles = StyleSheet.create({
   },
   buttonContainer: {
     alignItems: 'center',
+    width: 50
   },
   circleButton: {
     width: 40,

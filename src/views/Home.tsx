@@ -15,11 +15,13 @@ import {useSudokuStore} from '../store';
 interface HomeProps {
   openSudoku: () => void;
   openSetting: () => void;
+  getEasyBank: () => void;
 }
 
 const Home: React.FC<HomeProps> = ({
   openSudoku,
   openSetting,
+  getEasyBank,
 }) => {
   const {setIsContinue, setDifficulty, setIsHome, isSound} = useSudokuStore();
   const [showLevel, setShowLevel] = useState(false);
@@ -63,7 +65,7 @@ const Home: React.FC<HomeProps> = ({
           <Text style={styles.continueButtonText}>继续</Text>
           <Text style={styles.arrowIcon}>❯</Text>
         </Pressable>
-        <Pressable style={styles.customButton}>
+        <Pressable style={styles.customButton} onPressIn={getEasyBank}>
           <Text style={styles.customButtonText}>自定义</Text>
           <Text style={styles.arrowIcon}>❯</Text>
         </Pressable>

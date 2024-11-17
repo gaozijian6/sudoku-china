@@ -19,25 +19,29 @@ interface SudokuState {
   setPauseVisible: (value: boolean) => void;
   isSound: boolean;
   setIsSound: (value: boolean) => void;
+  easyBank: SudokuBank[];
+  setEasyBank: (value: SudokuBank[]) => void;
 }
 
-export const useSudokuStore = create<SudokuState>((set) => ({
+export const useSudokuStore = create<SudokuState>(set => ({
   isContinue: false,
-  setIsContinue: (value) => set({isContinue: value}),
+  setIsContinue: value => set({isContinue: value}),
   difficulty: '',
-  setDifficulty: (value) => set({difficulty: value}),
+  setDifficulty: value => set({difficulty: value}),
   isHome: true,
-  setIsHome: (value) => set({isHome: value}),
+  setIsHome: value => set({isHome: value}),
   resultVisible: false,
-  setResultVisible: (value) => set({resultVisible: value}),
+  setResultVisible: value => set({resultVisible: value}),
   time: '00:00',
-  setTime: (value) => set({time: value}),
+  setTime: value => set({time: value}),
   errorCount: 0,
-  setErrorCount: (value) => set({errorCount: value}),
+  setErrorCount: value => set({errorCount: value}),
   hintCount: 0,
-  setHintCount: (value) => set({hintCount: value}),
+  setHintCount: value => set({hintCount: value}),
   pauseVisible: false,
-  setPauseVisible: (value) => set({pauseVisible: value}),
+  setPauseVisible: value => set({pauseVisible: value}),
   isSound: true,
-  setIsSound: (value) => set({isSound: value}),
+  setIsSound: value => set({isSound: value}),
+  easyBank: [],
+  setEasyBank: value => set({easyBank: value}),
 }));

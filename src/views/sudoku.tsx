@@ -51,27 +51,16 @@ import Timer from '../components/Timer';
 import {playSound} from '../tools/Sound';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSudokuStore} from '../store';
-
-import {
-  mockBoard1,
-  mockStandardBoard1,
-  mockAnswerBoard1,
-  mockRemainingCounts1,
-  mockCounts1,
-} from './easy';
-import middleBoard from './middle';
-import {
-  mockBoard3,
-  mockStandardBoard3,
-  mockAnswerBoard3,
-  mockRemainingCounts3,
-  mockCounts3,
-} from './hard';
-import extremeBoard from './extreme';
 import PauseOverlay from '../components/PauseOverlay';
 import TarBarsSudoku from '../components/tarBarsSudoku';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebase/config';
+import {collection, getDocs} from 'firebase/firestore';
+import {db} from '../firebase/config';
+
+import extremeBoard from '../mock/extreme';
+import entryBoard from '../mock/easy';
+import mediumBoard from '../mock/medium';
+import hardBoard from '../mock/hard';
+import easyBoard from '../mock/easy';
 
 interface SudokuProps {
   slideAnim: Animated.Value;
@@ -80,11 +69,7 @@ interface SudokuProps {
 }
 
 const Sudoku: React.FC<SudokuProps> = memo(
-  ({
-    slideAnim,
-    closeSudoku,
-    openSetting,
-  }) => {
+  ({slideAnim, closeSudoku, openSetting}) => {
     const {
       board,
       updateBoard,
@@ -293,40 +278,48 @@ const Sudoku: React.FC<SudokuProps> = memo(
       }
     }, [setErrorCount]);
 
-    const handleGetEasy = useCallback(async () => {
-      const easyBank = collection(db, 'easyBank');
-      const querySnapshot = await getDocs(easyBank);
-      initializeBoard2(
-        querySnapshot.docs[0].data().puzzle,
-        querySnapshot.docs[0].data().answer,
-      );
-    }, [initializeBoard2]);
-
-    const handleGetExtreme = useCallback(async () => {
-      const extremeBank = collection(db, 'extremeBank');
-      const querySnapshot = await getDocs(extremeBank);
-      initializeBoard2(
-        querySnapshot.docs[0].data().puzzle,
-        querySnapshot.docs[0].data().answer,
-      );
-    }, [initializeBoard2]);
-
     const generateBoard = useCallback(
       (difficulty: string) => {
+        let random: number;
         switch (difficulty) {
+          case DIFFICULTY.ENTRY:
+            random = Math.floor(Math.random() * entryBoard.length);
+            initializeBoard2(
+              entryBoard[random].puzzle,
+              entryBoard[random].solution,
+            );
+            break;
           case DIFFICULTY.EASY:
-            handleGetEasy();
+            random = Math.floor(Math.random() * easyBoard.length);
+            initializeBoard2(
+              easyBoard[random].puzzle,
+              easyBoard[random].solution,
+            );
             break;
           case DIFFICULTY.MEDIUM:
+            random = Math.floor(Math.random() * mediumBoard.length);
+            initializeBoard2(
+              mediumBoard[random].puzzle,
+              mediumBoard[random].solution,
+            );
             break;
           case DIFFICULTY.HARD:
+            random = Math.floor(Math.random() * hardBoard.length);
+            initializeBoard2(
+              hardBoard[random].puzzle,
+              hardBoard[random].solution,
+            );
             break;
           case DIFFICULTY.EXTREME:
-            handleGetExtreme();
+            random = Math.floor(Math.random() * extremeBoard.length);
+            initializeBoard2(
+              extremeBoard[random].puzzle,
+              extremeBoard[random].solution,
+            );
             break;
         }
       },
-      [handleGetEasy, handleGetExtreme],
+      [initializeBoard2],
     );
 
     const playSuccessSound = useCallback(
@@ -693,6 +686,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           const differenceMap = findDifferenceDraft(board, standradBoard);
           setDifferenceMap(differenceMap);
           setHintMethod('');
+          setHintDrawerVisible(true);
           setHintContent('笔记有错误，请先修正');
           return;
         }

@@ -109,6 +109,11 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
           </Pressable>
         </View>
         <LevelCard
+          level={DIFFICULTY.ENTRY}
+          onPressIn={() => handleLevelSelect(DIFFICULTY.ENTRY)}
+          style={showShadow ? styles.card : styles.cardNoShadow}
+        />
+        <LevelCard
           level={DIFFICULTY.EASY}
           onPressIn={() => handleLevelSelect(DIFFICULTY.EASY)}
           style={showShadow ? styles.card : styles.cardNoShadow}
