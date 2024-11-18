@@ -40,6 +40,7 @@ export const SOLUTION_METHODS = {
   SWORDFISH_COLUMN: "三阶鱼(列)",
   SWORDFISH_WITH_FIN_ROW: "三阶鱼带鳍(行)",
   SWORDFISH_WITH_FIN_COLUMN: "三阶鱼带鳍(列)",
+  WXYZ_WING: "WXYZ-Wing",
   TRIAL_AND_ERROR: "试数法",
 };
 

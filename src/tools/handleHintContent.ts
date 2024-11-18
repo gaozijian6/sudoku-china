@@ -680,6 +680,34 @@ export const handleHintContent = (
           target[0]
         }，第${rows.join('、')}行内都不能出现候选数${target[0]}`;
         break;
+      case SOLUTION_METHODS.WXYZ_WING:
+        boardWithHighlight = applyHintHighlight(board, result, 'both');
+        setPositions(target);
+        setPrompts(target);
+        if (position.length === 1) {
+          hintContent = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+            prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
+            prompt[2].col + 1
+          }、R${prompt[3].row + 1}C${prompt[3].col + 1}构成WXYZ-Wing,其中R${
+            prompt[0].row + 1
+          }C${prompt[0].col + 1}为枢纽，无论这四个候选方格内如何取值，R${
+            position[0].row + 1
+          }C${position[0].col + 1}内都不能出现候选数${target[0]}`;
+        } else if (position.length === 2) {
+          hintContent = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+            prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
+            prompt[2].col + 1
+          }、R${prompt[3].row + 1}C${prompt[3].col + 1}构成WXYZ-Wing，其中R${
+            prompt[0].row + 1
+          }C${prompt[0].col + 1}为枢纽，无论这四个候选方格内如何取值，R${
+            position[0].row + 1
+          }C${position[0].col + 1}、R${position[1].row + 1}C${
+            position[1].col + 1
+          }内都不能出现候选数${target[0]}`;
+        }
+        break;
     }
   }
 
