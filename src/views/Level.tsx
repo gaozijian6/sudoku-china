@@ -9,14 +9,14 @@ interface LevelCardProps {
   style?: any;
 }
 
-<<<<<<< HEAD
-const LevelCard: React.FC<LevelCardProps> = ({ level, onPressIn, style }) => (
-  <Pressable 
-    onPressIn={onPressIn}
-    style={style}
-  >
+const LevelCard: React.FC<LevelCardProps> = ({level, onPressIn, style}) => (
+  <Pressable onPressIn={onPressIn} style={style}>
+    <Text style={styles.cardText}>{level}</Text>
+  </Pressable>
+);
 
 interface LevelProps {
+  onClose: () => void;
   visible: boolean;
   onLevelSelect: (level: string) => void;
 }
