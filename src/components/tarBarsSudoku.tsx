@@ -1,35 +1,30 @@
 import React, {FC, useCallback} from 'react';
-import {
-  Text,
-  StyleSheet,
-  View,
-  Image,
-  Pressable,
-} from 'react-native';
+import {Text, StyleSheet, View, Image, Pressable} from 'react-native';
+import {useSudokuStore} from '../store';
 
 interface TarBarsSudokuProps {
   onBack: () => void;
-  tooglePause: () => void;
-  setDifficulty: (value: string) => void;
-  setIsHome: (value: boolean) => void;
+  openSetting: () => void;
+  saveData: () => void;
 }
 
 const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
   onBack,
-  tooglePause,
-  setDifficulty,
-  setIsHome,
+  openSetting,
+  saveData,
 }) => {
+  const {setIsHome, setDifficulty, setPauseVisible, pauseVisible} = useSudokuStore();
   const backToHome = useCallback(() => {
+    saveData();
     setDifficulty('');
     setIsHome(true);
     onBack();
-  }, [setDifficulty, setIsHome, onBack]);
+  }, [setDifficulty, setIsHome, onBack, saveData]);
 
   return (
     <View style={styles.container}>
       <>
-        <Pressable style={[styles.leftSection]} onPress={backToHome}>
+        <Pressable style={[styles.leftSection]} onPressIn={backToHome}>
           <Image
             source={require('../assets/icon/back.png')}
             style={styles.backIcon}
@@ -38,12 +33,26 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
         <View style={styles.centerSection}>
           <Text style={styles.sudoku}>sudoku</Text>
         </View>
-        <Pressable style={[styles.rightSection]} onPress={tooglePause}>
-          <Image
-            source={require('../assets/icon/pause.png')}
-            style={styles.pauseIcon}
-          />
-        </Pressable>
+        <View style={styles.rightSection}>
+          <Pressable
+            style={styles.pauseIconContainer}
+            onPressIn={() => {
+              setPauseVisible(!pauseVisible);
+            }}>
+            <Image
+              source={require('../assets/icon/pause.png')}
+              style={styles.pauseIcon}
+            />
+          </Pressable>
+          <Pressable
+            onPressIn={openSetting}
+            style={styles.settingIconContainer}>
+            <Image
+              source={require('../assets/icon/setting.png')}
+              style={styles.settingIcon}
+            />
+          </Pressable>
+        </View>
       </>
     </View>
   );
@@ -71,25 +80,53 @@ const styles = StyleSheet.create({
   leftSection: {
     flex: 1,
     alignItems: 'flex-start',
-    paddingHorizontal: 15,
+    justifyContent: 'center',
+    paddingLeft: 15,
+    position: 'absolute',
+    left: 0,
   },
   centerSection: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   rightSection: {
     flex: 1,
-    alignItems: 'flex-end',
-    paddingHorizontal: 15,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    height: '100%',
+    paddingRight: 5,
+    position: 'absolute',
+    right: 0,
+  },
+  pauseIconContainer: {
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  settingIconContainer: {
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
   },
   pauseIcon: {
-    width: 26,
-    height: 26,
+    width: 30,
+    height: 30,
     marginLeft: 10,
   },
   backIcon: {
     width: 22,
     height: 22,
+    marginRight: 10,
+  },
+  settingIcon: {
+    width: 26,
+    height: 26,
     marginRight: 10,
   },
 });

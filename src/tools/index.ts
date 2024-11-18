@@ -1,6 +1,7 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
+import {useCallback, useRef, useState} from 'react';
 import {isUnitStrongLink} from './solution';
 import initialBoard from '../views/initialBoard';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface Position {
   row: number;
@@ -234,58 +235,6 @@ export const isBoxFull = (board: CellData[][], box: number) => {
   return Array.from({length: 3}, (_, i) =>
     Array.from({length: 3}, (_, j) => board[startRow + i][startCol + j]),
   ).every(row => row.every(cell => cell.value !== null));
-};
-
-export const useTimer = (difficulty: string, pauseVisible: boolean) => {
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [time, setTime] = useState('00:00');
-  const [isRunning, setIsRunning] = useState(false);
-  const [pauseTime, setPauseTime] = useState<number | null>(null);
-  const [totalPausedTime, setTotalPausedTime] = useState(0);
-
-  useEffect(() => {
-    if (difficulty) {
-      setStartTime(Date.now());
-      setIsRunning(true);
-    }
-  }, [difficulty]);
-
-  useEffect(() => {
-    if (pauseVisible) {
-      setPauseTime(Date.now());
-      setIsRunning(false);
-    } else if (pauseTime) {
-      setTotalPausedTime(prev => prev + (Date.now() - pauseTime));
-      setPauseTime(null);
-      setIsRunning(true);
-    }
-  }, [pauseVisible]);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-
-    if (isRunning && startTime) {
-      timer = setInterval(() => {
-        const elapsedSeconds = Math.floor(
-          (Date.now() - startTime - totalPausedTime) / 1000,
-        );
-        const minutes = Math.floor(elapsedSeconds / 60);
-        const seconds = elapsedSeconds % 60;
-        const timeString = `${minutes.toString().padStart(2, '0')}:${seconds
-          .toString()
-          .padStart(2, '0')}`;
-        setTime(timeString);
-      }, 1000);
-    }
-
-    return () => {
-      if (timer) {
-        clearInterval(timer);
-      }
-    };
-  }, [isRunning, startTime, totalPausedTime]);
-
-  return {time, setIsRunning, setTime};
 };
 
 export const getCellClassName = (
@@ -549,6 +498,7 @@ export const isSameBoard = (board1: CellData[][], board2: CellData[][]) => {
 // 创建一个新的 hook 来管理棋盘状态和历史
 export const useSudokuBoard = () => {
   const [board, setBoard] = useState<CellData[][]>(initialBoard);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const answerBoard = useRef<CellData[][]>(initialBoard);
   const history = useRef<BoardHistory[]>([]);
   const [currentStep, setCurrentStep] = useState<number>(0);
@@ -595,6 +545,7 @@ export const useSudokuBoard = () => {
     setGraph(createGraph(initialBoard, candidateMap));
     setCounts(0);
     setStandradBoard(initialBoard);
+    setIsInitialized(false);
   }, [candidateMap]);
 
   const updateCandidateMap = useCallback((newBoard: CellData[][]) => {
@@ -642,6 +593,23 @@ export const useSudokuBoard = () => {
     setCandidateMap(newCandidateMap);
   }, []);
 
+  const loadSavedData2 = useCallback(async () => {
+    const sudokuData = await AsyncStorage.getItem('sudokuData2');
+    if (sudokuData) {
+      const data = JSON.parse(sudokuData);
+      setBoard(data.board);
+      answerBoard.current = data.answerBoard;
+      history.current = data.history;
+      setCurrentStep(data.currentStep);
+      setRemainingCounts(data.remainingCounts);
+      setCounts(data.counts);
+      setStandradBoard(data.standradBoard);
+      setIsInitialized(true);
+      updateCandidateMap(data.board);
+      setGraph(createGraph(data.board, candidateMap));
+    }
+  }, [candidateMap, updateCandidateMap]);
+
   // 添加清空历史记录的函数
   const clearHistory = useCallback((board: CellData[][]) => {
     // 保存当前棋盘状态作为唯一的历史记录
@@ -666,6 +634,19 @@ export const useSudokuBoard = () => {
     });
     setRemainingCounts(counts);
   }, []);
+
+  const saveSudokuData = useCallback(() => {
+    const sudokuData = {
+      board,
+      answerBoard: answerBoard.current,
+      history: history.current,
+      currentStep,
+      remainingCounts,
+      counts,
+      standradBoard,
+    };
+    AsyncStorage.setItem('sudokuData2', JSON.stringify(sudokuData));
+  }, [board, counts, currentStep, remainingCounts, standradBoard]);
 
   const updateBoard = useCallback(
     (newBoard: CellData[][], action: string, isFill: boolean) => {
@@ -692,8 +673,10 @@ export const useSudokuBoard = () => {
       }
 
       setBoard(newBoard);
-      updateCandidateMap(newBoard);
-      setGraph(createGraph(newBoard, candidateMap));
+      setTimeout(() => {
+        updateCandidateMap(newBoard);
+        setGraph(createGraph(newBoard, candidateMap));
+      }, 0);
     },
     [candidateMap, clearHistory, counts, currentStep, updateCandidateMap],
   );
@@ -719,14 +702,63 @@ export const useSudokuBoard = () => {
       mockCounts: number,
     ) => {
       updateBoard(deepCopyBoard(mockBoard), '生成新棋盘', false);
-      requestAnimationFrame(() => {
-        setStandradBoard(deepCopyBoard(mockStandardBoard));
-        setRemainingCounts([...mockRemainingCounts]);
-        setCounts(mockCounts);
-      });
+      setRemainingCounts([...mockRemainingCounts]);
+      setCounts(mockCounts);
       answerBoard.current = deepCopyBoard(mockAnswerBoard);
+      setTimeout(() => {
+        setStandradBoard(deepCopyBoard(mockStandardBoard));
+        setIsInitialized(true);
+      }, 600);
     },
     [updateBoard],
+  );
+
+  const convertStringToBoard = useCallback((str: string): CellData[][] => {
+    const board: CellData[][] = Array(9)
+      .fill(null)
+      .map(() => Array(9).fill(null));
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        const value = parseInt(str[i * 9 + j]);
+        board[i][j] = {
+          value: value === 0 ? null : value,
+          isGiven: value !== 0,
+          draft: [],
+        };
+      }
+    }
+    return board;
+  }, []);
+
+  const getCounts = useCallback((puzzle: string, answer: string): number => {
+    let count = 0;
+    for (let i = 0; i < puzzle.length; i++) {
+      if (puzzle[i] === '0' && answer[i] !== '0') {
+        count++;
+      }
+    }
+    return count;
+  }, []);
+
+  const initializeBoard2 = useCallback(
+    (puzzle: string, answer: string) => {
+      const newBoard = convertStringToBoard(puzzle);
+      setBoard(newBoard);
+      setTimeout(() => {
+        answerBoard.current = convertStringToBoard(answer);
+        updateCandidateMap(newBoard);
+        setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
+        setCounts(getCounts(puzzle, answer));
+        updateRemainingCounts(newBoard);
+        setIsInitialized(true);
+      }, 600);
+    },
+    [
+      convertStringToBoard,
+      getCounts,
+      updateCandidateMap,
+      updateRemainingCounts,
+    ],
   );
 
   return {
@@ -750,5 +782,9 @@ export const useSudokuBoard = () => {
     resetSudokuBoard,
     setCounts,
     initializeBoard,
+    isInitialized,
+    saveSudokuData,
+    loadSavedData2,
+    initializeBoard2,
   };
 };

@@ -76,75 +76,68 @@ const Cell = memo(
             highlight => styles[highlight as keyof typeof styles],
           ) || []),
         ]}>
-          {cell.value !== null ? (
+        {cell.value !== null ? (
+          <Text
+            style={
+              [
+                styles.cellValue,
+                cell.isGiven ? styles.givenNumber : styles.userNumber,
+                selectedNumber && cell.value === selectedNumber
+                  ? styles.selectedNumberText
+                  : null,
+              ].filter(Boolean) as TextStyle[]
+            }>
+            {cell.value}
+          </Text>
+        ) : (
+          resultBoard[rowIndex][colIndex].draft?.map((num: number) => (
             <Text
+              key={num}
               style={
                 [
-                  styles.cellValue,
-                  cell.isGiven ? styles.givenNumber : styles.userNumber,
-                  selectedNumber && cell.value === selectedNumber
-                    ? styles.selectedNumberText
-                    : null,
+                  styles.draftCell,
+                  styles.draftCellText,
                   {
-                    textAlign: 'center',
-                    textAlignVertical: 'center',
-                    width: '100%',
-                    height: '100%',
-                    lineHeight: 40, // 根据实际cell高度调整
+                    left: `${((num - 1) % 3) * 33.33 + 2}%`,
+                    top: `${Math.floor((num - 1) / 3) * 33.33 + 2}%`,
                   },
+                  {opacity: cell.draft.includes(num) ? 1 : 0},
+                  prompts.includes(num) &&
+                    cell?.highlightCandidates?.length &&
+                    board[rowIndex][colIndex].highlights?.includes(
+                      'promptHighlight',
+                    ) &&
+                    board[rowIndex][colIndex].draft.includes(num) &&
+                    styles.candidateHighlightHint,
+                  positions.includes(num) &&
+                    cell?.highlightCandidates?.length &&
+                    board[rowIndex][colIndex].highlights?.includes(
+                      'positionHighlight',
+                    ) &&
+                    board[rowIndex][colIndex].draft.includes(num) &&
+                    styles.candidateHighlightDelete,
+                  positions.includes(num) &&
+                    cell?.highlightCandidates?.length &&
+                    board[rowIndex][colIndex].highlights?.includes(
+                      'positionHighlight',
+                    ) &&
+                    styles.candidateHighlightDeleteText,
+                  prompts.includes(num) &&
+                    cell?.highlightCandidates?.length &&
+                    board[rowIndex][colIndex].highlights?.includes(
+                      'promptHighlight',
+                    ) &&
+                    styles.candidateHighlightHintText,
+                  differenceMap[`${rowIndex},${colIndex}`]?.includes(num) &&
+                    styles.candidateHighlightHint,
+                  differenceMap[`${rowIndex},${colIndex}`]?.includes(num) &&
+                    styles.candidateHighlightHintText,
                 ].filter(Boolean) as TextStyle[]
               }>
-              {cell.value}
+              {num}
             </Text>
-          ) : (
-            resultBoard[rowIndex][colIndex].draft?.map((num: number) => (
-              <Text
-                key={num}
-                style={
-                  [
-                    styles.draftCell,
-                    styles.draftCellText,
-                    {
-                      left: `${((num - 1) % 3) * 33.33 + 2}%`,
-                      top: `${Math.floor((num - 1) / 3) * 33.33 + 2}%`,
-                    },
-                    {opacity: cell.draft.includes(num) ? 1 : 0},
-                    prompts.includes(num) &&
-                      cell?.highlightCandidates?.length &&
-                      board[rowIndex][colIndex].highlights?.includes(
-                        'promptHighlight',
-                      ) &&
-                      board[rowIndex][colIndex].draft.includes(num) &&
-                      styles.candidateHighlightHint,
-                    positions.includes(num) &&
-                      cell?.highlightCandidates?.length &&
-                      board[rowIndex][colIndex].highlights?.includes(
-                        'positionHighlight',
-                      ) &&
-                      board[rowIndex][colIndex].draft.includes(num) &&
-                      styles.candidateHighlightDelete,
-                    positions.includes(num) &&
-                      cell?.highlightCandidates?.length &&
-                      board[rowIndex][colIndex].highlights?.includes(
-                        'positionHighlight',
-                      ) &&
-                      styles.candidateHighlightDeleteText,
-                    prompts.includes(num) &&
-                      cell?.highlightCandidates?.length &&
-                      board[rowIndex][colIndex].highlights?.includes(
-                        'promptHighlight',
-                      ) &&
-                      styles.candidateHighlightHintText,
-                    differenceMap[`${rowIndex},${colIndex}`]?.includes(num) &&
-                      styles.candidateHighlightHint,
-                    differenceMap[`${rowIndex},${colIndex}`]?.includes(num) &&
-                      styles.candidateHighlightHintText,
-                  ].filter(Boolean) as TextStyle[]
-                }>
-                {num}
-              </Text>
-            ))
-          )}
+          ))
+        )}
       </Pressable>
     );
   },
@@ -161,7 +154,8 @@ const Cell = memo(
 
     return (
       prevProps.cell.value === nextProps.cell.value &&
-      prevProps.cell.draft.length === nextProps.cell.draft.length &&
+      JSON.stringify(prevProps.cell.draft) ===
+        JSON.stringify(nextProps.cell.draft) &&
       prevProps.cell.highlights?.length === nextProps.cell.highlights?.length &&
       prevProps.cell.highlightCandidates?.length ===
         nextProps.cell.highlightCandidates?.length &&
@@ -175,8 +169,8 @@ const Cell = memo(
       prevProps.prompts.length === nextProps.prompts.length &&
       prevProps.positions.length === nextProps.positions.length &&
       prevProps.handleCellChange === nextProps.handleCellChange &&
-      prevProps.differenceMap === nextProps.differenceMap &&
-      prevProps.board === nextProps.board
+      JSON.stringify(prevProps.differenceMap) ===
+        JSON.stringify(nextProps.differenceMap)
     );
   },
 );

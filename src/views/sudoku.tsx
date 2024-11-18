@@ -37,7 +37,6 @@ import {
   hiddenTriple2,
   nakedQuadruple,
   swordfish,
-  eureka,
   trialAndError,
   findDifferenceDraft,
 } from '../tools/solution';
@@ -45,60 +44,32 @@ import type {CandidateMap, CellData, Graph, Position} from '../tools';
 import type {DifferenceMap, Result} from '../tools/solution';
 import {DIFFICULTY} from '../constans';
 import styles from './sudokuStyles';
-import Sound from 'react-native-sound';
 import {handleHintContent} from '../tools/handleHintContent';
 import Cell from '../components/SudokuCell';
 import Buttons from '../components/Buttons';
 import Timer from '../components/Timer';
-import errorSound from '../assets/audio/error.wav';
-import successSound from '../assets/audio/success.wav';
-import switchSound from '../assets/audio/switch.wav';
-import eraseSound from '../assets/audio/erase.wav';
-import successSound2 from '../assets/audio/success2.wav';
-import successSound3 from '../assets/audio/success3.wav';
-import {
-  mockBoard1,
-  mockStandardBoard1,
-  mockAnswerBoard1,
-  mockRemainingCounts1,
-  mockCounts1,
-} from './easy';
-import middleBoard from './middle';
-import {
-  mockBoard3,
-  mockStandardBoard3,
-  mockAnswerBoard3,
-  mockRemainingCounts3,
-  mockCounts3,
-} from './hard';
-import extremeBoard from './extreme';
+import {playSound} from '../tools/Sound';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useSudokuStore} from '../store';
 import PauseOverlay from '../components/PauseOverlay';
 import TarBarsSudoku from '../components/tarBarsSudoku';
+import {collection, getDocs} from 'firebase/firestore';
+import {db} from '../firebase/config';
+
+import extremeBoard from '../mock/extreme';
+import entryBoard from '../mock/easy';
+import mediumBoard from '../mock/medium';
+import hardBoard from '../mock/hard';
+import easyBoard from '../mock/easy';
 
 interface SudokuProps {
-  setSuccessResult: (
-    time: string,
-    errorCount: number,
-    hintCount: number,
-  ) => void;
-  difficulty: string;
-  setDifficulty: (value: string) => void;
-  pauseVisible: boolean;
-  tooglePause: () => void;
-  isHome: boolean;
-  setIsHome: (value: boolean) => void;
+  slideAnim: Animated.Value;
+  closeSudoku: () => void;
+  openSetting: () => void;
 }
 
 const Sudoku: React.FC<SudokuProps> = memo(
-  ({
-    setSuccessResult,
-    difficulty,
-    setDifficulty,
-    pauseVisible,
-    tooglePause,
-    isHome,
-    setIsHome,
-  }) => {
+  ({slideAnim, closeSudoku, openSetting}) => {
     const {
       board,
       updateBoard,
@@ -112,13 +83,16 @@ const Sudoku: React.FC<SudokuProps> = memo(
       standradBoard,
       history,
       setStandradBoard,
-      counts,
       resetSudokuBoard,
       initializeBoard,
+      isInitialized,
+      saveSudokuData,
+      loadSavedData2,
+      counts,
+      initializeBoard2,
     } = useSudokuBoard();
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
-    const [errorCount, setErrorCount] = useState<number>(0);
     const [draftMode, setDraftMode] = useState<boolean>(false);
     const lastErrorTime = useRef<number | null>(null);
     const errorCooldownPeriod = useRef<number>(300);
@@ -141,12 +115,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
     const [prompts, setPrompts] = useState<number[]>([]);
     const [positions, setPositions] = useState<number[]>([]);
     const [eraseEnabled, setEraseEnabled] = useState<boolean>(false);
-    const errorSoundsRef = useRef<Sound[]>([]);
-    const successSoundsRef = useRef<Sound[]>([]);
-    const switchSoundsRef = useRef<Sound[]>([]);
-    const eraseSoundsRef = useRef<Sound[]>([]);
-    const successSoundsRef2 = useRef<Sound[]>([]);
-    const successSoundsRef3 = useRef<Sound[]>([]);
+
     const isClickAutoNote = useRef<boolean>(false);
     const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
     const hintCount = useRef<number>(0);
@@ -172,11 +141,21 @@ const Sudoku: React.FC<SudokuProps> = memo(
       xWingVarient,
       xyWing,
       nakedQuadruple,
-      eureka,
       skyscraper,
       swordfish,
       trialAndError,
     ]);
+    const {
+      isContinue,
+      difficulty,
+      isHome,
+      setResultVisible,
+      setTime,
+      errorCount,
+      setErrorCount,
+      setHintCount,
+      isSound,
+    } = useSudokuStore();
     const resetSudoku = useCallback(() => {
       setSelectedNumber(1);
       lastSelectedNumber.current = null;
@@ -200,84 +179,148 @@ const Sudoku: React.FC<SudokuProps> = memo(
       time.current = '00:00';
       startTime.current = 0;
       resetSudokuBoard();
-    }, [resetSudokuBoard]);
+    }, [resetSudokuBoard, setErrorCount]);
+
+    const saveData = useCallback(() => {
+      const sudokuData = {
+        lastSelectedNumber: lastSelectedNumber.current,
+        errorCount,
+        draftMode,
+        lastErrorTime: lastErrorTime.current,
+        selectedCell: selectedCell,
+        lastSelectedCell: lastSelectedCell.current,
+        selectionMode,
+        errorCells,
+        hintDrawerVisible,
+        hintContent,
+        hintMethod,
+        result,
+        prompts,
+        positions,
+        eraseEnabled,
+        isClickAutoNote: isClickAutoNote.current,
+        differenceMap,
+        hintCount: hintCount.current,
+        time: time.current,
+        startTime: startTime.current,
+      };
+
+      AsyncStorage.setItem('sudokuData1', JSON.stringify(sudokuData));
+      saveSudokuData();
+    }, [
+      differenceMap,
+      draftMode,
+      eraseEnabled,
+      errorCells,
+      errorCount,
+      hintContent,
+      hintDrawerVisible,
+      hintMethod,
+      positions,
+      prompts,
+      result,
+      saveSudokuData,
+      selectedCell,
+      selectionMode,
+    ]);
 
     useEffect(() => {
-      if (!isHome) {
+      if (!isHome && !isContinue) {
         resetSudoku();
       }
-    }, [isHome]);
+    }, [isHome, isContinue]);
+
+    useEffect(() => {
+      if (isContinue) {
+        loadSavedData();
+        loadSavedData2();
+      }
+    }, [isContinue]);
+
+    useEffect(() => {
+      generateBoard(difficulty);
+    }, [difficulty]);
+
+    const setSuccessResult = useCallback(
+      (time: string, errorCount: number, hintCount: number) => {
+        setResultVisible(true);
+        setTime(time);
+        setErrorCount(errorCount);
+        setHintCount(hintCount);
+      },
+      [setResultVisible, setTime, setErrorCount, setHintCount],
+    );
+
+    const loadSavedData = useCallback(async () => {
+      const sudokuData = await AsyncStorage.getItem('sudokuData1');
+      if (sudokuData) {
+        const data = JSON.parse(sudokuData);
+        lastSelectedNumber.current = data.lastSelectedNumber;
+        setErrorCount(data.errorCount);
+        setDraftMode(data.draftMode);
+        lastErrorTime.current = data.lastErrorTime;
+        setSelectedCell(data.selectedCell);
+        lastSelectedCell.current = data.lastSelectedCell;
+        setSelectionMode(data.selectionMode);
+        setErrorCells(data.errorCells);
+        setHintDrawerVisible(data.hintDrawerVisible);
+        setHintContent(data.hintContent);
+        setHintMethod(data.hintMethod);
+        setResult(data.result);
+        setPrompts(data.prompts);
+        setPositions(data.positions);
+        setEraseEnabled(data.eraseEnabled);
+        isClickAutoNote.current = data.isClickAutoNote;
+        setDifferenceMap(data.differenceMap);
+        hintCount.current = data.hintCount;
+        time.current = data.time;
+        startTime.current = data.startTime;
+      }
+    }, [setErrorCount]);
 
     const generateBoard = useCallback(
       (difficulty: string) => {
-        if (!difficulty) {
-          return;
-        }
+        let random: number;
         switch (difficulty) {
+          case DIFFICULTY.ENTRY:
+            random = Math.floor(Math.random() * entryBoard.length);
+            initializeBoard2(
+              entryBoard[random].puzzle,
+              entryBoard[random].solution,
+            );
+            break;
           case DIFFICULTY.EASY:
-            initializeBoard(
-              mockBoard1,
-              mockStandardBoard1,
-              mockAnswerBoard1,
-              mockRemainingCounts1,
-              mockCounts1,
+            random = Math.floor(Math.random() * easyBoard.length);
+            initializeBoard2(
+              easyBoard[random].puzzle,
+              easyBoard[random].solution,
             );
             break;
           case DIFFICULTY.MEDIUM:
-            // newBoard = deepCopyBoard(middleBoard);
+            random = Math.floor(Math.random() * mediumBoard.length);
+            initializeBoard2(
+              mediumBoard[random].puzzle,
+              mediumBoard[random].solution,
+            );
             break;
           case DIFFICULTY.HARD:
-            initializeBoard(
-              mockBoard3,
-              mockStandardBoard3,
-              mockAnswerBoard3,
-              mockRemainingCounts3,
-              mockCounts3,
+            random = Math.floor(Math.random() * hardBoard.length);
+            initializeBoard2(
+              hardBoard[random].puzzle,
+              hardBoard[random].solution,
             );
             break;
           case DIFFICULTY.EXTREME:
-            // newBoard = deepCopyBoard(extremeBoard);
+            random = Math.floor(Math.random() * extremeBoard.length);
+            initializeBoard2(
+              extremeBoard[random].puzzle,
+              extremeBoard[random].solution,
+            );
             break;
         }
-
-        // updateBoard(newBoard, '生成新棋盘', false);
       },
-      [initializeBoard],
+      [initializeBoard2],
     );
-
-    useEffect(() => {
-      startTime.current = Date.now();
-      generateBoard(difficulty);
-    }, [difficulty]);
-    useEffect(() => {
-      const endTime = Date.now();
-      const elapsedTime = endTime - startTime.current;
-      console.log('elapsedTime', elapsedTime);
-    }, [board]);
-
-    // 播放音效的函数
-    const playSound = useCallback((soundsRef: React.RefObject<Sound[]>) => {
-      const sounds = soundsRef.current;
-      if (!sounds?.length) {
-        console.log('音效还未加载完成');
-        return;
-      }
-
-      const availableSound = sounds.find(
-        sound => sound?.isPlaying?.() === false,
-      );
-      if (!availableSound) {
-        console.log(
-          '没有可用的音效实例,当前正在播放的实例数:',
-          sounds.filter(s => s?.isPlaying()).length,
-        );
-        return;
-      }
-
-      availableSound.play(success => {
-        !success && console.log('播放音频失败:', availableSound.isPlaying());
-      });
-    }, []);
 
     const playSuccessSound = useCallback(
       (board: CellData[][], row: number, col: number) => {
@@ -287,44 +330,44 @@ const Sudoku: React.FC<SudokuProps> = memo(
           isBoxFull(board, Math.floor(row / 3) * 3 + Math.floor(col / 3)) ||
           remainingCounts[answerBoard.current[row][col].value! - 1] === 1
         ) {
-          playSound(successSoundsRef2);
+          playSound('success2', isSound);
         } else {
-          playSound(successSoundsRef);
+          playSound('success', isSound);
         }
       },
-      [answerBoard, playSound, remainingCounts],
+      [answerBoard, isSound, remainingCounts],
     );
 
     const playVictorySound = useCallback(() => {
       setTimeout(() => {
-        playSound(successSoundsRef3);
+        playSound('success3', isSound);
       }, 300);
-    }, [playSound]);
+    }, [isSound]);
 
     const handleError = useCallback(
       (row: number, col: number) => {
-        playSound(errorSoundsRef);
+        playSound('error', isSound);
         const currentTime = Date.now();
         if (
           lastErrorTime.current === null ||
           currentTime - lastErrorTime.current > errorCooldownPeriod.current
         ) {
-          setErrorCount(prevCount => prevCount + 1);
+          setErrorCount(errorCount + 1);
           setErrorCells([{row, col}]);
           lastErrorTime.current = currentTime;
           setTimeout(() => setErrorCells([]), errorCooldownPeriod.current);
         }
       },
-      [lastErrorTime, playSound],
+      [errorCount, isSound, setErrorCount],
     );
 
     const handleErrorDraftAnimation = useCallback(
       (conflictCells: Position[]) => {
         setErrorCells(conflictCells);
         setTimeout(() => setErrorCells([]), 300);
-        playSound(errorSoundsRef);
+        playSound('error', isSound);
       },
-      [playSound],
+      [isSound],
     );
 
     const remainingCountsMinusOne = (number: number) => {
@@ -381,7 +424,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
             `设置 (${row}, ${col}) 草稿为 ${cell.draft}`,
             false,
           );
-          playSound(switchSoundsRef);
+          playSound('switch', isSound);
         }
         // 处理非草稿模式
         else if (selectedNumber) {
@@ -412,12 +455,12 @@ const Sudoku: React.FC<SudokuProps> = memo(
         }
       },
       [
-        board,
         selectionMode,
+        board,
         draftMode,
         selectedNumber,
         updateBoard,
-        playSound,
+        isSound,
         handleErrorDraftAnimation,
         answerBoard,
         playSuccessSound,
@@ -433,8 +476,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
         isClickAutoNote.current = false;
       }
       undo();
-      playSound(switchSoundsRef);
-    }, [history, currentStep, undo, playSound]);
+      playSound('switch', isSound);
+    }, [history, currentStep, undo, isSound]);
 
     // 擦除
     const handleErase = useCallback(() => {
@@ -444,7 +487,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           eraseEnabled &&
           board[row][col].value !== answerBoard.current[row][col].value
         ) {
-          playSound(eraseSoundsRef);
+          playSound('erase', isSound);
           const newBoard = deepCopyBoard(board);
           const cell = newBoard[row][col];
           cell.value = null;
@@ -453,14 +496,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           setEraseEnabled(false);
         }
       }
-    }, [
-      selectedCell,
-      eraseEnabled,
-      board,
-      answerBoard,
-      playSound,
-      updateBoard,
-    ]);
+    }, [selectedCell, eraseEnabled, board, answerBoard, updateBoard, isSound]);
 
     // 选择数字
     const handleNumberSelect = useCallback(
@@ -498,7 +534,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
               draftSet.add(number);
             }
             newCell.draft = Array.from(draftSet).sort((a, b) => a - b);
-            playSound(switchSoundsRef);
+            playSound('switch', isSound);
 
             updateBoard(
               newBoard,
@@ -527,30 +563,32 @@ const Sudoku: React.FC<SudokuProps> = memo(
                 currentTime - lastErrorTime.current >
                   errorCooldownPeriod.current
               ) {
-                setErrorCount(prevCount => prevCount + 1);
+                setErrorCount(errorCount + 1);
                 lastErrorTime.current = currentTime;
               }
               return;
             }
           }
         } else {
-          playSound(switchSoundsRef);
+          playSound('switch', isSound);
           setSelectedNumber(number);
           lastSelectedNumber.current = number;
         }
       },
       [
-        selectedCell,
         selectionMode,
+        selectedCell,
         board,
         draftMode,
-        playSound,
+        isSound,
         updateBoard,
         handleErrorDraftAnimation,
         answerBoard,
+        playSuccessSound,
         remainingCountsMinusOne,
         handleError,
-        playSuccessSound,
+        setErrorCount,
+        errorCount,
       ],
     );
 
@@ -575,25 +613,28 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
     const handleDraftMode = useCallback(() => {
       setDraftMode(!draftMode);
-      playSound(switchSoundsRef);
-    }, [draftMode, playSound]);
+      playSound('switch', isSound);
+    }, [draftMode, isSound]);
 
     const handleDraftModeChange = useCallback(
       (value: boolean) => {
         setDraftMode(value);
-        playSound(switchSoundsRef);
+        playSound('switch', isSound);
       },
-      [playSound],
+      [isSound],
     );
 
     const handleShowCandidates = useCallback(() => {
-      playSound(switchSoundsRef);
+      if (!isInitialized) {
+        return;
+      }
+      playSound('switch', isSound);
       if (isSameBoard(board, standradBoard)) {
         return;
       }
       isClickAutoNote.current = true;
       updateBoard(deepCopyBoard(standradBoard), '复制官方草稿', false);
-    }, [board, standradBoard, playSound, updateBoard]);
+    }, [isInitialized, board, standradBoard, updateBoard, isSound]);
 
     const applyHintHighlight = useCallback(
       (
@@ -644,8 +685,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
         } else if (!checkDraftIsValid(board, answerBoard.current)) {
           const differenceMap = findDifferenceDraft(board, standradBoard);
           setDifferenceMap(differenceMap);
-          setHintDrawerVisible(true);
           setHintMethod('');
+          setHintDrawerVisible(true);
           setHintContent('笔记有错误，请先修正');
           return;
         }
@@ -695,7 +736,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         const newBoard = deepCopyBoard(standradBoard);
         handleHint(newBoard);
         isClickAutoNote.current = true;
-        playSound(switchSoundsRef);
+        playSound('switch', isSound);
         return;
       } else if (result) {
         const {position, target, isFill} = result;
@@ -730,7 +771,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
           remainingCountsMinusOne(target[0]);
         } else {
-          playSound(eraseSoundsRef);
+          playSound('erase', isSound);
         }
 
         // 移除提示高亮
@@ -745,7 +786,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       board,
       differenceMap,
       handleHint,
-      playSound,
+      isSound,
       playSuccessSound,
       remainingCountsMinusOne,
       removeHintHighlight,
@@ -766,7 +807,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
     // 切换模式回调函数
     const handleSelectionModeChange = useCallback(() => {
-      playSound(switchSoundsRef);
+      playSound('switch', isSound);
       if (selectionMode === 1) {
         setSelectionMode(2);
         setSelectedNumber(null);
@@ -777,7 +818,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         }
         setEraseEnabled(false);
       }
-    }, [playSound, selectionMode]);
+    }, [isSound, selectionMode]);
 
     useEffect(() => {
       if (!selectedCell) return;
@@ -790,78 +831,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       }
     }, [board, selectedCell, selectionMode]);
 
-    // 创建音效实例时增加错误处理
-    const createSound = useCallback((path: unknown): Promise<Sound> => {
-      return new Promise((resolve, reject) => {
-        const sound = new Sound(path, error => {
-          if (error) {
-            console.log('加载音效失败:', error);
-            reject(error);
-          } else {
-            // 加载成功后设置基础配置
-            sound.setVolume(1.0);
-            sound.setNumberOfLoops(0);
-            resolve(sound);
-          }
-        });
-      });
-    }, []);
-
-    useEffect(() => {
-      const initSounds = async () => {
-        try {
-          errorSoundsRef.current = await Promise.all(
-            Array(3)
-              .fill(0)
-              .map(() => createSound(errorSound)),
-          );
-          successSoundsRef.current = await Promise.all(
-            Array(3)
-              .fill(0)
-              .map(() => createSound(successSound)),
-          );
-          switchSoundsRef.current = await Promise.all(
-            Array(3)
-              .fill(0)
-              .map(() => createSound(switchSound)),
-          );
-          eraseSoundsRef.current = await Promise.all(
-            Array(3)
-              .fill(0)
-              .map(() => createSound(eraseSound)),
-          );
-          successSoundsRef2.current = await Promise.all(
-            Array(3)
-              .fill(0)
-              .map(() => createSound(successSound2)),
-          );
-          successSoundsRef3.current = await Promise.all(
-            Array(1)
-              .fill(0)
-              .map(() => createSound(successSound3)),
-          );
-        } catch (error) {
-          console.error('音效加载失败:', error);
-        }
-      };
-
-      initSounds();
-
-      return () => {
-        // 清理音效实例
-        [
-          ...(errorSoundsRef.current || []),
-          ...(successSoundsRef.current || []),
-          ...(switchSoundsRef.current || []),
-          ...(eraseSoundsRef.current || []),
-          ...(successSoundsRef2.current || []),
-          ...(successSoundsRef3.current || []),
-        ].forEach(sound => {
-          sound?.release();
-        });
-      };
-    }, []);
-
     const setTimeFunction = useCallback(
       (time1: string) => {
         time.current = time1;
@@ -870,21 +839,9 @@ const Sudoku: React.FC<SudokuProps> = memo(
       [errorCount, setSuccessResult],
     );
 
-    const slideAnim = useRef(new Animated.Value(800)).current;
-
-    useEffect(() => {
-      Animated.spring(slideAnim, {
-        toValue: isHome ? 800 : 0,
-        useNativeDriver: true,
-        tension: 20,
-        friction: 8,
-        velocity: 0.5,
-      }).start();
-    }, [isHome]);
-
     const handleBack = useCallback(() => {
-      setIsHome(true);
-    }, [setIsHome]);
+      closeSudoku();
+    }, [closeSudoku]);
 
     return (
       <Animated.View
@@ -904,24 +861,26 @@ const Sudoku: React.FC<SudokuProps> = memo(
         ]}>
         <TarBarsSudoku
           onBack={handleBack}
-          tooglePause={tooglePause}
-          setDifficulty={setDifficulty}
-          setIsHome={setIsHome}
+          openSetting={openSetting}
+          saveData={saveData}
         />
         <View style={styles.gameInfo}>
-          <Text style={[styles.gameInfoText, styles.leftText]}>
-            错误次数：{errorCount}
-          </Text>
+          <View style={styles.gameInfoError}>
+            <Image
+              source={require('../assets/icon/error.png')}
+              style={styles.errorIcon}
+            />
+            <Text style={styles.gameInfoTextError}>{errorCount}</Text>
+          </View>
           <Text style={[styles.gameInfoText, styles.middleText]}>
             {difficulty}
           </Text>
-          <Timer
+          {/* <Timer
             setTimeFunction={setTimeFunction}
             counts={counts}
             playVictorySound={playVictorySound}
             difficulty={difficulty}
-            pauseVisible={pauseVisible}
-          />
+          /> */}
         </View>
         <View style={styles.sudokuGrid}>
           {board?.map((row, rowIndex) =>
@@ -1031,44 +990,42 @@ const Sudoku: React.FC<SudokuProps> = memo(
           animationType="slide"
           transparent={true}
           visible={hintDrawerVisible}>
-          <Pressable style={styles.modalOverlay}>
-            <View
-              style={styles.drawerContent}
-              // 添加这个属性来阻止点击事件冒泡
-              onStartShouldSetResponder={() => true}
-              onTouchEnd={e => {
-                e.stopPropagation();
-              }}>
-              <>
-                <View style={styles.drawerHeader}>
-                  <Text style={styles.drawerTitle}>{hintMethod}</Text>
-                  <Pressable
-                    onPressIn={handleCancelHint}
-                    style={styles.closeIconButton}>
-                    <Image
-                      source={require('../assets/icon/close.png')}
-                      style={styles.closeIcon}
-                    />
-                  </Pressable>
-                </View>
-                <Text style={styles.drawerText}>{hintContent}</Text>
-                <View style={styles.drawerButtons}>
-                  <Pressable
-                    onPressIn={handleApplyHint}
-                    style={[styles.drawerButton, styles.drawerButtonApply]}>
-                    <Text style={styles.drawerButtonTextApply}>应用</Text>
-                  </Pressable>
-                  <Pressable
-                    onPressIn={handleCancelHint}
-                    style={[styles.drawerButton, styles.drawerButtonCancel]}>
-                    <Text style={styles.drawerButtonTextCancel}>取消</Text>
-                  </Pressable>
-                </View>
-              </>
-            </View>
-          </Pressable>
+          <View
+            style={styles.drawerContent}
+            // 添加这个属性来阻止点击事件冒泡
+            onStartShouldSetResponder={() => true}
+            onTouchEnd={e => {
+              e.stopPropagation();
+            }}>
+            <>
+              <View style={styles.drawerHeader}>
+                <Text style={styles.drawerTitle}>{hintMethod}</Text>
+                <Pressable
+                  onPressIn={handleCancelHint}
+                  style={styles.closeIconButton}>
+                  <Image
+                    source={require('../assets/icon/close.png')}
+                    style={styles.closeIcon}
+                  />
+                </Pressable>
+              </View>
+              <Text style={styles.drawerText}>{hintContent}</Text>
+              <View style={styles.drawerButtons}>
+                <Pressable
+                  onPressIn={handleApplyHint}
+                  style={[styles.drawerButton, styles.drawerButtonApply]}>
+                  <Text style={styles.drawerButtonTextApply}>应用</Text>
+                </Pressable>
+                <Pressable
+                  onPressIn={handleCancelHint}
+                  style={[styles.drawerButton, styles.drawerButtonCancel]}>
+                  <Text style={styles.drawerButtonTextCancel}>取消</Text>
+                </Pressable>
+              </View>
+            </>
+          </View>
         </Modal>
-        <PauseOverlay tooglePause={tooglePause} visible={pauseVisible} />
+        <PauseOverlay />
       </Animated.View>
     );
   },
