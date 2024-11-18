@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Pressable, Animated } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
 import { DIFFICULTY } from '../constans';
 
 interface LevelCardProps {
@@ -9,12 +9,12 @@ interface LevelCardProps {
 }
 
 const LevelCard: React.FC<LevelCardProps> = ({ level, onPressIn, style }) => (
-  <TouchableOpacity 
+  <Pressable 
     onPressIn={onPressIn}
     style={style}
   >
     <Text style={styles.cardText}>{level}</Text>
-  </TouchableOpacity>
+  </Pressable>
 );
 
 interface LevelProps {
