@@ -580,6 +580,28 @@ export const handleHintContent = (
           target[0]
         }，${deleteStr}内都不能出现候选数${target[0]}`;
         break;
+      case SOLUTION_METHODS.SKYSCRAPER2:
+        boardWithHighlight = applyHintHighlight(board, result, 'both');
+        setPrompts(target);
+        hintContent = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+          prompt[1].row + 1
+        }C${prompt[1].col + 1}与R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
+          prompt[3].row + 1
+        }C${prompt[3].col + 1}分别构成两个强链，R${prompt[1].row + 1}C${
+          prompt[1].col + 1
+        }与R${prompt[3].row + 1}C${prompt[3].col + 1}构成弱链，假设R${
+          prompt[0].row + 1
+        }C${prompt[0].col + 1}为真
+          ，则R${position[0].row + 1}C${position[0].col + 1}为假，假设R${
+          prompt[0].row + 1
+        }C${prompt[0].col + 1}为假，则会导致R${prompt[3].row + 1}C${
+          prompt[3].col + 1
+        }为真，R${position[0].row + 1}C${
+          position[0].col + 1
+        }依旧为假，无论如何，R${position[0].row + 1}C${
+          position[0].col + 1
+        }都不应出现候选数${target[0]}`;
+        break;
       case SOLUTION_METHODS.SWORDFISH_ROW:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         if (prompt.length === 6) {

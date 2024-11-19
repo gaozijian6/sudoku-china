@@ -2324,6 +2324,126 @@ export const skyscraper = (
   return null;
 };
 
+// 判断是否为弱链
+export const isWeakLink = (
+  board: CellData[][],
+  pos1: Position,
+  pos2: Position,
+  num: number,
+  candidateMap: CandidateMap
+) => {
+  if (isUnitStrongLink(board, pos1, pos2, num, candidateMap)) {
+    return false;
+  }
+  if (areCellsInSameUnit(pos1, pos2)) {
+    return true;
+  }
+  return false;
+};
+
+// skyscraper2(单节点弱链2-2)
+export const skyscraper2 = (
+  board: CellData[][],
+  candidateMap: CandidateMap,
+  graph: Graph
+): Result | null => {
+  for (const num of Object.keys(graph)) {
+    const graphArr = graph[Number(num)];
+    if (graphArr.length >= 2) {
+      const nodesArr: Position[][] = [];
+      for (const graphNode of graphArr) {
+        const queue: GraphNode[] = [graphNode];
+        const visited: Set<string> = new Set();
+        const nodes: Position[] = [];
+
+        while (queue.length > 0) {
+          const currentNode = queue.shift()!;
+          const key = `${currentNode.row},${currentNode.col}`;
+
+          if (visited.has(key)) {
+            continue;
+          }
+
+          visited.add(key);
+          nodes.push({
+            row: currentNode.row,
+            col: currentNode.col,
+          });
+
+          for (const nextNode of currentNode.next) {
+            queue.push(nextNode);
+          }
+        }
+
+        nodesArr.push(nodes);
+      }
+      
+      for (let i = 0; i < nodesArr.length - 1; i++) {
+        for (let j = i + 1; j < nodesArr.length; j++) {
+          for (let k = 0; k < nodesArr[i].length; k++) {
+            for (let l = 0; l < nodesArr[j].length; l++) {
+              if (
+                isWeakLink(
+                  board,
+                  nodesArr[i][k],
+                  nodesArr[j][l],
+                  Number(num),
+                  candidateMap
+                )
+              ) {
+                const graphNode1 = findGraphNode(
+                  nodesArr[i][k],
+                  Number(num),
+                  graph
+                );
+                const graphNode2 = findGraphNode(
+                  nodesArr[j][l],
+                  Number(num),
+                  graph
+                );
+                if (!graphNode1 || !graphNode2) continue;
+                for (const graphNode1_1 of graphNode1.next) {
+                  for (const graphNode2_1 of graphNode2?.next ?? []) {
+                    const commonUnits = getCommonUnits(
+                      { row: graphNode1_1.row, col: graphNode1_1.col },
+                      { row: graphNode2_1.row, col: graphNode2_1.col },
+                      board
+                    );
+                    if (commonUnits.length) {
+                      const positions: Position[] = [];
+                      for (const unit of commonUnits) {
+                        const cell = board[unit.row]?.[unit.col];
+                        if (cell?.draft?.includes(Number(num))) {
+                          positions.push(unit);
+                        }
+                      }
+                      if (positions.length) {
+                        return {
+                          position: positions,
+                          prompt: [
+                            { row: graphNode1_1.row, col: graphNode1_1.col },
+                            nodesArr[i][k],
+                            { row: graphNode2_1.row, col: graphNode2_1.col },
+                            nodesArr[j][l],
+                          ],
+                          method: SOLUTION_METHODS.SKYSCRAPER2,
+                          target: [Number(num)],
+                          isFill: false,
+                        };
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return null;
+};
+
 // 找到两个位置共同影响的区域
 const findCommonAffectedPositions = (
   pos1: Position,

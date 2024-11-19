@@ -36,6 +36,7 @@ export const SOLUTION_METHODS = {
   XY_WING: "XY-Wing",
   XYZ_WING: "XYZ-Wing",
   SKYSCRAPER: "摩天楼",
+  SKYSCRAPER2: "摩天楼2",
   SWORDFISH_ROW: "三阶鱼(行)",
   SWORDFISH_COLUMN: "三阶鱼(列)",
   SWORDFISH_WITH_FIN_ROW: "三阶鱼带鳍(行)",

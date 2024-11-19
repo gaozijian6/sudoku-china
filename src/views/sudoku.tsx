@@ -31,6 +31,7 @@ import {
   xWingVarient,
   xyWing,
   skyscraper,
+  skyscraper2,
   hiddenTriple1,
   nakedTriple1,
   nakedTriple2,
@@ -39,6 +40,7 @@ import {
   swordfish,
   trialAndError,
   findDifferenceDraft,
+  wxyzWing,
 } from '../tools/solution';
 import type {CandidateMap, CellData, Graph, Position} from '../tools';
 import type {DifferenceMap, Result} from '../tools/solution';
@@ -57,7 +59,7 @@ import {collection, getDocs} from 'firebase/firestore';
 import {db} from '../firebase/config';
 
 import extremeBoard from '../mock/extreme';
-import entryBoard from '../mock/easy';
+import entryBoard from '../mock/entry';
 import mediumBoard from '../mock/medium';
 import hardBoard from '../mock/hard';
 import easyBoard from '../mock/easy';
@@ -142,7 +144,9 @@ const Sudoku: React.FC<SudokuProps> = memo(
       xyWing,
       nakedQuadruple,
       skyscraper,
+      skyscraper2,
       swordfish,
+      wxyzWing,
       trialAndError,
     ]);
     const {
@@ -284,6 +288,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
         switch (difficulty) {
           case DIFFICULTY.ENTRY:
             random = Math.floor(Math.random() * entryBoard.length);
+            console.log(random,entryBoard.length);
+            
             initializeBoard2(
               entryBoard[random].puzzle,
               entryBoard[random].solution,
