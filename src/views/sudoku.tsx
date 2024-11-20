@@ -41,6 +41,7 @@ import {
   trialAndError,
   findDifferenceDraft,
   wxyzWing,
+  remotePair,
 } from '../tools/solution';
 import type {CandidateMap, CellData, Graph, Position} from '../tools';
 import type {DifferenceMap, Result} from '../tools/solution';
@@ -145,6 +146,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       nakedQuadruple,
       skyscraper,
       skyscraper2,
+      remotePair,
       swordfish,
       wxyzWing,
       trialAndError,

@@ -2185,6 +2185,220 @@ export const isStrongLink = (
   return false;
 };
 
+export const getGraphNodesCounts = (graphNode: GraphNode): number => {
+  const visited = new Set<string>();
+  const queue: GraphNode[] = [graphNode];
+  let count = 0;
+
+  while (queue.length > 0) {
+    const node = queue.shift()!;
+    const key = `${node.row},${node.col}`;
+
+    if (visited.has(key)) {
+      continue;
+    }
+
+    visited.add(key);
+    count++;
+
+    for (const nextNode of node.next) {
+      queue.push(nextNode);
+    }
+  }
+
+  return count;
+};
+
+export const getGraphNode = (
+  pos: Position,
+  num: number,
+  graph: Graph
+): GraphNode | null => {
+  const graphArr = graph[num] ?? [];
+  for (const graphNode of graphArr) {
+    const queue: GraphNode[] = [graphNode];
+    const visited = new Set<string>();
+
+    while (queue.length > 0) {
+      const node = queue.shift()!;
+      const key = `${node.row},${node.col}`;
+
+      if (visited.has(key)) continue;
+      visited.add(key);
+
+      if (node.row === pos.row && node.col === pos.col) {
+        return node;
+      }
+
+      queue.push(...node.next);
+    }
+  }
+
+  return null;
+};
+
+export const getGraphNodePaths = (
+  graphNode1: GraphNode | null,
+  graphNode2: GraphNode | null
+): Position[][] => {
+  if (!graphNode1 || !graphNode2) return [];
+  const paths: Position[][] = [];
+  const dfs = (
+    currentNode: GraphNode,
+    targetNode: GraphNode,
+    visited: Set<string>,
+    currentPath: Position[]
+  ) => {
+    if (
+      currentNode.row === targetNode.row &&
+      currentNode.col === targetNode.col
+    ) {
+      paths.push([...currentPath]);
+      return;
+    }
+
+    for (const nextNode of currentNode.next) {
+      const key = `${nextNode.row},${nextNode.col}`;
+      if (!visited.has(key)) {
+        visited.add(key);
+        currentPath.push({ row: nextNode.row, col: nextNode.col });
+        dfs(nextNode, targetNode, visited, currentPath);
+        currentPath.pop();
+        visited.delete(key);
+      }
+    }
+  };
+
+  const visited = new Set<string>();
+  const startKey = `${graphNode1.row},${graphNode1.col}`;
+  visited.add(startKey);
+  dfs(graphNode1, graphNode2, visited, [
+    { row: graphNode1.row, col: graphNode1.col },
+  ]);
+
+  return paths;
+};
+
+export const remotePair = (
+  board: CellData[][],
+  candidateMap: CandidateMap,
+  graph: Graph
+): Result | null => {
+  for (const num in candidateMap) {
+    for (const row of candidateMap[num].row.values()) {
+      if (!row) continue;
+      if (row.count > 2) {
+        for (let i = 0; i < row.positions.length - 1; i++) {
+          for (let j = i + 1; j < row.positions.length; j++) {
+            const pos1 = row.positions[i];
+            const pos2 = row.positions[j];
+            if (
+              !isUnitStrongLink(board, pos1, pos2, Number(num), candidateMap) &&
+              isStrongLink(pos1, pos2, Number(num), graph)
+            ) {
+              const graphNode1 = getGraphNode(pos1, Number(num), graph);
+              const graphNode2 = getGraphNode(pos2, Number(num), graph);
+              if (!graphNode1 || !graphNode2) continue;
+              const paths = getGraphNodePaths(graphNode1, graphNode2);
+              for (const path of paths) {
+                if (path.length === 4 || path.length === 6) {
+                  const positions = row.positions
+                    .filter((pos) => pos !== pos1 && pos !== pos2)
+                    .map((pos) => ({ row: pos.row, col: pos.col }));
+
+                  if (positions.length) {
+                    return {
+                      position: positions,
+                      prompt: path,
+                      method: SOLUTION_METHODS.REMOTE_PAIR,
+                      target: [Number(num)],
+                      isFill: false,
+                    };
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    for (const col of candidateMap[num].col.values()) {
+      if (!col) continue;
+      if (col.count && col.count > 2) {
+        for (let i = 0; i < col.positions.length - 1; i++) {
+          for (let j = i + 1; j < col.positions.length; j++) {
+            const pos1 = col.positions[i];
+            const pos2 = col.positions[j];
+            if (
+              !isUnitStrongLink(board, pos1, pos2, Number(num), candidateMap) &&
+              isStrongLink(pos1, pos2, Number(num), graph)
+            ) {
+              const graphNode1 = getGraphNode(pos1, Number(num), graph);
+              const graphNode2 = getGraphNode(pos2, Number(num), graph);
+              if (!graphNode1 || !graphNode2) continue;
+              const paths = getGraphNodePaths(graphNode1, graphNode2);
+              for (const path of paths) {
+                if (path.length === 4 || path.length === 6) {
+                  const positions = col.positions
+                    .filter((pos) => pos !== pos1 && pos !== pos2)
+                    .map((pos) => ({ row: pos.row, col: pos.col }));
+                  if (positions.length) {
+                    return {
+                      position: positions,
+                      prompt: path,
+                      method: SOLUTION_METHODS.REMOTE_PAIR,
+                      target: [Number(num)],
+                      isFill: false,
+                    };
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    for (const box of candidateMap[num].box.values()) {
+      if (!box) continue;
+      if (box.count && box.count > 2) {
+        for (let i = 0; i < box.positions.length - 1; i++) {
+          for (let j = i + 1; j < box.positions.length; j++) {
+            const pos1 = box.positions[i];
+            const pos2 = box.positions[j];
+            if (
+              !isUnitStrongLink(board, pos1, pos2, Number(num), candidateMap) &&
+              isStrongLink(pos1, pos2, Number(num), graph)
+            ) {
+              const graphNode1 = getGraphNode(pos1, Number(num), graph);
+              const graphNode2 = getGraphNode(pos2, Number(num), graph);
+              if (!graphNode1 || !graphNode2) continue;
+              const paths = getGraphNodePaths(graphNode1, graphNode2);
+              for (const path of paths) {
+                if (path.length === 4 || path.length === 6) {
+                  const positions = box.positions
+                    .filter((pos) => pos !== pos1 && pos !== pos2)
+                    .map((pos) => ({ row: pos.row, col: pos.col }));
+                  if (positions.length) {
+                    return {
+                      position: positions,
+                      prompt: path,
+                      method: SOLUTION_METHODS.REMOTE_PAIR,
+                      target: [Number(num)],
+                      isFill: false,
+                    };
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return null;
+};
+
 // 检查强连接的奇偶性
 export const checkStrongLinkParity = (
   position1: Position,
