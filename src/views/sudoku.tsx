@@ -42,6 +42,7 @@ import {
   findDifferenceDraft,
   wxyzWing,
   remotePair,
+  combinationChain,
 } from '../tools/solution';
 import type {CandidateMap, CellData, Graph, Position} from '../tools';
 import type {DifferenceMap, Result} from '../tools/solution';
@@ -147,6 +148,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       skyscraper,
       skyscraper2,
       remotePair,
+      combinationChain,
       swordfish,
       wxyzWing,
       trialAndError,
