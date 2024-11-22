@@ -2697,8 +2697,8 @@ export const combinationChain = (
         }
         if (pos2.row === pos3.row && pos1.row !== pos2.row) {
           A = { row: pos2.row, col: pos2.col };
-          B = { row: pos1.row, col: pos1.col };
-          C = { row: pos3.row, col: pos3.col };
+          B = { row: pos3.row, col: pos3.col };
+          C = { row: pos1.row, col: pos1.col };
         }
         if (A && B && C) {
           // 让单节点为桥梁
@@ -2750,8 +2750,8 @@ export const combinationChain = (
         }
         if (pos2.col === pos3.col && pos1.col !== pos2.col) {
           A = { row: pos2.row, col: pos2.col };
-          B = { row: pos1.row, col: pos1.col };
-          C = { row: pos3.row, col: pos3.col };
+          B = { row: pos3.row, col: pos3.col };
+          C = { row: pos1.row, col: pos1.col };
         }
 
  
@@ -2776,10 +2776,6 @@ export const combinationChain = (
                   continue;
                
                 if (board[graphNodeE.row]?.[A.col]?.draft?.includes(num)) {
-                  if(C.row===4&&C.col===6&&D.col===3&&D.row===4){
-                    console.log(graphNodeD);
-                    
-                  }
                   return {
                     position: [{ row: graphNodeE.row, col: A.col }],
                     prompt: [
