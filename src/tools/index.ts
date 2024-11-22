@@ -590,6 +590,7 @@ export const useSudokuBoard = () => {
       });
     });
 
+    setGraph(createGraph(newBoard, newCandidateMap));
     setCandidateMap(newCandidateMap);
   }, []);
 
@@ -606,9 +607,8 @@ export const useSudokuBoard = () => {
       setStandradBoard(data.standradBoard);
       setIsInitialized(true);
       updateCandidateMap(data.board);
-      setGraph(createGraph(data.board, candidateMap));
     }
-  }, [candidateMap, updateCandidateMap]);
+  }, [updateCandidateMap]);
 
   // 添加清空历史记录的函数
   const clearHistory = useCallback((board: CellData[][]) => {
@@ -675,10 +675,9 @@ export const useSudokuBoard = () => {
       setBoard(newBoard);
       setTimeout(() => {
         updateCandidateMap(newBoard);
-        setGraph(createGraph(newBoard, candidateMap));
       }, 0);
     },
-    [candidateMap, clearHistory, counts, currentStep, updateCandidateMap],
+    [clearHistory, counts, currentStep, updateCandidateMap],
   );
 
   const undo = useCallback(() => {
@@ -689,9 +688,8 @@ export const useSudokuBoard = () => {
       setCurrentStep(currentStep - 1);
       setBoard(previousBoard);
       updateCandidateMap(previousBoard);
-      setGraph(createGraph(previousBoard, candidateMap));
     }
-  }, [candidateMap, updateCandidateMap, currentStep]);
+  }, [updateCandidateMap, currentStep]);
 
   const initializeBoard = useCallback(
     (
