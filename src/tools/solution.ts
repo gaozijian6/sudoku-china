@@ -2817,7 +2817,9 @@ export const combinationChain = (
                   }
                   if (
                     board[A.row]?.[graphNodeG.col].value === null &&
-                    board[A.row]?.[graphNodeG.col]?.draft?.includes(num)
+                    board[A.row]?.[graphNodeG.col]?.draft?.includes(num) &&
+                    graphNodeG.col !== A.col &&
+                    graphNodeG.col !== B.col
                   ) {
                     return {
                       position: [{ row: A.row, col: graphNodeG.col }],
@@ -2946,7 +2948,9 @@ export const combinationChain = (
                     }
                     if (
                       board[graphNodeG.row]?.[A.col].value === null &&
-                      board[graphNodeG.row]?.[A.col]?.draft?.includes(num)
+                      board[graphNodeG.row]?.[A.col]?.draft?.includes(num) &&
+                      graphNodeG.row !== A.row &&
+                      graphNodeG.row !== B.row
                     ) {
                       return {
                         position: [{ row: graphNodeG.row, col: A.col }],
