@@ -10,6 +10,8 @@ import {
   copyOfficialDraft,
   deepCopyBoard,
   checkSolutionStatus,
+  BoardHistoryDIY,
+  solve3,
 } from './index';
 import initialBoard from '../views/initialBoard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,8 +21,9 @@ import {SOLUTION_STATUS} from '../constans';
 export const useSudokuBoardDIY = () => {
   const [board, setBoard] = useState<CellData[][]>(initialBoard);
   const answerBoard = useRef<CellData[][]>(initialBoard);
-  const history = useRef<BoardHistory[]>([
-    {board: initialBoard, action: '生成新棋盘'},
+  const counts = useRef<number>(0);
+  const history = useRef<BoardHistoryDIY[]>([
+    {board: initialBoard, action: '生成新棋盘', counts: counts.current},
   ]);
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [remainingCounts, setRemainingCounts] = useState<number[]>(
@@ -59,10 +62,11 @@ export const useSudokuBoardDIY = () => {
   // 添加清空历史记录的函数
   const clearHistory = useCallback((board: CellData[][]) => {
     // 保存当前棋盘状态作为唯一的历史记录
-    const newHistory = [
+    const newHistory: BoardHistoryDIY[] = [
       {
         board,
         action: '清空历史记录',
+        counts: counts.current,
       },
     ];
     history.current = newHistory;
@@ -76,7 +80,9 @@ export const useSudokuBoardDIY = () => {
     setTimeout(() => {
       clearHistory(initialBoard);
       answerBoard.current = initialBoard;
-      history.current = [{board: initialBoard, action: '生成新棋盘'}];
+      history.current = [
+        {board: initialBoard, action: '生成新棋盘', counts: counts.current},
+      ];
       setCandidateMap(() => {
         const initialCandidateMap: CandidateMap = {};
         for (let num = 1; num <= 9; num++) {
@@ -194,20 +200,25 @@ export const useSudokuBoardDIY = () => {
 
   const updateBoard = useCallback(
     (newBoard: CellData[][], action: string, isFill: boolean) => {
+      if (isFill) {
+        counts.current++;
+        setTimeout(() => {
+          if (counts.current >= 17 && solve3(newBoard)) {
+            setIsValidBoard(true);
+          }
+        }, 0);
+      }
+
       if (!action.startsWith('取消') && !action.startsWith('提示')) {
-        const newHistory = history.current.slice(0);
+        const newHistory: BoardHistoryDIY[] = history.current.slice(0);
         newHistory.push({
           board: newBoard,
           action,
+          counts: counts.current,
         });
 
         history.current = newHistory;
         setCurrentStep(newHistory.length - 1);
-      }
-      if (isFill) {
-        if (checkSolutionStatus(newBoard) === SOLUTION_STATUS.UNIQUE_SOLUTION) {
-          setIsValidBoard(true);
-        }
       }
 
       setBoard(newBoard);
@@ -220,16 +231,18 @@ export const useSudokuBoardDIY = () => {
 
   const undo = useCallback(() => {
     if (currentStep > 0) {
-      const previousBoard = history.current[currentStep - 1].board;
+      const historyDIY = history.current[currentStep - 1];
+      const previousBoard = historyDIY.board;
+      counts.current = historyDIY.counts;
       const newHistory = history.current.slice(0, currentStep);
       history.current = newHistory;
       setCurrentStep(currentStep - 1);
       setBoard(previousBoard);
       updateCandidateMap(previousBoard);
-      if (
-        checkSolutionStatus(previousBoard) !== SOLUTION_STATUS.UNIQUE_SOLUTION
-      ) {
+      if (counts.current < 17 || !solve3(previousBoard)) {
         setIsValidBoard(false);
+      } else {
+        setIsValidBoard(true);
       }
     }
   }, [updateCandidateMap, currentStep]);

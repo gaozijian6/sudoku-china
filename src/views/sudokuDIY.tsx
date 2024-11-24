@@ -945,6 +945,15 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             />
             <Text style={styles.buttonText}>提示</Text>
           </Pressable>
+          <Pressable
+            style={[styles.buttonContainer]}
+            onPressIn={() => handleHint(board)}>
+            <Image
+              source={require('../assets/icon/answer.png')}
+              style={styles.buttonIcon}
+            />
+            <Text style={styles.buttonText}>答案</Text>
+          </Pressable>
         </View>
         <Buttons
           handleNumberSelect={handleNumberSelect}
