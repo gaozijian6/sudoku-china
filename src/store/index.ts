@@ -19,8 +19,8 @@ interface SudokuState {
   setPauseVisible: (value: boolean) => void;
   isSound: boolean;
   setIsSound: (value: boolean) => void;
-  easyBank: SudokuBank[];
-  setEasyBank: (value: SudokuBank[]) => void;
+  isDIY: boolean;
+  setIsDIY: (value: boolean) => void;
 }
 
 export const useSudokuStore = create<SudokuState>(set => ({
@@ -42,6 +42,6 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setPauseVisible: value => set({pauseVisible: value}),
   isSound: true,
   setIsSound: value => set({isSound: value}),
-  easyBank: [],
-  setEasyBank: value => set({easyBank: value}),
+  isDIY: false,
+  setIsDIY: value => set({isDIY: value}),
 }));

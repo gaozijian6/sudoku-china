@@ -43,7 +43,7 @@ const ResultView: React.FC<ResultProps> = ({onNext}) => {
             <Text style={styles.rightText}>{hintCount}</Text>
           </View>
         </View>
-        <Pressable style={styles.button} onPress={onNext}>
+        <Pressable style={styles.button} onPressIn={onNext}>
           <Text style={styles.buttonText}>下一关</Text>
         </Pressable>
       </Animated.View>

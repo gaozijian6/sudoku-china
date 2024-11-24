@@ -14,12 +14,11 @@ import {
   getCandidates,
   deepCopyBoard,
   checkDraftIsValid,
-  isRowFull,
-  isColumnFull,
-  isBoxFull,
+  copyOfficialDraft,
   isSameBoard,
+  isValid,
 } from '../tools';
-import {useSudokuBoard} from '../tools/useSudokuBoard';
+import {useSudokuBoardDIY} from '../tools/useSudokuBoardDIY';
 import {
   hiddenSingle,
   singleCandidate,
@@ -45,30 +44,23 @@ import {
 } from '../tools/solution';
 import type {CandidateMap, CellData, Graph, Position} from '../tools';
 import type {DifferenceMap, Result} from '../tools/solution';
-import {DIFFICULTY} from '../constans';
 import styles from './sudokuStyles';
 import {handleHintContent} from '../tools/handleHintContent';
+// import Cell from '../components/SudokuCellDIY';
 import Cell from '../components/SudokuCell';
 import Buttons from '../components/Buttons';
-import Timer from '../components/Timer';
 import {playSound} from '../tools/Sound';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSudokuStore} from '../store';
 import TarBarsSudoku from '../components/tarBarsSudoku';
 
-import extremeBoard from '../mock/extreme';
-import entryBoard from '../mock/entry';
-import mediumBoard from '../mock/medium';
-import hardBoard from '../mock/hard';
-import easyBoard from '../mock/easy';
-
-interface SudokuProps {
+interface SudokuDIYProps {
   slideAnim: Animated.Value;
   closeSudoku: () => void;
   openSetting: () => void;
 }
 
-const Sudoku: React.FC<SudokuProps> = memo(
+const SudokuDIY: React.FC<SudokuDIYProps> = memo(
   ({slideAnim, closeSudoku, openSetting}) => {
     const {
       board,
@@ -82,13 +74,12 @@ const Sudoku: React.FC<SudokuProps> = memo(
       setRemainingCounts,
       standradBoard,
       history,
+      setStandradBoard,
       resetSudokuBoard,
-      isInitialized,
       saveSudokuData,
       loadSavedData2,
-      counts,
-      initializeBoard2,
-    } = useSudokuBoard();
+      isValidBoard,
+    } = useSudokuBoardDIY();
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
     const [draftMode, setDraftMode] = useState<boolean>(false);
@@ -148,9 +139,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       trialAndError,
     ]);
     const {
-      isContinue,
-      difficulty,
-      isHome,
       setResultVisible,
       setTime,
       errorCount,
@@ -159,29 +147,32 @@ const Sudoku: React.FC<SudokuProps> = memo(
       isSound,
     } = useSudokuStore();
     const resetSudoku = useCallback(() => {
+      playSound('switch', isSound);
       setSelectedNumber(1);
-      lastSelectedNumber.current = null;
-      setErrorCount(0);
-      setDraftMode(false);
-      lastErrorTime.current = null;
-      setSelectedCell({row: 0, col: 0});
-      lastSelectedCell.current = null;
-      setSelectionMode(1);
-      setErrorCells([]);
-      setHintDrawerVisible(false);
-      setHintContent('');
-      setHintMethod('');
-      setResult(null);
-      setPrompts([]);
-      setPositions([]);
-      setEraseEnabled(false);
-      isClickAutoNote.current = false;
-      setDifferenceMap({});
-      hintCount.current = 0;
-      time.current = '00:00';
-      startTime.current = 0;
       resetSudokuBoard();
-    }, [resetSudokuBoard, setErrorCount]);
+      setTimeout(() => {
+        lastSelectedNumber.current = null;
+        setErrorCount(0);
+        setDraftMode(false);
+        lastErrorTime.current = null;
+        setSelectedCell({row: 0, col: 0});
+        lastSelectedCell.current = null;
+        setSelectionMode(1);
+        setErrorCells([]);
+        setHintDrawerVisible(false);
+        setHintContent('');
+        setHintMethod('');
+        setResult(null);
+        setPrompts([]);
+        setPositions([]);
+        setEraseEnabled(false);
+        isClickAutoNote.current = false;
+        setDifferenceMap({});
+        hintCount.current = 0;
+        time.current = '00:00';
+        startTime.current = 0;
+      }, 0);
+    }, [isSound, resetSudokuBoard, setErrorCount]);
 
     const saveData = useCallback(() => {
       const sudokuData = {
@@ -207,7 +198,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         startTime: startTime.current,
       };
 
-      AsyncStorage.setItem('sudokuData1', JSON.stringify(sudokuData));
+      AsyncStorage.setItem('sudokuDataDIY1', JSON.stringify(sudokuData));
       saveSudokuData();
     }, [
       differenceMap,
@@ -226,23 +217,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       selectionMode,
     ]);
 
-    useEffect(() => {
-      if (!isHome && !isContinue) {
-        resetSudoku();
-      }
-    }, [isHome, isContinue]);
-
-    useEffect(() => {
-      if (isContinue) {
-        loadSavedData();
-        loadSavedData2();
-      }
-    }, [isContinue]);
-
-    useEffect(() => {
-      generateBoard(difficulty);
-    }, [difficulty]);
-
     const setSuccessResult = useCallback(
       (time: string, errorCount: number, hintCount: number) => {
         setResultVisible(true);
@@ -254,7 +228,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
     );
 
     const loadSavedData = useCallback(async () => {
-      const sudokuData = await AsyncStorage.getItem('sudokuData1');
+      const sudokuData = await AsyncStorage.getItem('sudokuDataDIY1');
       if (sudokuData) {
         const data = JSON.parse(sudokuData);
         lastSelectedNumber.current = data.lastSelectedNumber;
@@ -279,72 +253,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
         startTime.current = data.startTime;
       }
     }, [setErrorCount]);
-
-    const generateBoard = useCallback(
-      (difficulty: string) => {
-        let random: number;
-        switch (difficulty) {
-          case DIFFICULTY.ENTRY:
-            random = Math.floor(Math.random() * entryBoard.length);
-            initializeBoard2(
-              entryBoard[random].puzzle,
-              entryBoard[random].solution,
-            );
-            break;
-          case DIFFICULTY.EASY:
-            random = Math.floor(Math.random() * easyBoard.length);
-            initializeBoard2(
-              easyBoard[random].puzzle,
-              easyBoard[random].solution,
-            );
-            break;
-          case DIFFICULTY.MEDIUM:
-            random = Math.floor(Math.random() * mediumBoard.length);
-            initializeBoard2(
-              mediumBoard[random].puzzle,
-              mediumBoard[random].solution,
-            );
-            break;
-          case DIFFICULTY.HARD:
-            random = Math.floor(Math.random() * hardBoard.length);
-            initializeBoard2(
-              hardBoard[random].puzzle,
-              hardBoard[random].solution,
-            );
-            break;
-          case DIFFICULTY.EXTREME:
-            random = Math.floor(Math.random() * extremeBoard.length);
-            initializeBoard2(
-              extremeBoard[random].puzzle,
-              extremeBoard[random].solution,
-            );
-            break;
-        }
-      },
-      [initializeBoard2],
-    );
-
-    const playSuccessSound = useCallback(
-      (board: CellData[][], row: number, col: number) => {
-        if (
-          isRowFull(board, row) ||
-          isColumnFull(board, col) ||
-          isBoxFull(board, Math.floor(row / 3) * 3 + Math.floor(col / 3)) ||
-          remainingCounts[answerBoard.current[row][col].value! - 1] === 1
-        ) {
-          playSound('success2', isSound);
-        } else {
-          playSound('success', isSound);
-        }
-      },
-      [answerBoard, isSound, remainingCounts],
-    );
-
-    const playVictorySound = useCallback(() => {
-      setTimeout(() => {
-        playSound('success3', isSound);
-      }, 300);
-    }, [isSound]);
 
     const handleError = useCallback(
       (row: number, col: number) => {
@@ -430,8 +338,18 @@ const Sudoku: React.FC<SudokuProps> = memo(
         }
         // 处理非草稿模式
         else if (selectedNumber) {
+          const conflictCells = checkNumberInRowColumnAndBox(
+            newBoard,
+            row,
+            col,
+            selectedNumber,
+          );
+
           // 验证填入的数字是否为有效候选数字
-          if (answerBoard.current[row][col].value == selectedNumber) {
+          if (
+            answerBoard.current[row][col].value == selectedNumber &&
+            isValidBoard
+          ) {
             cell.value = selectedNumber;
             cell.draft = [];
 
@@ -443,7 +361,31 @@ const Sudoku: React.FC<SudokuProps> = memo(
               getCandidates,
             );
 
-            playSuccessSound(newBoard, row, col);
+            playSound('switch', isSound);
+            updateBoard(
+              newBoard,
+              `设置 (${row}, ${col}) 为 ${selectedNumber}`,
+              true,
+            );
+            remainingCountsMinusOne(selectedNumber);
+          } else if (!isValidBoard) {
+            if (!isValid(board, row, col, selectedNumber)) {
+              if (conflictCells.length > 0) {
+                handleErrorDraftAnimation(conflictCells);
+                return;
+              }
+            }
+            cell.value = selectedNumber;
+            cell.draft = [];
+            // 更新相关单元格的草稿数字
+            updateRelatedCellsDraft(
+              newBoard,
+              [{row, col}],
+              selectedNumber,
+              getCandidates,
+            );
+
+            playSound('switch', isSound);
             updateBoard(
               newBoard,
               `设置 (${row}, ${col}) 为 ${selectedNumber}`,
@@ -465,7 +407,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         isSound,
         handleErrorDraftAnimation,
         answerBoard,
-        playSuccessSound,
+        isValidBoard,
         remainingCountsMinusOne,
         handleError,
       ],
@@ -544,8 +486,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
               false,
             );
           } else {
-            if (answerBoard.current[row][col].value == number) {
-              playSuccessSound(newBoard, row, col);
+            if (answerBoard.current[row][col].value == number && isValidBoard) {
+              playSound('switch', isSound);
               newCell.value = number;
               newCell.draft = [];
               updateRelatedCellsDraft(
@@ -555,8 +497,37 @@ const Sudoku: React.FC<SudokuProps> = memo(
                 getCandidates,
               );
               updateBoard(newBoard, `设置 (${row}, ${col}) 为 ${number}`, true);
-              setEraseEnabled(false);
-              remainingCountsMinusOne(number);
+              setEraseEnabled(true);
+              setTimeout(() => {
+                remainingCountsMinusOne(number);
+              }, 0);
+            } else if (!isValidBoard) {
+              const conflictCells = checkNumberInRowColumnAndBox(
+                newBoard,
+                row,
+                col,
+                number,
+              );
+
+              if (conflictCells.length > 0) {
+                handleErrorDraftAnimation(conflictCells);
+                return;
+              }
+              playSound('switch', isSound);
+              newCell.value = number;
+              newCell.draft = [];
+              updateRelatedCellsDraft(
+                newBoard,
+                [{row, col}],
+                number,
+                getCandidates,
+              );
+              updateBoard(newBoard, `设置 (${row}, ${col}) 为 ${number}`, true);
+              setEraseEnabled(true);
+              setTimeout(() => {
+                remainingCountsMinusOne(number);
+              }, 0);
+              return;
             } else {
               handleError(row, col);
               const currentTime = Date.now();
@@ -586,7 +557,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
         updateBoard,
         handleErrorDraftAnimation,
         answerBoard,
-        playSuccessSound,
         remainingCountsMinusOne,
         handleError,
         setErrorCount,
@@ -627,18 +597,14 @@ const Sudoku: React.FC<SudokuProps> = memo(
     );
 
     const handleShowCandidates = useCallback(() => {
-      if (!isInitialized) {
+      if (!isValidBoard) {
+        playSound('error', isSound);
         return;
       }
-      
       playSound('switch', isSound);
-      if (isSameBoard(board, standradBoard)) {
-        return;
-      }
-      
       isClickAutoNote.current = true;
       updateBoard(deepCopyBoard(standradBoard), '复制官方草稿', false);
-    }, [isInitialized, board, standradBoard, updateBoard, isSound]);
+    }, [standradBoard, updateBoard, isSound, isValidBoard]);
 
     const applyHintHighlight = useCallback(
       (
@@ -771,7 +737,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         // 使用 updateBoard 函数更新棋盘
         updateBoard(newBoard, `应用提示：${result.method}`, false);
         if (isFill) {
-          playSuccessSound(newBoard, position[0].row, position[0].col);
+          playSound('switch', isSound);
           remainingCountsMinusOne(target[0]);
         } else {
           playSound('erase', isSound);
@@ -790,7 +756,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       differenceMap,
       handleHint,
       isSound,
-      playSuccessSound,
       remainingCountsMinusOne,
       removeHintHighlight,
       result,
@@ -825,11 +790,15 @@ const Sudoku: React.FC<SudokuProps> = memo(
     useEffect(() => {
       if (!selectedCell) return;
       const {row, col} = selectedCell;
-      if (selectionMode === 1) return;
-      if (board[row][col].value || board[row][col].draft.length === 0) {
+      if (selectionMode === 1) {
         setEraseEnabled(false);
+        return;
       } else {
-        setEraseEnabled(true);
+        if (board[row][col].value || board[row][col].draft.length) {
+          setEraseEnabled(true);
+        } else {
+          setEraseEnabled(false);
+        }
       }
     }, [board, selectedCell, selectionMode]);
 
@@ -867,23 +836,24 @@ const Sudoku: React.FC<SudokuProps> = memo(
           saveData={saveData}
           resetSudoku={resetSudoku}
         />
-        <View style={styles.gameInfo}>
-          <View style={styles.gameInfoError}>
-            <Image
-              source={require('../assets/icon/error.png')}
-              style={styles.errorIcon}
-            />
-            <Text style={styles.gameInfoTextError}>{errorCount}</Text>
-          </View>
-          <Text style={[styles.gameInfoText, styles.middleText]}>
-            {difficulty}
-          </Text>
-          {/* <Timer
-            setTimeFunction={setTimeFunction}
-            counts={counts}
-            playVictorySound={playVictorySound}
-            difficulty={difficulty}
-          /> */}
+        <View style={styles.gameInfoDIY}>
+          {isValidBoard ? (
+            <View style={styles.gameInfoTextDIY}>
+              <Image
+                source={require('../assets/icon/legal.png')}
+                style={styles.gameInfoIcon}
+              />
+              <Text style={styles.gameInfoText}>数独合法</Text>
+            </View>
+          ) : (
+            <View style={styles.gameInfoTextDIY}>
+              <Image
+                source={require('../assets/icon/illegal.png')}
+                style={styles.gameInfoIcon}
+              />
+              <Text style={styles.gameInfoText}>数独不合法</Text>
+            </View>
+          )}
         </View>
         <View style={styles.sudokuGrid}>
           {board?.map((row, rowIndex) =>
@@ -1029,10 +999,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
           </View>
         </Modal>
       </Animated.View>
-        
-
     );
   },
 );
 
-export default Sudoku;
+export default SudokuDIY;

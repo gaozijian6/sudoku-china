@@ -14,16 +14,17 @@ import {useSudokuStore} from '../store';
 
 interface HomeProps {
   openSudoku: () => void;
+  openSudokuDIY: () => void;
   openSetting: () => void;
-  getEasyBank: () => void;
 }
 
 const Home: React.FC<HomeProps> = ({
   openSudoku,
+  openSudokuDIY,
   openSetting,
-  getEasyBank,
 }) => {
-  const {setIsContinue, setDifficulty, setIsHome, isSound} = useSudokuStore();
+  const {setIsContinue, setDifficulty, setIsHome, isSound, setIsDIY, isHome} =
+    useSudokuStore();
   const [showLevel, setShowLevel] = useState(false);
   const handleLevelSelect = (level: string) => {
     openSudoku();
@@ -44,6 +45,13 @@ const Home: React.FC<HomeProps> = ({
     setIsHome(false);
   };
 
+  const handleCustom = () => {
+    playSound('switch', isSound);
+    openSudokuDIY();
+    setIsHome(false);
+    setIsDIY(true);
+  };
+
   return (
     <View style={[styles.container]}>
       <View style={styles.tarbar}>
@@ -57,15 +65,22 @@ const Home: React.FC<HomeProps> = ({
       <View style={styles.buttonContainer}>
         <Pressable
           style={styles.startButton}
+          disabled={!isHome}
           onPressIn={handleStart}>
           <Text style={styles.startButtonText}>开始</Text>
           <Text style={styles.arrowIcon}>❯</Text>
         </Pressable>
-        <Pressable style={styles.continueButton} onPressIn={handleContinue}>
+        <Pressable
+          style={styles.continueButton}
+          disabled={!isHome}
+          onPressIn={handleContinue}>
           <Text style={styles.continueButtonText}>继续</Text>
           <Text style={styles.arrowIcon}>❯</Text>
         </Pressable>
-        <Pressable style={styles.customButton} onPressIn={getEasyBank}>
+        <Pressable
+          style={styles.customButton}
+          disabled={!isHome}
+          onPressIn={handleCustom}>
           <Text style={styles.customButtonText}>自定义</Text>
           <Text style={styles.arrowIcon}>❯</Text>
         </Pressable>

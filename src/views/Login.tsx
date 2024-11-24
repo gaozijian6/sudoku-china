@@ -21,7 +21,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
       
       <Pressable 
         style={styles.googleButton}
-        onPress={handleGoogleLogin}
+        onPressIn={handleGoogleLogin}
       >
         <Text style={styles.buttonText}>使用Google账号登录</Text>
       </Pressable>
