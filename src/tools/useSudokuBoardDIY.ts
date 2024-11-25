@@ -1,21 +1,17 @@
 import {useState, useRef, useCallback} from 'react';
 import {
   CellData,
-  BoardHistory,
   CandidateMap,
   Candidate,
   CandidateStats,
   Graph,
   createGraph,
   copyOfficialDraft,
-  deepCopyBoard,
-  checkSolutionStatus,
   BoardHistoryDIY,
   solve3,
 } from './index';
 import initialBoard from '../views/initialBoard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {SOLUTION_STATUS} from '../constans';
 
 // 创建一个新的 hook 来管理棋盘状态和历史
 export const useSudokuBoardDIY = () => {

@@ -1,25 +1,4 @@
-import {
-  blockElimination,
-  hiddenPair,
-  nakedQuadruple,
-  skyscraper,
-  hiddenTriple2,
-  hiddenTriple1,
-  xyzWing,
-  xWingVarient,
-  xWing,
-  isUnitStrongLink,
-  nakedTriple1,
-  nakedPair,
-  nakedTriple2,
-  combinationChain,
-  swordfish,
-  wxyzWing,
-  hiddenSingle,
-  xyWing,
-  remotePair,
-} from './solution';
-import {SOLUTION_STATUS} from '../constans';
+import {isUnitStrongLink, hiddenSingle} from './solution';
 
 export interface Position {
   row: number;
@@ -175,22 +154,6 @@ export const createGraph = (
   return graph;
 };
 
-// 检查两个格子是否在同一宫或行或列
-export const areCellsInSameUnit = (cell1: Position, cell2: Position) => {
-  // 检查是否在同一行
-  const sameRow = cell1.row === cell2.row;
-
-  // 检查是否在同一列
-  const sameColumn = cell1.col === cell2.col;
-
-  // 检查是否在同一宫
-  const sameBox =
-    Math.floor(cell1.row / 3) === Math.floor(cell2.row / 3) &&
-    Math.floor(cell1.col / 3) === Math.floor(cell2.col / 3);
-
-  return sameRow || sameColumn || sameBox;
-};
-
 export const isValid = (
   board: CellData[][],
   row: number,
@@ -269,12 +232,9 @@ export const solve2 = (board: CellData[][]): boolean => {
   return s(board);
 };
 
-
 export const solve3 = (board: CellData[][]) => {
   const startTime = performance.now();
-  const solveFunctions = [
-    hiddenSingle,
-  ];
+  const solveFunctions = [hiddenSingle];
   const getCounts = (board: CellData[][]) => {
     let counts = 0;
     for (let row = 0; row < 9; row++) {
@@ -286,58 +246,14 @@ export const solve3 = (board: CellData[][]) => {
     }
     return counts;
   };
-  const updateCandidateMap = (newBoard: CellData[][]) => {
-    const newCandidateMap: CandidateMap = {};
-    for (let num = 1; num <= 9; num++) {
-      newCandidateMap[num] = {
-        row: new Map(),
-        col: new Map(),
-        box: new Map(),
-        all: [],
-      };
-    }
-
-    newBoard.forEach((row, rowIndex) => {
-      row.forEach((cell, colIndex) => {
-        if (cell.value === null) {
-          const boxIndex =
-            Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3);
-          const candidate: Candidate = {
-            row: rowIndex,
-            col: colIndex,
-            candidates: cell.draft,
-          };
-
-          cell.draft.forEach(num => {
-            const updateStats = (
-              map: Map<number, CandidateStats>,
-              index: number,
-            ) => {
-              const stats = map.get(index) ?? {count: 0, positions: []};
-              stats.count++;
-              stats.positions.push(candidate);
-              map.set(index, stats);
-            };
-
-            updateStats(newCandidateMap[num].row, rowIndex);
-            updateStats(newCandidateMap[num].col, colIndex);
-            updateStats(newCandidateMap[num].box, boxIndex);
-            newCandidateMap[num].all.push(candidate);
-          });
-        }
-      });
-    });
-    return newCandidateMap;
-  };
 
   let counts = getCounts(board);
   const standardBoard = copyOfficialDraft(board);
-  let candidateMap = updateCandidateMap(standardBoard);
 
   firstWhile: while (true) {
     for (let i = 0; i < solveFunctions.length; i++) {
       const solveFunction = solveFunctions[i];
-      let result = solveFunction(standardBoard, candidateMap, {});
+      let result = solveFunction(standardBoard, {}, {});
 
       if (result) {
         const {isFill, position, target} = result;
@@ -368,7 +284,6 @@ export const solve3 = (board: CellData[][]) => {
           }
         });
         result = null;
-        candidateMap = updateCandidateMap(standardBoard);
         continue firstWhile;
       } else if (!result && i < solveFunctions.length - 1) {
         continue;
@@ -377,7 +292,6 @@ export const solve3 = (board: CellData[][]) => {
       }
     }
   }
-
 
   const board1 = deepCopyBoard(standardBoard);
   const board2 = deepCopyBoard(standardBoard);
@@ -446,28 +360,6 @@ export const checkDraftIsValid = (
     }
   }
   return true;
-};
-
-// 检测数独解的情况
-export const checkSolutionStatus = (board: CellData[][]) => {
-  const newBoard1 = deepCopyBoard(board);
-  const newBoard2 = deepCopyBoard(board);
-
-  // 正序填满棋盘
-  const solved1 = solve(newBoard1);
-
-  // 倒序填满棋盘
-  const solved2 = solve2(newBoard2);
-
-  if (!solved1 && !solved2) {
-    return SOLUTION_STATUS.NO_SOLUTION;
-  }
-
-  if (isSameBoard(newBoard1, newBoard2)) {
-    return SOLUTION_STATUS.UNIQUE_SOLUTION;
-  }
-
-  return SOLUTION_STATUS.MULTIPLE_SOLUTION;
 };
 
 export const isSameBoard = (

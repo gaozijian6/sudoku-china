@@ -1,5 +1,4 @@
 import {SOLUTION_METHODS} from '../constans';
-import {areCellsInSameUnit, solve} from './index';
 import type {
   CandidateMap,
   CandidateStats,
@@ -7,7 +6,6 @@ import type {
   Graph,
   GraphNode,
   Position,
-  Candidate,
 } from './index';
 
 export interface Result {
@@ -31,6 +29,22 @@ export interface Result {
 export interface DifferenceMap {
   [key: string]: number[];
 }
+
+// 检查两个格子是否在同一宫或行或列
+export const areCellsInSameUnit = (cell1: Position, cell2: Position) => {
+  // 检查是否在同一行
+  const sameRow = cell1.row === cell2.row;
+
+  // 检查是否在同一列
+  const sameColumn = cell1.col === cell2.col;
+
+  // 检查是否在同一宫
+  const sameBox =
+    Math.floor(cell1.row / 3) === Math.floor(cell2.row / 3) &&
+    Math.floor(cell1.col / 3) === Math.floor(cell2.col / 3);
+
+  return sameRow || sameColumn || sameBox;
+};
 
 export const findDifferenceDraft = (
   beforeBoard: CellData[][],
@@ -3401,7 +3415,7 @@ export const wxyzWing = (
 };
 
 // 试数法
-export const trialAndError = (
+export const trialAndError2 = (
   board: CellData[][],
   candidateMap: CandidateMap,
   graph: Graph,
@@ -3423,6 +3437,42 @@ export const trialAndError = (
         }
       }
     }
+  }
+  return null;
+};
+
+export const trialAndError = (
+  board: CellData[][],
+  candidateMap: CandidateMap,
+  graph: Graph,
+  answerBoard?: CellData[][],
+): Result | null => {
+  if(!answerBoard) return null;
+  let minLength = 10;
+  let minPosition: Position | null = null;
+  let minValue: number | null = null;
+
+  for(let row = 0; row < 9; row++){
+    for(let col = 0; col < 9; col++){
+      const cell = board[row][col];
+      if(cell.value === null && cell.draft?.length) {
+        if(cell.draft.length < minLength) {
+          minLength = cell.draft.length;
+          minPosition = {row, col};
+          minValue = answerBoard[row][col].value;
+        }
+      }
+    }
+  }
+
+  if(minPosition && minValue) {
+    return {
+      position: [minPosition],
+      prompt: [minPosition],
+      method: SOLUTION_METHODS.TRIAL_AND_ERROR,
+      target: [minValue],
+      isFill: true
+    };
   }
   return null;
 };

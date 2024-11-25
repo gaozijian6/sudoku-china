@@ -64,9 +64,3 @@ export const DIFFICULTY = {
   EXTREME: "极难",
   DIY: "自定义",
 };
-
-export const SOLUTION_STATUS = {
-  NO_SOLUTION: "无解",
-  UNIQUE_SOLUTION: "有唯一解",
-  MULTIPLE_SOLUTION: "有多解",
-};
