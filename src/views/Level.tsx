@@ -104,7 +104,7 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
         onTouchEnd={e => e.stopPropagation()}>
         <View style={styles.header}>
           <Text style={styles.title}>选择难度</Text>
-          <Pressable onPress={handleClose} style={styles.closeButton}>
+          <Pressable onPressIn={handleClose} style={styles.closeButton}>
             <Text style={styles.closeIcon}>×</Text>
           </Pressable>
         </View>

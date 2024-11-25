@@ -6,20 +6,25 @@ interface TarBarsSudokuProps {
   onBack: () => void;
   openSetting: () => void;
   saveData: () => void;
+  resetSudoku: () => void;
 }
 
 const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
   onBack,
   openSetting,
   saveData,
+  resetSudoku,
 }) => {
-  const {setIsHome, setDifficulty, setPauseVisible, pauseVisible} = useSudokuStore();
+  const {setIsHome, setDifficulty, setPauseVisible, pauseVisible, isDIY, setIsDIY} =
+    useSudokuStore();
   const backToHome = useCallback(() => {
     saveData();
+    resetSudoku();
     setDifficulty('');
     setIsHome(true);
+    setIsDIY(false);
     onBack();
-  }, [setDifficulty, setIsHome, onBack, saveData]);
+  }, [saveData, resetSudoku, setDifficulty, setIsHome, setIsDIY, onBack]);
 
   return (
     <View style={styles.container}>
@@ -34,16 +39,27 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
           <Text style={styles.sudoku}>sudoku</Text>
         </View>
         <View style={styles.rightSection}>
-          <Pressable
-            style={styles.pauseIconContainer}
-            onPressIn={() => {
-              setPauseVisible(!pauseVisible);
-            }}>
-            <Image
-              source={require('../assets/icon/pause.png')}
-              style={styles.pauseIcon}
-            />
-          </Pressable>
+          {isDIY ? (
+            <Pressable
+              style={styles.pauseIconContainer}
+              onPressIn={resetSudoku}>
+              <Image
+                source={require('../assets/icon/refresh.png')}
+                style={styles.pauseIcon}
+              />
+            </Pressable>
+          ) : (
+            <Pressable
+              style={styles.pauseIconContainer}
+              onPressIn={() => {
+                setPauseVisible(!pauseVisible);
+              }}>
+              <Image
+                source={require('../assets/icon/pause.png')}
+                style={styles.pauseIcon}
+              />
+            </Pressable>
+          )}
           <Pressable
             onPressIn={openSetting}
             style={styles.settingIconContainer}>

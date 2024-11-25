@@ -2470,7 +2470,7 @@ export const checkStrongLinkParity = (
 export const skyscraper = (
   board: CellData[][],
   candidateMap: CandidateMap,
-  graph: Graph,
+  graph: Graph
 ): Result | null => {
   for (let num = 1; num <= 9; num++) {
     const candidates = candidateMap[num]?.all ?? [];
@@ -2486,54 +2486,88 @@ export const skyscraper = (
         }
 
         // 寻找一条包含四个节点的路径
-        const path = findFourPath(pos1, pos2, num, graph);
-        if (path.length !== 4) {
-          continue;
-        }
+        const paths = findFourPath(pos1, pos2, num, graph);
+        for (const path of paths) {
+          if (path.length !== 4) {
+            continue;
+          }
 
-        // 找到共同影响的区域
-        let affectedPositions = findCommonAffectedPositions(
-          pos1,
-          pos2,
-          board,
-          num,
-        );
+          // 找到共同影响的区域
+          let affectedPositions = findCommonAffectedPositions(
+            pos1,
+            pos2,
+            board,
+            num
+          );
 
-        // 排除与路径开头和结尾都为强连接的位置
-        affectedPositions = affectedPositions.filter(pos => {
-          const isStrongLinkWithStart = isUnitStrongLink(
-            board,
-            pos,
-            path[0],
-            num,
-            candidateMap,
-          );
-          const isStrongLinkWithEnd = isUnitStrongLink(
-            board,
-            pos,
-            path[3],
-            num,
-            candidateMap,
-          );
-          return !(isStrongLinkWithStart && isStrongLinkWithEnd);
-        });
-        if (
-          affectedPositions.length > 0 &&
-          !affectedPositions.some(pos =>
-            path.some(
-              pathPos => pathPos.row === pos.row && pathPos.col === pos.col,
-            ),
-          )
-        ) {
-          return {
-            position: affectedPositions,
-            prompt: path,
-            method: SOLUTION_METHODS.SKYSCRAPER,
-            target: [num],
-            isFill: false,
-          };
+          // 排除与路径开头和结尾都为强连接的位置
+          affectedPositions = affectedPositions.filter((pos) => {
+            const isStrongLinkWithStart = isUnitStrongLink(
+              board,
+              pos,
+              path[0],
+              num,
+              candidateMap
+            );
+            const isStrongLinkWithEnd = isUnitStrongLink(
+              board,
+              pos,
+              path[3],
+              num,
+              candidateMap
+            );
+            return !(isStrongLinkWithStart && isStrongLinkWithEnd);
+          });
+
+          if (
+            affectedPositions.length > 0 &&
+            !affectedPositions.some((pos) =>
+              path.some(
+                (pathPos) => pathPos.row === pos.row && pathPos.col === pos.col
+              )
+            )
+          ) {
+            return {
+              position: affectedPositions,
+              prompt: path,
+              method: SOLUTION_METHODS.SKYSCRAPER,
+              target: [num],
+              isFill: false,
+            };
+          }
         }
       }
+    }
+  }
+
+  return null;
+};
+
+// 已知位置和候选数找到graph对应的节点
+export const findGraphNodeByPosition = (
+  position: Position,
+  num: number,
+  graph: Graph
+): GraphNode | null => {
+  const { row, col } = position;
+  const startNodes = graph[num] ?? [];
+
+  for (const startNode of startNodes) {
+    const queue: GraphNode[] = [startNode];
+    const visited = new Set<string>();
+
+    while (queue.length > 0) {
+      const node = queue.shift()!;
+      const key = `${node.row},${node.col}`;
+
+      if (visited.has(key)) continue;
+      visited.add(key);
+
+      if (node.row === row && node.col === col) {
+        return node;
+      }
+
+      queue.push(...node.next);
     }
   }
 
@@ -2607,12 +2641,12 @@ export const skyscraper2 = (
                   candidateMap
                 )
               ) {
-                const graphNode1 = findGraphNode(
+                const graphNode1 = findGraphNodeByPosition(
                   nodesArr[i][k],
                   Number(num),
                   graph
                 );
-                const graphNode2 = findGraphNode(
+                const graphNode2 = findGraphNodeByPosition(
                   nodesArr[j][l],
                   Number(num),
                   graph
@@ -2672,6 +2706,37 @@ export const isInSameBox = (
   );
 };
 
+// 已知位置和候选数找到graph对应的节点
+const findGraphNodeByDistance = (
+  position: Position,
+  num: number,
+  graph: Graph,
+): GraphNode | null => {
+  const {row, col} = position;
+  const startNodes = graph[num] ?? [];
+
+  for (const startNode of startNodes) {
+    const queue: GraphNode[] = [startNode];
+    const visited = new Set<string>();
+
+    while (queue.length > 0) {
+      const node = queue.shift()!;
+      const key = `${node.row},${node.col}`;
+
+      if (visited.has(key)) continue;
+      visited.add(key);
+
+      if (node.row === row && node.col === col) {
+        return node;
+      }
+
+      queue.push(...node.next);
+    }
+  }
+
+  return null;
+};
+
 // 组合链,2-2、4
 export const combinationChain = (
   board: CellData[][],
@@ -2697,8 +2762,8 @@ export const combinationChain = (
         }
         if (pos2.row === pos3.row && pos1.row !== pos2.row) {
           A = { row: pos2.row, col: pos2.col };
-          B = { row: pos1.row, col: pos1.col };
-          C = { row: pos3.row, col: pos3.col };
+          B = { row: pos3.row, col: pos3.col };
+          C = { row: pos1.row, col: pos1.col };
         }
         if (A && B && C) {
           // 让单节点为桥梁
@@ -2714,7 +2779,10 @@ export const combinationChain = (
                   isInSameBox(graphNodeE, B)
                 )
                   continue;
-                if (board[A.row]?.[graphNodeE.col]?.draft?.includes(num)) {
+                if (
+                  board[C.row]?.[graphNodeE.col].value === null &&
+                  board[A.row]?.[graphNodeE.col]?.draft?.includes(num)
+                ) {
                   return {
                     position: [{ row: A.row, col: graphNodeE.col }],
                     prompt: [
@@ -2727,74 +2795,214 @@ export const combinationChain = (
                     method: SOLUTION_METHODS.COMBINATION_CHAIN,
                     target: [num],
                     isFill: false,
-                    isWeakLink: true,
-                    chainStructure: "3-2",
+                    isWeakLink: isWeakLink(board, C, D, num, candidateMap),
+                    chainStructure: "3-2-1",
                   };
+                }
+              }
+              // 寻找距离D为3的强连接
+              const graphNodes = findGraphNodeByDistance(graphNodeD, 3);
+              for (const graphNodeG of graphNodes) {
+                const paths = findFourPath(D, graphNodeG, num, graph);
+                for (const path of paths) {
+                  if (
+                    path.some(
+                      (p) =>
+                        (p.row === A?.row && p.col === A?.col) ||
+                        (p.row === B?.row && p.col === B?.col) ||
+                        (p.row === C?.row && p.col === C?.col)
+                    )
+                  ) {
+                    continue;
+                  }
+                  if (
+                    board[A.row]?.[graphNodeG.col].value === null &&
+                    board[A.row]?.[graphNodeG.col]?.draft?.includes(num) &&
+                    graphNodeG.col !== A.col &&
+                    graphNodeG.col !== B.col
+                  ) {
+                    return {
+                      position: [{ row: A.row, col: graphNodeG.col }],
+                      prompt: [A, B, C, ...path],
+                      method: SOLUTION_METHODS.COMBINATION_CHAIN,
+                      target: [num],
+                      isFill: false,
+                      isWeakLink: isWeakLink(board, C, D, num, candidateMap),
+                      chainStructure: "3-4-1",
+                    };
+                  }
+                }
+              }
+            }
+            // 让双节点为桥梁
+            for (const D of candidateMap[num].row.get(A.row)?.positions ?? []) {
+              if (!isInSameBox(D, C)) {
+                const graphNodeD = getGraphNode(D, num, graph);
+                // 寻找距离D为1的强连接
+                for (const graphNodeE of graphNodeD?.next ?? []) {
+                  if (
+                    isInSameBox(graphNodeE, C) ||
+                    isInSameBox(graphNodeE, D) ||
+                    isInSameBox(graphNodeE, A) ||
+                    isInSameBox(graphNodeE, B)
+                  )
+                    continue;
+
+                  if (
+                    board[C.row]?.[graphNodeE.col].value === null &&
+                    board[graphNodeE.row]?.[C.col]?.draft?.includes(num)
+                  ) {
+                    return {
+                      position: [{ row: C.row, col: graphNodeE.col }],
+                      prompt: [
+                        A,
+                        B,
+                        C,
+                        { row: D.row, col: D.col },
+                        { row: graphNodeE.row, col: graphNodeE.col },
+                      ],
+                      method: SOLUTION_METHODS.COMBINATION_CHAIN,
+                      target: [num],
+                      isFill: false,
+                      isWeakLink:
+                        candidateMap[num].row.get(A.row)?.count != 3
+                          ? true
+                          : false,
+                      chainStructure: "3-2-2",
+                    };
+                  }
                 }
               }
             }
           }
-        }
-        A = null;
-        B = null;
-        C = null;
-        if (pos1.col === pos3.col && pos1.col !== pos2.col) {
-          A = { row: pos1.row, col: pos1.col };
-          B = { row: pos3.row, col: pos3.col };
-          C = { row: pos2.row, col: pos2.col };
-        }
-        if (pos1.col === pos2.col && pos1.col !== pos3.col) {
-          A = { row: pos1.row, col: pos1.col };
-          B = { row: pos2.row, col: pos2.col };
-          C = { row: pos3.row, col: pos3.col };
-        }
-        if (pos2.col === pos3.col && pos1.col !== pos2.col) {
-          A = { row: pos2.row, col: pos2.col };
-          B = { row: pos1.row, col: pos1.col };
-          C = { row: pos3.row, col: pos3.col };
-        }
+          A = null;
+          B = null;
+          C = null;
+          if (pos1.col === pos3.col && pos1.col !== pos2.col) {
+            A = { row: pos1.row, col: pos1.col };
+            B = { row: pos3.row, col: pos3.col };
+            C = { row: pos2.row, col: pos2.col };
+          }
+          if (pos1.col === pos2.col && pos1.col !== pos3.col) {
+            A = { row: pos1.row, col: pos1.col };
+            B = { row: pos2.row, col: pos2.col };
+            C = { row: pos3.row, col: pos3.col };
+          }
+          if (pos2.col === pos3.col && pos1.col !== pos2.col) {
+            A = { row: pos2.row, col: pos2.col };
+            B = { row: pos3.row, col: pos3.col };
+            C = { row: pos1.row, col: pos1.col };
+          }
 
- 
-        if (A && B && C) {
-      
-          // 让单节点为桥梁
-          for (const D of candidateMap[num].row.get(C.row)?.positions ?? []) {
-            
-            if (!isInSameBox(D, C)) {
-             
-              const graphNodeD = getGraphNode(D, num, graph);
-             
-              // 寻找距离D为1的强连接
-              for (const graphNodeE of graphNodeD?.next ?? []) {
-            
-                if (
-                  isInSameBox(graphNodeE, C) ||
-                  isInSameBox(graphNodeE, D) ||
-                  isInSameBox(graphNodeE, A) ||
-                  isInSameBox(graphNodeE, B)
-                )
-                  continue;
-               
-                if (board[graphNodeE.row]?.[A.col]?.draft?.includes(num)) {
-                  if(C.row===4&&C.col===6&&D.col===3&&D.row===4){
-                    console.log(graphNodeD);
-                    
+          if (A && B && C) {
+            // 让单节点为桥梁
+            for (const D of candidateMap[num].row.get(C.row)?.positions ?? []) {
+              if (!isInSameBox(D, C)) {
+                const graphNodeD = getGraphNode(D, num, graph);
+
+                // 寻找距离D为1的强连接
+                for (const graphNodeE of graphNodeD?.next ?? []) {
+                  if (
+                    isInSameBox(graphNodeE, C) ||
+                    isInSameBox(graphNodeE, D) ||
+                    isInSameBox(graphNodeE, A) ||
+                    isInSameBox(graphNodeE, B)
+                  )
+                    continue;
+
+                  if (
+                    board[C.row]?.[graphNodeE.col].value === null &&
+                    board[graphNodeE.row]?.[A.col]?.draft?.includes(num)
+                  ) {
+                    return {
+                      position: [{ row: graphNodeE.row, col: A.col }],
+                      prompt: [
+                        A,
+                        B,
+                        C,
+                        { row: D.row, col: D.col },
+                        { row: graphNodeE.row, col: graphNodeE.col },
+                      ],
+                      method: SOLUTION_METHODS.COMBINATION_CHAIN,
+                      target: [num],
+                      isFill: false,
+                      isWeakLink: isWeakLink(board, C, D, num, candidateMap),
+                      chainStructure: "3-2-1",
+                    };
                   }
-                  return {
-                    position: [{ row: graphNodeE.row, col: A.col }],
-                    prompt: [
-                      A,
-                      B,
-                      C,
-                      { row: D.row, col: D.col },
-                      { row: graphNodeE.row, col: graphNodeE.col },
-                    ],
-                    method: SOLUTION_METHODS.COMBINATION_CHAIN,
-                    target: [num],
-                    isFill: false,
-                    isWeakLink: true,
-                    chainStructure: "3-2",
-                  };
+                }
+                // 寻找距离D为3的强连接
+                const graphNodes = findGraphNodeByDistance(graphNodeD, 3);
+                for (const graphNodeG of graphNodes) {
+                  const paths = findFourPath(D, graphNodeG, num, graph);
+                  for (const path of paths) {
+                    if (
+                      path.some(
+                        (p) =>
+                          (p.row === A?.row && p.col === A?.col) ||
+                          (p.row === B?.row && p.col === B?.col) ||
+                          (p.row === C?.row && p.col === C?.col)
+                      )
+                    ) {
+                      continue;
+                    }
+                    if (
+                      board[graphNodeG.row]?.[A.col].value === null &&
+                      board[graphNodeG.row]?.[A.col]?.draft?.includes(num) &&
+                      graphNodeG.row !== A.row &&
+                      graphNodeG.row !== B.row
+                    ) {
+                      return {
+                        position: [{ row: graphNodeG.row, col: A.col }],
+                        prompt: [A, B, C, ...path],
+                        method: SOLUTION_METHODS.COMBINATION_CHAIN,
+                        target: [num],
+                        isFill: false,
+                        isWeakLink: isWeakLink(board, C, D, num, candidateMap),
+                        chainStructure: "3-4-1",
+                      };
+                    }
+                  }
+                }
+              }
+            }
+            // 让双节点为桥梁
+            for (const D of candidateMap[num].col.get(A.col)?.positions ?? []) {
+              if (!isInSameBox(D, C)) {
+                const graphNodeD = getGraphNode(D, num, graph);
+                // 寻找距离D为1的强连接
+                for (const graphNodeE of graphNodeD?.next ?? []) {
+                  if (
+                    isInSameBox(graphNodeE, C) ||
+                    isInSameBox(graphNodeE, D) ||
+                    isInSameBox(graphNodeE, A) ||
+                    isInSameBox(graphNodeE, B)
+                  )
+                    continue;
+
+                  if (
+                    board[C.row]?.[graphNodeE.col].value === null &&
+                    board[C.row]?.[graphNodeE.col]?.draft?.includes(num)
+                  ) {
+                    return {
+                      position: [{ row: C.row, col: graphNodeE.col }],
+                      prompt: [
+                        A,
+                        B,
+                        C,
+                        { row: D.row, col: D.col },
+                        { row: graphNodeE.row, col: graphNodeE.col },
+                      ],
+                      method: SOLUTION_METHODS.COMBINATION_CHAIN,
+                      target: [num],
+                      isFill: false,
+                      isWeakLink:
+                        candidateMap[num].col.get(A.col)?.count != 3
+                          ? true
+                          : false,
+                      chainStructure: "3-2-2",
+                    };
+                  }
                 }
               }
             }
@@ -2839,83 +3047,50 @@ const findCommonAffectedPositions = (
   return affectedPositions;
 };
 
-// 已知两个强关联的格子，寻找A到B为4个格子的路径
+// 已知两个强关联的格子，寻找A到B为4个格子的所有路径
 export const findFourPath = (
   pos1: Position,
   pos2: Position,
   num: number,
-  graph: Graph,
-): Position[] => {
-  const startNode = findGraphNode(pos1, num, graph);
+  graph: Graph
+): Position[][] => {
+  const startNode = findGraphNodeByPosition(pos1, num, graph);
   if (!startNode) {
     return [];
   }
 
   const visited: Set<string> = new Set();
   const path: Position[] = [];
+  const allPaths: Position[][] = [];
 
-  const dfs = (node: GraphNode): Position[] | null => {
+  const dfs = (node: GraphNode) => {
     const key = `${node.row},${node.col}`;
 
     if (visited.has(key)) {
-      return null;
+      return;
     }
 
     visited.add(key);
-    path.push({row: node.row, col: node.col});
+    path.push({ row: node.row, col: node.col });
 
     if (path.length === 4 && node.row === pos2.row && node.col === pos2.col) {
-      return [...path];
+      allPaths.push([...path]);
     }
 
     if (path.length < 4) {
       for (const nextNode of node.next) {
-        const result = dfs(nextNode);
-        if (result) {
-          return result;
-        }
+        dfs(nextNode);
       }
     }
 
     visited.delete(key);
     path.pop();
-    return null;
   };
 
-  const result = dfs(startNode);
-  return result ?? [];
+  dfs(startNode);
+  return allPaths;
 };
 
-// 已知位置和候选数找到graph对应的节点
-const findGraphNode = (
-  position: Position,
-  num: number,
-  graph: Graph,
-): GraphNode | null => {
-  const {row, col} = position;
-  const startNodes = graph[num] ?? [];
-
-  for (const startNode of startNodes) {
-    const queue: GraphNode[] = [startNode];
-    const visited = new Set<string>();
-
-    while (queue.length > 0) {
-      const node = queue.shift()!;
-      const key = `${node.row},${node.col}`;
-
-      if (visited.has(key)) continue;
-      visited.add(key);
-
-      if (node.row === row && node.col === col) {
-        return node;
-      }
-
-      queue.push(...node.next);
-    }
-  }
-
-  return null;
-};
 
 // 三阶鱼
 export const swordfish = (

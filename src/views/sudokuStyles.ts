@@ -8,7 +8,7 @@ const sudokuStyles = StyleSheet.create({
     position: 'absolute' as const,
     top: StatusBar.currentHeight || 0,
     left: 0,
-    // backgroundColor: 'red',
+    backgroundColor: 'white',
   },
   gameInfo: {
     flexDirection: 'row',
@@ -388,6 +388,26 @@ const sudokuStyles = StyleSheet.create({
   gameInfoTextError: {
     fontSize: 16,
     color: 'rgb(59, 61, 99)',
+  },
+  gameInfoDIY: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 40,
+    justifyContent: 'center',
+    display: 'flex',
+    width: Dimensions.get('window').width * 0.95,
+  },
+  gameInfoTextDIY: {
+    fontSize: 16,
+    color: 'rgb(59, 61, 99)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 120,
+  },
+  gameInfoIcon: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
   },
 });
 
