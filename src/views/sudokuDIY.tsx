@@ -14,9 +14,8 @@ import {
   getCandidates,
   deepCopyBoard,
   checkDraftIsValid,
-  copyOfficialDraft,
-  isSameBoard,
   isValid,
+  solve3,
 } from '../tools';
 import {useSudokuBoardDIY} from '../tools/useSudokuBoardDIY';
 import {
@@ -36,11 +35,11 @@ import {
   hiddenTriple2,
   nakedQuadruple,
   swordfish,
-  trialAndError,
   findDifferenceDraft,
   wxyzWing,
   remotePair,
   combinationChain,
+  trialAndErrorDIY,
 } from '../tools/solution';
 import type {CandidateMap, CellData, Graph, Position} from '../tools';
 import type {DifferenceMap, Result} from '../tools/solution';
@@ -53,6 +52,7 @@ import {playSound} from '../tools/Sound';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSudokuStore} from '../store';
 import TarBarsSudoku from '../components/tarBarsSudoku';
+import {SUDOKU_STATUS} from '../constans';
 
 interface SudokuDIYProps {
   slideAnim: Animated.Value;
@@ -69,7 +69,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       currentStep,
       candidateMap,
       graph,
-      answerBoard,
       remainingCounts,
       setRemainingCounts,
       standradBoard,
@@ -78,7 +77,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       resetSudokuBoard,
       saveSudokuData,
       loadSavedData2,
-      isValidBoard,
     } = useSudokuBoardDIY();
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
@@ -104,6 +102,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     const [prompts, setPrompts] = useState<number[]>([]);
     const [positions, setPositions] = useState<number[]>([]);
     const [eraseEnabled, setEraseEnabled] = useState<boolean>(false);
+    const [sudokuStatus, setSudokuStatus] = useState<
+      keyof typeof SUDOKU_STATUS
+    >(SUDOKU_STATUS.VOID);
 
     const isClickAutoNote = useRef<boolean>(false);
     const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
@@ -136,16 +137,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       combinationChain,
       swordfish,
       wxyzWing,
-      trialAndError,
+      trialAndErrorDIY,
     ]);
-    const {
-      setResultVisible,
-      setTime,
-      errorCount,
-      setErrorCount,
-      setHintCount,
-      isSound,
-    } = useSudokuStore();
+    const {errorCount, setErrorCount, setHintCount, isSound} = useSudokuStore();
     const resetSudoku = useCallback(() => {
       playSound('switch', isSound);
       setSelectedNumber(1);
@@ -217,16 +211,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       selectionMode,
     ]);
 
-    const setSuccessResult = useCallback(
-      (time: string, errorCount: number, hintCount: number) => {
-        setResultVisible(true);
-        setTime(time);
-        setErrorCount(errorCount);
-        setHintCount(hintCount);
-      },
-      [setResultVisible, setTime, setErrorCount, setHintCount],
-    );
-
     const loadSavedData = useCallback(async () => {
       const sudokuData = await AsyncStorage.getItem('sudokuDataDIY1');
       if (sudokuData) {
@@ -253,23 +237,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         startTime.current = data.startTime;
       }
     }, [setErrorCount]);
-
-    const handleError = useCallback(
-      (row: number, col: number) => {
-        playSound('error', isSound);
-        const currentTime = Date.now();
-        if (
-          lastErrorTime.current === null ||
-          currentTime - lastErrorTime.current > errorCooldownPeriod.current
-        ) {
-          setErrorCount(errorCount + 1);
-          setErrorCells([{row, col}]);
-          lastErrorTime.current = currentTime;
-          setTimeout(() => setErrorCells([]), errorCooldownPeriod.current);
-        }
-      },
-      [errorCount, isSound, setErrorCount],
-    );
 
     const handleErrorDraftAnimation = useCallback(
       (conflictCells: Position[]) => {
@@ -346,37 +313,10 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           );
 
           // 验证填入的数字是否为有效候选数字
-          if (
-            answerBoard.current[row][col].value == selectedNumber &&
-            isValidBoard
-          ) {
+          if (!conflictCells.length) {
             cell.value = selectedNumber;
             cell.draft = [];
 
-            // 更新相关单元格的草稿数字
-            updateRelatedCellsDraft(
-              newBoard,
-              [{row, col}],
-              selectedNumber,
-              getCandidates,
-            );
-
-            playSound('switch', isSound);
-            updateBoard(
-              newBoard,
-              `设置 (${row}, ${col}) 为 ${selectedNumber}`,
-              true,
-            );
-            remainingCountsMinusOne(selectedNumber);
-          } else if (!isValidBoard) {
-            if (!isValid(board, row, col, selectedNumber)) {
-              if (conflictCells.length > 0) {
-                handleErrorDraftAnimation(conflictCells);
-                return;
-              }
-            }
-            cell.value = selectedNumber;
-            cell.draft = [];
             // 更新相关单元格的草稿数字
             updateRelatedCellsDraft(
               newBoard,
@@ -393,7 +333,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             );
             remainingCountsMinusOne(selectedNumber);
           } else {
-            handleError(row, col);
+            handleErrorDraftAnimation(conflictCells);
             return;
           }
         }
@@ -406,31 +346,26 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         updateBoard,
         isSound,
         handleErrorDraftAnimation,
-        answerBoard,
-        isValidBoard,
         remainingCountsMinusOne,
-        handleError,
       ],
     );
 
     // 撤销
     const handleUndo = useCallback(() => {
+      setSudokuStatus(SUDOKU_STATUS.VOID);
       const lastAction = history.current[currentStep]?.action;
       if (lastAction === '复制官方草稿') {
         isClickAutoNote.current = false;
       }
       undo();
       playSound('switch', isSound);
-    }, [history, currentStep, undo, isSound]);
+    }, [history, currentStep, undo, isSound, setSudokuStatus]);
 
     // 擦除
     const handleErase = useCallback(() => {
       if (selectedCell) {
         const {row, col} = selectedCell;
-        if (
-          eraseEnabled &&
-          board[row][col].value !== answerBoard.current[row][col].value
-        ) {
+        if (eraseEnabled) {
           playSound('erase', isSound);
           const newBoard = deepCopyBoard(board);
           const cell = newBoard[row][col];
@@ -440,7 +375,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           setEraseEnabled(false);
         }
       }
-    }, [selectedCell, eraseEnabled, board, answerBoard, updateBoard, isSound]);
+    }, [selectedCell, eraseEnabled, board, updateBoard, isSound]);
 
     // 选择数字
     const handleNumberSelect = useCallback(
@@ -456,21 +391,18 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
           const newBoard = deepCopyBoard(board);
           const newCell = newBoard[row][col];
-
+          const conflictCells = checkNumberInRowColumnAndBox(
+            newBoard,
+            row,
+            col,
+            number,
+          );
+          if (conflictCells.length > 0) {
+            handleErrorDraftAnimation(conflictCells);
+            return;
+          }
           // 模式2下草稿模式
           if (draftMode) {
-            const conflictCells = checkNumberInRowColumnAndBox(
-              newBoard,
-              row,
-              col,
-              number,
-            );
-
-            if (conflictCells.length > 0) {
-              handleErrorDraftAnimation(conflictCells);
-              return;
-            }
-
             const draftSet = new Set(newCell.draft);
             if (draftSet.has(number)) {
               draftSet.delete(number);
@@ -486,61 +418,20 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
               false,
             );
           } else {
-            if (answerBoard.current[row][col].value == number && isValidBoard) {
-              playSound('switch', isSound);
-              newCell.value = number;
-              newCell.draft = [];
-              updateRelatedCellsDraft(
-                newBoard,
-                [{row, col}],
-                number,
-                getCandidates,
-              );
-              updateBoard(newBoard, `设置 (${row}, ${col}) 为 ${number}`, true);
-              setEraseEnabled(true);
-              setTimeout(() => {
-                remainingCountsMinusOne(number);
-              }, 0);
-            } else if (!isValidBoard) {
-              const conflictCells = checkNumberInRowColumnAndBox(
-                newBoard,
-                row,
-                col,
-                number,
-              );
-
-              if (conflictCells.length > 0) {
-                handleErrorDraftAnimation(conflictCells);
-                return;
-              }
-              playSound('switch', isSound);
-              newCell.value = number;
-              newCell.draft = [];
-              updateRelatedCellsDraft(
-                newBoard,
-                [{row, col}],
-                number,
-                getCandidates,
-              );
-              updateBoard(newBoard, `设置 (${row}, ${col}) 为 ${number}`, true);
-              setEraseEnabled(true);
-              setTimeout(() => {
-                remainingCountsMinusOne(number);
-              }, 0);
-              return;
-            } else {
-              handleError(row, col);
-              const currentTime = Date.now();
-              if (
-                lastErrorTime.current === null ||
-                currentTime - lastErrorTime.current >
-                  errorCooldownPeriod.current
-              ) {
-                setErrorCount(errorCount + 1);
-                lastErrorTime.current = currentTime;
-              }
-              return;
-            }
+            playSound('switch', isSound);
+            newCell.value = number;
+            newCell.draft = [];
+            updateRelatedCellsDraft(
+              newBoard,
+              [{row, col}],
+              number,
+              getCandidates,
+            );
+            updateBoard(newBoard, `设置 (${row}, ${col}) 为 ${number}`, true);
+            setEraseEnabled(true);
+            setTimeout(() => {
+              remainingCountsMinusOne(number);
+            }, 0);
           }
         } else {
           playSound('switch', isSound);
@@ -556,11 +447,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         isSound,
         updateBoard,
         handleErrorDraftAnimation,
-        answerBoard,
         remainingCountsMinusOne,
-        handleError,
-        setErrorCount,
-        errorCount,
       ],
     );
 
@@ -597,14 +484,10 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     );
 
     const handleShowCandidates = useCallback(() => {
-      if (!isValidBoard) {
-        playSound('error', isSound);
-        return;
-      }
       playSound('switch', isSound);
       isClickAutoNote.current = true;
       updateBoard(deepCopyBoard(standradBoard), '复制官方草稿', false);
-    }, [standradBoard, updateBoard, isSound, isValidBoard]);
+    }, [standradBoard, updateBoard, isSound]);
 
     const applyHintHighlight = useCallback(
       (
@@ -652,13 +535,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           handleShowCandidates();
           handleHint(currentBoard);
           return;
-        } else if (!checkDraftIsValid(board, answerBoard.current)) {
-          const differenceMap = findDifferenceDraft(board, standradBoard);
-          setDifferenceMap(differenceMap);
-          setHintMethod('');
-          setHintDrawerVisible(true);
-          setHintContent('笔记有错误，请先修正');
-          return;
         }
         let result: Result | null = null;
         for (const solveFunction of solveFunctions.current) {
@@ -688,7 +564,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         }
       },
       [
-        answerBoard,
         standradBoard,
         handleShowCandidates,
         candidateMap,
@@ -802,17 +677,17 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       }
     }, [board, selectedCell, selectionMode]);
 
-    const setTimeFunction = useCallback(
-      (time1: string) => {
-        time.current = time1;
-        setSuccessResult(time.current, errorCount, hintCount.current);
-      },
-      [errorCount, setSuccessResult],
-    );
-
     const handleBack = useCallback(() => {
       closeSudoku();
     }, [closeSudoku]);
+
+    const getAnswer = useCallback((board: CellData[][]) => {
+      const startTime = performance.now();
+      solve3(board);
+      const endTime = performance.now();
+      const time = endTime - startTime;
+      console.log('解题时间：', time);
+    }, []);
 
     return (
       <Animated.View
@@ -837,22 +712,24 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           resetSudoku={resetSudoku}
         />
         <View style={styles.gameInfoDIY}>
-          {isValidBoard ? (
-            <View style={styles.gameInfoTextDIY}>
-              <Image
-                source={require('../assets/icon/legal.png')}
-                style={styles.gameInfoIcon}
-              />
-              <Text style={styles.gameInfoText}>数独合法</Text>
-            </View>
-          ) : (
-            <View style={styles.gameInfoTextDIY}>
-              <Image
-                source={require('../assets/icon/illegal.png')}
-                style={styles.gameInfoIcon}
-              />
-              <Text style={styles.gameInfoText}>数独不合法</Text>
-            </View>
+          {sudokuStatus !== SUDOKU_STATUS.VOID && (
+            sudokuStatus === SUDOKU_STATUS.SOLVED ? (
+              <View style={styles.gameInfoTextDIY}>
+                <Image
+                  source={require('../assets/icon/legal.png')}
+                  style={styles.gameInfoIcon}
+                />
+                <Text style={styles.gameInfoText}>数独合法</Text>
+              </View>
+            ) : (
+              <View style={styles.gameInfoTextDIY}>
+                <Image
+                  source={require('../assets/icon/illegal.png')}
+                  style={styles.gameInfoIcon}
+                />
+                <Text style={styles.gameInfoText}>数独不合法</Text>
+              </View>
+            )
           )}
         </View>
         <View style={styles.sudokuGrid}>
@@ -947,7 +824,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           </Pressable>
           <Pressable
             style={[styles.buttonContainer]}
-            onPressIn={() => handleHint(board)}>
+            onPressIn={() => getAnswer(board)}>
             <Image
               source={require('../assets/icon/answer.png')}
               style={styles.buttonIcon}

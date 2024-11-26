@@ -3415,28 +3415,36 @@ export const wxyzWing = (
 };
 
 // 试数法
-export const trialAndError2 = (
+export const trialAndErrorDIY = (
   board: CellData[][],
   candidateMap: CandidateMap,
   graph: Graph,
 ): Result | null => {
-  const newBoard = board.map(row => row.map(cell => ({...cell})));
-  if (solve(newBoard)) {
-    for (let row = 0; row < 9; row++) {
-      for (let col = 0; col < 9; col++) {
-        const cell = board[row][col];
-        if (cell.value === null && cell.draft?.length === 2) {
-          const correctValue = newBoard[row][col].value;
-          return {
-            position: [{row, col}],
-            prompt: [{row, col}],
-            method: SOLUTION_METHODS.TRIAL_AND_ERROR,
-            target: [correctValue as number],
-            isFill: true,
-          };
+  let minLength = 10;
+  let minPosition: Position | null = null;
+  let minValue: number | null = null;
+
+  for(let row = 0; row < 9; row++){
+    for(let col = 0; col < 9; col++){
+      const cell = board[row][col];
+      if(cell.value === null && cell.draft?.length) {
+        if(cell.draft.length < minLength) {
+          minLength = cell.draft.length;
+          minPosition = {row, col};
+          minValue = board[row][col].draft[0];
         }
       }
     }
+  }
+
+  if(minPosition && minValue) {
+    return {
+      position: [minPosition],
+      prompt: [minPosition],
+      method: SOLUTION_METHODS.TRIAL_AND_ERROR,
+      target: [minValue],
+      isFill: true
+    };
   }
   return null;
 };

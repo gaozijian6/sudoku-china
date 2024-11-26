@@ -64,3 +64,10 @@ export const DIFFICULTY = {
   EXTREME: "极难",
   DIY: "自定义",
 };
+
+export const SUDOKU_STATUS = {
+  VOID: 'VOID',
+  SOLVING: 'SOLVING',
+  SOLVED: 'SOLVED',
+  FAILED: 'FAILED',
+} as const;

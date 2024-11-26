@@ -233,7 +233,6 @@ export const solve2 = (board: CellData[][]): boolean => {
 };
 
 export const solve3 = (board: CellData[][]) => {
-  const startTime = performance.now();
   const solveFunctions = [hiddenSingle];
   const getCounts = (board: CellData[][]) => {
     let counts = 0;
@@ -248,6 +247,8 @@ export const solve3 = (board: CellData[][]) => {
   };
 
   let counts = getCounts(board);
+  if (counts < 17) return null;
+
   const standardBoard = copyOfficialDraft(board);
 
   firstWhile: while (true) {
@@ -298,8 +299,6 @@ export const solve3 = (board: CellData[][]) => {
   solve(board1);
   solve2(board2);
   if (isSameBoard(board1, board2)) {
-    const endTime = performance.now();
-    console.log(`solve3 耗时: ${endTime - startTime}ms`);
     return standardBoard;
   }
   return null;
@@ -312,7 +311,6 @@ export const isRowFull = (board: CellData[][], row: number) => {
 export const isColumnFull = (board: CellData[][], col: number) => {
   return board.every(row => row[col].value !== null);
 };
-
 export const isBoxFull = (board: CellData[][], box: number) => {
   const startRow = Math.floor(box / 3) * 3;
   const startCol = (box % 3) * 3;
@@ -525,6 +523,7 @@ export interface BoardHistoryDIY {
   board: CellData[][];
   action: string;
   counts: number;
+  remainingCounts: number[];
 }
 
 export interface CandidateStats {
