@@ -52,9 +52,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSudokuStore} from '../store';
 import TarBarsSudoku from '../components/tarBarsSudoku';
 import {SUDOKU_STATUS} from '../constans';
-import {NativeModules} from 'react-native';
-
-const {ComputeModule} = NativeModules;
 
 interface SudokuDIYProps {
   slideAnim: Animated.Value;
@@ -693,18 +690,20 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       closeSudoku();
     }, [closeSudoku]);
 
-    const getAnswer = useCallback(async (board: CellData[][]) => {
-      try {
+    const getAnswer = useCallback(
+      async (board: CellData[][]) => {
+        setSudokuStatus(SUDOKU_STATUS.SOLVING);
         const standardBoard = copyOfficialDraft(board);
         const result = await solve3(standardBoard);
-        if (!result) return;
-        updateBoard(result, '答案', false);
-        return result;
-      } catch (error) {
-        console.error('数独求解失败:', error);
-        return null;
-      }
-    }, [updateBoard]);
+        if (result) {
+          setSudokuStatus(SUDOKU_STATUS.SOLVED);
+          updateBoard(result, '答案', false);
+        } else {
+          setSudokuStatus(SUDOKU_STATUS.ILLEGAL);
+        }
+      },
+      [updateBoard],
+    );
 
     return (
       <Animated.View
@@ -737,6 +736,14 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
                   style={styles.gameInfoIcon}
                 />
                 <Text style={styles.gameInfoText}>数独合法</Text>
+              </View>
+            ) : sudokuStatus === SUDOKU_STATUS.SOLVING ? (
+              <View style={styles.gameInfoTextDIY}>
+                <Image
+                  source={require('../assets/icon/waiting.png')}
+                  style={styles.gameInfoIcon}
+                />
+                <Text style={styles.gameInfoText}>求解中...</Text>
               </View>
             ) : (
               <View style={styles.gameInfoTextDIY}>

@@ -299,7 +299,7 @@ export const solve3 = async (board: CellData[][]) => {
   const result1 = await ComputeModule.solveSudoku1(standardBoard,standardBoard);
   const result2 = await ComputeModule.solveSudoku2(standardBoard,standardBoard);
   if (isSameBoard(result1, result2)) {
-    return standardBoard;
+    return result1;
   }
   return null;
 };

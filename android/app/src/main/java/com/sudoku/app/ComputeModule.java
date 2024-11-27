@@ -28,114 +28,118 @@ public class ComputeModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void solveSudoku1(ReadableArray board, ReadableArray standardBoard, Promise promise) {
-        int[][] numberBoard = new int[9][9];
-        boolean[][][] draftBoard = new boolean[9][9][9];
-        
-        // 转换数字数组和草稿数组
-        for (int i = 0; i < 9; i++) {
-            ReadableArray row = board.getArray(i);
-            ReadableArray standardRow = standardBoard.getArray(i);
-            for (int j = 0; j < 9; j++) {
-                ReadableMap cell = row.getMap(j);
-                ReadableMap standardCell = standardRow.getMap(j);
-                
-                // 设置数字
-                if (cell.hasKey("value") && !cell.isNull("value")) {
-                    numberBoard[i][j] = cell.getInt("value");
-                } else {
-                    numberBoard[i][j] = 0;
-                }
-                
-                // 设置草稿
-                ReadableArray draft = standardCell.getArray("draft");
-                for (int k = 0; k < draft.size(); k++) {
-                    draftBoard[i][j][draft.getInt(k) - 1] = true;
-                }
-            }
-        }
-
-        // 求解数独
-        if (solveSudokuHelper1(numberBoard, draftBoard)) {
-            // 将结果转换回 CellData[][] 格式
-            WritableArray solvedBoard = new WritableNativeArray();
+        new Thread(() -> {
+            int[][] numberBoard = new int[9][9];
+            boolean[][][] draftBoard = new boolean[9][9][9];
+            
+            // 转换数字数组和草稿数组
             for (int i = 0; i < 9; i++) {
-                WritableArray row = new WritableNativeArray();
+                ReadableArray row = board.getArray(i);
+                ReadableArray standardRow = standardBoard.getArray(i);
                 for (int j = 0; j < 9; j++) {
-                    WritableMap cell = new WritableNativeMap();
-                    cell.putInt("value", numberBoard[i][j]);
+                    ReadableMap cell = row.getMap(j);
+                    ReadableMap standardCell = standardRow.getMap(j);
                     
-                    // 保持原有的 isGiven 属性
-                    ReadableMap originalCell = board.getArray(i).getMap(j);
-                    cell.putBoolean("isGiven", originalCell.getBoolean("isGiven"));
+                    // 设置数字
+                    if (cell.hasKey("value") && !cell.isNull("value")) {
+                        numberBoard[i][j] = cell.getInt("value");
+                    } else {
+                        numberBoard[i][j] = 0;
+                    }
                     
-                    // 创建空的 draft 数组
-                    WritableArray draft = new WritableNativeArray();
-                    cell.putArray("draft", draft);
-                    
-                    row.pushMap(cell);
+                    // 设置草稿
+                    ReadableArray draft = standardCell.getArray("draft");
+                    for (int k = 0; k < draft.size(); k++) {
+                        draftBoard[i][j][draft.getInt(k) - 1] = true;
+                    }
                 }
-                solvedBoard.pushArray(row);
             }
-            promise.resolve(solvedBoard);
-        } else {
-            promise.reject("SOLVE_ERROR", "无法找到有效解");
-        }
+
+            // 求解数独
+            if (solveSudokuHelper1(numberBoard, draftBoard)) {
+                // 将结果转换回 CellData[][] 格式
+                WritableArray solvedBoard = new WritableNativeArray();
+                for (int i = 0; i < 9; i++) {
+                    WritableArray row = new WritableNativeArray();
+                    for (int j = 0; j < 9; j++) {
+                        WritableMap cell = new WritableNativeMap();
+                        cell.putInt("value", numberBoard[i][j]);
+                        
+                        // 保持原有的 isGiven 属性
+                        ReadableMap originalCell = board.getArray(i).getMap(j);
+                        cell.putBoolean("isGiven", originalCell.getBoolean("isGiven"));
+                        
+                        // 创建空的 draft 数组
+                        WritableArray draft = new WritableNativeArray();
+                        cell.putArray("draft", draft);
+                        
+                        row.pushMap(cell);
+                    }
+                    solvedBoard.pushArray(row);
+                }
+                reactContext.runOnUiQueueThread(() -> promise.resolve(solvedBoard));
+            } else {
+                reactContext.runOnUiQueueThread(() -> promise.reject("SOLVE_ERROR", "无法找到有效解"));
+            }
+        }).start();
     }
 
     @ReactMethod
     public void solveSudoku2(ReadableArray board, ReadableArray standardBoard, Promise promise) {
-        int[][] numberBoard = new int[9][9];
-        boolean[][][] draftBoard = new boolean[9][9][9];
-        
-        // 转换数字数组和草稿数组
-        for (int i = 0; i < 9; i++) {
-            ReadableArray row = board.getArray(i);
-            ReadableArray standardRow = standardBoard.getArray(i);
-            for (int j = 0; j < 9; j++) {
-                ReadableMap cell = row.getMap(j);
-                ReadableMap standardCell = standardRow.getMap(j);
-                
-                // 设置数字
-                if (cell.hasKey("value") && !cell.isNull("value")) {
-                    numberBoard[i][j] = cell.getInt("value");
-                } else {
-                    numberBoard[i][j] = 0;
-                }
-                
-                // 设置草稿
-                ReadableArray draft = standardCell.getArray("draft");
-                for (int k = 0; k < draft.size(); k++) {
-                    draftBoard[i][j][draft.getInt(k) - 1] = true;
-                }
-            }
-        }
-
-        // 求解数独
-        if (solveSudokuHelper2(numberBoard, draftBoard)) {
-            // 将结果转换回 CellData[][] 格式
-            WritableArray solvedBoard = new WritableNativeArray();
+        new Thread(() -> {
+            int[][] numberBoard = new int[9][9];
+            boolean[][][] draftBoard = new boolean[9][9][9];
+            
+            // 转换数字数组和草稿数组
             for (int i = 0; i < 9; i++) {
-                WritableArray row = new WritableNativeArray();
+                ReadableArray row = board.getArray(i);
+                ReadableArray standardRow = standardBoard.getArray(i);
                 for (int j = 0; j < 9; j++) {
-                    WritableMap cell = new WritableNativeMap();
-                    cell.putInt("value", numberBoard[i][j]);
+                    ReadableMap cell = row.getMap(j);
+                    ReadableMap standardCell = standardRow.getMap(j);
                     
-                    // 保持原有的 isGiven 属性
-                    ReadableMap originalCell = board.getArray(i).getMap(j);
-                    cell.putBoolean("isGiven", originalCell.getBoolean("isGiven"));
+                    // 设置数字
+                    if (cell.hasKey("value") && !cell.isNull("value")) {
+                        numberBoard[i][j] = cell.getInt("value");
+                    } else {
+                        numberBoard[i][j] = 0;
+                    }
                     
-                    // 创建空的 draft 数组
-                    WritableArray draft = new WritableNativeArray();
-                    cell.putArray("draft", draft);
-                    
-                    row.pushMap(cell);
+                    // 设置草稿
+                    ReadableArray draft = standardCell.getArray("draft");
+                    for (int k = 0; k < draft.size(); k++) {
+                        draftBoard[i][j][draft.getInt(k) - 1] = true;
+                    }
                 }
-                solvedBoard.pushArray(row);
             }
-            promise.resolve(solvedBoard);
-        } else {
-            promise.reject("SOLVE_ERROR", "无法找到有效解");
-        }
+
+            // 求解数独
+            if (solveSudokuHelper2(numberBoard, draftBoard)) {
+                // 将结果转换回 CellData[][] 格式
+                WritableArray solvedBoard = new WritableNativeArray();
+                for (int i = 0; i < 9; i++) {
+                    WritableArray row = new WritableNativeArray();
+                    for (int j = 0; j < 9; j++) {
+                        WritableMap cell = new WritableNativeMap();
+                        cell.putInt("value", numberBoard[i][j]);
+                        
+                        // 保持原有的 isGiven 属性
+                        ReadableMap originalCell = board.getArray(i).getMap(j);
+                        cell.putBoolean("isGiven", originalCell.getBoolean("isGiven"));
+                        
+                        // 创建空的 draft 数组
+                        WritableArray draft = new WritableNativeArray();
+                        cell.putArray("draft", draft);
+                        
+                        row.pushMap(cell);
+                    }
+                    solvedBoard.pushArray(row);
+                }
+                reactContext.runOnUiQueueThread(() -> promise.resolve(solvedBoard));
+            } else {
+                reactContext.runOnUiQueueThread(() -> promise.reject("SOLVE_ERROR", "无法找到有效解"));
+            }
+        }).start();
     }
 
     private boolean solveSudokuHelper1(int[][] board, boolean[][][] draftBoard) {
