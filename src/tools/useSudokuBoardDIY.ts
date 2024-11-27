@@ -8,7 +8,6 @@ import {
   createGraph,
   copyOfficialDraft,
   BoardHistoryDIY,
-  solve3,
   isValid,
 } from './index';
 import initialBoard from '../views/initialBoard';
@@ -618,6 +617,9 @@ export const useSudokuBoardDIY = () => {
     (newBoard: CellData[][], action: string, isFill: boolean) => {
       if (isFill) {
         counts.current++;
+      }
+      if(action==='答案'){
+        counts.current=81;
       }
 
       if (!action.startsWith('取消') && !action.startsWith('提示')) {

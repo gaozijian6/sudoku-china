@@ -1,4 +1,7 @@
 import {isUnitStrongLink, hiddenSingle} from './solution';
+import {NativeModules} from 'react-native';
+
+const {ComputeModule} = NativeModules;
 
 export interface Position {
   row: number;
@@ -232,7 +235,7 @@ export const solve2 = (board: CellData[][]): boolean => {
   return s(board);
 };
 
-export const solve3 = (board: CellData[][]) => {
+export const solve3 = async (board: CellData[][]) => {
   const solveFunctions = [hiddenSingle];
   const getCounts = (board: CellData[][]) => {
     let counts = 0;
@@ -293,12 +296,9 @@ export const solve3 = (board: CellData[][]) => {
       }
     }
   }
-
-  const board1 = deepCopyBoard(standardBoard);
-  const board2 = deepCopyBoard(standardBoard);
-  solve(board1);
-  solve2(board2);
-  if (isSameBoard(board1, board2)) {
+  const result1 = await ComputeModule.solveSudoku1(standardBoard,standardBoard);
+  const result2 = await ComputeModule.solveSudoku2(standardBoard,standardBoard);
+  if (isSameBoard(result1, result2)) {
     return standardBoard;
   }
   return null;

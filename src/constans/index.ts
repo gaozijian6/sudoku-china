@@ -69,5 +69,5 @@ export const SUDOKU_STATUS = {
   VOID: 'VOID',
   SOLVING: 'SOLVING',
   SOLVED: 'SOLVED',
-  FAILED: 'FAILED',
+  ILLEGAL: 'ILLEGAL',
 } as const;

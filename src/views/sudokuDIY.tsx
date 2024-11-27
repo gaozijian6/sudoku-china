@@ -15,6 +15,7 @@ import {
   deepCopyBoard,
   checkDraftIsValid,
   isValid,
+  copyOfficialDraft,
   solve3,
 } from '../tools';
 import {useSudokuBoardDIY} from '../tools/useSudokuBoardDIY';
@@ -35,7 +36,6 @@ import {
   hiddenTriple2,
   nakedQuadruple,
   swordfish,
-  findDifferenceDraft,
   wxyzWing,
   remotePair,
   combinationChain,
@@ -45,7 +45,6 @@ import type {CandidateMap, CellData, Graph, Position} from '../tools';
 import type {DifferenceMap, Result} from '../tools/solution';
 import styles from './sudokuStyles';
 import {handleHintContent} from '../tools/handleHintContent';
-// import Cell from '../components/SudokuCellDIY';
 import Cell from '../components/SudokuCell';
 import Buttons from '../components/Buttons';
 import {playSound} from '../tools/Sound';
@@ -53,6 +52,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSudokuStore} from '../store';
 import TarBarsSudoku from '../components/tarBarsSudoku';
 import {SUDOKU_STATUS} from '../constans';
+import {NativeModules} from 'react-native';
+
+const {ComputeModule} = NativeModules;
 
 interface SudokuDIYProps {
   slideAnim: Animated.Value;
@@ -73,7 +75,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       setRemainingCounts,
       standradBoard,
       history,
-      setStandradBoard,
       resetSudokuBoard,
       saveSudokuData,
       loadSavedData2,
@@ -82,7 +83,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     const lastSelectedNumber = useRef<number | null>(null);
     const [draftMode, setDraftMode] = useState<boolean>(false);
     const lastErrorTime = useRef<number | null>(null);
-    const errorCooldownPeriod = useRef<number>(300);
     const [selectedCell, setSelectedCell] = useState<{
       row: number;
       col: number;
@@ -369,13 +369,25 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           playSound('erase', isSound);
           const newBoard = deepCopyBoard(board);
           const cell = newBoard[row][col];
+          if (cell.value) {
+            remainingCounts[cell.value - 1] += 1;
+            setRemainingCounts(remainingCounts);
+          }
           cell.value = null;
           cell.draft = [];
           updateBoard(newBoard, `擦除 (${row}, ${col})`, false);
           setEraseEnabled(false);
         }
       }
-    }, [selectedCell, eraseEnabled, board, updateBoard, isSound]);
+    }, [
+      selectedCell,
+      eraseEnabled,
+      isSound,
+      board,
+      remainingCounts,
+      setRemainingCounts,
+      updateBoard,
+    ]);
 
     // 选择数字
     const handleNumberSelect = useCallback(
@@ -681,13 +693,18 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       closeSudoku();
     }, [closeSudoku]);
 
-    const getAnswer = useCallback((board: CellData[][]) => {
-      const startTime = performance.now();
-      solve3(board);
-      const endTime = performance.now();
-      const time = endTime - startTime;
-      console.log('解题时间：', time);
-    }, []);
+    const getAnswer = useCallback(async (board: CellData[][]) => {
+      try {
+        const standardBoard = copyOfficialDraft(board);
+        const result = await solve3(standardBoard);
+        if (!result) return;
+        updateBoard(result, '答案', false);
+        return result;
+      } catch (error) {
+        console.error('数独求解失败:', error);
+        return null;
+      }
+    }, [updateBoard]);
 
     return (
       <Animated.View
@@ -712,8 +729,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           resetSudoku={resetSudoku}
         />
         <View style={styles.gameInfoDIY}>
-          {sudokuStatus !== SUDOKU_STATUS.VOID && (
-            sudokuStatus === SUDOKU_STATUS.SOLVED ? (
+          {sudokuStatus !== SUDOKU_STATUS.VOID &&
+            (sudokuStatus === SUDOKU_STATUS.SOLVED ? (
               <View style={styles.gameInfoTextDIY}>
                 <Image
                   source={require('../assets/icon/legal.png')}
@@ -729,8 +746,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
                 />
                 <Text style={styles.gameInfoText}>数独不合法</Text>
               </View>
-            )
-          )}
+            ))}
         </View>
         <View style={styles.sudokuGrid}>
           {board?.map((row, rowIndex) =>
