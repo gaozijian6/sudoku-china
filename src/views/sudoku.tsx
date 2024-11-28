@@ -7,6 +7,7 @@ import {
   Switch,
   Pressable,
   Animated,
+  AppState,
 } from 'react-native';
 import {
   checkNumberInRowColumnAndBox,
@@ -844,6 +845,15 @@ const Sudoku: React.FC<SudokuProps> = memo(
     const handleBack = useCallback(() => {
       closeSudoku();
     }, [closeSudoku]);
+
+    useEffect(() => {
+      const subscription = AppState.addEventListener('change', nextAppState => {
+        if (nextAppState === 'background') {
+          saveData();
+        }
+      });
+      return () => subscription.remove();
+    }, []);
 
     return (
       <Animated.View

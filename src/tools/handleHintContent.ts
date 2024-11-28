@@ -59,7 +59,7 @@ export const handleHintContent = (
         break;
       case SOLUTION_METHODS.TRIAL_AND_ERROR:
         boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-        hintContent = `尝试向只有两个候选数的方格内填入${target[0]}，若后续无解，则说明填入${target[0]}是错误的，应填入另一个候选数`;
+        hintContent = `尝试向拥有最少候选数的方格内填入${target[0]}，若后续无解，则说明填入${target[0]}是错误的，应填入另一个候选数`;
         break;
     }
   } else {

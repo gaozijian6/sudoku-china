@@ -55,8 +55,11 @@ public class ComputeModule extends ReactContextBaseJavaModule {
                 }
             }
 
-            // 求解数独
-            if (solveSudokuHelper1(numberBoard, draftBoard)) {
+            boolean solved = solveSudokuHelper1(numberBoard, draftBoard);
+
+            System.out.println("solved: " + solved);
+            
+            if (solved) {
                 // 将结果转换回 CellData[][] 格式
                 WritableArray solvedBoard = new WritableNativeArray();
                 for (int i = 0; i < 9; i++) {
@@ -79,7 +82,7 @@ public class ComputeModule extends ReactContextBaseJavaModule {
                 }
                 reactContext.runOnUiQueueThread(() -> promise.resolve(solvedBoard));
             } else {
-                reactContext.runOnUiQueueThread(() -> promise.reject("SOLVE_ERROR", "无法找到有效解"));
+                reactContext.runOnUiQueueThread(() -> promise.resolve(false));
             }
         }).start();
     }
@@ -137,7 +140,7 @@ public class ComputeModule extends ReactContextBaseJavaModule {
                 }
                 reactContext.runOnUiQueueThread(() -> promise.resolve(solvedBoard));
             } else {
-                reactContext.runOnUiQueueThread(() -> promise.reject("SOLVE_ERROR", "无法找到有效解"));
+                reactContext.runOnUiQueueThread(() -> promise.resolve(false));
             }
         }).start();
     }
@@ -147,7 +150,6 @@ public class ComputeModule extends ReactContextBaseJavaModule {
             for (int col = 0; col < 9; col++) {
                 if (board[row][col] == 0) {
                     for (int num = 1; num <= 9; num++) {
-                        // 检查数字是否在草稿中且位置有效
                         if (draftBoard[row][col][num-1] && isValidPlacement(board, row, col, num)) {
                             board[row][col] = num;
                             if (solveSudokuHelper1(board, draftBoard)) {

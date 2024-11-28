@@ -15,16 +15,19 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
   saveData,
   resetSudoku,
 }) => {
-  const {setIsHome, setDifficulty, setPauseVisible, pauseVisible, isDIY, setIsDIY} =
-    useSudokuStore();
+  const {
+    setIsHome,
+    setDifficulty,
+    setPauseVisible,
+    pauseVisible,
+  } = useSudokuStore();
   const backToHome = useCallback(() => {
     saveData();
     resetSudoku();
     setDifficulty('');
     setIsHome(true);
-    setIsDIY(false);
     onBack();
-  }, [saveData, resetSudoku, setDifficulty, setIsHome, setIsDIY, onBack]);
+  }, [saveData, resetSudoku, setDifficulty, setIsHome, onBack]);
 
   return (
     <View style={styles.container}>
@@ -39,27 +42,16 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
           <Text style={styles.sudoku}>sudoku</Text>
         </View>
         <View style={styles.rightSection}>
-          {isDIY ? (
-            <Pressable
-              style={styles.pauseIconContainer}
-              onPressIn={resetSudoku}>
-              <Image
-                source={require('../assets/icon/refresh.png')}
-                style={styles.pauseIcon}
-              />
-            </Pressable>
-          ) : (
-            <Pressable
-              style={styles.pauseIconContainer}
-              onPressIn={() => {
-                setPauseVisible(!pauseVisible);
-              }}>
-              <Image
-                source={require('../assets/icon/pause.png')}
-                style={styles.pauseIcon}
-              />
-            </Pressable>
-          )}
+          <Pressable
+            style={styles.pauseIconContainer}
+            onPressIn={() => {
+              setPauseVisible(!pauseVisible);
+            }}>
+            <Image
+              source={require('../assets/icon/pause.png')}
+              style={styles.pauseIcon}
+            />
+          </Pressable>
           <Pressable
             onPressIn={openSetting}
             style={styles.settingIconContainer}>

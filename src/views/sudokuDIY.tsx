@@ -14,8 +14,6 @@ import {
   updateRelatedCellsDraft,
   getCandidates,
   deepCopyBoard,
-  checkDraftIsValid,
-  isValid,
   copyOfficialDraft,
   solve3,
 } from '../tools';
@@ -51,7 +49,7 @@ import Buttons from '../components/Buttons';
 import {playSound} from '../tools/Sound';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSudokuStore} from '../store';
-import TarBarsSudoku from '../components/tarBarsSudoku';
+import TarBarsSudokuDIY from '../components/tarBarsSudokuDIY';
 import {SUDOKU_STATUS} from '../constans';
 
 interface SudokuDIYProps {
@@ -167,7 +165,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       }, 0);
     }, [isSound, resetSudokuBoard, setErrorCount]);
 
-    const saveData = useCallback(() => {
+    const saveDataDIY = useCallback(() => {
       const sudokuData = {
         lastSelectedNumber: lastSelectedNumber.current,
         errorCount,
@@ -695,6 +693,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
     const getAnswer = useCallback(
       async (board: CellData[][]) => {
+        playSound('switch', isSound);
         setSudokuStatus(SUDOKU_STATUS.SOLVING);
         const standardBoard = copyOfficialDraft(board);
         const result = await solve3(standardBoard);
@@ -705,13 +704,13 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           setSudokuStatus(SUDOKU_STATUS.ILLEGAL);
         }
       },
-      [updateBoard],
+      [isSound, updateBoard],
     );
 
     useEffect(() => {
       const subscription = AppState.addEventListener('change', nextAppState => {
         if (nextAppState === 'background') {
-          saveData();
+          saveDataDIY();
         }
       });
       return () => subscription.remove();
@@ -740,10 +739,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             zIndex: 5,
           },
         ]}>
-        <TarBarsSudoku
+        <TarBarsSudokuDIY
           onBack={handleBack}
           openSetting={openSetting}
-          saveData={saveData}
           saveDataDIY={saveDataDIY}
           resetSudoku={resetSudoku}
         />
@@ -882,12 +880,15 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           selectedNumber={selectedNumber}
           draftMode={draftMode}
         />
-        <Switch
-          value={selectionMode === 2}
-          onValueChange={handleSelectionModeChange}
-          trackColor={{false: '#767577', true: '#81b0ff'}}
-          thumbColor={selectionMode === 2 ? '#1890ff' : '#f4f3f4'}
-        />
+        <View style={styles.selectionModeContainer}>
+          <Text style={styles.selectionModeText}>选择模式</Text>
+          <Switch
+            value={selectionMode === 2}
+            onValueChange={handleSelectionModeChange}
+            trackColor={{false: '#767577', true: '#81b0ff'}}
+            thumbColor={selectionMode === 2 ? '#1890ff' : '#f4f3f4'}
+          />
+        </View>
         <Modal
           animationType="slide"
           transparent={true}

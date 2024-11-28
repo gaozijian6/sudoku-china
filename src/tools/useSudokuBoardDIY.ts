@@ -8,7 +8,6 @@ import {
   createGraph,
   copyOfficialDraft,
   BoardHistoryDIY,
-  isValid,
 } from './index';
 import initialBoard from '../views/initialBoard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,432 +16,437 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const useSudokuBoardDIY = () => {
   const [board, setBoard] = useState<CellData[][]>([
     [
-        {
-            "value": 8,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        }
+      {
+        value: 8,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
     ],
     [
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 3,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 6,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        }
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 3,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 6,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
     ],
     [
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 7,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 9,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 2,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        }
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 7,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 9,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 2,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
     ],
     [
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 5,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 7,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        }
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 5,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 7,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
     ],
     [
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 4,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 5,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 7,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        }
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 4,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 5,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 7,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
     ],
     [
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 1,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 3,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        }
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 1,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 3,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
     ],
     [
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 1,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 6,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 8,
-            "isGiven": false,
-            "draft": []
-        }
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 1,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 6,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 8,
+        isGiven: false,
+        draft: [],
+      },
     ],
     [
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 8,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 5,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 1,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        }
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 8,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 5,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 1,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
     ],
     [
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 9,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": 4,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        },
-        {
-            "value": null,
-            "isGiven": false,
-            "draft": []
-        }
-    ]
-]);
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 9,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: 4,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+      {
+        value: null,
+        isGiven: false,
+        draft: [],
+      },
+    ],
+  ]);
   const counts = useRef<number>(0);
   const history = useRef<BoardHistoryDIY[]>([
-    {board: initialBoard, action: '生成新棋盘', counts: counts.current},
+    {
+      board: initialBoard,
+      action: '生成新棋盘',
+      counts: counts.current,
+      remainingCounts: Array(9).fill(9),
+    },
   ]);
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [remainingCounts, setRemainingCounts] = useState<number[]>(
@@ -480,18 +484,22 @@ export const useSudokuBoardDIY = () => {
   const [isValidBoard, setIsValidBoard] = useState<boolean>(false);
 
   // 添加清空历史记录的函数
-  const clearHistory = useCallback((board: CellData[][]) => {
-    // 保存当前棋盘状态作为唯一的历史记录
-    const newHistory: BoardHistoryDIY[] = [
-      {
-        board,
-        action: '清空历史记录',
-        counts: counts.current,
-      },
-    ];
-    history.current = newHistory;
-    setCurrentStep(0);
-  }, []);
+  const clearHistory = useCallback(
+    (board: CellData[][]) => {
+      // 保存当前棋盘状态作为唯一的历史记录
+      const newHistory: BoardHistoryDIY[] = [
+        {
+          board,
+          action: '清空历史记录',
+          counts: counts.current,
+          remainingCounts: [...remainingCountsSync.current],
+        },
+      ];
+      history.current = newHistory;
+      setCurrentStep(0);
+    },
+    [remainingCountsSync],
+  );
 
   const resetSudokuBoard = useCallback(() => {
     setBoard(initialBoard);
@@ -501,7 +509,12 @@ export const useSudokuBoardDIY = () => {
     setTimeout(() => {
       clearHistory(initialBoard);
       history.current = [
-        {board: initialBoard, action: '生成新棋盘', counts: counts.current},
+        {
+          board: initialBoard,
+          action: '生成新棋盘',
+          counts: counts.current,
+          remainingCounts: [...remainingCountsSync.current],
+        },
       ];
       setCandidateMap(() => {
         const initialCandidateMap: CandidateMap = {};
@@ -574,9 +587,11 @@ export const useSudokuBoardDIY = () => {
       });
     });
 
-    setGraph(createGraph(newBoard, newCandidateMap));
-    setCandidateMap(newCandidateMap);
     setStandradBoard(copyOfficialDraft(newBoard));
+    setTimeout(() => {
+      setGraph(createGraph(newBoard, newCandidateMap));
+      setCandidateMap(newCandidateMap);
+    }, 0);
   }, []);
 
   const loadSavedData2 = useCallback(async () => {
@@ -622,7 +637,7 @@ export const useSudokuBoardDIY = () => {
       if (isFill) {
         counts.current++;
       }
-      if(action === '答案'){
+      if (action === '答案') {
         counts.current = 81;
         // 计算新的 remainingCounts
         const newRemainingCounts = Array(9).fill(0);
@@ -656,17 +671,15 @@ export const useSudokuBoardDIY = () => {
       const historyDIY = history.current[currentStep - 1];
       const previousBoard = historyDIY.board;
       // 确保从历史记录中恢复 remainingCounts
-      remainingCountsSync.current = historyDIY.remainingCounts?.length ? 
-        historyDIY.remainingCounts : 
-        Array(9).fill(9);
+      remainingCountsSync.current = historyDIY.remainingCounts?.length
+        ? historyDIY.remainingCounts
+        : Array(9).fill(9);
       setRemainingCounts(remainingCountsSync.current);
       counts.current = historyDIY.counts;
       history.current.pop();
       setBoard(previousBoard);
       setCurrentStep(currentStep - 1);
-      setTimeout(() => {
-        updateAuxiliaryData(previousBoard);
-      }, 0);
+      updateAuxiliaryData(previousBoard);
     }
   }, [updateAuxiliaryData, currentStep]);
 

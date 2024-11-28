@@ -409,6 +409,16 @@ const sudokuStyles = StyleSheet.create({
     height: 20,
     resizeMode: 'contain',
   },
+  selectionModeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  selectionModeText: {
+    fontSize: 16,
+    color: '#666666',
+  },
 });
 
 export default sudokuStyles;
