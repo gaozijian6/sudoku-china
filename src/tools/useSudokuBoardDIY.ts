@@ -448,6 +448,7 @@ export const useSudokuBoardDIY = () => {
   const [remainingCounts, setRemainingCounts] = useState<number[]>(
     Array(9).fill(9),
   );
+  const remainingCountsSync = useRef<number[]>(Array(9).fill(9));
   const [candidateMap, setCandidateMap] = useState<CandidateMap>(() => {
     const initialCandidateMap: CandidateMap = {};
     for (let num = 1; num <= 9; num++) {
@@ -494,7 +495,8 @@ export const useSudokuBoardDIY = () => {
 
   const resetSudokuBoard = useCallback(() => {
     setBoard(initialBoard);
-    setRemainingCounts(Array(9).fill(9));
+    remainingCountsSync.current = Array(9).fill(9);
+    setRemainingCounts(remainingCountsSync.current);
     setCurrentStep(0);
     setTimeout(() => {
       clearHistory(initialBoard);
@@ -584,7 +586,8 @@ export const useSudokuBoardDIY = () => {
       setBoard(data.board);
       history.current = data.history;
       setCurrentStep(data.currentStep);
-      setRemainingCounts(data.remainingCounts);
+      remainingCountsSync.current = data.remainingCounts;
+      setRemainingCounts(remainingCountsSync.current);
       setStandradBoard(data.standradBoard);
       updateAuxiliaryData(data.board);
     }
@@ -599,7 +602,8 @@ export const useSudokuBoardDIY = () => {
         }
       });
     });
-    setRemainingCounts(counts);
+    remainingCountsSync.current = counts;
+    setRemainingCounts(remainingCountsSync.current);
   }, []);
 
   const saveSudokuData = useCallback(() => {
@@ -618,8 +622,12 @@ export const useSudokuBoardDIY = () => {
       if (isFill) {
         counts.current++;
       }
-      if(action==='答案'){
-        counts.current=81;
+      if(action === '答案'){
+        counts.current = 81;
+        // 计算新的 remainingCounts
+        const newRemainingCounts = Array(9).fill(0);
+        remainingCountsSync.current = newRemainingCounts;
+        setRemainingCounts(remainingCountsSync.current);
       }
 
       if (!action.startsWith('取消') && !action.startsWith('提示')) {
@@ -628,7 +636,7 @@ export const useSudokuBoardDIY = () => {
           board: newBoard,
           action,
           counts: counts.current,
-          remainingCounts: [...remainingCounts],
+          remainingCounts: [...remainingCountsSync.current], // 确保存入当前的 remainingCounts
         });
 
         history.current = newHistory;
@@ -640,17 +648,20 @@ export const useSudokuBoardDIY = () => {
         updateAuxiliaryData(newBoard);
       }, 0);
     },
-    [remainingCounts, updateAuxiliaryData],
+    [updateAuxiliaryData],
   );
 
   const undo = useCallback(() => {
     if (currentStep > 0) {
       const historyDIY = history.current[currentStep - 1];
       const previousBoard = historyDIY.board;
-      const remainingCounts = historyDIY.remainingCounts;
+      // 确保从历史记录中恢复 remainingCounts
+      remainingCountsSync.current = historyDIY.remainingCounts?.length ? 
+        historyDIY.remainingCounts : 
+        Array(9).fill(9);
+      setRemainingCounts(remainingCountsSync.current);
       counts.current = historyDIY.counts;
       history.current.pop();
-      setRemainingCounts(remainingCounts);
       setBoard(previousBoard);
       setCurrentStep(currentStep - 1);
       setTimeout(() => {
@@ -679,5 +690,6 @@ export const useSudokuBoardDIY = () => {
     loadSavedData2,
     isValidBoard,
     setIsValidBoard,
+    remainingCountsSync,
   };
 };

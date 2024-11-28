@@ -34,6 +34,9 @@ local.properties
 *.keystore
 !debug.keystore
 
+# Gradle wrapper
+android/gradle/wrapper/
+
 # node.js
 #
 node_modules/

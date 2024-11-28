@@ -7,6 +7,7 @@ import {
   Switch,
   Pressable,
   Animated,
+  AppState,
 } from 'react-native';
 import {
   checkNumberInRowColumnAndBox,
@@ -75,6 +76,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       resetSudokuBoard,
       saveSudokuData,
       loadSavedData2,
+      remainingCountsSync,
     } = useSudokuBoardDIY();
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
@@ -136,7 +138,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       wxyzWing,
       trialAndErrorDIY,
     ]);
-    const {errorCount, setErrorCount, setHintCount, isSound} = useSudokuStore();
+    const {errorCount, setErrorCount, setHintCount, isSound, isDIY} = useSudokuStore();
     const resetSudoku = useCallback(() => {
       playSound('switch', isSound);
       setSelectedNumber(1);
@@ -250,7 +252,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       if (newCounts[selectedNumber! - 1] === 0) {
         jumpToNextNumber(newCounts);
       }
-      setRemainingCounts(newCounts);
+      remainingCountsSync.current = newCounts;
+      setRemainingCounts(remainingCountsSync.current);
     };
 
     // 点击方格的回调函数
@@ -367,8 +370,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           const newBoard = deepCopyBoard(board);
           const cell = newBoard[row][col];
           if (cell.value) {
-            remainingCounts[cell.value - 1] += 1;
-            setRemainingCounts(remainingCounts);
+            remainingCountsSync.current[cell.value - 1] += 1;
+            setRemainingCounts(remainingCountsSync.current);
           }
           cell.value = null;
           cell.draft = [];
@@ -381,9 +384,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       eraseEnabled,
       isSound,
       board,
-      remainingCounts,
-      setRemainingCounts,
       updateBoard,
+      remainingCountsSync,
+      setRemainingCounts,
     ]);
 
     // 选择数字
@@ -705,6 +708,22 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       [updateBoard],
     );
 
+    useEffect(() => {
+      const subscription = AppState.addEventListener('change', nextAppState => {
+        if (nextAppState === 'background') {
+          saveData();
+        }
+      });
+      return () => subscription.remove();
+    }, []);
+
+    useEffect(() => {
+      if (isDIY) {
+        loadSavedData();
+        loadSavedData2();
+      }
+    }, [isDIY]);
+
     return (
       <Animated.View
         style={[
@@ -725,6 +744,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           onBack={handleBack}
           openSetting={openSetting}
           saveData={saveData}
+          saveDataDIY={saveDataDIY}
           resetSudoku={resetSudoku}
         />
         <View style={styles.gameInfoDIY}>
