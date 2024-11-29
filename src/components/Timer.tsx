@@ -1,35 +1,68 @@
-import React, {useEffect} from 'react';
-import {Text} from 'react-native';
+import React, {useCallback, useEffect, useRef} from 'react';
+import {Text, AppState} from 'react-native';
 import styles from '../views/sudokuStyles';
-import {useTimer} from '../tools/useTimer';
 import {useSudokuStore} from '../store';
 
 interface TimerProps {
   setTimeFunction: (time: string) => void;
   counts: number;
   playVictorySound: () => void;
-  difficulty: string;
-  timeOffset: number;
 }
 
 export default React.memo(function Timer({
   setTimeFunction,
   counts,
   playVictorySound,
-  difficulty,
 }: TimerProps) {
-  const {pauseVisible} = useSudokuStore();
-  const {time, setIsRunning} = useTimer(difficulty, pauseVisible);
+  const {
+    pauseVisible,
+    time,
+    isContinue,
+    isSudoku,
+    start,
+    stop,
+  } = useSudokuStore();
+
+  useEffect(() => {
+    if (pauseVisible) {
+      stop();
+    } else {
+      start();
+    }
+  }, [pauseVisible]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (nextAppState === 'background') {
+        stop();
+      } else {
+        start();
+      }
+    });
+    return () => subscription.remove();
+  }, []);
 
   useEffect(() => {
     if (counts === 81) {
       setTimeout(() => {
-        setIsRunning(false);
         setTimeFunction(time);
         playVictorySound();
+        stop();
       }, 100);
     }
-  }, [counts, setIsRunning, setTimeFunction, time, playVictorySound]);
+  }, [counts]);
+
+  useEffect(() => {
+    if (isSudoku) {
+      start();
+    }
+  }, [isSudoku]);
+
+  useEffect(() => {
+    if (isContinue) {
+      start();
+    }
+  }, [isContinue]);
 
   return <Text style={[styles.gameInfoText, styles.rightText]}>{time}</Text>;
 });

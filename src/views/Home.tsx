@@ -10,7 +10,7 @@ import {
 import Level from './Level';
 import {playSound} from '../tools/Sound';
 import {useSudokuStore} from '../store';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface HomeProps {
   openSudoku: () => void;
@@ -23,8 +23,18 @@ const Home: React.FC<HomeProps> = ({
   openSudokuDIY,
   openSetting,
 }) => {
-  const {setIsContinue, setDifficulty, setIsHome, isSound, setIsDIY, isHome} =
-    useSudokuStore();
+  const {
+    setIsContinue,
+    setDifficulty,
+    setIsHome,
+    isSound,
+    setIsDIY,
+    isHome,
+    setIsSudoku,
+    setTime,
+    setTimeOffset,
+    start,
+  } = useSudokuStore();
   const [showLevel, setShowLevel] = useState(false);
   const handleLevelSelect = (level: string) => {
     openSudoku();
@@ -36,13 +46,24 @@ const Home: React.FC<HomeProps> = ({
   const handleStart = () => {
     playSound('switch', isSound);
     setShowLevel(true);
+    setIsSudoku(true);
+    setTime('00:00');
+    setTimeOffset(0);
+    start();
   };
 
   const handleContinue = () => {
     playSound('switch', isSound);
+    AsyncStorage.getItem('time').then(value => {
+      setTime(value || '00:00');
+    });
+    AsyncStorage.getItem('timeOffset').then(value => {
+      setTimeOffset(parseInt(value || '0'));
+    });
     setIsContinue(true);
     openSudoku();
     setIsHome(false);
+    start();
   };
 
   const handleCustom = () => {

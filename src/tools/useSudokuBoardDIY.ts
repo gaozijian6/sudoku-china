@@ -14,437 +14,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 创建一个新的 hook 来管理棋盘状态和历史
 export const useSudokuBoardDIY = () => {
-  const [board, setBoard] = useState<CellData[][]>([
-    [
-      {
-        value: 8,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-    ],
-    [
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 3,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 6,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-    ],
-    [
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 7,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 9,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 2,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-    ],
-    [
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 5,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 7,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-    ],
-    [
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 4,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 5,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 7,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-    ],
-    [
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 1,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 3,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-    ],
-    [
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 1,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 6,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 8,
-        isGiven: false,
-        draft: [],
-      },
-    ],
-    [
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 8,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 5,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 1,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-    ],
-    [
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 9,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: 4,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-      {
-        value: null,
-        isGiven: false,
-        draft: [],
-      },
-    ],
-  ]);
-  const counts = useRef<number>(0);
+  const [board, setBoard] = useState<CellData[][]>(initialBoard);
+  const [counts, setCounts] = useState<number>(0);
+  const countsSync = useRef<number>(0);
   const history = useRef<BoardHistoryDIY[]>([
     {
       board: initialBoard,
       action: '生成新棋盘',
-      counts: counts.current,
+      counts: countsSync.current,
       remainingCounts: Array(9).fill(9),
     },
   ]);
@@ -491,7 +68,7 @@ export const useSudokuBoardDIY = () => {
         {
           board,
           action: '清空历史记录',
-          counts: counts.current,
+          counts: countsSync.current,
           remainingCounts: [...remainingCountsSync.current],
         },
       ];
@@ -506,13 +83,14 @@ export const useSudokuBoardDIY = () => {
     remainingCountsSync.current = Array(9).fill(9);
     setRemainingCounts(remainingCountsSync.current);
     setCurrentStep(0);
+    countsSync.current = 0;
     setTimeout(() => {
       clearHistory(initialBoard);
       history.current = [
         {
           board: initialBoard,
           action: '生成新棋盘',
-          counts: counts.current,
+          counts: countsSync.current,
           remainingCounts: [...remainingCountsSync.current],
         },
       ];
@@ -635,10 +213,12 @@ export const useSudokuBoardDIY = () => {
   const updateBoard = useCallback(
     (newBoard: CellData[][], action: string, isFill: boolean) => {
       if (isFill) {
-        counts.current++;
+        countsSync.current++;
+        setCounts(countsSync.current);
       }
       if (action === '答案') {
-        counts.current = 81;
+        countsSync.current = 81;
+        setCounts(countsSync.current);
         // 计算新的 remainingCounts
         const newRemainingCounts = Array(9).fill(0);
         remainingCountsSync.current = newRemainingCounts;
@@ -650,7 +230,7 @@ export const useSudokuBoardDIY = () => {
         newHistory.push({
           board: newBoard,
           action,
-          counts: counts.current,
+          counts: countsSync.current,
           remainingCounts: [...remainingCountsSync.current], // 确保存入当前的 remainingCounts
         });
 
@@ -675,7 +255,8 @@ export const useSudokuBoardDIY = () => {
         ? historyDIY.remainingCounts
         : Array(9).fill(9);
       setRemainingCounts(remainingCountsSync.current);
-      counts.current = historyDIY.counts;
+      countsSync.current = historyDIY.counts;
+      setCounts(countsSync.current);
       history.current.pop();
       setBoard(previousBoard);
       setCurrentStep(currentStep - 1);
@@ -704,5 +285,8 @@ export const useSudokuBoardDIY = () => {
     isValidBoard,
     setIsValidBoard,
     remainingCountsSync,
+    countsSync,
+    setCounts,
+    counts,
   };
 };

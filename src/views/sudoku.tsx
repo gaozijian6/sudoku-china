@@ -118,7 +118,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
     const isClickAutoNote = useRef<boolean>(false);
     const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
     const hintCount = useRef<number>(0);
-    const time = useRef<string>('00:00');
     const startTime = useRef<number>(0);
     const solveFunctions = useRef<
       ((
@@ -154,6 +153,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       isHome,
       setResultVisible,
       setTime,
+      // time,
       errorCount,
       setErrorCount,
       setHintCount,
@@ -179,7 +179,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       isClickAutoNote.current = false;
       setDifferenceMap({});
       hintCount.current = 0;
-      time.current = '00:00';
       startTime.current = 0;
       resetSudokuBoard();
     }, [resetSudokuBoard, setErrorCount]);
@@ -204,7 +203,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
         isClickAutoNote: isClickAutoNote.current,
         differenceMap,
         hintCount: hintCount.current,
-        time: time.current,
         startTime: startTime.current,
       };
 
@@ -276,7 +274,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
         isClickAutoNote.current = data.isClickAutoNote;
         setDifferenceMap(data.differenceMap);
         hintCount.current = data.hintCount;
-        time.current = data.time;
         startTime.current = data.startTime;
       }
     }, [setErrorCount]);
@@ -836,8 +833,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
     const setTimeFunction = useCallback(
       (time1: string) => {
-        time.current = time1;
-        setSuccessResult(time.current, errorCount, hintCount.current);
+        setSuccessResult(time1, errorCount, hintCount.current);
       },
       [errorCount, setSuccessResult],
     );
@@ -888,12 +884,11 @@ const Sudoku: React.FC<SudokuProps> = memo(
           <Text style={[styles.gameInfoText, styles.middleText]}>
             {difficulty}
           </Text>
-          {/* <Timer
+          <Timer
             setTimeFunction={setTimeFunction}
             counts={counts}
             playVictorySound={playVictorySound}
-            difficulty={difficulty}
-          /> */}
+          />
         </View>
         <View style={styles.sudokuGrid}>
           {board?.map((row, rowIndex) =>

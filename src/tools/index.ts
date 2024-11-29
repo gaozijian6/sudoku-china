@@ -296,10 +296,7 @@ export const solve3 = async (board: CellData[][]) => {
       }
     }
   }
-  const startTime1 = performance.now();
   const result = await ComputeModule.solveSudoku(standardBoard,standardBoard);
-  const endTime2 = performance.now();
-  console.log(`solveSudoku: ${endTime2 - startTime1}ms`);
   
   if(!result){
     return null;

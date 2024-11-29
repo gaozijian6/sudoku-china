@@ -53,8 +53,6 @@ import {useSudokuStore} from '../store';
 import TarBarsSudokuDIY from '../components/tarBarsSudokuDIY';
 import {SUDOKU_STATUS} from '../constans';
 
-const {ComputeModule} = NativeModules;
-
 interface SudokuDIYProps {
   slideAnim: Animated.Value;
   closeSudoku: () => void;
@@ -78,6 +76,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       saveSudokuData,
       loadSavedData2,
       remainingCountsSync,
+      countsSync,
+      setCounts,
+      counts,
     } = useSudokuBoardDIY();
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
@@ -139,7 +140,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       wxyzWing,
       trialAndErrorDIY,
     ]);
-    const {errorCount, setErrorCount, setHintCount, isSound, isDIY} = useSudokuStore();
+    const {errorCount, setErrorCount, isSound, isDIY} = useSudokuStore();
     const resetSudoku = useCallback(() => {
       playSound('switch', isSound);
       setSelectedNumber(1);
@@ -373,6 +374,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           if (cell.value) {
             remainingCountsSync.current[cell.value - 1] += 1;
             setRemainingCounts(remainingCountsSync.current);
+            countsSync.current--;
+            setCounts(countsSync.current);
           }
           cell.value = null;
           cell.draft = [];
@@ -388,6 +391,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       updateBoard,
       remainingCountsSync,
       setRemainingCounts,
+      countsSync,
+      setCounts,
     ]);
 
     // 选择数字
@@ -725,6 +730,10 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         loadSavedData2();
       }
     }, [isDIY]);
+
+    useEffect(() => {
+      setSudokuStatus(SUDOKU_STATUS.VOID)
+    }, [countsSync.current]);
 
     return (
       <Animated.View
