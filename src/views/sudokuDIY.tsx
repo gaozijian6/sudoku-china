@@ -8,6 +8,7 @@ import {
   Pressable,
   Animated,
   AppState,
+  NativeModules,
 } from 'react-native';
 import {
   checkNumberInRowColumnAndBox,
@@ -51,6 +52,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSudokuStore} from '../store';
 import TarBarsSudokuDIY from '../components/tarBarsSudokuDIY';
 import {SUDOKU_STATUS} from '../constans';
+
+const {ComputeModule} = NativeModules;
 
 interface SudokuDIYProps {
   slideAnim: Animated.Value;

@@ -296,16 +296,15 @@ export const solve3 = async (board: CellData[][]) => {
       }
     }
   }
-  const result1 = await ComputeModule.solveSudoku1(standardBoard,standardBoard);
-  const result2 = await ComputeModule.solveSudoku2(standardBoard,standardBoard);
-  if(!result1||!result2){
+  const startTime1 = performance.now();
+  const result = await ComputeModule.solveSudoku(standardBoard,standardBoard);
+  const endTime2 = performance.now();
+  console.log(`solveSudoku: ${endTime2 - startTime1}ms`);
+  
+  if(!result){
     return null;
   }
-  
-  if (isSameBoard(result1, result2)) {
-    return result1;
-  }
-  return null;
+  return result;
 };
 
 export const isRowFull = (board: CellData[][], row: number) => {
