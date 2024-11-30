@@ -2720,35 +2720,35 @@ export const isInSameBox = (
   );
 };
 
-// 已知位置和候选数找到graph对应的节点
-const findGraphNodeByDistance = (
-  position: Position,
-  num: number,
-  graph: Graph,
-): GraphNode | null => {
-  const {row, col} = position;
-  const startNodes = graph[num] ?? [];
+export const findGraphNodeByDistance = (
+  graphNode: GraphNode | null,
+  distance: number
+): GraphNode[] => {
+  if (!graphNode) return [];
+  const resultNodes: GraphNode[] = [];
+  const visited = new Set<string>();
+  const dfs = (node: GraphNode, currentDistance: number) => {
+    const key = `${node.row}-${node.col}`;
+    if (visited.has(key)) return;
+    visited.add(key);
 
-  for (const startNode of startNodes) {
-    const queue: GraphNode[] = [startNode];
-    const visited = new Set<string>();
-
-    while (queue.length > 0) {
-      const node = queue.shift()!;
-      const key = `${node.row},${node.col}`;
-
-      if (visited.has(key)) continue;
-      visited.add(key);
-
-      if (node.row === row && node.col === col) {
-        return node;
-      }
-
-      queue.push(...node.next);
+    if (currentDistance === distance) {
+      resultNodes.push(node);
+      visited.delete(key);
+      return;
     }
-  }
 
-  return null;
+    if (currentDistance < distance) {
+      for (const nextNode of node.next) {
+        dfs(nextNode, currentDistance + 1);
+      }
+    }
+    visited.delete(key);
+  };
+
+  dfs(graphNode, 0);
+
+  return resultNodes;
 };
 
 // 组合链,2-2、4
@@ -2816,7 +2816,7 @@ export const combinationChain = (
               }
               // 寻找距离D为3的强连接
               const graphNodes = findGraphNodeByDistance(graphNodeD, 3);
-              for (const graphNodeG of graphNodes) {
+              for (const graphNodeG of graphNodes ?? []) {
                 const paths = findFourPath(D, graphNodeG, num, graph);
                 for (const path of paths) {
                   if (

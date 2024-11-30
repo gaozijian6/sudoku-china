@@ -6,14 +6,12 @@ interface TarBarsSudokuProps {
   onBack: () => void;
   openSetting: () => void;
   saveData: () => void;
-  resetSudoku: () => void;
 }
 
 const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
   onBack,
   openSetting,
   saveData,
-  resetSudoku,
 }) => {
   const {
     setIsHome,
@@ -25,19 +23,33 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
     setIsSudoku,
     setIsContinue,
     stop,
+    setIsLevel,
   } = useSudokuStore();
   const backToHome = useCallback(() => {
+    saveData();
+    onBack();
     stop();
     setTime('00:00');
     setTimeOffset(0);
-    saveData();
-    resetSudoku();
-    setDifficulty('');
-    setIsHome(true);
-    setIsSudoku(false);
-    setIsContinue(false);
-    onBack();
-  }, [setTime, setTimeOffset, stop, saveData, resetSudoku, setDifficulty, setIsHome, setIsSudoku, setIsContinue, onBack]);
+    setTimeout(() => {
+      setDifficulty('');
+      setIsHome(true);
+      setIsSudoku(false);
+      setIsContinue(false);
+      setIsLevel(false);
+    }, 600);
+  }, [
+    onBack,
+    stop,
+    setTime,
+    setTimeOffset,
+    setIsLevel,
+    saveData,
+    setDifficulty,
+    setIsHome,
+    setIsSudoku,
+    setIsContinue,
+  ]);
 
   return (
     <View style={styles.container}>

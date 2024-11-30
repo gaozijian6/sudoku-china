@@ -1,7 +1,8 @@
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {useEffect} from 'react';
 import {Text, AppState} from 'react-native';
 import styles from '../views/sudokuStyles';
 import {useSudokuStore} from '../store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface TimerProps {
   setTimeFunction: (time: string) => void;
@@ -14,20 +15,13 @@ export default React.memo(function Timer({
   counts,
   playVictorySound,
 }: TimerProps) {
-  const {
-    pauseVisible,
-    time,
-    isContinue,
-    isSudoku,
-    start,
-    stop,
-  } = useSudokuStore();
+  const {pauseVisible, time, start, stop, timeOffset} = useSudokuStore();
 
   useEffect(() => {
     if (pauseVisible) {
       stop();
     } else {
-      start();
+      start(timeOffset);
     }
   }, [pauseVisible]);
 
@@ -36,7 +30,9 @@ export default React.memo(function Timer({
       if (nextAppState === 'background') {
         stop();
       } else {
-        start();
+        AsyncStorage.getItem('timeOffset').then(timeOffset => {
+          start(parseInt(timeOffset || '0'));
+        });
       }
     });
     return () => subscription.remove();
@@ -51,18 +47,6 @@ export default React.memo(function Timer({
       }, 100);
     }
   }, [counts]);
-
-  useEffect(() => {
-    if (isSudoku) {
-      start();
-    }
-  }, [isSudoku]);
-
-  useEffect(() => {
-    if (isContinue) {
-      start();
-    }
-  }, [isContinue]);
 
   return <Text style={[styles.gameInfoText, styles.rightText]}>{time}</Text>;
 });

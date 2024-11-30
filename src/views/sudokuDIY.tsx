@@ -8,7 +8,6 @@ import {
   Pressable,
   Animated,
   AppState,
-  NativeModules,
 } from 'react-native';
 import {
   checkNumberInRowColumnAndBox,
@@ -55,12 +54,12 @@ import {SUDOKU_STATUS} from '../constans';
 
 interface SudokuDIYProps {
   slideAnim: Animated.Value;
-  closeSudoku: () => void;
+  closeSudokuDIY: () => void;
   openSetting: () => void;
 }
 
 const SudokuDIY: React.FC<SudokuDIYProps> = memo(
-  ({slideAnim, closeSudoku, openSetting}) => {
+  ({slideAnim, closeSudokuDIY, openSetting}) => {
     const {
       board,
       updateBoard,
@@ -78,7 +77,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       remainingCountsSync,
       countsSync,
       setCounts,
-      counts,
     } = useSudokuBoardDIY();
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
@@ -248,15 +246,44 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       [isSound],
     );
 
-    const remainingCountsMinusOne = (number: number) => {
-      const newCounts = [...remainingCounts];
-      newCounts[number - 1] -= 1;
-      if (newCounts[selectedNumber! - 1] === 0) {
-        jumpToNextNumber(newCounts);
-      }
-      remainingCountsSync.current = newCounts;
-      setRemainingCounts(remainingCountsSync.current);
-    };
+    const jumpToNextNumber = useCallback(
+      (newCounts: number[]): void => {
+        if (!selectedNumber || newCounts[selectedNumber - 1] !== 0) {
+          return;
+        }
+
+        let nextNumber = selectedNumber;
+        do {
+          nextNumber = (nextNumber % 9) + 1;
+        } while (
+          newCounts[nextNumber - 1] === 0 &&
+          nextNumber !== selectedNumber
+        );
+
+        setSelectedNumber(nextNumber);
+        lastSelectedNumber.current = nextNumber;
+      },
+      [selectedNumber],
+    );
+
+    const remainingCountsMinusOne = useCallback(
+      (number: number) => {
+        const newCounts = [...remainingCounts];
+        newCounts[number - 1] -= 1;
+        if (newCounts[selectedNumber! - 1] === 0) {
+          jumpToNextNumber(newCounts);
+        }
+        remainingCountsSync.current = newCounts;
+        setRemainingCounts(remainingCountsSync.current);
+      },
+      [
+        jumpToNextNumber,
+        remainingCounts,
+        remainingCountsSync,
+        selectedNumber,
+        setRemainingCounts,
+      ],
+    );
 
     // 点击方格的回调函数
     const handleCellChange = useCallback(
@@ -469,25 +496,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       ],
     );
 
-    const jumpToNextNumber = useCallback(
-      (newCounts: number[]): void => {
-        if (!selectedNumber || newCounts[selectedNumber - 1] !== 0) {
-          return;
-        }
-
-        let nextNumber = selectedNumber;
-        do {
-          nextNumber = (nextNumber % 9) + 1;
-        } while (
-          newCounts[nextNumber - 1] === 0 &&
-          nextNumber !== selectedNumber
-        );
-
-        handleNumberSelect(nextNumber);
-      },
-      [handleNumberSelect, selectedNumber],
-    );
-
     const handleDraftMode = useCallback(() => {
       setDraftMode(!draftMode);
       playSound('switch', isSound);
@@ -696,8 +704,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     }, [board, selectedCell, selectionMode]);
 
     const handleBack = useCallback(() => {
-      closeSudoku();
-    }, [closeSudoku]);
+      closeSudokuDIY();
+    }, [closeSudokuDIY]);
 
     const getAnswer = useCallback(
       async (board: CellData[][]) => {
@@ -732,7 +740,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     }, [isDIY]);
 
     useEffect(() => {
-      setSudokuStatus(SUDOKU_STATUS.VOID)
+      setSudokuStatus(SUDOKU_STATUS.VOID);
     }, [countsSync.current]);
 
     return (

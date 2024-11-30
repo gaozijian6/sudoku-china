@@ -21,6 +21,40 @@ const sudokuStyles = StyleSheet.create({
     position: 'relative',
     top: 25,
   },
+  gameInfoItem: {
+    width: '33.33%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  gameInfoItem1: {
+    alignItems: 'flex-start',
+  },
+  gameInfoItem2: {
+  },
+  gameInfoItem3: {
+    alignItems: 'flex-end',
+  },
+  gameInfoError: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingLeft: 10,
+  },
+  errorIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 5,
+    resizeMode: 'contain',
+  },
+  gameInfoText: {
+    fontSize: 16,
+    color: 'rgb(59, 61, 99)',
+    textAlign: 'center',
+  },
+  gameInfoTextError: {
+    fontSize: 16,
+    color: 'rgb(59, 61, 99)',
+  },
   leftText: {
     width: 100,
     alignItems: 'center', // 添加垂直居中
@@ -42,11 +76,6 @@ const sudokuStyles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignSelf: 'center',
-  },
-  gameInfoText: {
-    fontSize: 16,
-    marginHorizontal: 10,
-    color: 'rgb(59, 61, 99)',
   },
   sudokuCell: {
     width: '11.11%',
@@ -372,22 +401,6 @@ const sudokuStyles = StyleSheet.create({
   },
   draftModeSwitchStyle: {
     transform: [{scaleX: 0.6}, {scaleY: 0.6}],
-  },
-  gameInfoError: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: 30,
-    justifyContent: 'space-between',
-  },
-  errorIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 5,
-    resizeMode: 'contain',
-  },
-  gameInfoTextError: {
-    fontSize: 16,
-    color: 'rgb(59, 61, 99)',
   },
   gameInfoDIY: {
     flexDirection: 'row',

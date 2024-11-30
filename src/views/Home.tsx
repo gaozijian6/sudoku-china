@@ -34,6 +34,9 @@ const Home: React.FC<HomeProps> = ({
     setTime,
     setTimeOffset,
     start,
+    isHasContinue,
+    setIsHasContinue,
+    setIsLevel,
   } = useSudokuStore();
   const [showLevel, setShowLevel] = useState(false);
   const handleLevelSelect = (level: string) => {
@@ -41,15 +44,18 @@ const Home: React.FC<HomeProps> = ({
     setDifficulty(level);
     setIsHome(false);
     setShowLevel(false);
+    setIsHasContinue(true);
+    setIsSudoku(true);
+    AsyncStorage.setItem('isHasContinue', 'true');
   };
 
   const handleStart = () => {
     playSound('switch', isSound);
     setShowLevel(true);
-    setIsSudoku(true);
+    setIsLevel(true);
     setTime('00:00');
     setTimeOffset(0);
-    start();
+    start(0);
   };
 
   const handleContinue = () => {
@@ -59,11 +65,11 @@ const Home: React.FC<HomeProps> = ({
     });
     AsyncStorage.getItem('timeOffset').then(value => {
       setTimeOffset(parseInt(value || '0'));
+      start(parseInt(value || '0'));
     });
     setIsContinue(true);
     openSudoku();
     setIsHome(false);
-    start();
   };
 
   const handleCustom = () => {
@@ -91,13 +97,15 @@ const Home: React.FC<HomeProps> = ({
           <Text style={styles.startButtonText}>开始</Text>
           <Text style={styles.arrowIcon}>❯</Text>
         </Pressable>
-        <Pressable
-          style={styles.continueButton}
-          disabled={!isHome}
-          onPressIn={handleContinue}>
-          <Text style={styles.continueButtonText}>继续</Text>
-          <Text style={styles.arrowIcon}>❯</Text>
-        </Pressable>
+        {isHasContinue && (
+          <Pressable
+            style={styles.continueButton}
+            disabled={!isHome}
+            onPressIn={handleContinue}>
+            <Text style={styles.continueButtonText}>继续</Text>
+            <Text style={styles.arrowIcon}>❯</Text>
+          </Pressable>
+        )}
         <Pressable
           style={styles.customButton}
           disabled={!isHome}
@@ -108,7 +116,10 @@ const Home: React.FC<HomeProps> = ({
       </View>
       {showLevel && (
         <Level
-          onClose={() => setShowLevel(false)}
+          onClose={() => {
+            setShowLevel(false);
+            setIsLevel(false);
+          }}
           visible={showLevel}
           onLevelSelect={handleLevelSelect}
         />

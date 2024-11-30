@@ -30,8 +30,12 @@ interface SudokuState {
   setTimer: (value: NodeJS.Timeout | undefined) => void;
   startTime: number;
   setStartTime: (value: number) => void;
-  start: () => void;
+  start: (timeOffset: number) => void;
   stop: () => void;
+  isHasContinue: boolean;
+  setIsHasContinue: (value: boolean) => void;
+  isLevel: boolean;
+  setIsLevel: (value: boolean) => void;
 }
 
 export const useSudokuStore = create<SudokuState>(set => ({
@@ -63,8 +67,12 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setTimer: value => set({timer: value}),
   startTime: 0,
   setStartTime: value => set({startTime: value}),
-
-  start: () =>
+  isHasContinue: false,
+  setIsHasContinue: value => set({isHasContinue: value}),
+  isLevel: false,
+  setIsLevel: value => set({isLevel: value}),
+  
+  start: (timeOffset: number) =>
     set(state => {
       if (state.timer) {
         clearInterval(state.timer);
@@ -73,7 +81,7 @@ export const useSudokuStore = create<SudokuState>(set => ({
       const newTimer = setInterval(() => {
         const currentTime = Date.now();
         const elapsedTime = Math.floor(
-          (currentTime - newStartTime + state.timeOffset) / 1000,
+          (currentTime - newStartTime + timeOffset) / 1000,
         );
         set({
           time: `${Math.floor(elapsedTime / 60)}:${(elapsedTime % 60)

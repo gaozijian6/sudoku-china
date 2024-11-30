@@ -153,9 +153,7 @@ const Cell = memo(
     }
 
     return (
-      prevProps.cell.value === nextProps.cell.value &&
-      JSON.stringify(prevProps.cell.draft) ===
-        JSON.stringify(nextProps.cell.draft) &&
+      JSON.stringify(prevProps.cell) === JSON.stringify(nextProps.cell) &&
       prevProps.cell.highlights?.length === nextProps.cell.highlights?.length &&
       prevProps.cell.highlightCandidates?.length ===
         nextProps.cell.highlightCandidates?.length &&
@@ -170,7 +168,13 @@ const Cell = memo(
       prevProps.positions.length === nextProps.positions.length &&
       prevProps.handleCellChange === nextProps.handleCellChange &&
       JSON.stringify(prevProps.differenceMap) ===
-        JSON.stringify(nextProps.differenceMap)
+        JSON.stringify(nextProps.differenceMap) &&
+      JSON.stringify(
+        prevProps.resultBoard[prevProps.rowIndex][prevProps.colIndex],
+      ) ===
+        JSON.stringify(
+          nextProps.resultBoard[nextProps.rowIndex][nextProps.colIndex],
+        )
     );
   },
 );

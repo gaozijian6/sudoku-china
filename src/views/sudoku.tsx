@@ -62,6 +62,7 @@ import entryBoard from '../mock/entry';
 import mediumBoard from '../mock/medium';
 import hardBoard from '../mock/hard';
 import easyBoard from '../mock/easy';
+import ResultView from '../components/ResultOverlay';
 
 interface SudokuProps {
   slideAnim: Animated.Value;
@@ -148,9 +149,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       trialAndError,
     ]);
     const {
-      isContinue,
       difficulty,
-      isHome,
       setResultVisible,
       setTime,
       // time,
@@ -158,6 +157,11 @@ const Sudoku: React.FC<SudokuProps> = memo(
       setErrorCount,
       setHintCount,
       isSound,
+      setIsHasContinue,
+      setDifficulty,
+      isLevel,
+      isSudoku,
+      resultVisible,
     } = useSudokuStore();
     const resetSudoku = useCallback(() => {
       setSelectedNumber(1);
@@ -183,7 +187,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
       resetSudokuBoard();
     }, [resetSudokuBoard, setErrorCount]);
 
-    const saveData = useCallback(() => {
+    const saveData = useCallback(async () => {
+      await saveSudokuData();
       const sudokuData = {
         lastSelectedNumber: lastSelectedNumber.current,
         errorCount,
@@ -204,10 +209,10 @@ const Sudoku: React.FC<SudokuProps> = memo(
         differenceMap,
         hintCount: hintCount.current,
         startTime: startTime.current,
+        difficulty,
       };
 
-      AsyncStorage.setItem('sudokuData1', JSON.stringify(sudokuData));
-      saveSudokuData();
+      await AsyncStorage.setItem('sudokuData1', JSON.stringify(sudokuData));
     }, [
       differenceMap,
       draftMode,
@@ -223,23 +228,13 @@ const Sudoku: React.FC<SudokuProps> = memo(
       saveSudokuData,
       selectedCell,
       selectionMode,
+      difficulty,
     ]);
 
     useEffect(() => {
-      if (!isHome && !isContinue) {
-        resetSudoku();
+      if (isSudoku) {
+        generateBoard(difficulty);
       }
-    }, [isHome, isContinue]);
-
-    useEffect(() => {
-      if (isContinue) {
-        loadSavedData();
-        loadSavedData2();
-      }
-    }, [isContinue]);
-
-    useEffect(() => {
-      generateBoard(difficulty);
     }, [difficulty]);
 
     const setSuccessResult = useCallback(
@@ -248,11 +243,20 @@ const Sudoku: React.FC<SudokuProps> = memo(
         setTime(time);
         setErrorCount(errorCount);
         setHintCount(hintCount);
+        setIsHasContinue(true);
+        AsyncStorage.setItem('isHasContinue', 'false');
       },
-      [setResultVisible, setTime, setErrorCount, setHintCount],
+      [
+        setResultVisible,
+        setTime,
+        setErrorCount,
+        setHintCount,
+        setIsHasContinue,
+      ],
     );
 
     const loadSavedData = useCallback(async () => {
+      loadSavedData2();
       const sudokuData = await AsyncStorage.getItem('sudokuData1');
       if (sudokuData) {
         const data = JSON.parse(sudokuData);
@@ -275,8 +279,9 @@ const Sudoku: React.FC<SudokuProps> = memo(
         setDifferenceMap(data.differenceMap);
         hintCount.current = data.hintCount;
         startTime.current = data.startTime;
+        setDifficulty(data.difficulty);
       }
-    }, [setErrorCount]);
+    }, [loadSavedData2, setErrorCount, setDifficulty]);
 
     const generateBoard = useCallback(
       (difficulty: string) => {
@@ -370,14 +375,37 @@ const Sudoku: React.FC<SudokuProps> = memo(
       [isSound],
     );
 
-    const remainingCountsMinusOne = (number: number) => {
-      const newCounts = [...remainingCounts];
-      newCounts[number - 1] -= 1;
-      if (newCounts[selectedNumber! - 1] === 0) {
-        jumpToNextNumber(newCounts);
-      }
-      setRemainingCounts(newCounts);
-    };
+    const jumpToNextNumber = useCallback(
+      (newCounts: number[]): void => {
+        if (!selectedNumber || newCounts[selectedNumber - 1] !== 0) {
+          return;
+        }
+
+        let nextNumber = selectedNumber;
+        do {
+          nextNumber = (nextNumber % 9) + 1;
+        } while (
+          newCounts[nextNumber - 1] === 0 &&
+          nextNumber !== selectedNumber
+        );
+
+        setSelectedNumber(nextNumber);
+        lastSelectedNumber.current = nextNumber;
+      },
+      [selectedNumber],
+    );
+
+    const remainingCountsMinusOne = useCallback(
+      (number: number) => {
+        const newCounts = [...remainingCounts];
+        newCounts[number - 1] -= 1;
+        if (newCounts[selectedNumber! - 1] === 0) {
+          jumpToNextNumber(newCounts);
+        }
+        setRemainingCounts(newCounts);
+      },
+      [jumpToNextNumber, remainingCounts, selectedNumber, setRemainingCounts],
+    );
 
     // 点击方格的回调函数
     const handleCellChange = useCallback(
@@ -592,25 +620,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       ],
     );
 
-    const jumpToNextNumber = useCallback(
-      (newCounts: number[]): void => {
-        if (!selectedNumber || newCounts[selectedNumber - 1] !== 0) {
-          return;
-        }
-
-        let nextNumber = selectedNumber;
-        do {
-          nextNumber = (nextNumber % 9) + 1;
-        } while (
-          newCounts[nextNumber - 1] === 0 &&
-          nextNumber !== selectedNumber
-        );
-
-        handleNumberSelect(nextNumber);
-      },
-      [handleNumberSelect, selectedNumber],
-    );
-
     const handleDraftMode = useCallback(() => {
       setDraftMode(!draftMode);
       playSound('switch', isSound);
@@ -628,12 +637,12 @@ const Sudoku: React.FC<SudokuProps> = memo(
       if (!isInitialized) {
         return;
       }
-      
+
       playSound('switch', isSound);
       if (isSameBoard(board, standradBoard)) {
         return;
       }
-      
+
       isClickAutoNote.current = true;
       updateBoard(deepCopyBoard(standradBoard), '复制官方草稿', false);
     }, [isInitialized, board, standradBoard, updateBoard, isSound]);
@@ -851,6 +860,16 @@ const Sudoku: React.FC<SudokuProps> = memo(
       return () => subscription.remove();
     }, []);
 
+    useEffect(() => {
+      if (isLevel) {
+        setTimeout(() => {
+          resetSudoku();
+        }, 200);
+      } else {
+        loadSavedData();
+      }
+    }, [isLevel]);
+
     return (
       <Animated.View
         style={[
@@ -871,24 +890,27 @@ const Sudoku: React.FC<SudokuProps> = memo(
           onBack={handleBack}
           openSetting={openSetting}
           saveData={saveData}
-          resetSudoku={resetSudoku}
         />
         <View style={styles.gameInfo}>
-          <View style={styles.gameInfoError}>
-            <Image
-              source={require('../assets/icon/error.png')}
-              style={styles.errorIcon}
-            />
-            <Text style={styles.gameInfoTextError}>{errorCount}</Text>
+          <View style={[styles.gameInfoItem, styles.gameInfoItem1]}>
+            <View style={styles.gameInfoError}>
+              <Image
+                source={require('../assets/icon/error.png')}
+                style={styles.errorIcon}
+              />
+              <Text style={styles.gameInfoTextError}>{errorCount}</Text>
+            </View>
           </View>
-          <Text style={[styles.gameInfoText, styles.middleText]}>
-            {difficulty}
-          </Text>
-          <Timer
-            setTimeFunction={setTimeFunction}
-            counts={counts}
-            playVictorySound={playVictorySound}
-          />
+          <View style={styles.gameInfoItem}>
+            <Text style={styles.gameInfoText}>{difficulty}</Text>
+          </View>
+          <View style={[styles.gameInfoItem, styles.gameInfoItem3]}>
+            <Timer
+              setTimeFunction={setTimeFunction}
+              counts={counts}
+              playVictorySound={playVictorySound}
+            />
+          </View>
         </View>
         <View style={styles.sudokuGrid}>
           {board?.map((row, rowIndex) =>
@@ -1033,9 +1055,10 @@ const Sudoku: React.FC<SudokuProps> = memo(
             </>
           </View>
         </Modal>
+        {resultVisible && (
+          <ResultView onBack={closeSudoku} generateBoard={generateBoard} resetSudoku={resetSudoku} />
+        )}
       </Animated.View>
-        
-
     );
   },
 );

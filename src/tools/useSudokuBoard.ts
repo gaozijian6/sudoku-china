@@ -39,7 +39,8 @@ export const useSudokuBoard = () => {
     createGraph(initialBoard, candidateMap),
   );
   const [counts, setCounts] = useState<number>(0);
-  const [standradBoard, setStandradBoard] = useState<CellData[][]>(initialBoard);
+  const [standradBoard, setStandradBoard] =
+    useState<CellData[][]>(initialBoard);
   const resetSudokuBoard = useCallback(() => {
     setBoard(initialBoard);
     answerBoard.current = initialBoard;
@@ -107,10 +108,8 @@ export const useSudokuBoard = () => {
     });
 
     setGraph(createGraph(newBoard, newCandidateMap));
-    
-    setStandradBoard(
-      copyOfficialDraft(deepCopyBoard(newBoard)),
-    );
+
+    setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
     setCandidateMap(newCandidateMap);
   }, []);
 
@@ -119,7 +118,7 @@ export const useSudokuBoard = () => {
     if (sudokuData) {
       const data = JSON.parse(sudokuData);
       setBoard(data.board);
-      answerBoard.current = data.answerBoard;
+      answerBoard.current = data.answerBoard; 
       history.current = data.history;
       setCurrentStep(data.currentStep);
       setRemainingCounts(data.remainingCounts);
@@ -155,7 +154,7 @@ export const useSudokuBoard = () => {
     setRemainingCounts(counts);
   }, []);
 
-  const saveSudokuData = useCallback(() => {
+  const saveSudokuData = useCallback(async () => {
     const sudokuData = {
       board,
       answerBoard: answerBoard.current,
@@ -165,7 +164,7 @@ export const useSudokuBoard = () => {
       counts,
       standradBoard,
     };
-    AsyncStorage.setItem('sudokuData2', JSON.stringify(sudokuData));
+    await AsyncStorage.setItem('sudokuData2', JSON.stringify(sudokuData));
   }, [board, counts, currentStep, remainingCounts, standradBoard]);
 
   const updateBoard = useCallback(
@@ -225,10 +224,10 @@ export const useSudokuBoard = () => {
     return board;
   }, []);
 
-  const getCounts = useCallback((puzzle: string, answer: string): number => {
+  const getCounts = useCallback((puzzle: string): number => {
     let count = 0;
     for (let i = 0; i < puzzle.length; i++) {
-      if (puzzle[i] === '0' && answer[i] !== '0') {
+      if (puzzle[i] !== '0') {
         count++;
       }
     }
@@ -239,13 +238,13 @@ export const useSudokuBoard = () => {
     (puzzle: string, answer: string) => {
       const newBoard = convertStringToBoard(puzzle);
       setBoard(newBoard);
+      updateRemainingCounts(newBoard);
       setTimeout(() => {
         answerBoard.current = convertStringToBoard(answer);
         updateCandidateMap(newBoard);
-        setCounts(getCounts(puzzle, answer));
-        updateRemainingCounts(newBoard);
+        setCounts(getCounts(puzzle));
         setIsInitialized(true);
-      }, 600);
+      }, 1000);
     },
     [
       convertStringToBoard,

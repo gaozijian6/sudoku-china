@@ -2,16 +2,16 @@ import React, {useCallback, useState, useRef, useEffect} from 'react';
 import {StatusBar, SafeAreaView, StyleSheet, Animated} from 'react-native';
 import Sudoku from './src/views/sudoku';
 import SudokuDIY from './src/views/sudokuDIY';
-import ResultView from './src/components/ResultOverlay';
 import Home from './src/views/Home';
 import Login from './src/views/Login';
 import Setting from './src/views/setting';
 import {initSounds} from './src/tools/Sound';
 import {useSudokuStore} from './src/store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import PauseOverlay from './src/components/PauseOverlay';
 
 function App() {
-  const {resultVisible, pauseVisible} = useSudokuStore();
+  const {resultVisible, pauseVisible, setIsHasContinue} = useSudokuStore();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const slideAnim1 = useRef(new Animated.Value(800)).current;
   const slideAnim2 = useRef(new Animated.Value(800)).current;
@@ -78,7 +78,11 @@ function App() {
   }, [settingSlideAnim]);
 
   useEffect(() => {
+    AsyncStorage.clear();
     initSounds();
+    AsyncStorage.getItem('isHasContinue').then(value => {
+      setIsHasContinue(value === 'true');
+    });
   }, []);
 
   return (
@@ -108,14 +112,13 @@ function App() {
             />
             <SudokuDIY
               slideAnim={slideAnim2}
-              closeSudoku={closeSudokuDIY}
+              closeSudokuDIY={closeSudokuDIY}
               openSetting={openSetting}
             />
             <Setting slideAnim={settingSlideAnim} closeSetting={closeSetting} />
           </>
         )}
       </SafeAreaView>
-      {resultVisible && <ResultView onNext={() => {}} />}
       {pauseVisible && <PauseOverlay />}
     </>
   );
