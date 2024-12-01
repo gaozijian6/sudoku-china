@@ -169,12 +169,6 @@ export const useSudokuBoard = () => {
 
   const updateBoard = useCallback(
     (newBoard: CellData[][], action: string, isFill: boolean) => {
-      if (
-        history.current.length > 0 &&
-        history.current[currentStep]?.action === action
-      ) {
-        return;
-      }
       if (!action.startsWith('取消') && !action.startsWith('提示')) {
         const newHistory = history.current.slice(0);
         newHistory.push({
@@ -193,7 +187,7 @@ export const useSudokuBoard = () => {
       setBoard(newBoard);
       updateCandidateMap(newBoard);
     },
-    [clearHistory, counts, currentStep, updateCandidateMap],
+    [clearHistory, counts, updateCandidateMap],
   );
 
   const undo = useCallback(() => {

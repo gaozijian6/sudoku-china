@@ -1,6 +1,7 @@
 import React, {useEffect, useCallback} from 'react';
 import {View, Text, Pressable, StyleSheet, Animated} from 'react-native';
 import {useSudokuStore} from '../store';
+import { useTranslation } from 'react-i18next';
 
 interface ResultProps {
   onBack: () => void;
@@ -13,6 +14,7 @@ const ResultView: React.FC<ResultProps> = ({
   generateBoard,
   resetSudoku,
 }) => {
+  const { t } = useTranslation();
   const scaleAnim = new Animated.Value(0);
   const {
     time,
@@ -93,29 +95,29 @@ const ResultView: React.FC<ResultProps> = ({
             ],
           },
         ]}>
-        <Text style={styles.title}>恭喜过关</Text>
+        <Text style={styles.title}>{t('congratulations')}</Text>
         <View style={styles.content}>
           <View style={styles.row}>
-            <Text style={styles.leftText}>用时：</Text>
+            <Text style={styles.leftText}>{t('duration')}:</Text>
             <Text style={styles.rightText}>{time}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.leftText}>错误次数：</Text>
+            <Text style={styles.leftText}>{t('mistakes')}:</Text>
             <Text style={styles.rightText}>{errorCount}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.leftText}>提示次数：</Text>
+            <Text style={styles.leftText}>{t('hints')}:</Text>
             <Text style={styles.rightText}>{hintCount}</Text>
           </View>
         </View>
         <View style={styles.buttonContainer}>
           <Pressable style={styles.button} onPressIn={handleBack}>
-            <Text style={styles.buttonText}>返回</Text>
+            <Text style={styles.buttonText}>{t('back')}</Text>
           </Pressable>
           <Pressable
             style={[styles.button, styles.nextButton]}
             onPressIn={handleNext}>
-            <Text style={styles.buttonText}>下一关</Text>
+            <Text style={styles.buttonText}>{t('next')}</Text>
           </Pressable>
         </View>
       </Animated.View>

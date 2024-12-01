@@ -44,6 +44,7 @@ import {
   remotePair,
   combinationChain,
 } from '../tools/solution';
+import {useTranslation} from 'react-i18next';
 import type {CandidateMap, CellData, Graph, Position} from '../tools';
 import type {DifferenceMap, Result} from '../tools/solution';
 import {DIFFICULTY} from '../constans';
@@ -72,6 +73,7 @@ interface SudokuProps {
 
 const Sudoku: React.FC<SudokuProps> = memo(
   ({slideAnim, closeSudoku, openSetting}) => {
+    const {t} = useTranslation();
     const {
       board,
       updateBoard,
@@ -318,8 +320,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
           case DIFFICULTY.EXTREME:
             random = Math.floor(Math.random() * extremeBoard.length);
             initializeBoard2(
-              extremeBoard[random].puzzle,
-              extremeBoard[random].solution,
+              extremeBoard[106].puzzle,
+              extremeBoard[106].solution,
             );
             break;
         }
@@ -625,14 +627,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       playSound('switch', isSound);
     }, [draftMode, isSound]);
 
-    const handleDraftModeChange = useCallback(
-      (value: boolean) => {
-        setDraftMode(value);
-        playSound('switch', isSound);
-      },
-      [isSound],
-    );
-
     const handleShowCandidates = useCallback(() => {
       if (!isInitialized) {
         return;
@@ -719,6 +713,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
                 setPositions,
                 applyHintHighlight,
                 updateBoard,
+                t,
               ),
             );
             setHintDrawerVisible(true);
@@ -738,6 +733,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         applyHintHighlight,
         updateBoard,
         selectedCell,
+        t,
       ],
     );
 
@@ -775,8 +771,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
           }
         });
 
-        // 使用 updateBoard 函数更新棋盘
-        updateBoard(newBoard, `应用提示：${result.method}`, false);
         if (isFill) {
           playSuccessSound(newBoard, position[0].row, position[0].col);
           remainingCountsMinusOne(target[0]);
@@ -786,7 +780,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
         // 移除提示高亮
         const updatedBoard = removeHintHighlight(newBoard);
-        updateBoard(updatedBoard, '提示应用完成', isFill);
+
+        updateBoard(updatedBoard, '应用提示完成', isFill);
 
         setHintDrawerVisible(false);
         lastSelectedCell.current = selectedCell;
@@ -902,7 +897,9 @@ const Sudoku: React.FC<SudokuProps> = memo(
             </View>
           </View>
           <View style={styles.gameInfoItem}>
-            <Text style={styles.gameInfoText}>{difficulty}</Text>
+            <Text style={styles.gameInfoText}>
+              {t(`difficulty.${difficulty}`)}
+            </Text>
           </View>
           <View style={[styles.gameInfoItem, styles.gameInfoItem3]}>
             <Timer
@@ -948,7 +945,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
               }
               style={styles.buttonIcon}
             />
-            <Text style={styles.buttonText}>撤销</Text>
+            <Text style={styles.buttonText}>{t('undo')}</Text>
           </Pressable>
 
           <Pressable style={[styles.buttonContainer]} onPressIn={handleErase}>
@@ -960,27 +957,20 @@ const Sudoku: React.FC<SudokuProps> = memo(
               }
               style={styles.buttonIcon}
             />
-            <Text style={styles.buttonText}>擦除</Text>
+            <Text style={styles.buttonText}>{t('erase')}</Text>
           </Pressable>
 
           <Pressable
             style={[styles.buttonContainer]}
             onPressIn={handleDraftMode}>
-            <Switch
-              value={draftMode}
-              thumbColor={draftMode ? '#1890ff' : '#f4f3f4'}
-              style={[
-                styles.draftModeSwitchStyle,
-                styles.draftModeSwitch,
-                {right: -25},
-              ]}
-              onValueChange={handleDraftModeChange}
-            />
             <Image
               source={require('../assets/icon/draft.png')}
-              style={styles.buttonIcon}
+              style={[
+                styles.buttonIcon,
+                {tintColor: draftMode ? '#1890ff' : undefined},
+              ]}
             />
-            <Text style={styles.buttonText}>笔记</Text>
+            <Text style={styles.buttonText}>{t('notes')}</Text>
           </Pressable>
 
           <Pressable
@@ -990,7 +980,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
               source={require('../assets/icon/auto.png')}
               style={styles.buttonIcon}
             />
-            <Text style={styles.buttonText}>自动笔记</Text>
+            <Text style={styles.buttonText}>{t('autoNote')}</Text>
           </Pressable>
 
           <Pressable
@@ -1000,7 +990,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
               source={require('../assets/icon/prompt.png')}
               style={styles.buttonIcon}
             />
-            <Text style={styles.buttonText}>提示</Text>
+            <Text style={styles.buttonText}>{t('hint')}</Text>
           </Pressable>
         </View>
         <Buttons
@@ -1010,6 +1000,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           selectedNumber={selectedNumber}
           draftMode={draftMode}
         />
+        <Text style={styles.selectionModeText}>{t('selectMode')}</Text>
         <Switch
           value={selectionMode === 2}
           onValueChange={handleSelectionModeChange}
@@ -1044,19 +1035,25 @@ const Sudoku: React.FC<SudokuProps> = memo(
                 <Pressable
                   onPressIn={handleApplyHint}
                   style={[styles.drawerButton, styles.drawerButtonApply]}>
-                  <Text style={styles.drawerButtonTextApply}>应用</Text>
+                  <Text style={styles.drawerButtonTextApply}>{t('apply')}</Text>
                 </Pressable>
                 <Pressable
                   onPressIn={handleCancelHint}
                   style={[styles.drawerButton, styles.drawerButtonCancel]}>
-                  <Text style={styles.drawerButtonTextCancel}>取消</Text>
+                  <Text style={styles.drawerButtonTextCancel}>
+                    {t('cancel')}
+                  </Text>
                 </Pressable>
               </View>
             </>
           </View>
         </Modal>
         {resultVisible && (
-          <ResultView onBack={closeSudoku} generateBoard={generateBoard} resetSudoku={resetSudoku} />
+          <ResultView
+            onBack={closeSudoku}
+            generateBoard={generateBoard}
+            resetSudoku={resetSudoku}
+          />
         )}
       </Animated.View>
     );

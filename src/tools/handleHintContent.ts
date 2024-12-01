@@ -1,6 +1,7 @@
 import {Result} from './solution';
 import {SOLUTION_METHODS} from '../constans';
 import {CellData} from './index';
+import {TFunction} from 'i18next';
 
 export const handleHintContent = (
   result: Result,
@@ -11,8 +12,10 @@ export const handleHintContent = (
   setPositions: any,
   applyHintHighlight: any,
   updateBoard: any,
+  t: TFunction,
 ): string => {
-  const {position, target, method, prompt, isFill, isWeakLink, chainStructure} = result;
+  const {position, target, method, prompt, isFill, isWeakLink, chainStructure} =
+    result;
   let posStr = '';
   let candStr = '';
   let deleteStr = '';
@@ -25,41 +28,41 @@ export const handleHintContent = (
     switch (method) {
       case SOLUTION_METHODS.SINGLE_CANDIDATE:
         boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-        hintContent = `注意到单元格R${position[0].row + 1}C${
-          position[0].col + 1
-        }只剩${target.join(
-          ', ',
-        )}一个候选数，所以可以确定该单元格的值为${target.join(', ')}`;
+        hintContent = t('hints.SINGLE_CANDIDATE', {
+          row: position[0].row + 1,
+          col: position[0].col + 1,
+          target: target.join(','),
+        });
         break;
       case SOLUTION_METHODS.HIDDEN_SINGLE_ROW:
         boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-        hintContent = `候选数${target.join(',')}在第${
-          position[0].row + 1
-        }行中，只有一个候选方格，所以可以确定该单元格的值为${target.join(
-          ', ',
-        )}`;
+        hintContent = t('hints.HIDDEN_SINGLE_ROW', {
+          target: target.join(','),
+          row: position[0].row + 1,
+        });
         break;
       case SOLUTION_METHODS.HIDDEN_SINGLE_COLUMN:
         boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-        hintContent = `候选数${target.join(',')}在第${
-          position[0].col + 1
-        }列中，只有一个候选方格，所以可以确定该单元格的值为${target.join(
-          ', ',
-        )}`;
+        hintContent = t('hints.HIDDEN_SINGLE_COLUMN', {
+          target: target.join(','),
+          col: position[0].col + 1,
+        });
         break;
       case SOLUTION_METHODS.HIDDEN_SINGLE_BOX:
         boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-        hintContent = `候选数${target.join(',')}在第${
-          Math.floor(position[0].row / 3) * 3 +
-          Math.floor(position[0].col / 3) +
-          1
-        }宫中，只有一个候选方格，所以可以确定该单元格的值为${target.join(
-          ', ',
-        )}`;
+        hintContent = t('hints.HIDDEN_SINGLE_BOX', {
+          target: target.join(','),
+          box:
+            Math.floor(position[0].row / 3) * 3 +
+            Math.floor(position[0].col / 3) +
+            1,
+        });
         break;
       case SOLUTION_METHODS.TRIAL_AND_ERROR:
         boardWithHighlight = applyHintHighlight(board, result, 'prompt');
-        hintContent = `尝试向拥有最少候选数的方格内填入${target[0]}，若后续无解，说明填入${target[0]}是错误的，则尝试其他候选数`;
+        hintContent = t('hints.TRIAL_AND_ERROR', {
+          target: target[0],
+        });
         break;
     }
   } else {
@@ -77,17 +80,17 @@ export const handleHintContent = (
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         }
-        hintContent = `在第${
-          Math.floor(prompt[0].row / 3) * 3 + Math.floor(prompt[0].col / 3) + 1
-        }宫中，候选数${target.join(
-          ',',
-        )}只存在${posStr}中，无论存在哪个方格中，这一行上的其他位置都不应出现此候选数${target.join(
-          ',',
-        )}`;
+        hintContent = t('hints.BLOCK_ELIMINATION_ROW', {
+          box:
+            Math.floor(prompt[0].row / 3) * 3 +
+            Math.floor(prompt[0].col / 3) +
+            1,
+          target: target.join(','),
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.BLOCK_ELIMINATION_COLUMN:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
-
         setPrompts(target);
         if (prompt.length == 2) {
           posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
@@ -98,13 +101,14 @@ export const handleHintContent = (
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         }
-        hintContent = `在第${
-          Math.floor(prompt[0].row / 3) * 3 + Math.floor(prompt[0].col / 3) + 1
-        }宫中，候选数${target.join(
-          ',',
-        )}只存在${posStr}中，无论存在哪个方格中，这一列上的其他位置都不应出现此候选数${target.join(
-          ',',
-        )}`;
+        hintContent = t('hints.BLOCK_ELIMINATION_COLUMN', {
+          box:
+            Math.floor(prompt[0].row / 3) * 3 +
+            Math.floor(prompt[0].col / 3) +
+            1,
+          target: target.join(','),
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.BLOCK_ELIMINATION_BOX_ROW:
         setPrompts(target);
@@ -118,11 +122,11 @@ export const handleHintContent = (
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         }
-        hintContent = `在第${prompt[0].row + 1}行中，候选数${target.join(
-          ',',
-        )}只存在${posStr}中，无论存在哪个方格中，这一宫中的其他位置都不应出现此候选数${target.join(
-          ',',
-        )}`;
+        hintContent = t('hints.BLOCK_ELIMINATION_BOX_ROW', {
+          row: prompt[0].row + 1,
+          target: target.join(','),
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.BLOCK_ELIMINATION_BOX_COLUMN:
         setPrompts(target);
@@ -136,11 +140,11 @@ export const handleHintContent = (
             prompt[1].row + 1
           }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         }
-        hintContent = `在第${prompt[0].col + 1}列中，候选数${target.join(
-          ',',
-        )}只存在${posStr}中，无论存在哪个方格中，这一宫中的其他位置都不应出现此候选数${target.join(
-          ',',
-        )}`;
+        hintContent = t('hints.BLOCK_ELIMINATION_BOX_COLUMN', {
+          col: prompt[0].col + 1,
+          target: target.join(','),
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.NAKED_PAIR_ROW:
         setPrompts(target);
@@ -149,10 +153,11 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}`;
-        candStr = target.join(',');
-        hintContent = `在第${
-          position[0].row + 1
-        }行中，因为候选数${candStr}只能出现在${posStr}这两个方格中，所以此行其他位置都不应出现候选数${candStr}`;
+        hintContent = t('hints.NAKED_PAIR_ROW', {
+          row: position[0].row + 1,
+          target: target.join(','),
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.NAKED_PAIR_COLUMN:
         setPrompts(target);
@@ -161,10 +166,11 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}`;
-        candStr = target.join(',');
-        hintContent = `在第${
-          position[0].col + 1
-        }列中，因为候选数${candStr}只能出现在${posStr}这两个方格中，所以此列其他位置都不应出现候选数${candStr}`;
+        hintContent = t('hints.NAKED_PAIR_COLUMN', {
+          col: position[0].col + 1,
+          target: target.join(','),
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.NAKED_PAIR_BOX:
         setPrompts(target);
@@ -173,10 +179,14 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}`;
-        candStr = target.join(',');
-        hintContent = `在第${
-          Math.floor(prompt[0].row / 3) * 3 + Math.floor(prompt[0].col / 3) + 1
-        }宫中，因为候选数${candStr}只能出现在${posStr}这两个方格中，所以此宫其他位置都不应出现候选数${candStr}`;
+        hintContent = t('hints.NAKED_PAIR_BOX', {
+          box:
+            Math.floor(prompt[0].row / 3) * 3 +
+            Math.floor(prompt[0].col / 3) +
+            1,
+          target: target.join(','),
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.NAKED_TRIPLE_ROW1:
         setPrompts(target);
@@ -185,10 +195,11 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-        candStr = target.join(',');
-        hintContent = `在第${
-          position[0].row + 1
-        }行中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此行其他位置都不应出现候选数${candStr}`;
+        hintContent = t('hints.NAKED_TRIPLE_ROW1', {
+          row: position[0].row + 1,
+          target: target.join(','),
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.NAKED_TRIPLE_COLUMN1:
         setPrompts(target);
@@ -197,10 +208,11 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-        candStr = target.join(',');
-        hintContent = `在第${
-          position[0].col + 1
-        }列中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此列其他位置都不应出现候选数${candStr}`;
+        hintContent = t('hints.NAKED_TRIPLE_COLUMN1', {
+          col: position[0].col + 1,
+          target: target.join(','),
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.NAKED_TRIPLE_BOX1:
         setPrompts(target);
@@ -209,10 +221,14 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-        candStr = target.join(',');
-        hintContent = `在第${
-          Math.floor(prompt[0].row / 3) * 3 + Math.floor(prompt[0].col / 3) + 1
-        }宫中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此宫其他位置都不应出现候选数${candStr}`;
+        hintContent = t('hints.NAKED_TRIPLE_BOX1', {
+          box:
+            Math.floor(prompt[0].row / 3) * 3 +
+            Math.floor(prompt[0].col / 3) +
+            1,
+          target: target.join(','),
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.NAKED_TRIPLE_ROW2:
         setPrompts(target);
@@ -221,10 +237,11 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-        candStr = target.join(',');
-        hintContent = `在第${
-          position[0].row + 1
-        }行中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此行其他位置都不应出现候选数${candStr}`;
+        hintContent = t('hints.NAKED_TRIPLE_ROW2', {
+          row: position[0].row + 1,
+          target: target.join(','),
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.NAKED_TRIPLE_COLUMN2:
         setPrompts(target);
@@ -233,10 +250,11 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-        candStr = target.join(',');
-        hintContent = `在第${
-          position[0].col + 1
-        }列中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此列其他位置都不应出现候选数${candStr}`;
+        hintContent = t('hints.NAKED_TRIPLE_COLUMN2', {
+          col: position[0].col + 1,
+          target: target.join(','),
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.NAKED_TRIPLE_BOX2:
         setPrompts(target);
@@ -245,10 +263,14 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-        candStr = target.join(',');
-        hintContent = `在第${
-          Math.floor(prompt[0].row / 3) * 3 + Math.floor(prompt[0].col / 3) + 1
-        }宫中，因为候选数${candStr}只能出现在${posStr}这三个方格中，所以此宫其他位置都不应出现候选数${candStr}`;
+        hintContent = t('hints.NAKED_TRIPLE_BOX2', {
+          box:
+            Math.floor(prompt[0].row / 3) * 3 +
+            Math.floor(prompt[0].col / 3) +
+            1,
+          target: target.join(','),
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.HIDDEN_PAIR_ROW:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -264,9 +286,11 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}`;
-        hintContent = `在第${
-          position[0].row + 1
-        }行中，因为候选数${candStr}只出现在${posStr}这两个方格中，因此这两个方格不应出现其他候选数`;
+        hintContent = t('hints.HIDDEN_PAIR_ROW', {
+          row: position[0].row + 1,
+          candStr,
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.HIDDEN_PAIR_COLUMN:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -282,9 +306,11 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}`;
-        hintContent = `在第${
-          position[0].col + 1
-        }列中，因为候选数${candStr}只出现在${posStr}这两个方格中，因此这两个方格不应出现其他候选数`;
+        hintContent = t('hints.HIDDEN_PAIR_COLUMN', {
+          col: position[0].col + 1,
+          candStr,
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.HIDDEN_PAIR_BOX:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -300,9 +326,14 @@ export const handleHintContent = (
           prompt[1].row + 1
         }C${prompt[1].col + 1}`;
         candStr = [...new Set(prompts)].join(',');
-        hintContent = `在第${
-          Math.floor(prompt[0].row / 3) * 3 + Math.floor(prompt[0].col / 3) + 1
-        }宫中，因为候选数${candStr}只出现在${posStr}这两个方格中，因此这两个方格不应出现其他候选数`;
+        hintContent = t('hints.HIDDEN_PAIR_BOX', {
+          box:
+            Math.floor(prompt[0].row / 3) * 3 +
+            Math.floor(prompt[0].col / 3) +
+            1,
+          candStr,
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.HIDDEN_TRIPLE_ROW1:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -318,9 +349,11 @@ export const handleHintContent = (
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = [...new Set(prompts)].join(',');
-        hintContent = `在第${
-          position[0].row + 1
-        }行中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
+        hintContent = t('hints.HIDDEN_TRIPLE_ROW1', {
+          row: position[0].row + 1,
+          candStr,
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.HIDDEN_TRIPLE_COLUMN1:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -336,9 +369,11 @@ export const handleHintContent = (
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = [...new Set(prompts)].join(',');
-        hintContent = `在第${
-          position[0].col + 1
-        }列中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
+        hintContent = t('hints.HIDDEN_TRIPLE_COLUMN1', {
+          col: position[0].col + 1,
+          candStr,
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.HIDDEN_TRIPLE_BOX1:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -354,9 +389,14 @@ export const handleHintContent = (
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = [...new Set(prompts)].join(',');
-        hintContent = `在第${
-          Math.floor(prompt[0].row / 3) * 3 + Math.floor(prompt[0].col / 3) + 1
-        }宫中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
+        hintContent = t('hints.HIDDEN_TRIPLE_BOX1', {
+          box:
+            Math.floor(prompt[0].row / 3) * 3 +
+            Math.floor(prompt[0].col / 3) +
+            1,
+          candStr,
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.HIDDEN_TRIPLE_ROW2:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -372,9 +412,11 @@ export const handleHintContent = (
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = [...new Set(prompts)].join(',');
-        hintContent = `在第${
-          position[0].row + 1
-        }行中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
+        hintContent = t('hints.HIDDEN_TRIPLE_ROW2', {
+          row: position[0].row + 1,
+          candStr,
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.HIDDEN_TRIPLE_COLUMN2:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -390,9 +432,11 @@ export const handleHintContent = (
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = [...new Set(prompts)].join(',');
-        hintContent = `在第${
-          position[0].col + 1
-        }列中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
+        hintContent = t('hints.HIDDEN_TRIPLE_COLUMN2', {
+          col: position[0].col + 1,
+          candStr,
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.HIDDEN_TRIPLE_BOX2:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -408,9 +452,14 @@ export const handleHintContent = (
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = [...new Set(prompts)].join(',');
-        hintContent = `在第${
-          Math.floor(prompt[0].row / 3) * 3 + Math.floor(prompt[0].col / 3) + 1
-        }宫中，因为候选数${candStr}只出现在${posStr}这三个方格中，因此这三个方格不应出现其他候选数`;
+        hintContent = t('hints.HIDDEN_TRIPLE_BOX2', {
+          box:
+            Math.floor(prompt[0].row / 3) * 3 +
+            Math.floor(prompt[0].col / 3) +
+            1,
+          candStr,
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.NAKED_QUADRUPLE_ROW:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -420,9 +469,11 @@ export const handleHintContent = (
           prompt[3].row + 1
         }C${prompt[3].col + 1}`;
         candStr = [...new Set(target)].join(',');
-        hintContent = `在第${
-          position[0].row + 1
-        }行中，因为候选数${candStr}只出现在${posStr}这四个方格中，因此这四个方格不应出现其他候选数`;
+        hintContent = t('hints.NAKED_QUADRUPLE_ROW', {
+          row: position[0].row + 1,
+          candStr,
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.NAKED_QUADRUPLE_COLUMN:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -432,9 +483,11 @@ export const handleHintContent = (
           prompt[3].row + 1
         }C${prompt[3].col + 1}`;
         candStr = [...new Set(target)].join(',');
-        hintContent = `在第${
-          position[0].col + 1
-        }列中，因为候选数${candStr}只出现在${posStr}这四个方格中，因此这四个方格不应出现其他候选数`;
+        hintContent = t('hints.NAKED_QUADRUPLE_COLUMN', {
+          col: position[0].col + 1,
+          candStr,
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.NAKED_QUADRUPLE_BOX:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -444,9 +497,14 @@ export const handleHintContent = (
           prompt[3].row + 1
         }C${prompt[3].col + 1}`;
         candStr = [...new Set(target)].join(',');
-        hintContent = `在第${
-          Math.floor(prompt[0].row / 3) * 3 + Math.floor(prompt[0].col / 3) + 1
-        }宫中，因为候选数${candStr}只出现在${posStr}这四个方格中，因此这四个方格不应出现其他候选数`;
+        hintContent = t('hints.NAKED_QUADRUPLE_BOX', {
+          box:
+            Math.floor(prompt[0].row / 3) * 3 +
+            Math.floor(prompt[0].col / 3) +
+            1,
+          candStr,
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.X_WING_ROW:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -457,9 +515,12 @@ export const handleHintContent = (
           prompt[3].row + 1
         }C${prompt[3].col + 1}`;
         candStr = target.join(',');
-        hintContent = `在${prompt[0].row + 1}、${
-          prompt[2].row + 1
-        }两行中，候选数${candStr}每行都有两个候选方格且他们的列号相同，在这四个候选方格内无论哪两个取值，都会导致这两列其他位置不应出现候选数${candStr}`;
+        hintContent = t('hints.X_WING_ROW', {
+          row1: prompt[0].row + 1,
+          row2: prompt[2].row + 1,
+          candStr,
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.X_WING_COLUMN:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -470,9 +531,12 @@ export const handleHintContent = (
           prompt[3].row + 1
         }C${prompt[3].col + 1}`;
         candStr = target.join(',');
-        hintContent = `在${prompt[0].row + 1}、${
-          prompt[2].col + 1
-        }两列中，候选数${candStr}每列都有两个候选方格且他们的行号相同，在这四个候选方格内无论哪两个取值，都会导致这两行其他位置不应出现候选数${candStr}`;
+        hintContent = t('hints.X_WING_COLUMN', {
+          col1: prompt[0].col + 1,
+          col2: prompt[2].col + 1,
+          candStr,
+          positions: posStr,
+        });
         break;
       case SOLUTION_METHODS.X_WING_VARIENT_COLUMN:
       case SOLUTION_METHODS.X_WING_VARIENT_ROW:
@@ -496,11 +560,13 @@ export const handleHintContent = (
         }
         candStr = target.join(',');
         setPrompts(target);
-        hintContent = `在${posStr}这${
-          prompt.length
-        }个候选方格内无论哪两个取${candStr}，都会导致R${position[0].row + 1}C${
-          position[0].col + 1
-        }内不应出现候选数${candStr}`;
+        hintContent = t('hints.X_WING_VARIENT_ROW', {
+          positions: posStr,
+          length: prompt.length,
+          candStr,
+          row: position[0].row + 1,
+          col: position[0].col + 1,
+        });
         break;
       case SOLUTION_METHODS.XY_WING:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -510,21 +576,17 @@ export const handleHintContent = (
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = target.join(',');
         if (position.length === 1) {
-          hintContent = `无论${posStr}这三个候选方格内如何取值，R${
-            position[0].row + 1
-          }C${position[0].col + 1}内都不能出现候选数${target[0]}`;
-        }
-        if (position.length === 1) {
-          hintContent = `无论${posStr}这三个候选方格内如何取值，R${
-            position[0].row + 1
-          }C${position[0].col + 1}内都不能出现候选数${target[0]}`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}`;
         } else if (position.length === 2) {
-          hintContent = `无论${posStr}这三个候选方格内如何取值，R${
-            position[0].row + 1
-          }C${position[0].col + 1}、R${position[1].row + 1}C${
-            position[1].col + 1
-          }内都不能出现候选数${target[0]}`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
+            position[1].row + 1
+          }C${position[1].col + 1}`;
         }
+        hintContent = t('hints.XY_WING', {
+          positions: posStr,
+          candStr,
+          deleteStr,
+        });
         break;
       case SOLUTION_METHODS.XYZ_WING:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -542,16 +604,18 @@ export const handleHintContent = (
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = target.join(',');
         if (position.length === 1) {
-          hintContent = `无论${posStr}这三个候选方格内如何取值，R${
-            position[0].row + 1
-          }C${position[0].col + 1}内都不能出现候选数${target[0]}`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}`;
         } else if (position.length === 2) {
-          hintContent = `无论${posStr}这三个候选方格内如何取值，R${
-            position[0].row + 1
-          }C${position[0].col + 1}、R${position[1].row + 1}C${
-            position[1].col + 1
-          }内都不能出现候选数${target[0]}`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
+            position[1].row + 1
+          }C${position[1].col + 1}`;
         }
+        hintContent = t('hints.XYZ_WING', {
+          positions: posStr,
+          candStr,
+          deleteStr,
+          target: target[0],
+        });
         break;
       case SOLUTION_METHODS.SKYSCRAPER:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -574,55 +638,60 @@ export const handleHintContent = (
             position[2].col + 1
           }`;
         }
-        hintContent = `${posStr}四个方格构成共轭链，无论R${prompt[0].row + 1}C${
-          prompt[0].col + 1
-        }还是R${prompt[3].row + 1}C${prompt[3].col + 1}取值为${
-          target[0]
-        }，${deleteStr}内都不能出现候选数${target[0]}`;
+        hintContent = t('hints.SKYSCRAPER', {
+          positions: posStr,
+          row1: prompt[0].row + 1,
+          col1: prompt[0].col + 1,
+          row2: prompt[3].row + 1,
+          col2: prompt[3].col + 1,
+          deleteStr,
+          target: target[0],
+        });
         break;
       case SOLUTION_METHODS.SKYSCRAPER2:
         if (position.length === 1) {
-          posStr = `R${position[0].row + 1}C${position[0].col + 1}`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}`;
         } else if (position.length === 2) {
-          posStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
             position[1].row + 1
           }C${position[1].col + 1}`;
         } else if (position.length === 3) {
-          posStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
             position[1].row + 1
           }C${position[1].col + 1}、R${position[2].row + 1}C${
             position[2].col + 1
           }`;
         } else if (position.length === 4) {
-          posStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
             position[1].row + 1
           }C${position[1].col + 1}、R${position[2].row + 1}C${
             position[2].col + 1
           }、R${position[3].row + 1}C${position[3].col + 1}`;
         }
-        boardWithHighlight = applyHintHighlight(board, result, "both");
+        boardWithHighlight = applyHintHighlight(board, result, 'both');
         setPrompts(target);
-        hintContent = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}与R${prompt[2].row + 1}C${
-          prompt[2].col + 1
-        }、R${prompt[3].row + 1}C${prompt[3].col + 1}分别构成两个强链，它们通过R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[3].row + 1}C${
-          prompt[3].col + 1
-        }构成的弱链相连，假设R${prompt[0].row + 1}C${prompt[0].col + 1}为真
-        ，则R${position[0].row + 1}C${position[0].col + 1}为假，假设R${
-          prompt[0].row + 1
-        }C${prompt[0].col + 1}为假，则会导致R${prompt[3].row + 1}C${
-          prompt[3].col + 1
-        }为真，R${position[0].row + 1}C${
-          position[0].col + 1
-        }依旧为假，无论如何，${posStr}内都不应出现候选数${target[0]}`;
+        hintContent = t('hints.SKYSCRAPER2', {
+          positions: posStr,
+          deleteStr,
+          row1: prompt[0].row + 1,
+          col1: prompt[0].col + 1,
+          row2: prompt[1].row + 1,
+          col2: prompt[1].col + 1,
+          row3: prompt[2].row + 1,
+          col3: prompt[2].col + 1,
+          row4: prompt[3].row + 1,
+          col4: prompt[3].col + 1,
+          target: target[0],
+        });
         break;
       case SOLUTION_METHODS.REMOTE_PAIR:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         setPositions(target);
         setPrompts(target);
+        const posStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+          prompt[prompt.length - 1].row + 1
+        }C${prompt[prompt.length - 1].col + 1}`;
+        let posStr2 = '';
         if (position.length === 1) {
           posStr = `R${position[0].row + 1}C${position[0].col + 1}`;
         } else if (position.length === 2) {
@@ -637,148 +706,183 @@ export const handleHintContent = (
           }`;
         }
         if (prompt.length === 4) {
-          hintContent = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[3].row + 1
-          }C${prompt[3].col + 1}构成远程数对，这两个远程数对通过R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }形成强链，无论R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[3].row + 1
-          }C${prompt[3].col + 1}谁为真，${posStr}内都不能出现候选数${
-            target[0]
-          }`;
+          posStr2 = `R${prompt[1].row + 1}C${prompt[1].col + 1}、R${
+            prompt[2].row + 1
+          }C${prompt[2].col + 1}`;
         } else if (prompt.length === 6) {
-          hintContent = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[5].row + 1
-          }C${prompt[5].col + 1}构成远程数对，这两个远程数对通过R${
+          posStr2 = `R${prompt[1].row + 1}C${prompt[1].col + 1}、R${
+            prompt[2].row + 1
+          }C${prompt[2].col + 1}、R${prompt[3].row + 1}C${
+            prompt[3].col + 1
+          }、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
+        }
+        hintContent = t('hints.REMOTE_PAIR', {
+          posStr,
+          posStr1,
+          posStr2,
+          target: target[0],
+        });
+        break;
+      case SOLUTION_METHODS.COMBINATION_CHAIN:
+        boardWithHighlight = applyHintHighlight(board, result, 'both');
+        setPositions(target);
+        setPrompts(target);
+        if (position.length === 1) {
+          posStr = `R${position[0].row + 1}C${position[0].col + 1}`;
+        } else if (position.length === 2) {
+          posStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
+            position[1].row + 1
+          }C${position[1].col + 1}`;
+        }
+        // 组合方格
+        let candStr1 = '';
+        // 组合方格的配对
+        let candStr2 = '';
+        // 另外一组强链
+        let candStr3 = '';
+        let candStr4 = '';
+        let pivotStr = '';
+        let pivotStr1 = '';
+        let pivotStr2 = '';
+
+        if (!isWeakLink && chainStructure === '3-2-1') {
+          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
             prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
+          }C${prompt[1].col + 1}`;
+          candStr2 = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
+            prompt[3].row + 1
+          }C${prompt[3].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
+          candStr4 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+            prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
+          hintContent = t('hints.COMBINATION_CHAIN_3_2_1_STRONG', {
+            candStr1,
+            candStr2,
+            candStr4,
+            posStr,
+            target: target[0],
+          });
+        } else if (isWeakLink && chainStructure === '3-2-1') {
+          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+            prompt[1].row + 1
+          }C${prompt[1].col + 1}`;
+          candStr2 = `R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+          candStr3 = `R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
             prompt[4].row + 1
-          }C${prompt[4].col + 1}形成强链，无论R${prompt[0].row + 1}C${
-            prompt[0].col + 1
-          }、R${prompt[5].row + 1}C${
+          }C${prompt[4].col + 1}`;
+          pivotStr = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
+            prompt[3].row + 1
+          }C${prompt[3].col + 1}`;
+          candStr4 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+            prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
+          hintContent = t('hints.COMBINATION_CHAIN_3_2_1_WEAK', {
+            candStr1,
+            candStr2,
+            candStr3,
+            pivotStr,
+            candStr4,
+            posStr,
+            target: target[0],
+          });
+        } else if (isWeakLink && chainStructure === '3-2-2') {
+          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+            prompt[1].row + 1
+          }C${prompt[1].col + 1}`;
+          candStr2 = `R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+          candStr3 = `R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
+            prompt[4].row + 1
+          }C${prompt[4].col + 1}`;
+          pivotStr1 = `R${prompt[3].row + 1}C${prompt[3].col + 1}`;
+          pivotStr2 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+            prompt[1].row + 1
+          }C${prompt[1].col + 1}`;
+          candStr4 = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
+            prompt[4].row + 1
+          }C${prompt[4].col + 1}`;
+          hintContent = t('hints.COMBINATION_CHAIN_3_2_2_WEAK', {
+            candStr1,
+            candStr2,
+            candStr3,
+            pivotStr1,
+            pivotStr2,
+            candStr4,
+            posStr,
+            target: target[0],
+          });
+        } else if (!isWeakLink && chainStructure === '3-2-2') {
+          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+            prompt[1].row + 1
+          }C${prompt[1].col + 1}`;
+          candStr2 = `R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+          candStr3 = `R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
+            prompt[4].row + 1
+          }C${prompt[4].col + 1}`;
+          pivotStr1 = `R${prompt[3].row + 1}C${prompt[3].col + 1}`;
+          pivotStr2 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+            prompt[1].row + 1
+          }C${prompt[1].col + 1}`;
+          candStr4 = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
+            prompt[4].row + 1
+          }C${prompt[4].col + 1}`;
+          hintContent = t('hints.COMBINATION_CHAIN_3_2_2_STRONG', {
+            candStr1,
+            candStr2,
+            candStr3,
+            pivotStr1,
+            pivotStr2,
+            candStr4,
+            posStr,
+            target: target[0],
+          });
+        } else if (!isWeakLink && chainStructure === '3-4-1') {
+          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+            prompt[1].row + 1
+          }C${prompt[1].col + 1}`;
+          candStr2 = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
+            prompt[3].row + 1
+          }C${prompt[3].col + 1}、R${prompt[4].row + 1}C${
+            prompt[4].col + 1
+          }、R${prompt[5].row + 1}C${prompt[5].col + 1}、R${
+            prompt[6].row + 1
+          }C${prompt[6].col + 1}`;
+          candStr4 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+            prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
+          hintContent = t('hints.COMBINATION_CHAIN_3_2_1_STRONG', {
+            candStr1,
+            candStr2,
+            candStr4,
+            posStr,
+            target: target[0],
+          });
+        } else if (isWeakLink && chainStructure === '3-4-1') {
+          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+            prompt[1].row + 1
+          }C${prompt[1].col + 1}`;
+          candStr2 = `R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+          candStr3 = `R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
+            prompt[4].row + 1
+          }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
             prompt[5].col + 1
-          }谁为真，${posStr}内都不能出现候选数${target[0]}`;
+          }、R${prompt[6].row + 1}C${prompt[6].col + 1}`;
+          pivotStr = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
+            prompt[3].row + 1
+          }C${prompt[3].col + 1}`;
+          candStr4 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+            prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
+          hintContent = t('hints.COMBINATION_CHAIN_3_2_1_WEAK', {
+            candStr1,
+            candStr2,
+            candStr3,
+            pivotStr,
+            candStr4,
+            posStr,
+            target: target[0],
+          });
         }
         break;
-        case SOLUTION_METHODS.COMBINATION_CHAIN:
-          boardWithHighlight = applyHintHighlight(board, result, "both");
-          setPositions(target);
-          setPrompts(target);
-          if (position.length === 1) {
-            posStr = `R${position[0].row + 1}C${position[0].col + 1}`;
-          } else if (position.length === 2) {
-            posStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
-              position[1].row + 1
-            }C${position[1].col + 1}`;
-          }
-          if (!isWeakLink && chainStructure === "3-2-1") {
-            hintContent = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}两个方格的组合与R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}构成强链，无论R${prompt[0].row + 1}C${
-              prompt[0].col + 1
-            }、R${prompt[1].row + 1}C${prompt[1].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}谁为真，${posStr}内都不能出现候选数${
-              target[0]
-            }`;
-          } else if (isWeakLink && chainStructure === "3-2-1") {
-            hintContent = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}两个方格的组合与R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }构成强链，R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}两个方格构成强链，这两条强链通过R${
-              prompt[2].row + 1
-            }C${prompt[2].col + 1}、R${prompt[3].row + 1}C${
-              prompt[3].col + 1
-            }构成的弱链相连，无论R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[4].row + 1}C${
-              prompt[4].col + 1
-            }谁为真，${posStr}内都不能出现候选数${target[0]}`;
-          } else if (isWeakLink && chainStructure === "3-2-2") {
-            hintContent = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}两个方格的组合与R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }构成强链，R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}两个方格构成强链，这两条强链通过R${
-              prompt[3].row + 1
-            }C${prompt[3].col + 1}与R${prompt[0].row + 1}C${
-              prompt[0].col + 1
-            }、R${prompt[1].row + 1}C${
-              prompt[1].col + 1
-            }两方格的整体构成的弱链相连，无论R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }、R${prompt[4].row + 1}C${
-              prompt[4].col + 1
-            }谁为真，${posStr}内都不能出现候选数${target[0]}`;
-          } else if (!isWeakLink && chainStructure === "3-2-2") {
-            hintContent = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}两个方格的组合与R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }构成强链，R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}两个方格构成强链，这两条强链通过R${
-              prompt[3].row + 1
-            }C${prompt[3].col + 1}与R${prompt[0].row + 1}C${
-              prompt[0].col + 1
-            }、R${prompt[1].row + 1}C${
-              prompt[1].col + 1
-            }两方格的整体构成的强链相连，无论R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }、R${prompt[4].row + 1}C${
-              prompt[4].col + 1
-            }谁为真，${posStr}内都不能出现候选数${target[0]}`;
-          } else if (!isWeakLink && chainStructure === "3-4-1") {
-            hintContent = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}两个方格的组合与R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-              prompt[5].col + 1
-            }、R${prompt[6].row + 1}C${prompt[6].col + 1}构成强链，无论R${
-              prompt[0].row + 1
-            }C${prompt[0].col + 1}、R${prompt[1].row + 1}C${
-              prompt[1].col + 1
-            }、R${prompt[6].row + 1}C${prompt[6].col + 1}谁为真，${posStr}内都不能出现候选数${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}谁为真，${posStr}内都不能出现候选数${
-              target[0]
-            }`;
-          } else if (isWeakLink && chainStructure === "3-4-1") {
-            hintContent = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}两个方格的组合与R${prompt[2].row + 1}C${
-              prompt[2].col + 1
-            }构成强链，R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-              prompt[4].row + 1
-            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-              prompt[5].col + 1
-            }、R${prompt[6].row + 1}C${prompt[6].col + 1}四个方格构成强链，这两条强链通过R${
-              prompt[2].row + 1
-            }C${prompt[2].col + 1}、R${prompt[3].row + 1}C${
-              prompt[3].col + 1
-            }构成的弱链相连，无论R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-              prompt[1].row + 1
-            }C${prompt[1].col + 1}、R${prompt[4].row + 1}C${
-              prompt[4].col + 1
-            }谁为真，${posStr}内都不能出现候选数${target[0]}`;
-          }
-          break;
       case SOLUTION_METHODS.SWORDFISH_ROW:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         if (prompt.length === 6) {
@@ -825,9 +929,12 @@ export const handleHintContent = (
           }C${prompt[7].col + 1}、R${prompt[8].row + 1}C${prompt[8].col + 1}`;
         }
         const columns = [...new Set(prompt.map(pos => pos.col + 1))];
-        hintContent = `无论${posStr}这${prompt.length}个候选方格哪三个取${
-          target[0]
-        }，第${columns.join('、')}列内都不能出现候选数${target[0]}`;
+        hintContent = t('hints.SWORDFISH_ROW', {
+          posStr,
+          length: prompt.length,
+          target: target[0],
+          columns: columns.join(','),
+        });
         break;
       case SOLUTION_METHODS.SWORDFISH_COLUMN:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -875,37 +982,36 @@ export const handleHintContent = (
           }C${prompt[7].col + 1}、R${prompt[8].row + 1}C${prompt[8].col + 1}`;
         }
         const rows = [...new Set(prompt.map(pos => pos.row + 1))];
-        hintContent = `无论${posStr}这${prompt.length}个候选方格哪三个取${
-          target[0]
-        }，第${rows.join('、')}行内都不能出现候选数${target[0]}`;
+        hintContent = t('hints.SWORDFISH_COLUMN', {
+          posStr,
+          length: prompt.length,
+          target: target[0],
+          rows: rows.join(','),
+        });
         break;
       case SOLUTION_METHODS.WXYZ_WING:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         setPositions(target);
         setPrompts(target);
+        candStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
+          prompt[1].row + 1
+        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
+          prompt[3].row + 1
+        }C${prompt[3].col + 1}`;
         if (position.length === 1) {
-          hintContent = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}构成WXYZ-Wing,其中R${
-            prompt[0].row + 1
-          }C${prompt[0].col + 1}为枢纽，无论这四个候选方格内如何取值，R${
-            position[0].row + 1
-          }C${position[0].col + 1}内都不能出现候选数${target[0]}`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}`;
         } else if (position.length === 2) {
-          hintContent = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}构成WXYZ-Wing，其中R${
-            prompt[0].row + 1
-          }C${prompt[0].col + 1}为枢纽，无论这四个候选方格内如何取值，R${
-            position[0].row + 1
-          }C${position[0].col + 1}、R${position[1].row + 1}C${
-            position[1].col + 1
-          }内都不能出现候选数${target[0]}`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
+            position[1].row + 1
+          }C${position[1].col + 1}`;
         }
+        hintContent = t('hints.WXYZ_WING', {
+          candStr,
+          deleteStr,
+          target: target[0],
+          row1: prompt[0].row + 1,
+          col1: prompt[0].col + 1,
+        });
         break;
     }
   }

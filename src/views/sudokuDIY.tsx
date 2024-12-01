@@ -51,6 +51,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSudokuStore} from '../store';
 import TarBarsSudokuDIY from '../components/tarBarsSudokuDIY';
 import {SUDOKU_STATUS} from '../constans';
+import {useTranslation} from 'react-i18next';
 
 interface SudokuDIYProps {
   slideAnim: Animated.Value;
@@ -60,6 +61,7 @@ interface SudokuDIYProps {
 
 const SudokuDIY: React.FC<SudokuDIYProps> = memo(
   ({slideAnim, closeSudokuDIY, openSetting}) => {
+    const {t} = useTranslation();
     const {
       board,
       updateBoard,
@@ -635,8 +637,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           }
         });
 
-        // 使用 updateBoard 函数更新棋盘
-        updateBoard(newBoard, `应用提示：${result.method}`, false);
         if (isFill) {
           playSound('switch', isSound);
           remainingCountsMinusOne(target[0]);
@@ -646,7 +646,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
         // 移除提示高亮
         const updatedBoard = removeHintHighlight(newBoard);
-        updateBoard(updatedBoard, '提示应用完成', isFill);
+        updateBoard(updatedBoard, '应用提示完成', isFill);
 
         setHintDrawerVisible(false);
         lastSelectedCell.current = selectedCell;
@@ -773,7 +773,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
                   source={require('../assets/icon/legal.png')}
                   style={styles.gameInfoIcon}
                 />
-                <Text style={styles.gameInfoText}>数独合法</Text>
+                <Text style={styles.gameInfoText}>{t('legal')}</Text>
               </View>
             ) : sudokuStatus === SUDOKU_STATUS.SOLVING ? (
               <View style={styles.gameInfoTextDIY}>
@@ -781,7 +781,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
                   source={require('../assets/icon/waiting.png')}
                   style={styles.gameInfoIcon}
                 />
-                <Text style={styles.gameInfoText}>求解中...</Text>
+                <Text style={styles.gameInfoText}>{t('solving')}</Text>
               </View>
             ) : (
               <View style={styles.gameInfoTextDIY}>
@@ -789,7 +789,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
                   source={require('../assets/icon/illegal.png')}
                   style={styles.gameInfoIcon}
                 />
-                <Text style={styles.gameInfoText}>数独不合法</Text>
+                <Text style={styles.gameInfoText}>{t('illegal')}</Text>
               </View>
             ))}
         </View>
@@ -829,7 +829,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
               }
               style={styles.buttonIcon}
             />
-            <Text style={styles.buttonText}>撤销</Text>
+            <Text style={styles.buttonText}>{t('undo')}</Text>
           </Pressable>
 
           <Pressable style={[styles.buttonContainer]} onPressIn={handleErase}>
@@ -841,27 +841,20 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
               }
               style={styles.buttonIcon}
             />
-            <Text style={styles.buttonText}>擦除</Text>
+            <Text style={styles.buttonText}>{t('erase')}</Text>
           </Pressable>
 
           <Pressable
             style={[styles.buttonContainer]}
             onPressIn={handleDraftMode}>
-            <Switch
-              value={draftMode}
-              thumbColor={draftMode ? '#1890ff' : '#f4f3f4'}
-              style={[
-                styles.draftModeSwitchStyle,
-                styles.draftModeSwitch,
-                {right: -25},
-              ]}
-              onValueChange={handleDraftModeChange}
-            />
             <Image
               source={require('../assets/icon/draft.png')}
-              style={styles.buttonIcon}
+              style={[
+                styles.buttonIcon,
+                {tintColor: draftMode ? '#1890ff' : undefined},
+              ]}
             />
-            <Text style={styles.buttonText}>笔记</Text>
+            <Text style={styles.buttonText}>{t('notes')}</Text>
           </Pressable>
 
           <Pressable
@@ -871,7 +864,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
               source={require('../assets/icon/auto.png')}
               style={styles.buttonIcon}
             />
-            <Text style={styles.buttonText}>自动笔记</Text>
+            <Text style={styles.buttonText}>{t('autoNote')}</Text>
           </Pressable>
 
           <Pressable
@@ -881,7 +874,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
               source={require('../assets/icon/prompt.png')}
               style={styles.buttonIcon}
             />
-            <Text style={styles.buttonText}>提示</Text>
+            <Text style={styles.buttonText}>{t('hint')}</Text>
           </Pressable>
           <Pressable
             style={[styles.buttonContainer]}
@@ -890,7 +883,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
               source={require('../assets/icon/answer.png')}
               style={styles.buttonIcon}
             />
-            <Text style={styles.buttonText}>答案</Text>
+            <Text style={styles.buttonText}>{t('answer')}</Text>
           </Pressable>
         </View>
         <Buttons
@@ -901,7 +894,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           draftMode={draftMode}
         />
         <View style={styles.selectionModeContainer}>
-          <Text style={styles.selectionModeText}>选择模式</Text>
+          <Text style={styles.selectionModeText}>{t('selectMode')}</Text>
           <Switch
             value={selectionMode === 2}
             onValueChange={handleSelectionModeChange}
@@ -937,12 +930,12 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
                 <Pressable
                   onPressIn={handleApplyHint}
                   style={[styles.drawerButton, styles.drawerButtonApply]}>
-                  <Text style={styles.drawerButtonTextApply}>应用</Text>
+                  <Text style={styles.drawerButtonTextApply}>{t('apply')}</Text>
                 </Pressable>
                 <Pressable
                   onPressIn={handleCancelHint}
                   style={[styles.drawerButton, styles.drawerButtonCancel]}>
-                  <Text style={styles.drawerButtonTextCancel}>取消</Text>
+                  <Text style={styles.drawerButtonTextCancel}>{t('cancel')}</Text>
                 </Pressable>
               </View>
             </>

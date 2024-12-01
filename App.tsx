@@ -9,6 +9,7 @@ import {initSounds} from './src/tools/Sound';
 import {useSudokuStore} from './src/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PauseOverlay from './src/components/PauseOverlay';
+import './src/i18n';
 
 function App() {
   const {resultVisible, pauseVisible, setIsHasContinue} = useSudokuStore();

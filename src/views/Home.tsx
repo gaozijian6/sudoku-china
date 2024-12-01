@@ -11,6 +11,7 @@ import Level from './Level';
 import {playSound} from '../tools/Sound';
 import {useSudokuStore} from '../store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useTranslation} from 'react-i18next';
 
 interface HomeProps {
   openSudoku: () => void;
@@ -38,6 +39,8 @@ const Home: React.FC<HomeProps> = ({
     setIsHasContinue,
     setIsLevel,
   } = useSudokuStore();
+  const {t} = useTranslation();
+
   const [showLevel, setShowLevel] = useState(false);
   const handleLevelSelect = (level: string) => {
     openSudoku();
@@ -94,7 +97,7 @@ const Home: React.FC<HomeProps> = ({
           style={styles.startButton}
           disabled={!isHome}
           onPressIn={handleStart}>
-          <Text style={styles.startButtonText}>开始</Text>
+          <Text style={styles.startButtonText}>{t('start')}</Text>
           <Text style={styles.arrowIcon}>❯</Text>
         </Pressable>
         {isHasContinue && (
@@ -102,7 +105,7 @@ const Home: React.FC<HomeProps> = ({
             style={styles.continueButton}
             disabled={!isHome}
             onPressIn={handleContinue}>
-            <Text style={styles.continueButtonText}>继续</Text>
+            <Text style={styles.continueButtonText}>{t('continue')}</Text>
             <Text style={styles.arrowIcon}>❯</Text>
           </Pressable>
         )}
@@ -110,7 +113,7 @@ const Home: React.FC<HomeProps> = ({
           style={styles.customButton}
           disabled={!isHome}
           onPressIn={handleCustom}>
-          <Text style={styles.customButtonText}>自定义</Text>
+          <Text style={styles.customButtonText}>{t('difficulty.custom')}</Text>
           <Text style={styles.arrowIcon}>❯</Text>
         </Pressable>
       </View>

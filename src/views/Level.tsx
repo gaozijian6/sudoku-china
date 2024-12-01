@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {View, Text, StyleSheet, Pressable, Animated} from 'react-native';
 import {DIFFICULTY} from '../constans';
-import {useSudokuStore} from '../store';
+import {useTranslation} from 'react-i18next';
 
 interface LevelCardProps {
   level: string;
@@ -25,6 +25,7 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [showShadow, setShowShadow] = useState(true);
+  const {t} = useTranslation();
 
   useEffect(() => {
     if (visible) {
@@ -101,33 +102,33 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
         ]}
         onTouchEnd={e => e.stopPropagation()}>
         <View style={styles.header}>
-          <Text style={styles.title}>选择难度</Text>
+          <Text style={styles.title}>{t('difficulty.title')}</Text>
           <Pressable onPressIn={handleClose} style={styles.closeButton}>
             <Text style={styles.closeIcon}>×</Text>
           </Pressable>
         </View>
         <LevelCard
-          level={DIFFICULTY.ENTRY}
+          level={t('difficulty.entry')}
           onPressIn={() => handleLevelSelect(DIFFICULTY.ENTRY)}
           style={showShadow ? styles.card : styles.cardNoShadow}
         />
         <LevelCard
-          level={DIFFICULTY.EASY}
+          level={t('difficulty.easy')}
           onPressIn={() => handleLevelSelect(DIFFICULTY.EASY)}
           style={showShadow ? styles.card : styles.cardNoShadow}
         />
         <LevelCard
-          level={DIFFICULTY.MEDIUM}
+          level={t('difficulty.medium')}
           onPressIn={() => handleLevelSelect(DIFFICULTY.MEDIUM)}
           style={showShadow ? styles.card : styles.cardNoShadow}
         />
         <LevelCard
-          level={DIFFICULTY.HARD}
+          level={t('difficulty.hard')}
           onPressIn={() => handleLevelSelect(DIFFICULTY.HARD)}
           style={showShadow ? styles.card : styles.cardNoShadow}
         />
         <LevelCard
-          level={DIFFICULTY.EXTREME}
+          level={t('difficulty.extreme')}
           onPressIn={() => handleLevelSelect(DIFFICULTY.EXTREME)}
           style={showShadow ? styles.card : styles.cardNoShadow}
         />

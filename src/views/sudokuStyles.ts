@@ -210,20 +210,15 @@ const sudokuStyles = StyleSheet.create({
   },
   buttonContainer: {
     alignItems: 'center',
-    width: 50
-  },
-  circleButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: '#d9d9d9',
+    width: 60,
+    overflow: 'hidden',
   },
   buttonText: {
     marginTop: 4,
     fontSize: 12,
     color: '#666666',
+    width: 70,
+    textAlign: 'center',
   },
   buttonIcon: {
     width: 32,
@@ -393,15 +388,6 @@ const sudokuStyles = StyleSheet.create({
     width: 20,
     height: 20,
   },
-  draftModeSwitch: {
-    position: 'absolute',
-    right: -20,
-    top: -10,
-    zIndex: 1,
-  },
-  draftModeSwitchStyle: {
-    transform: [{scaleX: 0.6}, {scaleY: 0.6}],
-  },
   gameInfoDIY: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -415,12 +401,15 @@ const sudokuStyles = StyleSheet.create({
     color: 'rgb(59, 61, 99)',
     flexDirection: 'row',
     alignItems: 'center',
-    width: 120,
+    width: 100,
+    display: 'flex',
+    justifyContent: 'center',
   },
   gameInfoIcon: {
     width: 20,
     height: 20,
     resizeMode: 'contain',
+    marginRight: 5,
   },
   selectionModeContainer: {
     flexDirection: 'row',
