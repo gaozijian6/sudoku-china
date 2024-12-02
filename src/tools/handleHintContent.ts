@@ -147,6 +147,8 @@ export const handleHintContent = (
         });
         break;
       case SOLUTION_METHODS.NAKED_PAIR_ROW:
+        console.log(1);
+        
         setPrompts(target);
         setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -160,6 +162,8 @@ export const handleHintContent = (
         });
         break;
       case SOLUTION_METHODS.NAKED_PAIR_COLUMN:
+        console.log(2);
+        
         setPrompts(target);
         setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
@@ -173,6 +177,8 @@ export const handleHintContent = (
         });
         break;
       case SOLUTION_METHODS.NAKED_PAIR_BOX:
+        console.log(3);
+        
         setPrompts(target);
         setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');

@@ -61,7 +61,7 @@ export const useSudokuBoardDIY = () => {
   //         })),
   //     );
   // });
-  const [standradBoard, setStandradBoard] = useState<CellData[][]>(mockStandradBoard);
+  const [standradBoard, setStandradBoard] = useState<CellData[][]>(mockBoard);
   const [isValidBoard, setIsValidBoard] = useState<boolean>(false);
 
   // 添加清空历史记录的函数

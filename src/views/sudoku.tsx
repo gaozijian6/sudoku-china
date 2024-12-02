@@ -64,6 +64,7 @@ import mediumBoard from '../mock/medium';
 import hardBoard from '../mock/hard';
 import easyBoard from '../mock/easy';
 import ResultView from '../components/ResultOverlay';
+import handleHintMethod from '../tools/handleHintMethod';
 
 interface SudokuProps {
   slideAnim: Animated.Value;
@@ -177,7 +178,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       setErrorCells([]);
       setHintDrawerVisible(false);
       setHintContent('');
-      setHintMethod('');
+        setHintMethod(handleHintMethod('', t));
       setResult(null);
       setPrompts([]);
       setPositions([]);
@@ -187,7 +188,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       hintCount.current = 0;
       startTime.current = 0;
       resetSudokuBoard();
-    }, [resetSudokuBoard, setErrorCount]);
+    }, [resetSudokuBoard, setErrorCount, t]);
 
     const saveData = useCallback(async () => {
       await saveSudokuData();
@@ -272,7 +273,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         setErrorCells(data.errorCells);
         setHintDrawerVisible(data.hintDrawerVisible);
         setHintContent(data.hintContent);
-        setHintMethod(data.hintMethod);
+        setHintMethod(handleHintMethod(data.hintMethod, t));
         setResult(data.result);
         setPrompts(data.prompts);
         setPositions(data.positions);
@@ -283,7 +284,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         startTime.current = data.startTime;
         setDifficulty(data.difficulty);
       }
-    }, [loadSavedData2, setErrorCount, setDifficulty]);
+    }, [loadSavedData2, setErrorCount, t, setDifficulty]);
 
     const generateBoard = useCallback(
       (difficulty: string) => {
@@ -690,7 +691,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         } else if (!checkDraftIsValid(board, answerBoard.current)) {
           const differenceMap = findDifferenceDraft(board, standradBoard);
           setDifferenceMap(differenceMap);
-          setHintMethod('');
+          setHintMethod(handleHintMethod('', t));
           setHintDrawerVisible(true);
           setHintContent('笔记有错误，请先修正');
           return;
@@ -702,7 +703,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
             hintCount.current++;
             setResult(result);
             setSelectedNumber(null);
-            setHintMethod(result.method);
+            setHintMethod(handleHintMethod(result.method, t));
             setHintContent(
               handleHintContent(
                 result,

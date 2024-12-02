@@ -2687,8 +2687,8 @@ export const skyscraper2 = (
                           prompt: [
                             { row: graphNode1_1.row, col: graphNode1_1.col },
                             nodesArr[i][k],
-                            { row: graphNode2_1.row, col: graphNode2_1.col },
                             nodesArr[j][l],
+                            { row: graphNode2_1.row, col: graphNode2_1.col },
                           ],
                           method: SOLUTION_METHODS.SKYSCRAPER2,
                           target: [Number(num)],

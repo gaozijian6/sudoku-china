@@ -164,7 +164,7 @@ const resources = {
         SKYSCRAPER:
           'The four cells at {{positions}} form a conjugate pair. Whether cell R{{row1}}C{{col1}} or cell R{{row2}}C{{col2}} contains {{target}}, candidate {{target}} cannot appear in {{deleteStr}}.',
         SKYSCRAPER2:
-          'Cells R{{row1}}C{{col1}} and R{{row2}}C{{col2}} form one strong link, while R{{row3}}C{{col3}} and R{{row4}}C{{col4}} form another strong link. These are connected by a weak link between R{{row3}}C{{col3}} and R{{row4}}C{{col4}}. If R{{row1}}C{{col1}} is true, then {{deleteStr}} must be false. If R{{row1}}C{{col1}} is false, then R{{row4}}C{{col4}} must be true, which still makes {{deleteStr}} false. Either way, candidate {{target}} cannot appear in {{deleteStr}}.',
+          'Cells R{{row1}}C{{col1}} and R{{row2}}C{{col2}} form one strong link, while R{{row3}}C{{col3}} and R{{row4}}C{{col4}} form another strong link. These are connected by a weak link between R{{row3}}C{{col3}} and R{{row2}}C{{col2}}. If R{{row1}}C{{col1}} is true, then {{deleteStr}} must be false. If R{{row1}}C{{col1}} is false, then R{{row4}}C{{col4}} must be true, which still makes {{deleteStr}} false. Either way, candidate {{target}} cannot appear in {{deleteStr}}.',
         REMOTE_PAIR:
           '{{posStr1}} form a remote pair. These two remote pairs form a strong link through {{posStr2}}. Regardless of which cell in {{posStr1}} is true, candidate {{target}} cannot appear in {{posStr}}.',
         SWORDFISH_ROW:
@@ -260,7 +260,7 @@ const resources = {
       XY_WING: 'xy-wing',
       XYZ_WING: 'xyz-wing',
       SKYSCRAPER: '摩天楼',
-      SKYSCRAPER2: '摩天楼',
+      SKYSCRAPER2: '摩天楼2',
       REMOTE_PAIR: '远程数对',
       COMBINATION_CHAIN: '组合链',
       SWORDFISH_ROW: '三阶鱼',
@@ -347,7 +347,7 @@ const resources = {
         SKYSCRAPER:
           '{{positions}}这四个方格构成共轭链，无论R{{row1}}C{{col1}}还是R{{row2}}C{{col2}}取值为{{target}}，{{deleteStr}}内都不能出现候选数{{target}}',
         SKYSCRAPER2:
-          '单元格R{{row1}}C{{col1}}和R{{row2}}C{{col2}}形成一个强链，单元格R{{row3}}C{{col3}}和R{{row4}}C{{col4}}形成另一个强链，这两个强链通过R{{row3}}C{{col3}}和R{{row4}}C{{col4}}之间的弱链相连。如果R{{row1}}C{{col1}}为真，则{{deleteStr}}必须为假。如果R{{row1}}C{{col1}}为假，则R{{row4}}C{{col4}}必须为真，这仍然会使{{deleteStr}}为假。无论如何，候选数{{target}}都不能出现在{{deleteStr}}内。',
+          '单元格R{{row1}}C{{col1}}和R{{row2}}C{{col2}}形成一个强链，单元格R{{row3}}C{{col3}}和R{{row4}}C{{col4}}形成另一个强链，这两个强链通过R{{row3}}C{{col3}}和R{{row2}}C{{col2}}之间的弱链相连。如果R{{row1}}C{{col1}}为真，则{{deleteStr}}必须为假。如果R{{row1}}C{{col1}}为假，则R{{row4}}C{{col4}}必须为真，这仍然会使{{deleteStr}}为假。无论如何，候选数{{target}}都不能出现在{{deleteStr}}内。',
         REMOTE_PAIR:
           '{{posStr1}}构成远程数对，这两个远程数对通过{{posStr2}}形成强链，无论{{posStr1}}谁为真，{{posStr}}内都不能出现候选数{{target}}',
         SWORDFISH_ROW:

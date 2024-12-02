@@ -52,6 +52,7 @@ import {useSudokuStore} from '../store';
 import TarBarsSudokuDIY from '../components/tarBarsSudokuDIY';
 import {SUDOKU_STATUS} from '../constans';
 import {useTranslation} from 'react-i18next';
+import handleHintMethod from '../tools/handleHintMethod';
 
 interface SudokuDIYProps {
   slideAnim: Animated.Value;
@@ -156,7 +157,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         setErrorCells([]);
         setHintDrawerVisible(false);
         setHintContent('');
-        setHintMethod('');
+        setHintMethod(handleHintMethod('', t));
         setResult(null);
         setPrompts([]);
         setPositions([]);
@@ -167,7 +168,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         time.current = '00:00';
         startTime.current = 0;
       }, 0);
-    }, [isSound, resetSudokuBoard, setErrorCount]);
+    }, [isSound, resetSudokuBoard, setErrorCount, t]);
 
     const saveDataDIY = useCallback(() => {
       const sudokuData = {
@@ -226,7 +227,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         setErrorCells(data.errorCells);
         setHintDrawerVisible(data.hintDrawerVisible);
         setHintContent(data.hintContent);
-        setHintMethod(data.hintMethod);
+        setHintMethod(handleHintMethod(data.hintMethod, t));
         setResult(data.result);
         setPrompts(data.prompts);
         setPositions(data.positions);
@@ -237,7 +238,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         time.current = data.time;
         startTime.current = data.startTime;
       }
-    }, [setErrorCount]);
+    }, [setErrorCount, t]);
 
     const handleErrorDraftAnimation = useCallback(
       (conflictCells: Position[]) => {
@@ -503,14 +504,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       playSound('switch', isSound);
     }, [draftMode, isSound]);
 
-    const handleDraftModeChange = useCallback(
-      (value: boolean) => {
-        setDraftMode(value);
-        playSound('switch', isSound);
-      },
-      [isSound],
-    );
-
     const handleShowCandidates = useCallback(() => {
       playSound('switch', isSound);
       isClickAutoNote.current = true;
@@ -571,7 +564,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             hintCount.current++;
             setResult(result);
             setSelectedNumber(null);
-            setHintMethod(result.method);
+            setHintMethod(handleHintMethod(result.method, t));
             setHintContent(
               handleHintContent(
                 result,
@@ -582,6 +575,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
                 setPositions,
                 applyHintHighlight,
                 updateBoard,
+                t,
               ),
             );
             setHintDrawerVisible(true);
@@ -600,6 +594,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         applyHintHighlight,
         updateBoard,
         selectedCell,
+        t
       ],
     );
 
