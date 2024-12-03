@@ -12,6 +12,7 @@ import {playSound} from '../tools/Sound';
 import {useSudokuStore} from '../store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useTranslation} from 'react-i18next';
+import { generateBoard } from '../tools';
 
 interface HomeProps {
   openSudoku: () => void;
@@ -38,11 +39,13 @@ const Home: React.FC<HomeProps> = ({
     isHasContinue,
     setIsHasContinue,
     setIsLevel,
+    initializeBoard2,
   } = useSudokuStore();
   const {t} = useTranslation();
 
   const [showLevel, setShowLevel] = useState(false);
   const handleLevelSelect = (level: string) => {
+    generateBoard(level, initializeBoard2);
     openSudoku();
     setDifficulty(level);
     setIsHome(false);
@@ -85,12 +88,12 @@ const Home: React.FC<HomeProps> = ({
   return (
     <View style={[styles.container]}>
       <View style={styles.tarbar}>
-        <Pressable onPressIn={openSetting}>
+        {/* <Pressable onPressIn={openSetting}>
           <Image
             source={require('../assets/icon/setting.png')}
             style={styles.logo}
           />
-        </Pressable>
+        </Pressable> */}
       </View>
       <View style={styles.buttonContainer}>
         <Pressable

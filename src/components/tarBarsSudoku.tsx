@@ -74,14 +74,14 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
               style={styles.pauseIcon}
             />
           </Pressable>
-          <Pressable
+          {/* <Pressable
             onPressIn={openSetting}
             style={styles.settingIconContainer}>
             <Image
               source={require('../assets/icon/setting.png')}
               style={styles.settingIcon}
             />
-          </Pressable>
+          </Pressable> */}
         </View>
       </>
     </View>

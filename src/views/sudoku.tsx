@@ -47,7 +47,6 @@ import {
 import {useTranslation} from 'react-i18next';
 import type {CandidateMap, CellData, Graph, Position} from '../tools';
 import type {DifferenceMap, Result} from '../tools/solution';
-import {DIFFICULTY} from '../constans';
 import styles from './sudokuStyles';
 import {handleHintContent} from '../tools/handleHintContent';
 import Cell from '../components/SudokuCell';
@@ -58,11 +57,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSudokuStore} from '../store';
 import TarBarsSudoku from '../components/tarBarsSudoku';
 
-import extremeBoard from '../mock/extreme';
-import entryBoard from '../mock/entry';
-import mediumBoard from '../mock/medium';
-import hardBoard from '../mock/hard';
-import easyBoard from '../mock/easy';
 import ResultView from '../components/ResultOverlay';
 import handleHintMethod from '../tools/handleHintMethod';
 
@@ -163,9 +157,14 @@ const Sudoku: React.FC<SudokuProps> = memo(
       setIsHasContinue,
       setDifficulty,
       isLevel,
-      isSudoku,
       resultVisible,
+      setInitializeBoard2,
     } = useSudokuStore();
+
+    useEffect(() => {
+      setInitializeBoard2(initializeBoard2);
+    }, [initializeBoard2, setInitializeBoard2]);
+
     const resetSudoku = useCallback(() => {
       setSelectedNumber(1);
       lastSelectedNumber.current = null;
@@ -234,12 +233,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       difficulty,
     ]);
 
-    useEffect(() => {
-      if (isSudoku) {
-        generateBoard(difficulty);
-      }
-    }, [difficulty]);
-
     const setSuccessResult = useCallback(
       (time: string, errorCount: number, hintCount: number) => {
         setResultVisible(true);
@@ -285,50 +278,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
         setDifficulty(data.difficulty);
       }
     }, [loadSavedData2, setErrorCount, t, setDifficulty]);
-
-    const generateBoard = useCallback(
-      (difficulty: string) => {
-        let random: number;
-        switch (difficulty) {
-          case DIFFICULTY.ENTRY:
-            random = Math.floor(Math.random() * entryBoard.length);
-            initializeBoard2(
-              entryBoard[random].puzzle,
-              entryBoard[random].solution,
-            );
-            break;
-          case DIFFICULTY.EASY:
-            random = Math.floor(Math.random() * easyBoard.length);
-            initializeBoard2(
-              easyBoard[random].puzzle,
-              easyBoard[random].solution,
-            );
-            break;
-          case DIFFICULTY.MEDIUM:
-            random = Math.floor(Math.random() * mediumBoard.length);
-            initializeBoard2(
-              mediumBoard[random].puzzle,
-              mediumBoard[random].solution,
-            );
-            break;
-          case DIFFICULTY.HARD:
-            random = Math.floor(Math.random() * hardBoard.length);
-            initializeBoard2(
-              hardBoard[random].puzzle,
-              hardBoard[random].solution,
-            );
-            break;
-          case DIFFICULTY.EXTREME:
-            random = Math.floor(Math.random() * extremeBoard.length);
-            initializeBoard2(
-              extremeBoard[106].puzzle,
-              extremeBoard[106].solution,
-            );
-            break;
-        }
-      },
-      [initializeBoard2],
-    );
 
     const playSuccessSound = useCallback(
       (board: CellData[][], row: number, col: number) => {
@@ -1052,7 +1001,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
         {resultVisible && (
           <ResultView
             onBack={closeSudoku}
-            generateBoard={generateBoard}
             resetSudoku={resetSudoku}
           />
         )}

@@ -1,3 +1,9 @@
+import {DIFFICULTY} from '../constans';
+import easyBoard from '../mock/easy';
+import entryBoard from '../mock/entry';
+import extremeBoard from '../mock/extreme';
+import hardBoard from '../mock/hard';
+import mediumBoard from '../mock/medium';
 import {isUnitStrongLink, hiddenSingle} from './solution';
 import {NativeModules} from 'react-native';
 
@@ -296,9 +302,9 @@ export const solve3 = async (board: CellData[][]) => {
       }
     }
   }
-  const result = await ComputeModule.solveSudoku(standardBoard,standardBoard);
-  
-  if(!result){
+  const result = await ComputeModule.solveSudoku(standardBoard, standardBoard);
+
+  if (!result) {
     return null;
   }
   return result;
@@ -540,3 +546,38 @@ export interface CandidateMap {
     all: Candidate[];
   };
 }
+
+export const generateBoard = (
+  difficulty: string,
+  initializeBoard2: (puzzle: string, answer: string) => void,
+) => {
+  let random: number;
+  switch (difficulty) {
+    case DIFFICULTY.ENTRY:
+      random = Math.floor(Math.random() * entryBoard.length);
+      initializeBoard2(entryBoard[random].puzzle, entryBoard[random].solution);
+      break;
+    case DIFFICULTY.EASY:
+      random = Math.floor(Math.random() * easyBoard.length);
+      initializeBoard2(easyBoard[random].puzzle, easyBoard[random].solution);
+      break;
+    case DIFFICULTY.MEDIUM:
+      random = Math.floor(Math.random() * mediumBoard.length);
+      initializeBoard2(
+        mediumBoard[random].puzzle,
+        mediumBoard[random].solution,
+      );
+      break;
+    case DIFFICULTY.HARD:
+      random = Math.floor(Math.random() * hardBoard.length);
+      initializeBoard2(hardBoard[random].puzzle, hardBoard[random].solution);
+      break;
+    case DIFFICULTY.EXTREME:
+      random = Math.floor(Math.random() * extremeBoard.length);
+      initializeBoard2(
+        extremeBoard[random].puzzle,
+        extremeBoard[random].solution,
+      );
+      break;
+  }
+};

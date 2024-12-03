@@ -36,6 +36,8 @@ interface SudokuState {
   setIsHasContinue: (value: boolean) => void;
   isLevel: boolean;
   setIsLevel: (value: boolean) => void;
+  initializeBoard2: (puzzle: string, answer: string) => void;
+  setInitializeBoard2: (fn: (puzzle: string, answer: string) => void) => void;
 }
 
 export const useSudokuStore = create<SudokuState>(set => ({
@@ -71,6 +73,8 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setIsHasContinue: value => set({isHasContinue: value}),
   isLevel: false,
   setIsLevel: value => set({isLevel: value}),
+  initializeBoard2: () => {},
+  setInitializeBoard2: (fn) => set({ initializeBoard2: fn }),
   
   start: (timeOffset: number) =>
     set(state => {
