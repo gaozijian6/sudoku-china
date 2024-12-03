@@ -1,20 +1,16 @@
 import React, {useEffect, useCallback} from 'react';
 import {View, Text, Pressable, StyleSheet, Animated} from 'react-native';
 import {useSudokuStore} from '../store';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
+import {generateBoard} from '../tools';
 
 interface ResultProps {
   onBack: () => void;
-  generateBoard: (difficulty: string) => void;
   resetSudoku: () => void;
 }
 
-const ResultView: React.FC<ResultProps> = ({
-  onBack,
-  generateBoard,
-  resetSudoku,
-}) => {
-  const { t } = useTranslation();
+const ResultView: React.FC<ResultProps> = ({onBack, resetSudoku}) => {
+  const {t} = useTranslation();
   const scaleAnim = new Animated.Value(0);
   const {
     time,
@@ -31,6 +27,7 @@ const ResultView: React.FC<ResultProps> = ({
     setTime,
     setTimeOffset,
     start,
+    initializeBoard2,
   } = useSudokuStore();
   useEffect(() => {
     Animated.spring(scaleAnim, {
@@ -62,7 +59,7 @@ const ResultView: React.FC<ResultProps> = ({
   const handleNext = useCallback(() => {
     setResultVisible(false);
     resetSudoku();
-    generateBoard(difficulty);
+    generateBoard(difficulty, initializeBoard2);
     setIsHasContinue(true);
     setIsSudoku(true);
     setIsContinue(false);
@@ -71,9 +68,9 @@ const ResultView: React.FC<ResultProps> = ({
     start(0);
   }, [
     setResultVisible,
-    generateBoard,
-    difficulty,
     resetSudoku,
+    difficulty,
+    initializeBoard2,
     setIsHasContinue,
     setIsSudoku,
     setIsContinue,
@@ -106,7 +103,7 @@ const ResultView: React.FC<ResultProps> = ({
             <Text style={styles.rightText}>{errorCount}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.leftText}>{t('hints')}:</Text>
+            <Text style={styles.leftText}>{t('hintCount')}:</Text>
             <Text style={styles.rightText}>{hintCount}</Text>
           </View>
         </View>

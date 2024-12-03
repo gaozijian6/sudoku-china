@@ -88,6 +88,7 @@ const resources = {
       congratulations: 'Congratulations',
       duration: 'Duration',
       mistakes: 'Mistakes',
+      hintCount: 'Hints',
       hints: {
         SINGLE_CANDIDATE:
           'Notice that cell R{{row}}C{{col}} has only one candidate {{target}}, so this cell must be {{target}}',
@@ -271,6 +272,7 @@ const resources = {
       TRIAL_AND_ERROR: '试错法',
       duration: '用时',
       mistakes: '错误次数',
+      hintCount: '提示次数',
       hints: {
         SINGLE_CANDIDATE:
           '注意到单元格R{{row}}C{{col}}只剩{{target}}一个候选数，所以可以确定该单元格的值为{{target}}',
