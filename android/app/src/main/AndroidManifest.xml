@@ -1,4 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE"/>
@@ -27,5 +29,10 @@
       <meta-data
           android:name="com.google.android.gms.version"
           android:value="@integer/google_play_services_version" />
+      <provider
+          android:name="com.google.firebase.provider.FirebaseInitProvider"
+          android:authorities="${applicationId}.firebaseinitprovider"
+          android:exported="false"
+          android:initOrder="100" />
     </application>
 </manifest>

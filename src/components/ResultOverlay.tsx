@@ -20,7 +20,6 @@ const ResultView: React.FC<ResultProps> = ({onBack, resetSudoku}) => {
     setIsHasContinue,
     setIsSudoku,
     setIsHome,
-    setDifficulty,
     setIsLevel,
     difficulty,
     setIsContinue,
@@ -44,7 +43,6 @@ const ResultView: React.FC<ResultProps> = ({onBack, resetSudoku}) => {
     setIsHasContinue(false);
     setIsSudoku(false);
     setIsHome(true);
-    setDifficulty('');
     setIsLevel(false);
   }, [
     onBack,
@@ -52,7 +50,6 @@ const ResultView: React.FC<ResultProps> = ({onBack, resetSudoku}) => {
     setIsHasContinue,
     setIsSudoku,
     setIsHome,
-    setDifficulty,
     setIsLevel,
   ]);
 

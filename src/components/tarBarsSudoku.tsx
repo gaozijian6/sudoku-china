@@ -15,7 +15,6 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
 }) => {
   const {
     setIsHome,
-    setDifficulty,
     setPauseVisible,
     pauseVisible,
     setTime,
@@ -25,19 +24,18 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
     stop,
     setIsLevel,
   } = useSudokuStore();
-  const backToHome = useCallback(() => {
-    saveData();
+  const backToHome = useCallback(async () => {
+    await saveData();
     onBack();
     stop();
     setTime('00:00');
     setTimeOffset(0);
     setTimeout(() => {
-      setDifficulty('');
       setIsHome(true);
       setIsSudoku(false);
       setIsContinue(false);
       setIsLevel(false);
-    }, 600);
+    }, 0);
   }, [
     onBack,
     stop,
@@ -45,7 +43,6 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
     setTimeOffset,
     setIsLevel,
     saveData,
-    setDifficulty,
     setIsHome,
     setIsSudoku,
     setIsContinue,

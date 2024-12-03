@@ -9,7 +9,6 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
   const handleGoogleLogin = async () => {
     const user = await signInWithGoogle();
-    console.log(user);
     if(user) {
       setIsLoggedIn(true);
     }

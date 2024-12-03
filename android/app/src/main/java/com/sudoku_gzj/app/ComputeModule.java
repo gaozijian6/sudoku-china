@@ -1,4 +1,4 @@
-package com.sudoku.app;
+package com.sudoku_gzj.app;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;

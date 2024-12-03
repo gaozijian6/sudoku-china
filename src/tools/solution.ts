@@ -3362,11 +3362,6 @@ export const wxyzWing = (
                 commonCandidate = b2 as number;
               }
 
-              if (x == 2 && y == 5 && pivot.col == 7 && w == 6 && z == 9) {
-                console.log(unit, unit2);
-
-                console.log(commonUnits2);
-              }
               const position: Position[] = [];
               for (const commonUnit2 of commonUnits2) {
                 if (
