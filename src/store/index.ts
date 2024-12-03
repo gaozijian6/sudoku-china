@@ -38,6 +38,8 @@ interface SudokuState {
   setIsLevel: (value: boolean) => void;
   initializeBoard2: (puzzle: string, answer: string) => void;
   setInitializeBoard2: (fn: (puzzle: string, answer: string) => void) => void;
+  loadData: () => void;
+  setLoadData: (fn: () => void) => void;
 }
 
 export const useSudokuStore = create<SudokuState>(set => ({
@@ -75,6 +77,9 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setIsLevel: value => set({isLevel: value}),
   initializeBoard2: () => {},
   setInitializeBoard2: (fn) => set({ initializeBoard2: fn }),
+  loadData: () => {},
+  setLoadData: (fn) => set({ loadData: fn }),
+
   
   start: (timeOffset: number) =>
     set(state => {

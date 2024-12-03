@@ -594,7 +594,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         applyHintHighlight,
         updateBoard,
         selectedCell,
-        t
+        t,
       ],
     );
 
@@ -728,11 +728,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     }, []);
 
     useEffect(() => {
-      if (isDIY) {
-        loadSavedData();
-        loadSavedData2();
-      }
-    }, [isDIY]);
+      loadSavedData();
+      loadSavedData2();
+    }, []);
 
     useEffect(() => {
       setSudokuStatus(SUDOKU_STATUS.VOID);
@@ -930,7 +928,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
                 <Pressable
                   onPressIn={handleCancelHint}
                   style={[styles.drawerButton, styles.drawerButtonCancel]}>
-                  <Text style={styles.drawerButtonTextCancel}>{t('cancel')}</Text>
+                  <Text style={styles.drawerButtonTextCancel}>
+                    {t('cancel')}
+                  </Text>
                 </Pressable>
               </View>
             </>

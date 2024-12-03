@@ -117,6 +117,7 @@ export const useSudokuBoard = () => {
     const sudokuData = await AsyncStorage.getItem('sudokuData2');
     if (sudokuData) {
       const data = JSON.parse(sudokuData);
+      console.log(data.board);
       setBoard(data.board);
       answerBoard.current = data.answerBoard; 
       history.current = data.history;

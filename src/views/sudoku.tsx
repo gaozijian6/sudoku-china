@@ -87,6 +87,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       loadSavedData2,
       counts,
       initializeBoard2,
+      isHasContinue,
     } = useSudokuBoard();
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
@@ -159,6 +160,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
       isLevel,
       resultVisible,
       setInitializeBoard2,
+      setLoadData,
+      isContinue,
     } = useSudokuStore();
 
     useEffect(() => {
@@ -806,6 +809,10 @@ const Sudoku: React.FC<SudokuProps> = memo(
     }, []);
 
     useEffect(() => {
+      if (isContinue) {
+        loadSavedData();
+        return;
+      }
       if (isLevel) {
         setTimeout(() => {
           resetSudoku();
@@ -813,7 +820,11 @@ const Sudoku: React.FC<SudokuProps> = memo(
       } else {
         loadSavedData();
       }
-    }, [isLevel]);
+    }, [isLevel, isContinue]);
+
+    useEffect(() => {
+      setLoadData(loadSavedData);
+    }, [loadSavedData]);
 
     return (
       <Animated.View

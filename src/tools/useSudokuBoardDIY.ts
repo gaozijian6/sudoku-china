@@ -16,8 +16,8 @@ import mockStandradBoard from '../views/standradBoard';
 
 // 创建一个新的 hook 来管理棋盘状态和历史
 export const useSudokuBoardDIY = () => {
-  // const [board, setBoard] = useState<CellData[][]>(initialBoard);
-  const [board, setBoard] = useState<CellData[][]>(mockBoard);
+  const [board, setBoard] = useState<CellData[][]>(initialBoard);
+  // const [board, setBoard] = useState<CellData[][]>(mockBoard);
   const [counts, setCounts] = useState<number>(0);
   const countsSync = useRef<number>(0);
   const history = useRef<BoardHistoryDIY[]>([
@@ -48,20 +48,20 @@ export const useSudokuBoardDIY = () => {
   const [graph, setGraph] = useState<Graph>(
     createGraph(initialBoard, candidateMap),
   );
-  // const [standradBoard, setStandradBoard] = useState<CellData[][]>(() => {
-  //   return Array(9)
-  //     .fill(null)
-  //     .map(() =>
-  //       Array(9)
-  //         .fill(null)
-  //         .map(() => ({
-  //           value: null,
-  //           draft: Array.from({length: 9}, (_, i) => i + 1),
-  //           isGiven: false,
-  //         })),
-  //     );
-  // });
-  const [standradBoard, setStandradBoard] = useState<CellData[][]>(mockBoard);
+  const [standradBoard, setStandradBoard] = useState<CellData[][]>(() => {
+    return Array(9)
+      .fill(null)
+      .map(() =>
+        Array(9)
+          .fill(null)
+          .map(() => ({
+            value: null,
+            draft: Array.from({length: 9}, (_, i) => i + 1),
+            isGiven: false,
+          })),
+      );
+  });
+  // const [standradBoard, setStandradBoard] = useState<CellData[][]>(mockBoard);
   const [isValidBoard, setIsValidBoard] = useState<boolean>(false);
 
   // 添加清空历史记录的函数
@@ -180,6 +180,7 @@ export const useSudokuBoardDIY = () => {
     const sudokuData = await AsyncStorage.getItem('sudokuDataDIY2');
     if (sudokuData) {
       const data = JSON.parse(sudokuData);
+      console.log(data);
       setBoard(data.board);
       history.current = data.history;
       setCurrentStep(data.currentStep);
