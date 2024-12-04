@@ -730,7 +730,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         }
       });
       return () => subscription.remove();
-    }, []);
+    }, [isDIY, saveDataDIY]);
 
     useEffect(() => {
       loadSavedData();

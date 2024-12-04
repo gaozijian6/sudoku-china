@@ -87,7 +87,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       loadSavedData2,
       counts,
       initializeBoard2,
-      isSudoku,
     } = useSudokuBoard();
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
@@ -162,6 +161,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       setInitializeBoard2,
       setLoadData,
       isContinue,
+      isSudoku,
     } = useSudokuStore();
 
     useEffect(() => {
@@ -645,7 +645,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           setDifferenceMap(differenceMap);
           setHintMethod(handleHintMethod('', t));
           setHintDrawerVisible(true);
-          setHintContent('笔记有错误，请先修正');
+          setHintContent(t('errorDraft'));
           return;
         }
         let result: Result | null = null;
@@ -806,7 +806,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         }
       });
       return () => subscription.remove();
-    }, []);
+    }, [isSudoku, saveData]);
 
     useEffect(() => {
       if (isContinue) {

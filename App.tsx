@@ -10,6 +10,7 @@ import {useSudokuStore} from './src/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PauseOverlay from './src/components/PauseOverlay';
 import './src/i18n';
+import {AdEventType, AppOpenAd, TestIds} from 'react-native-google-mobile-ads';
 
 function App() {
   const {resultVisible, pauseVisible, setIsHasContinue} = useSudokuStore();
@@ -79,10 +80,38 @@ function App() {
   }, [settingSlideAnim]);
 
   useEffect(() => {
+    const loadAppOpenAd = async () => {
+      const appOpenAd = AppOpenAd.createForAdRequest(
+        TestIds.APP_OPEN,
+        {
+          requestNonPersonalizedAdsOnly: true,
+          keywords: ['game', 'puzzle', 'sudoku'],
+        },
+      );
+
+      appOpenAd.addAdEventListener(AdEventType.LOADED, async () => {
+        console.log('开屏广告加载成功');
+        try {
+          await appOpenAd.show();
+          console.log('开屏广告展示成功');
+        } catch (error) {
+          console.log('开屏广告展示失败:', error);
+        }
+      });
+      
+      appOpenAd.addAdEventListener(AdEventType.ERROR, error => {
+        console.log('开屏广告错误:', error);
+      });
+
+      await appOpenAd.load();
+    };
+
     initSounds();
     AsyncStorage.getItem('isHasContinue').then(value => {
       setIsHasContinue(value === 'true');
     });
+    
+    loadAppOpenAd();
   }, []);
 
   return (

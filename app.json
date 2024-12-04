@@ -1,4 +1,7 @@
 {
   "name": "SudokuApp",
-  "displayName": "SudokuApp"
+  "displayName": "SudokuApp",
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-2981436674907454~4808996246"
+  }
 }

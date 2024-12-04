@@ -401,7 +401,7 @@ const sudokuStyles = StyleSheet.create({
     color: 'rgb(59, 61, 99)',
     flexDirection: 'row',
     alignItems: 'center',
-    width: 100,
+    width: 150,
     display: 'flex',
     justifyContent: 'center',
   },

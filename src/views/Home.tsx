@@ -1,17 +1,11 @@
-import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  StatusBar,
-  StyleSheet,
-} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, Pressable, StatusBar, StyleSheet} from 'react-native';
 import Level from './Level';
 import {playSound} from '../tools/Sound';
 import {useSudokuStore} from '../store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useTranslation} from 'react-i18next';
-import { generateBoard } from '../tools';
+import {generateBoard} from '../tools';
 
 interface HomeProps {
   openSudoku: () => void;
@@ -39,6 +33,7 @@ const Home: React.FC<HomeProps> = ({
     setIsHasContinue,
     setIsLevel,
     initializeBoard2,
+    isDIY,
   } = useSudokuStore();
   const {t} = useTranslation();
 
@@ -79,9 +74,9 @@ const Home: React.FC<HomeProps> = ({
 
   const handleCustom = () => {
     playSound('switch', isSound);
-    openSudokuDIY();
     setIsHome(false);
     setIsDIY(true);
+    openSudokuDIY();
   };
 
   return (
