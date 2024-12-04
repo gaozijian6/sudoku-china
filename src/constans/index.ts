@@ -120,4 +120,5 @@ export const SUDOKU_STATUS = {
   SOLVING: 'SOLVING',
   SOLVED: 'SOLVED',
   ILLEGAL: 'ILLEGAL',
+  INCOMPLETE: 'INCOMPLETE',
 } as const;

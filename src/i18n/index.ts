@@ -89,6 +89,7 @@ const resources = {
       duration: 'Duration',
       mistakes: 'Mistakes',
       hintCount: 'Hints',
+      incomplete: 'Incomplete Sudoku',
       hints: {
         SINGLE_CANDIDATE:
           'Notice that cell R{{row}}C{{col}} has only one candidate {{target}}, so this cell must be {{target}}',
@@ -224,6 +225,7 @@ const resources = {
       solving: '求解中...',
       illegal: '数独不合法',
       answer: '答案',
+      incomplete: '数独不完整',
       CHECK_CANDIDATE: '候选数检查',
       SINGLE_CANDIDATE: '唯一候选数',
       HIDDEN_SINGLE_ROW: '隐性唯一数',

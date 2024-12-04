@@ -551,6 +551,10 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
     const handleHint = useCallback(
       async (board: CellData[][]) => {
+        if (countsSync.current < 17) {
+          setSudokuStatus(SUDOKU_STATUS.INCOMPLETE);
+          return;
+        }
         if (!isClickAutoNote.current) {
           const currentBoard = deepCopyBoard(standradBoard);
           handleShowCandidates();
@@ -586,15 +590,16 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         }
       },
       [
+        countsSync,
         standradBoard,
         handleShowCandidates,
         candidateMap,
         graph,
+        t,
         prompts,
         applyHintHighlight,
         updateBoard,
         selectedCell,
-        t,
       ],
     );
 
@@ -776,13 +781,21 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
                 />
                 <Text style={styles.gameInfoText}>{t('solving')}</Text>
               </View>
-            ) : (
+            ) : sudokuStatus === SUDOKU_STATUS.ILLEGAL ? (
               <View style={styles.gameInfoTextDIY}>
                 <Image
                   source={require('../assets/icon/illegal.png')}
                   style={styles.gameInfoIcon}
                 />
                 <Text style={styles.gameInfoText}>{t('illegal')}</Text>
+              </View>
+            ) : (
+              <View style={styles.gameInfoTextDIY}>
+                <Image
+                  source={require('../assets/icon/illegal.png')}
+                  style={styles.gameInfoIcon}
+                />
+                <Text style={styles.gameInfoText}>{t('incomplete')}</Text>
               </View>
             ))}
         </View>
