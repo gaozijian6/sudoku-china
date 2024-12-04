@@ -87,7 +87,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       loadSavedData2,
       counts,
       initializeBoard2,
-      isHasContinue,
+      isSudoku,
     } = useSudokuBoard();
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
@@ -801,7 +801,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
     useEffect(() => {
       const subscription = AppState.addEventListener('change', nextAppState => {
-        if (nextAppState === 'background') {
+        if (nextAppState === 'background' && isSudoku) {
           saveData();
         }
       });

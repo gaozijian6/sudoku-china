@@ -12,7 +12,7 @@ import PauseOverlay from './src/components/PauseOverlay';
 import './src/i18n';
 
 function App() {
-  const {resultVisible, pauseVisible, setIsHasContinue, loadData} = useSudokuStore();
+  const {resultVisible, pauseVisible, setIsHasContinue} = useSudokuStore();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const slideAnim1 = useRef(new Animated.Value(800)).current;
   const slideAnim2 = useRef(new Animated.Value(800)).current;
@@ -79,7 +79,6 @@ function App() {
   }, [settingSlideAnim]);
 
   useEffect(() => {
-    console.log('App');
     initSounds();
     AsyncStorage.getItem('isHasContinue').then(value => {
       setIsHasContinue(value === 'true');

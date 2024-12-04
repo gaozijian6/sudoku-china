@@ -720,7 +720,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
     useEffect(() => {
       const subscription = AppState.addEventListener('change', nextAppState => {
-        if (nextAppState === 'background') {
+        if (nextAppState === 'background' && isDIY) {
           saveDataDIY();
         }
       });

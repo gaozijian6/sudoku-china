@@ -180,7 +180,6 @@ export const useSudokuBoardDIY = () => {
     const sudokuData = await AsyncStorage.getItem('sudokuDataDIY2');
     if (sudokuData) {
       const data = JSON.parse(sudokuData);
-      console.log(data);
       setBoard(data.board);
       history.current = data.history;
       setCurrentStep(data.currentStep);

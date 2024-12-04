@@ -5,7 +5,6 @@ import {
   Pressable,
   StatusBar,
   StyleSheet,
-  Image,
 } from 'react-native';
 import Level from './Level';
 import {playSound} from '../tools/Sound';
