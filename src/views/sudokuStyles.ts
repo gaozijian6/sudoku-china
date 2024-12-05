@@ -206,12 +206,15 @@ const sudokuStyles = StyleSheet.create({
     justifyContent: 'space-evenly',
     paddingHorizontal: 16,
     position: 'relative',
-    top: -25,
+    top: -30,
   },
   buttonContainer: {
     alignItems: 'center',
     width: 60,
+    height: 60,
     overflow: 'hidden',
+    display: 'flex',
+    justifyContent: 'center',
   },
   buttonText: {
     marginTop: 4,

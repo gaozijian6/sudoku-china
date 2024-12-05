@@ -56,9 +56,10 @@ import {playSound} from '../tools/Sound';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSudokuStore} from '../store';
 import TarBarsSudoku from '../components/tarBarsSudoku';
-
 import ResultView from '../components/ResultOverlay';
 import handleHintMethod from '../tools/handleHintMethod';
+import WatchIcon from '../components/WatchIcon';
+import rewardedVideo from '../tools/RewardedVideo';
 
 interface SudokuProps {
   slideAnim: Animated.Value;
@@ -112,6 +113,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
     const [prompts, setPrompts] = useState<number[]>([]);
     const [positions, setPositions] = useState<number[]>([]);
     const [eraseEnabled, setEraseEnabled] = useState<boolean>(false);
+    const [watchIconVisible, setWatchIconVisible] = useState<boolean>(false);
+    
 
     const isClickAutoNote = useRef<boolean>(false);
     const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
@@ -179,7 +182,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       setErrorCells([]);
       setHintDrawerVisible(false);
       setHintContent('');
-        setHintMethod(handleHintMethod('', t));
+      setHintMethod(handleHintMethod('', t));
       setResult(null);
       setPrompts([]);
       setPositions([]);
@@ -634,6 +637,12 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
     const handleHint = useCallback(
       async (board: CellData[][]) => {
+        if (watchIconVisible) {
+          await rewardedVideo.show();
+          rewardedVideo.load();
+        }
+        setWatchIconVisible(rewardedVideo.isReady());
+
         if (!isClickAutoNote.current) {
           const currentBoard = deepCopyBoard(standradBoard);
           handleShowCandidates();
@@ -676,18 +685,23 @@ const Sudoku: React.FC<SudokuProps> = memo(
         }
       },
       [
+        watchIconVisible,
         answerBoard,
         standradBoard,
         handleShowCandidates,
+        t,
         candidateMap,
         graph,
         prompts,
         applyHintHighlight,
         updateBoard,
         selectedCell,
-        t,
       ],
     );
+
+    useEffect(() => {
+      rewardedVideo.setCallback(setWatchIconVisible);
+    }, [setWatchIconVisible]);
 
     const handleApplyHint = useCallback(() => {
       if (Object.keys(differenceMap).length > 0) {
@@ -946,6 +960,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           <Pressable
             style={[styles.buttonContainer]}
             onPressIn={() => handleHint(board)}>
+            <WatchIcon top={0} right={10} visible={watchIconVisible} />
             <Image
               source={require('../assets/icon/prompt.png')}
               style={styles.buttonIcon}
@@ -1009,10 +1024,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           </View>
         </Modal>
         {resultVisible && (
-          <ResultView
-            onBack={closeSudoku}
-            resetSudoku={resetSudoku}
-          />
+          <ResultView onBack={closeSudoku} resetSudoku={resetSudoku} />
         )}
       </Animated.View>
     );

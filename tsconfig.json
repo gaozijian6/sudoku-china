@@ -2,7 +2,8 @@
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
     "jsx": "react-native",
-    "lib": ["DOM", "DOM.Iterable", "ESNext", "WebWorker"]
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "WebWorker"],
+    "forceConsistentCasingInFileNames": false
   },
   "files": [
     "src/types/audio.d.ts"

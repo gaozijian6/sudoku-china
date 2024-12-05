@@ -80,33 +80,33 @@ function App() {
   }, [settingSlideAnim]);
 
   useEffect(() => {
-    const loadAppOpenAd = async () => {
-      const appOpenAd = AppOpenAd.createForAdRequest(
-        TestIds.APP_OPEN,
-        {
-          requestNonPersonalizedAdsOnly: true,
-          keywords: ['game', 'puzzle', 'sudoku'],
-        },
-      );
+    // const loadAppOpenAd = async () => {
+    //   const appOpenAd = AppOpenAd.createForAdRequest(
+    //     TestIds.APP_OPEN,
+    //     {
+    //       requestNonPersonalizedAdsOnly: true,
+    //       keywords: ['game', 'puzzle', 'sudoku'],
+    //     },
+    //   );
 
-      appOpenAd.addAdEventListener(AdEventType.LOADED, async () => {
-        try {
-          await appOpenAd.show();
-          console.log('开屏广告展示成功');
-        } catch (error) {
-          console.log('开屏广告展示失败:', error);
-        }
-      });
+    //   appOpenAd.addAdEventListener(AdEventType.LOADED, async () => {
+    //     try {
+    //       await appOpenAd.show();
+    //       console.log('开屏广告展示成功');
+    //     } catch (error) {
+    //       console.log('开屏广告展示失败:', error);
+    //     }
+    //   });
 
-      await appOpenAd.load();
-    };
+    //   await appOpenAd.load();
+    // };
 
     initSounds();
     AsyncStorage.getItem('isHasContinue').then(value => {
       setIsHasContinue(value === 'true');
     });
     
-    loadAppOpenAd();
+    // loadAppOpenAd();
   }, []);
 
   return (
