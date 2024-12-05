@@ -739,7 +739,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
     useEffect(() => {
       setSudokuStatus(SUDOKU_STATUS.VOID);
-    }, [countsSync.current]);
+    }, []);
 
     return (
       <Animated.View

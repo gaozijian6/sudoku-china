@@ -33,7 +33,6 @@ const Home: React.FC<HomeProps> = ({
     setIsHasContinue,
     setIsLevel,
     initializeBoard2,
-    isDIY,
   } = useSudokuStore();
   const {t} = useTranslation();
 

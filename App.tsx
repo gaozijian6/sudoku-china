@@ -90,17 +90,12 @@ function App() {
       );
 
       appOpenAd.addAdEventListener(AdEventType.LOADED, async () => {
-        console.log('开屏广告加载成功');
         try {
           await appOpenAd.show();
           console.log('开屏广告展示成功');
         } catch (error) {
           console.log('开屏广告展示失败:', error);
         }
-      });
-      
-      appOpenAd.addAdEventListener(AdEventType.ERROR, error => {
-        console.log('开屏广告错误:', error);
       });
 
       await appOpenAd.load();

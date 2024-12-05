@@ -149,7 +149,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       difficulty,
       setResultVisible,
       setTime,
-      // time,
       errorCount,
       setErrorCount,
       setHintCount,
@@ -824,7 +823,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
     useEffect(() => {
       setLoadData(loadSavedData);
-    }, [loadSavedData]);
+    }, [loadSavedData, setLoadData]);
 
     return (
       <Animated.View
