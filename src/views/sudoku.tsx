@@ -638,10 +638,13 @@ const Sudoku: React.FC<SudokuProps> = memo(
     const handleHint = useCallback(
       async (board: CellData[][]) => {
         if (watchIconVisible) {
-          await rewardedVideo.show();
+          setWatchIconVisible(false);
+          rewardedVideo.show();
           rewardedVideo.load();
         }
-        setWatchIconVisible(rewardedVideo.isReady());
+        if (!rewardedVideo.isReady()) {
+          rewardedVideo.load();
+        }
 
         if (!isClickAutoNote.current) {
           const currentBoard = deepCopyBoard(standradBoard);
@@ -698,10 +701,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
         selectedCell,
       ],
     );
-
-    useEffect(() => {
-      rewardedVideo.setCallback(setWatchIconVisible);
-    }, [setWatchIconVisible]);
 
     const handleApplyHint = useCallback(() => {
       if (Object.keys(differenceMap).length > 0) {

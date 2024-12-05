@@ -9,7 +9,6 @@ class RewardedVideo {
   private isLoaded: boolean = false;
   private rewardedAd: RewardedAd;
   private adUnitId: string = TestIds.REWARDED; // 替换为你的广告ID
-  private callback?: (value: boolean) => void;
   private constructor() {
     this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
     this.initListeners();
@@ -25,8 +24,8 @@ class RewardedVideo {
 
   private initListeners(): void {
     this.rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
+      console.log('RewardedVideo loaded');
       this.isLoaded = true;
-      this.callback?.(true);
     });
     this.rewardedAd.addAdEventListener(
       RewardedAdEventType.EARNED_REWARD,
@@ -38,6 +37,7 @@ class RewardedVideo {
 
   public async load(): Promise<void> {
     if (!this.isLoaded) {
+      console.log('RewardedVideo load');
       await this.rewardedAd.load();
     }
   }
@@ -45,12 +45,7 @@ class RewardedVideo {
   public async show(): Promise<void> {
     if (this.isLoaded) {
       await this.rewardedAd.show();
-      this.load();
     }
-  }
-
-  public setCallback(callback: (value: boolean) => void): void {
-    this.callback = callback;
   }
 
   public isReady(): boolean {
