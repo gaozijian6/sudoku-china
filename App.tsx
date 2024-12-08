@@ -11,13 +11,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import PauseOverlay from './src/components/PauseOverlay';
 import './src/i18n';
 import {AdEventType, AppOpenAd, TestIds} from 'react-native-google-mobile-ads';
+import NetInfo from '@react-native-community/netinfo';
 
 function App() {
-  const {resultVisible, pauseVisible, setIsHasContinue} = useSudokuStore();
+  const {resultVisible, pauseVisible, setIsHasContinue, setIsConnected} = useSudokuStore();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const slideAnim1 = useRef(new Animated.Value(800)).current;
   const slideAnim2 = useRef(new Animated.Value(800)).current;
   const [settingSlideAnim] = useState(new Animated.Value(800));
+  
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(state.isConnected ?? false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const openSudoku = useCallback(() => {
     Animated.spring(slideAnim1, {

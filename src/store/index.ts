@@ -40,6 +40,8 @@ interface SudokuState {
   setInitializeBoard2: (fn: (puzzle: string, answer: string) => void) => void;
   loadData: () => void;
   setLoadData: (fn: () => void) => void;
+  isConnected: boolean;
+  setIsConnected: (value: boolean) => void;
 }
 
 export const useSudokuStore = create<SudokuState>(set => ({
@@ -79,7 +81,8 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setInitializeBoard2: (fn) => set({ initializeBoard2: fn }),
   loadData: () => {},
   setLoadData: (fn) => set({ loadData: fn }),
-
+  isConnected: false,
+  setIsConnected: value => set({isConnected: value}),
   
   start: (timeOffset: number) =>
     set(state => {

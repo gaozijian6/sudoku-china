@@ -53,6 +53,8 @@ import TarBarsSudokuDIY from '../components/tarBarsSudokuDIY';
 import {SUDOKU_STATUS} from '../constans';
 import {useTranslation} from 'react-i18next';
 import handleHintMethod from '../tools/handleHintMethod';
+import rewardedVideo from '../tools/RewardedVideo';
+import WatchIcon from '../components/WatchIcon';
 
 interface SudokuDIYProps {
   slideAnim: Animated.Value;
@@ -141,7 +143,10 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       wxyzWing,
       trialAndErrorDIY,
     ]);
-    const {errorCount, setErrorCount, isSound, isDIY} = useSudokuStore();
+    const {errorCount, setErrorCount, isSound, isDIY, isConnected} =
+      useSudokuStore();
+    const [watchIconVisible, setWatchIconVisible] = useState<boolean>(false);
+    const isFirstHint = useRef<boolean>(true);
     const resetSudoku = useCallback(() => {
       playSound('switch', isSound);
       setSelectedNumber(1);
@@ -192,6 +197,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         hintCount: hintCount.current,
         time: time.current,
         startTime: startTime.current,
+        watchIconVisible,
+        isFirstHint: isFirstHint.current,
       };
 
       AsyncStorage.setItem('sudokuDataDIY1', JSON.stringify(sudokuData));
@@ -211,6 +218,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       saveSudokuData,
       selectedCell,
       selectionMode,
+      watchIconVisible,
+      isFirstHint,
     ]);
 
     const loadSavedData = useCallback(async () => {
@@ -237,6 +246,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         hintCount.current = data.hintCount;
         time.current = data.time;
         startTime.current = data.startTime;
+        setWatchIconVisible(data.watchIconVisible);
+        isFirstHint.current = data.isFirstHint;
       }
     }, [setErrorCount, t]);
 
@@ -549,6 +560,33 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       return updatedBoard;
     }, []);
 
+    useEffect(() => {
+      if (isDIY && !rewardedVideo.isReady()) {
+        rewardedVideo.load();
+      }
+    }, [isDIY]);
+
+    const handleRewardedVideo = useCallback(() => {
+      // 非第一次提示
+      if (!isFirstHint.current) {
+        if (watchIconVisible) {
+          setWatchIconVisible(false);
+          rewardedVideo.show();
+        } else {
+          setWatchIconVisible(rewardedVideo.isReady());
+        }
+      } else {
+        // 第一次提示
+        setWatchIconVisible(rewardedVideo.isReady());
+        isFirstHint.current = false;
+        if (!rewardedVideo.isReady()) {
+          rewardedVideo.load();
+        } else {
+          setWatchIconVisible(true);
+        }
+      }
+    }, [watchIconVisible]);
+
     const handleHint = useCallback(
       async (board: CellData[][]) => {
         if (countsSync.current < 17) {
@@ -603,7 +641,25 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       ],
     );
 
+    const handleHintAndRewardedVideo = useCallback(
+      (board: CellData[][]) => {
+        if (!isConnected) {
+          setHintDrawerVisible(true);
+          setHintMethod('');
+          setHintContent(t('pleaseConnectNetwork'));
+          return;
+        }
+        handleRewardedVideo();
+        handleHint(board);
+      },
+      [handleHint, handleRewardedVideo, isConnected, t],
+    );
+
     const handleApplyHint = useCallback(() => {
+      if (!isConnected) {
+        setHintDrawerVisible(false);
+        return;
+      }
       if (Object.keys(differenceMap).length > 0) {
         setDifferenceMap({});
         const newBoard = deepCopyBoard(standradBoard);
@@ -663,7 +719,14 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       selectedCell,
       standradBoard,
       updateBoard,
+      isConnected,
     ]);
+
+    useEffect(() => {
+      if (isConnected) {
+        setHintDrawerVisible(false);
+      }
+    }, [isConnected]);
 
     const handleCancelHint = useCallback(() => {
       setDifferenceMap({});
@@ -709,6 +772,13 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
     const getAnswer = useCallback(
       async (board: CellData[][]) => {
+        if (!isConnected) {
+          setHintDrawerVisible(true);
+          setHintMethod('');
+          setHintContent(t('pleaseConnectNetwork'));
+          return;
+        }
+        handleRewardedVideo();
         playSound('switch', isSound);
         setSudokuStatus(SUDOKU_STATUS.SOLVING);
         const standardBoard = copyOfficialDraft(board);
@@ -720,7 +790,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           setSudokuStatus(SUDOKU_STATUS.ILLEGAL);
         }
       },
-      [isSound, updateBoard],
+      [handleRewardedVideo, isConnected, isSound, t, updateBoard],
     );
 
     useEffect(() => {
@@ -875,7 +945,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
           <Pressable
             style={[styles.buttonContainer]}
-            onPressIn={() => handleHint(board)}>
+            onPressIn={() => handleHintAndRewardedVideo(board)}>
+            <WatchIcon top={0} right={10} visible={watchIconVisible} />
             <Image
               source={require('../assets/icon/prompt.png')}
               style={styles.buttonIcon}
@@ -885,6 +956,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           <Pressable
             style={[styles.buttonContainer]}
             onPressIn={() => getAnswer(board)}>
+            <WatchIcon top={0} right={10} visible={watchIconVisible} />
             <Image
               source={require('../assets/icon/answer.png')}
               style={styles.buttonIcon}

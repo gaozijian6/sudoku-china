@@ -13,6 +13,7 @@
     "@ant-design/react-native": "^5.2.3",
     "@gorhom/bottom-sheet": "^5.0.5",
     "@react-native-async-storage/async-storage": "^2.1.0",
+    "@react-native-community/netinfo": "^11.4.1",
     "@react-native-google-signin/google-signin": "^13.1.0",
     "antd-mobile": "^5.38.0",
     "axios": "^1.7.7",

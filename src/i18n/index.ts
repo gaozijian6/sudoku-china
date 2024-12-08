@@ -187,6 +187,7 @@ const resources = {
       back: 'Back',
       next: 'Next',
       errorDraft: 'The notes contain errors. Please correct them first.',
+      pleaseConnectNetwork: 'Please connect to the network first.',
     },
   },
   zh: {
@@ -373,6 +374,7 @@ const resources = {
       back: '返回',
       next: '下一关',
       errorDraft: '笔记有错误，请先修正',
+      pleaseConnectNetwork: '请先连接网络',
     },
   },
 };

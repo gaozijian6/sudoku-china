@@ -8,6 +8,7 @@ import {
   Pressable,
   Animated,
   AppState,
+  Dimensions,
 } from 'react-native';
 import {
   checkNumberInRowColumnAndBox,
@@ -114,7 +115,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
     const [positions, setPositions] = useState<number[]>([]);
     const [eraseEnabled, setEraseEnabled] = useState<boolean>(false);
     const [watchIconVisible, setWatchIconVisible] = useState<boolean>(false);
-    
 
     const isClickAutoNote = useRef<boolean>(false);
     const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
@@ -164,7 +164,9 @@ const Sudoku: React.FC<SudokuProps> = memo(
       setLoadData,
       isContinue,
       isSudoku,
+      isConnected,
     } = useSudokuStore();
+    const isFirstHint = useRef<boolean>(true);
 
     useEffect(() => {
       setInitializeBoard2(initializeBoard2);
@@ -192,6 +194,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
       hintCount.current = 0;
       startTime.current = 0;
       resetSudokuBoard();
+      setWatchIconVisible(false);
+      isFirstHint.current = true;
     }, [resetSudokuBoard, setErrorCount, t]);
 
     const saveData = useCallback(async () => {
@@ -217,6 +221,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
         hintCount: hintCount.current,
         startTime: startTime.current,
         difficulty,
+        watchIconVisible,
+        isFirstHint: isFirstHint.current,
       };
 
       await AsyncStorage.setItem('sudokuData1', JSON.stringify(sudokuData));
@@ -236,6 +242,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
       selectedCell,
       selectionMode,
       difficulty,
+      watchIconVisible,
+      isFirstHint,
     ]);
 
     const setSuccessResult = useCallback(
@@ -281,8 +289,10 @@ const Sudoku: React.FC<SudokuProps> = memo(
         hintCount.current = data.hintCount;
         startTime.current = data.startTime;
         setDifficulty(data.difficulty);
+        setWatchIconVisible(data.watchIconVisible);
+        isFirstHint.current = data.isFirstHint;
       }
-    }, [loadSavedData2, setErrorCount, t, setDifficulty]);
+    }, [loadSavedData2, setErrorCount, t, setDifficulty, setWatchIconVisible]);
 
     const playSuccessSound = useCallback(
       (board: CellData[][], row: number, col: number) => {
@@ -635,17 +645,36 @@ const Sudoku: React.FC<SudokuProps> = memo(
       return updatedBoard;
     }, []);
 
-    const handleHint = useCallback(
-      async (board: CellData[][]) => {
+    useEffect(() => {
+      if (isSudoku && !rewardedVideo.isReady()) {
+        rewardedVideo.load();
+      }
+    }, [isSudoku]);
+
+    const handleRewardedVideo = useCallback(() => {
+      // 非第一次提示
+      if (!isFirstHint.current) {
         if (watchIconVisible) {
+
           setWatchIconVisible(false);
           rewardedVideo.show();
-          rewardedVideo.load();
+        } else {
+          setWatchIconVisible(rewardedVideo.isReady());
         }
+      } else {
+        // 第一次提示
+        setWatchIconVisible(rewardedVideo.isReady());
+        isFirstHint.current = false;
         if (!rewardedVideo.isReady()) {
           rewardedVideo.load();
+        } else {
+          setWatchIconVisible(true);
         }
+      }
+    }, [watchIconVisible]);
 
+    const handleHint = useCallback(
+      async (board: CellData[][]) => {
         if (!isClickAutoNote.current) {
           const currentBoard = deepCopyBoard(standradBoard);
           handleShowCandidates();
@@ -688,7 +717,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
         }
       },
       [
-        watchIconVisible,
         answerBoard,
         standradBoard,
         handleShowCandidates,
@@ -702,7 +730,24 @@ const Sudoku: React.FC<SudokuProps> = memo(
       ],
     );
 
+    const handleHintAndRewardedVideo = useCallback(
+      (board: CellData[][]) => {
+        if (!isConnected) {
+          setHintDrawerVisible(true);
+          setHintContent(t('pleaseConnectNetwork'));
+          return;
+        }
+        handleRewardedVideo();
+        handleHint(board);
+      },
+      [handleHint, handleRewardedVideo, isConnected, t],
+    );
+
     const handleApplyHint = useCallback(() => {
+      if (!isConnected) {
+        setHintDrawerVisible(false);
+        return;
+      }
       if (Object.keys(differenceMap).length > 0) {
         setDifferenceMap({});
         const newBoard = deepCopyBoard(standradBoard);
@@ -764,7 +809,14 @@ const Sudoku: React.FC<SudokuProps> = memo(
       selectedCell,
       standradBoard,
       updateBoard,
+      isConnected,
     ]);
+
+    useEffect(() => {
+      if (isConnected) {
+        setHintDrawerVisible(false);
+      }
+    }, [isConnected]);
 
     const handleCancelHint = useCallback(() => {
       setDifferenceMap({});
@@ -958,7 +1010,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
           <Pressable
             style={[styles.buttonContainer]}
-            onPressIn={() => handleHint(board)}>
+            onPressIn={() => handleHintAndRewardedVideo(board)}>
             <WatchIcon top={0} right={10} visible={watchIconVisible} />
             <Image
               source={require('../assets/icon/prompt.png')}
