@@ -1,4 +1,4 @@
-import {Dimensions, StatusBar, StyleSheet} from 'react-native';
+import {Dimensions, StatusBar, StyleSheet, PixelRatio} from 'react-native';
 
 const sudokuStyles = StyleSheet.create({
   container: {
@@ -15,11 +15,11 @@ const sudokuStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: Dimensions.get('window').width * 0.95,
-    marginBottom: 20,
+    marginBottom: PixelRatio.get()===3?10:20,
     alignSelf: 'center',
-    height: 40,
+    height: PixelRatio.get()===3?40:80,
     position: 'relative',
-    top: 25,
+    top: PixelRatio.get()===3?15:30,
   },
   gameInfoItem: {
     width: '33.33%',
@@ -41,32 +41,32 @@ const sudokuStyles = StyleSheet.create({
     paddingLeft: 10,
   },
   errorIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 5,
+    width: PixelRatio.get()===3?20:40,
+    height: PixelRatio.get()===3?20:40,
+    marginRight: PixelRatio.get()===3?5:10,
     resizeMode: 'contain',
   },
   gameInfoText: {
-    fontSize: 16,
+    fontSize: PixelRatio.get() === 3 ? 16 : 32,
     color: 'rgb(59, 61, 99)',
     textAlign: 'center',
   },
   gameInfoTextError: {
-    fontSize: 16,
+    fontSize: PixelRatio.get() === 3 ? 16 : 32,
     color: 'rgb(59, 61, 99)',
   },
   leftText: {
-    width: 100,
+    width: PixelRatio.get()===3?100:200,
     alignItems: 'center', // 添加垂直居中
     textAlign: 'center', // 添加文字居中
   },
   middleText: {
-    width: 100,
+    width: PixelRatio.get()===3?100:200,
     alignItems: 'center', // 添加垂直居中
     textAlign: 'center', // 添加文字居中
   },
   rightText: {
-    width: 100,
+    width: PixelRatio.get()===3?100:200,
     alignItems: 'center', // 添加垂直居中
     textAlign: 'center', // 添加文字居中
   },
@@ -114,11 +114,8 @@ const sudokuStyles = StyleSheet.create({
   sudokuCellLeftNoBorder: {
     borderLeftWidth: 0,
   },
-  emptySudokuCell: {
-    // 注意：React Native 不支持 :hover，需要通过 onPressIn 和 onPressOut 来模拟
-  },
   cellValue: {
-    fontSize: 30,
+    fontSize: PixelRatio.get() === 3 ? 30 : 60,
     fontWeight: 'bold',
   },
   candidatesGrid: {
@@ -132,9 +129,6 @@ const sudokuStyles = StyleSheet.create({
     height: '33.33%',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  candidateCellText: {
-    fontSize: 8,
   },
   givenNumber: {
     color: '#000',
@@ -157,7 +151,7 @@ const sudokuStyles = StyleSheet.create({
     alignItems: 'center',
   },
   draftCellText: {
-    fontSize: 8,
+    fontSize: PixelRatio.get() === 3 ? 8 : 16,
     width: '33.33%',
     height: '33.33%',
     textAlign: 'center',
@@ -168,7 +162,7 @@ const sudokuStyles = StyleSheet.create({
     backgroundColor: 'rgb(204,223,253)',
   },
   selectedNumberButton: {
-    fontSize: 30,
+    fontSize: PixelRatio.get()===3?30:60,
     fontWeight: 'bold',
     color: 'rgb(78,106,176)',
   },
@@ -193,13 +187,13 @@ const sudokuStyles = StyleSheet.create({
   //   backgroundColor: '#f3f37f',
   // },
   selectMode: {
-    marginTop: 20,
+    marginTop: PixelRatio.get()===3?20:40,
     flexDirection: 'row',
     justifyContent: 'center',
     flexWrap: 'wrap',
   },
   controlButtons: {
-    marginTop: 20,
+    marginTop: PixelRatio.get()===3?20:40,
     flexDirection: 'row',
     flexWrap: 'wrap',
     width: '100%',
@@ -210,28 +204,28 @@ const sudokuStyles = StyleSheet.create({
   },
   buttonContainer: {
     alignItems: 'center',
-    width: 60,
-    height: 60,
+    width: PixelRatio.get() === 3 ? 60 : 120,
+    height: PixelRatio.get() === 3 ? 60 : 120,
     overflow: 'hidden',
     display: 'flex',
     justifyContent: 'center',
   },
   buttonText: {
-    marginTop: 4,
-    fontSize: 12,
+    marginTop: PixelRatio.get() === 3 ? 4 : 8,
+    fontSize: PixelRatio.get() === 3 ? 12 : 24,
     color: '#666666',
-    width: 70,
+    width: PixelRatio.get() === 3 ? 70 : 140,
     textAlign: 'center',
   },
   buttonIcon: {
-    width: 32,
-    height: 32,
+    width: PixelRatio.get() === 3 ? 32 : 64,
+    height: PixelRatio.get() === 3 ? 32 : 64,
   },
   numberButtons: {
     flexDirection: 'row',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    marginTop: 10,
+    marginTop: PixelRatio.get()===3?10:20,
     position: 'relative',
     top: -25,
   },
@@ -239,15 +233,15 @@ const sudokuStyles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 40,
-    height: 60,
+    width: PixelRatio.get()===3?40:80,
+    height: PixelRatio.get()===3?60:120,
     margin: 2,
     borderWidth: 1,
     borderColor: '#d9d9d9',
     borderRadius: 5,
-    fontSize: 30,
-    paddingBottom: 6,
-    paddingTop: 4,
+    fontSize: PixelRatio.get()===3?30:60,
+    paddingBottom: PixelRatio.get()===3?6:12,
+    paddingTop: PixelRatio.get()===3?4:8,
   },
   numberButtonDisabled: {
     backgroundColor: '#f5f5f5',
@@ -258,8 +252,8 @@ const sudokuStyles = StyleSheet.create({
     color: 'rgba(0, 0, 0, 0.25)',
   },
   remainingCount: {
-    fontSize: 12,
-    marginTop: 2,
+    fontSize: PixelRatio.get()===3?12:24,
+    marginTop: PixelRatio.get()===3?2:4,
     color: 'rgb(125,123,134)',
   },
   remainingCountDisabled: {
@@ -332,23 +326,23 @@ const sudokuStyles = StyleSheet.create({
     borderTopRightRadius: 16,
   },
   drawerHandle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
+    width: PixelRatio.get() === 3 ? 40 : 80,
+    height: PixelRatio.get() === 3 ? 4 : 8,
+    borderRadius: PixelRatio.get() === 3 ? 2 : 4,
   },
   drawerTitle: {
-    fontSize: 24,
+    fontSize: PixelRatio.get() === 3 ? 24 : 48,
     fontWeight: 'bold',
     color: '#333',
     textAlign: 'center',
     flex: 1,
   },
   drawerText: {
-    fontSize: 16,
-    marginBottom: 20,
+    fontSize: PixelRatio.get() === 3 ? 16 : 32,
+    marginBottom: PixelRatio.get() === 3 ? 20 : 40,
     color: '#000',
     fontWeight: 'bold',
-    lineHeight: 24,
+    lineHeight: PixelRatio.get() === 3 ? 24 : 48,
     textAlign: 'center',
     alignSelf: 'center',
     width: '100%',
@@ -360,9 +354,9 @@ const sudokuStyles = StyleSheet.create({
     marginTop: 10,
   },
   drawerButton: {
-    width: 100,
-    height: 40,
-    borderRadius: 8,
+    width: PixelRatio.get() === 3 ? 100 : 200,
+    height: PixelRatio.get() === 3 ? 40 : 80,
+    borderRadius: PixelRatio.get() === 3 ? 8 : 16,
     backgroundColor: '#f0f0f0',
     justifyContent: 'center',
     alignItems: 'center',
@@ -374,12 +368,12 @@ const sudokuStyles = StyleSheet.create({
     backgroundColor: 'rgb(239,239,249)',
   },
   drawerButtonTextApply: {
-    fontSize: 16,
+    fontSize: PixelRatio.get() === 3 ? 16 : 32,
     color: '#fff',
     fontWeight: '500',
   },
   drawerButtonTextCancel: {
-    fontSize: 16,
+    fontSize: PixelRatio.get() === 3 ? 16 : 32,
     color: '#000',
     fontWeight: '500',
   },
@@ -388,8 +382,8 @@ const sudokuStyles = StyleSheet.create({
     right: 0,
   },
   closeIcon: {
-    width: 20,
-    height: 20,
+    width: PixelRatio.get() === 3 ? 20 : 40,
+    height: PixelRatio.get() === 3 ? 20 : 40,
   },
   gameInfoDIY: {
     flexDirection: 'row',
@@ -400,19 +394,19 @@ const sudokuStyles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.95,
   },
   gameInfoTextDIY: {
-    fontSize: 16,
+    fontSize: PixelRatio.get() === 3 ? 16 : 32,
     color: 'rgb(59, 61, 99)',
     flexDirection: 'row',
     alignItems: 'center',
-    width: 150,
+    width: PixelRatio.get() === 3 ? 150 : 300,
     display: 'flex',
     justifyContent: 'center',
   },
   gameInfoIcon: {
-    width: 20,
-    height: 20,
+    width: PixelRatio.get() === 3 ? 20 : 40,
+    height: PixelRatio.get() === 3 ? 20 : 40,
     resizeMode: 'contain',
-    marginRight: 5,
+    marginRight: PixelRatio.get() === 3 ? 5 : 10,
   },
   selectionModeContainer: {
     flexDirection: 'row',
@@ -421,7 +415,7 @@ const sudokuStyles = StyleSheet.create({
     gap: 10,
   },
   selectionModeText: {
-    fontSize: 16,
+    fontSize: PixelRatio.get() === 3 ? 16 : 32,
     color: '#666666',
   },
 });

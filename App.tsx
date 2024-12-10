@@ -1,5 +1,5 @@
 import React, {useCallback, useState, useRef, useEffect} from 'react';
-import {StatusBar, SafeAreaView, StyleSheet, Animated} from 'react-native';
+import {StatusBar, SafeAreaView, StyleSheet, Animated, PixelRatio} from 'react-native';
 import Sudoku from './src/views/sudoku';
 import SudokuDIY from './src/views/sudokuDIY';
 import Home from './src/views/Home';
@@ -115,6 +115,11 @@ function App() {
     });
     
     // loadAppOpenAd();
+  }, []);
+
+  useEffect(() => {
+    const dpi = PixelRatio.get();
+    console.log(dpi);
   }, []);
 
   return (
