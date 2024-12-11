@@ -1044,7 +1044,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           transparent={true}
           visible={hintDrawerVisible}>
           <View
-            style={[styles.drawerContent, {height: isDown ? 370 : 50}]}
+            style={[styles.drawerContent, {height: isDown ? undefined : 50}]}
             // 添加这个属性来阻止点击事件冒泡
             onStartShouldSetResponder={() => true}
             onTouchEnd={e => {

@@ -308,7 +308,8 @@ const sudokuStyles = StyleSheet.create({
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     backgroundColor: '#fff',
-    height: 370,
+    // height: 370,
+    height: 'auto',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -317,6 +318,8 @@ const sudokuStyles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 15,
     elevation: 24,
+    flex: 1,
+    flexDirection: 'column',
   },
   drawerIconContainer: {
     position: 'absolute',
@@ -361,12 +364,13 @@ const sudokuStyles = StyleSheet.create({
     textAlign: 'center',
     alignSelf: 'center',
     width: '100%',
+    flexGrow: 1,
   },
   drawerButtons: {
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 20,
-    marginTop: 10,
+    marginBottom: 30,
   },
   drawerButton: {
     width: 100,
