@@ -8,7 +8,6 @@ import {
   Pressable,
   Animated,
   AppState,
-  Dimensions,
 } from 'react-native';
 import {
   checkNumberInRowColumnAndBox,
@@ -115,6 +114,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
     const [positions, setPositions] = useState<number[]>([]);
     const [eraseEnabled, setEraseEnabled] = useState<boolean>(false);
     const [watchIconVisible, setWatchIconVisible] = useState<boolean>(false);
+    const [isDown, setIsDown] = useState<boolean>(true);
 
     const isClickAutoNote = useRef<boolean>(false);
     const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
@@ -655,7 +655,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       // 非第一次提示
       if (!isFirstHint.current) {
         if (watchIconVisible) {
-
           setWatchIconVisible(false);
           rewardedVideo.show();
         } else {
@@ -890,6 +889,11 @@ const Sudoku: React.FC<SudokuProps> = memo(
       setLoadData(loadSavedData);
     }, [loadSavedData, setLoadData]);
 
+    const toggleDrawer = useCallback(() => {
+      console.log('toggleDrawer');
+      setIsDown(!isDown);
+    }, [isDown]);
+
     return (
       <Animated.View
         style={[
@@ -1026,35 +1030,44 @@ const Sudoku: React.FC<SudokuProps> = memo(
           selectedNumber={selectedNumber}
           draftMode={draftMode}
         />
-        <Text style={styles.selectionModeText}>{t('selectMode')}</Text>
-        <Switch
-          value={selectionMode === 2}
-          onValueChange={handleSelectionModeChange}
-          trackColor={{false: '#767577', true: '#81b0ff'}}
-          thumbColor={selectionMode === 2 ? '#1890ff' : '#f4f3f4'}
-        />
+        <View style={styles.selectionModeContainer}>
+          <Text style={styles.selectionModeText}>{t('selectMode')}</Text>
+          <Switch
+            value={selectionMode === 2}
+            onValueChange={handleSelectionModeChange}
+            trackColor={{false: '#767577', true: '#81b0ff'}}
+            thumbColor={selectionMode === 2 ? '#1890ff' : '#f4f3f4'}
+          />
+        </View>
         <Modal
           animationType="slide"
           transparent={true}
           visible={hintDrawerVisible}>
           <View
-            style={styles.drawerContent}
+            style={[styles.drawerContent, {height: isDown ? 370 : 50}]}
             // 添加这个属性来阻止点击事件冒泡
             onStartShouldSetResponder={() => true}
             onTouchEnd={e => {
               e.stopPropagation();
             }}>
+            <Pressable
+              style={styles.drawerIconContainer}
+              onPressIn={toggleDrawer}>
+              {isDown ? (
+                <Image
+                  source={require('../assets/icon/arrow2.png')}
+                  style={styles.drawerIcon}
+                />
+              ) : (
+                <Image
+                  source={require('../assets/icon/arrow2.png')}
+                  style={[styles.drawerIcon, {transform: [{rotate: '180deg'}]}]}
+                />
+              )}
+            </Pressable>
             <>
               <View style={styles.drawerHeader}>
                 <Text style={styles.drawerTitle}>{hintMethod}</Text>
-                <Pressable
-                  onPressIn={handleCancelHint}
-                  style={styles.closeIconButton}>
-                  <Image
-                    source={require('../assets/icon/close.png')}
-                    style={styles.closeIcon}
-                  />
-                </Pressable>
               </View>
               <Text style={styles.drawerText}>{hintContent}</Text>
               <View style={styles.drawerButtons}>

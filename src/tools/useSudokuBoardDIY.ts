@@ -187,6 +187,8 @@ export const useSudokuBoardDIY = () => {
       setRemainingCounts(remainingCountsSync.current);
       setStandradBoard(data.standradBoard);
       updateAuxiliaryData(data.board);
+      countsSync.current = data.countsSync;
+      setCounts(countsSync.current);
     }
   }, [updateAuxiliaryData]);
 
@@ -210,6 +212,7 @@ export const useSudokuBoardDIY = () => {
       currentStep,
       remainingCounts,
       standradBoard,
+      countsSync: countsSync.current,
     };
     AsyncStorage.setItem('sudokuDataDIY2', JSON.stringify(sudokuData));
   }, [board, currentStep, remainingCounts, standradBoard]);

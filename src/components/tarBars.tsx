@@ -31,7 +31,7 @@ const TarBars: FC<TarBarsProps> = ({isHome, tooglePause, setIsHome}) => {
             />
           </Pressable>
           <View style={styles.centerSection}>
-            <Text style={styles.sudoku}>sudoku</Text>
+            <Text style={styles.sudoku}>Sudoku Custom</Text>
           </View>
           <Pressable
             style={[styles.rightSection]}

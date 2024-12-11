@@ -25,7 +25,7 @@ class RewardedVideo {
 
   private initListeners(): void {
     this.rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
-      console.log('RewardedVideo loaded');
+      // console.log('RewardedVideo loaded');
       this.isLoaded = true;
       this.startLoadTime = Date.now();
     });
@@ -42,7 +42,7 @@ class RewardedVideo {
 
   public async load(): Promise<void> {
     if (!this.isLoaded) {
-      console.log('RewardedVideo load');
+      // console.log('RewardedVideo load');
       try {
         await this.rewardedAd.load();
       } catch (err) {

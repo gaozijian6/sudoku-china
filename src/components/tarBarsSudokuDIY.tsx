@@ -33,7 +33,7 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
           />
         </Pressable>
         <View style={styles.centerSection}>
-          <Text style={styles.sudoku}>sudoku</Text>
+          <Text style={styles.sudoku}>Sudoku Custom</Text>
         </View>
         <View style={styles.rightSection}>
           <Pressable style={styles.pauseIconContainer} onPressIn={resetSudoku}>

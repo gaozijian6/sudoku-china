@@ -82,6 +82,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       remainingCountsSync,
       countsSync,
       setCounts,
+      counts,
     } = useSudokuBoardDIY();
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
@@ -109,6 +110,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     const [sudokuStatus, setSudokuStatus] = useState<
       keyof typeof SUDOKU_STATUS
     >(SUDOKU_STATUS.VOID);
+    const [isDown, setIsDown] = useState<boolean>(true);
 
     const isClickAutoNote = useRef<boolean>(false);
     const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
@@ -811,6 +813,14 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       setSudokuStatus(SUDOKU_STATUS.VOID);
     }, []);
 
+    const toggleDrawer = useCallback(() => {
+      setIsDown(!isDown);
+    }, [isDown]);
+
+    useEffect(() => {
+      setSudokuStatus(SUDOKU_STATUS.VOID);
+    }, [counts]);
+
     return (
       <Animated.View
         style={[
@@ -991,17 +1001,24 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             onTouchEnd={e => {
               e.stopPropagation();
             }}>
+            <Pressable
+              style={styles.drawerIconContainer}
+              onPressIn={toggleDrawer}>
+              {isDown ? (
+                <Image
+                  source={require('../assets/icon/arrow2.png')}
+                  style={styles.drawerIcon}
+                />
+              ) : (
+                <Image
+                  source={require('../assets/icon/arrow2.png')}
+                  style={[styles.drawerIcon, {transform: [{rotate: '180deg'}]}]}
+                />
+              )}
+            </Pressable>
             <>
               <View style={styles.drawerHeader}>
                 <Text style={styles.drawerTitle}>{hintMethod}</Text>
-                <Pressable
-                  onPressIn={handleCancelHint}
-                  style={styles.closeIconButton}>
-                  <Image
-                    source={require('../assets/icon/close.png')}
-                    style={styles.closeIcon}
-                  />
-                </Pressable>
               </View>
               <Text style={styles.drawerText}>{hintContent}</Text>
               <View style={styles.drawerButtons}>
