@@ -1,5 +1,11 @@
 import React, {useCallback, useState, useRef, useEffect} from 'react';
-import {StatusBar, SafeAreaView, StyleSheet, Animated, PixelRatio} from 'react-native';
+import {
+  StatusBar,
+  SafeAreaView,
+  StyleSheet,
+  Animated,
+  PixelRatio,
+} from 'react-native';
 import Sudoku from './src/views/sudoku';
 import SudokuDIY from './src/views/sudokuDIY';
 import Home from './src/views/Home';
@@ -10,16 +16,18 @@ import {useSudokuStore} from './src/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PauseOverlay from './src/components/PauseOverlay';
 import './src/i18n';
-import {AdEventType, AppOpenAd, TestIds} from 'react-native-google-mobile-ads';
 import NetInfo from '@react-native-community/netinfo';
+import mobileAds from 'react-native-google-mobile-ads';
+import { MaxAdContentRating } from 'react-native-google-mobile-ads';
 
 function App() {
-  const {resultVisible, pauseVisible, setIsHasContinue, setIsConnected} = useSudokuStore();
+  const {resultVisible, pauseVisible, setIsHasContinue, setIsConnected} =
+    useSudokuStore();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const slideAnim1 = useRef(new Animated.Value(800)).current;
   const slideAnim2 = useRef(new Animated.Value(800)).current;
   const [settingSlideAnim] = useState(new Animated.Value(800));
-  
+
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected ?? false);
@@ -88,38 +96,19 @@ function App() {
   }, [settingSlideAnim]);
 
   useEffect(() => {
-    // const loadAppOpenAd = async () => {
-    //   const appOpenAd = AppOpenAd.createForAdRequest(
-    //     TestIds.APP_OPEN,
-    //     {
-    //       requestNonPersonalizedAdsOnly: true,
-    //       keywords: ['game', 'puzzle', 'sudoku'],
-    //     },
-    //   );
-
-    //   appOpenAd.addAdEventListener(AdEventType.LOADED, async () => {
-    //     try {
-    //       await appOpenAd.show();
-    //       console.log('开屏广告展示成功');
-    //     } catch (error) {
-    //       console.log('开屏广告展示失败:', error);
-    //     }
-    //   });
-
-    //   await appOpenAd.load();
-    // };
-
+    const initAds = async () => {
+      await mobileAds().initialize();
+      await mobileAds().setRequestConfiguration({
+        maxAdContentRating: MaxAdContentRating.G,
+        tagForChildDirectedTreatment: true,
+      });
+    };
+    
+    initAds();
     initSounds();
     AsyncStorage.getItem('isHasContinue').then(value => {
       setIsHasContinue(value === 'true');
     });
-    
-    // loadAppOpenAd();
-  }, []);
-
-  useEffect(() => {
-    const dpi = PixelRatio.get();
-    console.log(dpi);
   }, []);
 
   return (
