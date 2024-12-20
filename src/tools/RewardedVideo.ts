@@ -1,4 +1,5 @@
-import {
+import mobileAds, {
+  MaxAdContentRating,
   RewardedAd,
   RewardedAdEventType,
   TestIds,
@@ -11,9 +12,14 @@ class RewardedVideo {
   private adUnitId: string = TestIds.REWARDED; // 替换为你的广告ID
   private startLoadTime: number = 0;
   private constructor() {
-    this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
-    this.initListeners();
-    this.load();
+    this.initAds();
+    setTimeout(() => {
+      this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
+      this.initListeners();
+    }, 1000);
+    setTimeout(() => {
+      this.load();
+    }, 3000);
   }
 
   public static getInstance(): RewardedVideo {
@@ -62,6 +68,18 @@ class RewardedVideo {
       this.isLoaded = false;
     }
     return this.isLoaded;
+  }
+
+  public async initAds(): Promise<void> {
+    try {
+      await mobileAds().setRequestConfiguration({
+        maxAdContentRating: MaxAdContentRating.G,
+        tagForChildDirectedTreatment: true,
+      });
+      await mobileAds().initialize();
+    } catch (error) {
+      console.error('初始化广告失败:', error);
+    }
   }
 }
 
