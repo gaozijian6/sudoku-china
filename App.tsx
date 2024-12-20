@@ -4,7 +4,6 @@ import {
   SafeAreaView,
   StyleSheet,
   Animated,
-  PixelRatio,
 } from 'react-native';
 import Sudoku from './src/views/sudoku';
 import SudokuDIY from './src/views/sudokuDIY';
@@ -17,8 +16,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import PauseOverlay from './src/components/PauseOverlay';
 import './src/i18n';
 import NetInfo from '@react-native-community/netinfo';
-import mobileAds from 'react-native-google-mobile-ads';
-import { MaxAdContentRating } from 'react-native-google-mobile-ads';
 
 function App() {
   const {resultVisible, pauseVisible, setIsHasContinue, setIsConnected} =
@@ -96,15 +93,8 @@ function App() {
   }, [settingSlideAnim]);
 
   useEffect(() => {
-    const initAds = async () => {
-      await mobileAds().initialize();
-      await mobileAds().setRequestConfiguration({
-        maxAdContentRating: MaxAdContentRating.G,
-        tagForChildDirectedTreatment: true,
-      });
-    };
-    
-    initAds();
+
+  
     initSounds();
     AsyncStorage.getItem('isHasContinue').then(value => {
       setIsHasContinue(value === 'true');
