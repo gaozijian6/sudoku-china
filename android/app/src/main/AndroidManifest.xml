@@ -32,12 +32,13 @@
           android:value="@integer/google_play_services_version" />
       <provider
           android:name="com.google.firebase.provider.FirebaseInitProvider"
-          android:authorities="${applicationId}.firebaseinitprovider"
+          android:authorities="${applicationId}.firebaseinitprovider2"
           android:exported="false"
-          android:initOrder="100" />
+          android:initOrder="100"
+          tools:replace="android:authorities" />
       <meta-data
           android:name="com.google.android.gms.ads.APPLICATION_ID"
-          android:value="ca-app-pub-2981436674907454~4808996246"
+          android:value="ca-app-pub-7074198277688532~9436927387"
           tools:replace="android:value" />
       <property
           android:name="android.adservices.AD_SERVICES_CONFIG"

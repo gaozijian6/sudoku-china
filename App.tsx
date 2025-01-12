@@ -93,8 +93,6 @@ function App() {
   }, [settingSlideAnim]);
 
   useEffect(() => {
-
-  
     initSounds();
     AsyncStorage.getItem('isHasContinue').then(value => {
       setIsHasContinue(value === 'true');

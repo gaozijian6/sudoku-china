@@ -9,17 +9,14 @@ class RewardedVideo {
   private static instance: RewardedVideo;
   private isLoaded: boolean = false;
   private rewardedAd: RewardedAd;
-  private adUnitId: string = TestIds.REWARDED; // 替换为你的广告ID
+  // private adUnitId: string = 'ca-app-pub-2981436674907454/8073755152'; // 实际广告ID
+  private adUnitId: string = TestIds.REWARDED; // 测试广告ID
   private startLoadTime: number = 0;
   private constructor() {
     this.initAds();
-    setTimeout(() => {
-      this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
-      this.initListeners();
-    }, 1000);
-    setTimeout(() => {
-      this.load();
-    }, 3000);
+    this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
+    this.initListeners();
+    this.load();
   }
 
   public static getInstance(): RewardedVideo {
@@ -31,7 +28,6 @@ class RewardedVideo {
 
   private initListeners(): void {
     this.rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
-      // console.log('RewardedVideo loaded');
       this.isLoaded = true;
       this.startLoadTime = Date.now();
     });
@@ -48,12 +44,7 @@ class RewardedVideo {
 
   public async load(): Promise<void> {
     if (!this.isLoaded) {
-      // console.log('RewardedVideo load');
-      try {
-        await this.rewardedAd.load();
-      } catch (err) {
-        console.log('加载激励视频失败:', err);
-      }
+      await this.rewardedAd.load();
     }
   }
 
@@ -71,15 +62,13 @@ class RewardedVideo {
   }
 
   public async initAds(): Promise<void> {
-    try {
-      await mobileAds().setRequestConfiguration({
-        maxAdContentRating: MaxAdContentRating.G,
-        tagForChildDirectedTreatment: true,
-      });
-      await mobileAds().initialize();
-    } catch (error) {
-      console.error('初始化广告失败:', error);
-    }
+    // await mobileAds().setRequestConfiguration({
+    //   // 设置面向儿童的广告
+    //   tagForChildDirectedTreatment: true,
+    //   // 设置最大广告内容分级为 G
+    //   maxAdContentRating: MaxAdContentRating.G,
+    // });
+    await mobileAds().initialize();
   }
 }
 
