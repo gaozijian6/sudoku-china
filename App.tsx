@@ -93,12 +93,16 @@ function App() {
   }, [settingSlideAnim]);
 
   useEffect(() => {
-
-  
     initSounds();
-    AsyncStorage.getItem('isHasContinue').then(value => {
-      setIsHasContinue(value === 'true');
-    });
+    const checkContinue = async () => {
+      try {
+        const value = await AsyncStorage.getItem('isHasContinue');
+        setIsHasContinue(value === 'true');
+      } catch (error) {
+        console.error('AsyncStorage error:', error);
+      }
+    };
+    checkContinue();
   }, []);
 
   return (

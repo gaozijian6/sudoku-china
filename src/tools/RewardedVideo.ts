@@ -13,13 +13,9 @@ class RewardedVideo {
   private startLoadTime: number = 0;
   private constructor() {
     this.initAds();
-    setTimeout(() => {
-      this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
-      this.initListeners();
-    }, 1000);
-    setTimeout(() => {
-      this.load();
-    }, 3000);
+    this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
+    this.initListeners();
+    this.load();
   }
 
   public static getInstance(): RewardedVideo {
@@ -72,10 +68,6 @@ class RewardedVideo {
 
   public async initAds(): Promise<void> {
     try {
-      await mobileAds().setRequestConfiguration({
-        maxAdContentRating: MaxAdContentRating.G,
-        tagForChildDirectedTreatment: true,
-      });
       await mobileAds().initialize();
     } catch (error) {
       console.error('初始化广告失败:', error);
