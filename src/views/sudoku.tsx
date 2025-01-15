@@ -115,6 +115,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
     const [eraseEnabled, setEraseEnabled] = useState<boolean>(false);
     const [watchIconVisible, setWatchIconVisible] = useState<boolean>(false);
     const [isDown, setIsDown] = useState<boolean>(true);
+    // 记录是否在提示过程中
+    const isHinting = useRef<boolean>(false);
 
     const isClickAutoNote = useRef<boolean>(false);
     const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
@@ -209,7 +211,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
         lastSelectedCell: lastSelectedCell.current,
         selectionMode,
         errorCells,
-        hintDrawerVisible,
         hintContent,
         hintMethod,
         result,
@@ -223,6 +224,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         difficulty,
         watchIconVisible,
         isFirstHint: isFirstHint.current,
+        isHinting: isHinting.current,
       };
 
       await AsyncStorage.setItem('sudokuData1', JSON.stringify(sudokuData));
@@ -233,7 +235,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       errorCells,
       errorCount,
       hintContent,
-      hintDrawerVisible,
       hintMethod,
       positions,
       prompts,
@@ -244,6 +245,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       difficulty,
       watchIconVisible,
       isFirstHint,
+      isHinting,
     ]);
 
     const setSuccessResult = useCallback(
@@ -277,7 +279,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
         lastSelectedCell.current = data.lastSelectedCell;
         setSelectionMode(data.selectionMode);
         setErrorCells(data.errorCells);
-        setHintDrawerVisible(data.hintDrawerVisible);
         setHintContent(data.hintContent);
         setHintMethod(handleHintMethod(data.hintMethod, t));
         setResult(data.result);
@@ -291,6 +292,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         setDifficulty(data.difficulty);
         setWatchIconVisible(data.watchIconVisible);
         isFirstHint.current = data.isFirstHint;
+        isHinting.current = data.isHinting;
       }
     }, [loadSavedData2, setErrorCount, t, setDifficulty, setWatchIconVisible]);
 
@@ -729,6 +731,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       ],
     );
 
+    // 提示和观看广告
     const handleHintAndRewardedVideo = useCallback(
       (board: CellData[][]) => {
         if (!isConnected) {
@@ -864,17 +867,22 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
     useEffect(() => {
       const subscription = AppState.addEventListener('change', nextAppState => {
-        if (nextAppState === 'background' && isSudoku) {
+        if (nextAppState === 'background' && (isSudoku || isContinue)) {
+          console.log('saveData');
           saveData();
         }
       });
       return () => subscription.remove();
-    }, [isSudoku, saveData]);
+    }, [isSudoku, isContinue, saveData]);
 
     useEffect(() => {
       if (isContinue) {
-        loadSavedData();
-        return;
+        // loadSavedData();
+        // return;
+        if (isHinting.current) {
+          setHintDrawerVisible(true);
+          return;
+        }
       }
       if (isLevel) {
         setTimeout(() => {
@@ -893,6 +901,14 @@ const Sudoku: React.FC<SudokuProps> = memo(
       console.log('toggleDrawer');
       setIsDown(!isDown);
     }, [isDown]);
+
+    useEffect(() => {
+      if (hintDrawerVisible) {
+        isHinting.current = true;
+      } else {
+        isHinting.current = false;
+      }
+    }, [hintDrawerVisible]);
 
     return (
       <Animated.View
@@ -1043,6 +1059,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           animationType="slide"
           transparent={true}
           visible={hintDrawerVisible}>
+          <View style={styles.modalContainer}>
           <View
             style={[styles.drawerContent, {height: isDown ? undefined : 50}]}
             // 添加这个属性来阻止点击事件冒泡
@@ -1085,6 +1102,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
                 </Pressable>
               </View>
             </>
+            </View>
           </View>
         </Modal>
         {resultVisible && (

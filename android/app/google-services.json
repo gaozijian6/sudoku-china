@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:899975076561:android:07823ba950b65f65bfc3f0",
         "android_client_info": {
-          "package_name": "com.sudoku_gzj.app"
+          "package_name": "com.sudoku_gzj.app2"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "899975076561-73kgner97cr9stqffkdgfd4v7b1qufqo.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.sudoku_gzj.app",
+            "package_name": "com.sudoku_gzj.app2",
             "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },

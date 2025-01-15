@@ -79,7 +79,6 @@ export const playSound = (type: SoundType, isSound: boolean) => {
   const sounds = soundsRef?.current;
 
   if (!sounds?.length) {
-    console.log('音效还未加载完成');
     return;
   }
 
@@ -87,10 +86,6 @@ export const playSound = (type: SoundType, isSound: boolean) => {
     sound => sound?.isPlaying?.() === false,
   );
   if (!availableSound) {
-    console.log(
-      '没有可用的音效实例,当前正在播放的实例数:',
-      sounds.filter(s => s?.isPlaying()).length,
-    );
     return;
   }
 

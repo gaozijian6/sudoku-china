@@ -1,4 +1,4 @@
-package com.sudoku_gzj.app
+package com.sudoku_gzj.app2
 
 import android.app.Application
 import com.facebook.react.PackageList

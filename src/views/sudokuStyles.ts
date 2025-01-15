@@ -1,4 +1,4 @@
-import {Dimensions, StatusBar, StyleSheet, PixelRatio} from 'react-native';
+import {Dimensions, StatusBar, StyleSheet} from 'react-native';
 
 const sudokuStyles = StyleSheet.create({
   container: {
@@ -299,17 +299,16 @@ const sudokuStyles = StyleSheet.create({
     right: 0,
   },
   drawerContent: {
-    position: 'absolute',
+    position: 'relative',
+    marginTop: 'auto',
     bottom: 0,
-    left: 0,
-    right: 0,
     padding: 5,
     paddingHorizontal: 20,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     backgroundColor: '#fff',
-    // height: 370,
-    height: 'auto',
+    minHeight: 50,
+    maxHeight: '80%',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -318,7 +317,6 @@ const sudokuStyles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 15,
     elevation: 24,
-    flex: 1,
     flexDirection: 'column',
   },
   drawerIconContainer: {
@@ -436,6 +434,10 @@ const sudokuStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     top: -10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
   },
 });
 

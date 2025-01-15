@@ -187,7 +187,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         lastSelectedCell: lastSelectedCell.current,
         selectionMode,
         errorCells,
-        hintDrawerVisible,
         hintContent,
         hintMethod,
         result,
@@ -212,7 +211,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       errorCells,
       errorCount,
       hintContent,
-      hintDrawerVisible,
       hintMethod,
       positions,
       prompts,
@@ -236,7 +234,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         lastSelectedCell.current = data.lastSelectedCell;
         setSelectionMode(data.selectionMode);
         setErrorCells(data.errorCells);
-        setHintDrawerVisible(data.hintDrawerVisible);
         setHintContent(data.hintContent);
         setHintMethod(handleHintMethod(data.hintMethod, t));
         setResult(data.result);
