@@ -305,18 +305,12 @@ export const solve3 = async (board: CellData[][]) => {
       }
     }
   }
-  // const result = await ComputeModule.solveSudoku(standardBoard, standardBoard);
-  try {
-    const result = await ComputeModule.add(1, 2);
-    console.log(result);
-  } catch (error) {
-    console.error(error);
-  }
+  const result = await ComputeModule.solveSudoku(standardBoard, standardBoard);
 
-  // if (!result) {
-  //   return null;
-  // }
-  // return result;
+  if (!result) {
+    return null;
+  }
+  return result;
 };
 
 export const isRowFull = (board: CellData[][], row: number) => {
