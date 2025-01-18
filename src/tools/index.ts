@@ -8,6 +8,9 @@ import {isUnitStrongLink, hiddenSingle} from './solution';
 import {NativeModules} from 'react-native';
 
 const {ComputeModule} = NativeModules;
+if (!ComputeModule) {
+  console.error('ComputeModule is not available');
+}
 
 export interface Position {
   row: number;
@@ -303,13 +306,17 @@ export const solve3 = async (board: CellData[][]) => {
     }
   }
   // const result = await ComputeModule.solveSudoku(standardBoard, standardBoard);
-  const result = await ComputeModule.add(1, 2);
-  console.log(result);
-
-  if (!result) {
-    return null;
+  try {
+    const result = await ComputeModule.add(1, 2);
+    console.log(result);
+  } catch (error) {
+    console.error(error);
   }
-  return result;
+
+  // if (!result) {
+  //   return null;
+  // }
+  // return result;
 };
 
 export const isRowFull = (board: CellData[][], row: number) => {

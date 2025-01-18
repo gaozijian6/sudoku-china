@@ -14,6 +14,8 @@
 		24AC44CAC835E05BE3EC6284 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		644EF0F19F91A79A27BD0666 /* libPods-SudokuApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7409E385535AAA0CC6F334D /* libPods-SudokuApp.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		A98AD9E62D3B7117008FA233 /* ComputeModule.h in Sources */ = {isa = PBXBuildFile; fileRef = A98AD9E42D3B7117008FA233 /* ComputeModule.h */; };
+		A98AD9E72D3B7117008FA233 /* ComputeModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = A98AD9E52D3B7117008FA233 /* ComputeModule.mm */; };
 		E8A64C34B16256EA800F52A5 /* libPods-SudokuApp-SudokuAppTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF5C49CA5654DB16DE83A5F1 /* libPods-SudokuApp-SudokuAppTests.a */; };
 /* End PBXBuildFile section */
 
@@ -42,6 +44,8 @@
 		254F85F87C4716BDE24C77AB /* Pods-SudokuApp-SudokuAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SudokuApp-SudokuAppTests.release.xcconfig"; path = "Target Support Files/Pods-SudokuApp-SudokuAppTests/Pods-SudokuApp-SudokuAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		7E95D83B02F4F82FCA9E7CD5 /* Pods-SudokuApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SudokuApp.release.xcconfig"; path = "Target Support Files/Pods-SudokuApp/Pods-SudokuApp.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = SudokuApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		A98AD9E42D3B7117008FA233 /* ComputeModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ComputeModule.h; path = SudokuApp/ComputeModule.h; sourceTree = "<group>"; };
+		A98AD9E52D3B7117008FA233 /* ComputeModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = ComputeModule.mm; path = SudokuApp/ComputeModule.mm; sourceTree = "<group>"; };
 		D0E9476F100387AEE9D4F66A /* Pods-SudokuApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SudokuApp.debug.xcconfig"; path = "Target Support Files/Pods-SudokuApp/Pods-SudokuApp.debug.xcconfig"; sourceTree = "<group>"; };
 		E7409E385535AAA0CC6F334D /* libPods-SudokuApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SudokuApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -119,6 +123,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				A98AD9E42D3B7117008FA233 /* ComputeModule.h */,
+				A98AD9E52D3B7117008FA233 /* ComputeModule.mm */,
 				13B07FAE1A68108700A75B9A /* SudokuApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* SudokuAppTests */,
@@ -410,6 +416,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A98AD9E62D3B7117008FA233 /* ComputeModule.h in Sources */,
+				A98AD9E72D3B7117008FA233 /* ComputeModule.mm in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
@@ -604,10 +612,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -676,10 +681,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
