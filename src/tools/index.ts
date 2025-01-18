@@ -302,7 +302,9 @@ export const solve3 = async (board: CellData[][]) => {
       }
     }
   }
-  const result = await ComputeModule.solveSudoku(standardBoard, standardBoard);
+  // const result = await ComputeModule.solveSudoku(standardBoard, standardBoard);
+  const result = await ComputeModule.add(1, 2);
+  console.log(result);
 
   if (!result) {
     return null;

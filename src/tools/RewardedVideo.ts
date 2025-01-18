@@ -49,9 +49,9 @@ class RewardedVideo {
   }
 
   public async show(): Promise<void> {
-    if (this.isLoaded) {
-      await this.rewardedAd.show();
-    }
+    // if (this.isLoaded) {
+    //   await this.rewardedAd.show();
+    // }
   }
 
   public isReady(): boolean {
