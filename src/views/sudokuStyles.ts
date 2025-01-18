@@ -85,22 +85,23 @@ const sudokuStyles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     borderColor: 'rgb(204,223,253)',
+    margin: -0.05,
   },
   sudokuCellRightBorder: {
     borderRightWidth: 2,
-    borderRightColor: '#000000',
+    borderRightColor: 'rgb(164, 193, 243)',
   },
   sudokuCellBottomBorder: {
     borderBottomWidth: 2,
-    borderBottomColor: '#000000',
+    borderBottomColor: 'rgb(164, 193, 243)',
   },
   sudokuCellLeftBorder: {
     borderLeftWidth: 2,
-    borderLeftColor: '#000000',
+    borderLeftColor: 'rgb(164, 193, 243)',
   },
   sudokuCellTopBorder: {
     borderTopWidth: 2,
-    borderTopColor: '#000000',
+    borderTopColor: 'rgb(164, 193, 243)',
   },
   sudokuCellTopNoBorder: {
     borderTopWidth: 0,
@@ -166,9 +167,14 @@ const sudokuStyles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'rgb(78,106,176)',
   },
-  selectedNumber:{
+  selectedNumber: {
     backgroundColor: '#1890ff',
     borderColor: '#1890ff',
+    borderRightColor: '#1890ff',
+    borderBottomColor: '#1890ff',
+    borderLeftColor: '#1890ff',
+    borderTopColor: '#1890ff',
+    borderWidth: 2,
   },
   selectedNumberText: {
     color: '#fff',
@@ -183,9 +189,6 @@ const sudokuStyles = StyleSheet.create({
   promptHighlight: {
     backgroundColor: '#9dc3ff',
   },
-  // positionAndPromptHighlight: {
-  //   backgroundColor: '#f3f37f',
-  // },
   selectMode: {
     marginTop: 20,
     flexDirection: 'row',
@@ -198,13 +201,13 @@ const sudokuStyles = StyleSheet.create({
     flexWrap: 'wrap',
     width: '100%',
     justifyContent: 'space-evenly',
-    paddingHorizontal: 16,
+    paddingHorizontal: 10,
     position: 'relative',
     top: -30,
   },
   buttonContainer: {
     alignItems: 'center',
-    width: 60,
+    width: 62,
     height: 60,
     overflow: 'hidden',
     display: 'flex',

@@ -44,6 +44,7 @@ const Cell = memo(
         style={[
           styles.sudokuCell,
           cell.value === null && styles.draftGrid,
+          // 先应用边框样式
           // 右边框：每3列添加粗边框
           (colIndex + 1) % 3 === 0 &&
             (colIndex + 1) % 9 !== 0 &&
@@ -56,7 +57,7 @@ const Cell = memo(
             styles.sudokuCellBottomBorder,
           // 上边框：第4行和第7行添加粗边框
           rowIndex % 3 === 0 && styles.sudokuCellTopBorder,
-          // 其他已有的样式
+          // 后应用高亮和选中样式，确保它们能覆盖边框样式
           cell.draft.length > 0 &&
             cell.draft.includes(selectedNumber ?? 0) &&
             styles.candidateNumber,

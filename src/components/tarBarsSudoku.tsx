@@ -25,6 +25,7 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
     setIsLevel,
   } = useSudokuStore();
   const backToHome = useCallback(async () => {
+    console.log('backToHome');
     await saveData();
     onBack();
     stop();
@@ -49,7 +50,7 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
   ]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container]}>
       <>
         <Pressable style={[styles.leftSection]} onPressIn={backToHome}>
           <Image
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    height: 50,
+    height: 40,
   },
   sudoku: {
     color: 'white',
@@ -111,6 +112,7 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     position: 'absolute',
     left: 0,
+    zIndex: 100,
   },
   centerSection: {
     flex: 1,

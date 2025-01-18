@@ -1,4 +1,4 @@
-import {SOLUTION_METHODS} from '../constans';
+import { SOLUTION_METHODS } from '../constans';
 import type {
   CandidateMap,
   CandidateStats,
@@ -81,8 +81,8 @@ export const singleCandidate = (
       const cell = board[row]?.[col];
       if (cell?.value === null && cell.draft?.length === 1) {
         return {
-          position: [{row, col}],
-          prompt: [{row, col}], // 在这种情况下，prompt 与 position 相同
+          position: [{ row, col }],
+          prompt: [{ row, col }], // 在这种情况下，prompt 与 position 相同
           method: SOLUTION_METHODS.SINGLE_CANDIDATE,
           target: [cell.draft[0]],
           isFill: true,
@@ -102,7 +102,7 @@ export const hiddenSingle = (
 ): Result | null => {
   // 检查每一行
   for (let row = 0; row < 9; row++) {
-    const rowCandidates: {[key: number]: number[]} = {};
+    const rowCandidates: { [key: number]: number[] } = {};
     for (let col = 0; col < 9; col++) {
       if (board[row][col].value === null) {
         board[row][col].draft?.forEach(num => {
@@ -114,8 +114,8 @@ export const hiddenSingle = (
     for (const [num, cols] of Object.entries(rowCandidates)) {
       if (cols.length === 1) {
         return {
-          position: [{row, col: cols[0]}],
-          prompt: cols.map(col => ({row, col})), // 添加 prompt
+          position: [{ row, col: cols[0] }],
+          prompt: cols.map(col => ({ row, col })), // 添加 prompt
           method: SOLUTION_METHODS.HIDDEN_SINGLE_ROW,
           target: [Number(num)],
           isFill: true,
@@ -126,7 +126,7 @@ export const hiddenSingle = (
 
   // 检查每一列
   for (let col = 0; col < 9; col++) {
-    const colCandidates: {[key: number]: number[]} = {};
+    const colCandidates: { [key: number]: number[] } = {};
     for (let row = 0; row < 9; row++) {
       if (board[row][col].value === null) {
         board[row][col].draft?.forEach(num => {
@@ -138,8 +138,8 @@ export const hiddenSingle = (
     for (const [num, rows] of Object.entries(colCandidates)) {
       if (rows.length === 1) {
         return {
-          position: [{row: rows[0], col}],
-          prompt: rows.map(row => ({row, col})), // 添加 prompt
+          position: [{ row: rows[0], col }],
+          prompt: rows.map(row => ({ row, col })), // 添加 prompt
           method: SOLUTION_METHODS.HIDDEN_SINGLE_COLUMN,
           target: [Number(num)],
           isFill: true,
@@ -151,7 +151,7 @@ export const hiddenSingle = (
   // 检查每一宫
   for (let boxRow = 0; boxRow < 3; boxRow++) {
     for (let boxCol = 0; boxCol < 3; boxCol++) {
-      const boxCandidates: {[key: number]: {row: number; col: number}[]} = {};
+      const boxCandidates: { [key: number]: { row: number; col: number }[] } = {};
       for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
           const row = boxRow * 3 + i;
@@ -159,7 +159,7 @@ export const hiddenSingle = (
           if (board[row][col].value === null) {
             board[row][col].draft?.forEach(num => {
               boxCandidates[num] = boxCandidates[num] || [];
-              boxCandidates[num].push({row, col});
+              boxCandidates[num].push({ row, col });
             });
           }
         }
@@ -167,7 +167,7 @@ export const hiddenSingle = (
       for (const [num, cells] of Object.entries(boxCandidates)) {
         if (cells.length === 1) {
           return {
-            position: [{row: cells[0].row, col: cells[0].col}],
+            position: [{ row: cells[0].row, col: cells[0].col }],
             prompt: cells, // 添加 prompt
             method: SOLUTION_METHODS.HIDDEN_SINGLE_BOX,
             target: [Number(num)],
@@ -190,7 +190,7 @@ export const blockElimination = (
   // 检查每个3x3宫格
   for (let boxRow = 0; boxRow < 3; boxRow++) {
     for (let boxCol = 0; boxCol < 3; boxCol++) {
-      const boxCandidates: {[key: number]: {row: number; col: number}[]} = {};
+      const boxCandidates: { [key: number]: { row: number; col: number }[] } = {};
 
       // 收集宫内每个数字的候选位置
       for (let i = 0; i < 3; i++) {
@@ -200,7 +200,7 @@ export const blockElimination = (
           if (board[row][col].value === null) {
             board[row][col].draft?.forEach(num => {
               boxCandidates[num] = boxCandidates[num] || [];
-              boxCandidates[num].push({row, col});
+              boxCandidates[num].push({ row, col });
             });
           }
         }
@@ -214,7 +214,7 @@ export const blockElimination = (
         // 区块摒除法（行）
         if (rows.size === 1) {
           const targetRow = Array.from(rows)[0];
-          const positionsToRemove: {row: number; col: number}[] = [];
+          const positionsToRemove: { row: number; col: number }[] = [];
           for (let i = 0; i < 9; i++) {
             if (Math.floor(i / 3) !== boxCol) {
               const cell = board[targetRow]?.[i];
@@ -222,7 +222,7 @@ export const blockElimination = (
                 cell?.value === null &&
                 cell?.draft?.includes?.(Number(num))
               ) {
-                positionsToRemove.push({row: targetRow, col: i});
+                positionsToRemove.push({ row: targetRow, col: i });
               }
             }
           }
@@ -241,7 +241,7 @@ export const blockElimination = (
         // 区块摒除法（列）
         if (cols.size === 1) {
           const targetCol = Array.from(cols)[0];
-          const positionsToRemove: {row: number; col: number}[] = [];
+          const positionsToRemove: { row: number; col: number }[] = [];
           for (let i = 0; i < 9; i++) {
             if (Math.floor(i / 3) !== boxRow) {
               const cell = board[i]?.[targetCol];
@@ -249,7 +249,7 @@ export const blockElimination = (
                 cell?.value === null &&
                 cell?.draft?.includes?.(Number(num))
               ) {
-                positionsToRemove.push({row: i, col: targetCol});
+                positionsToRemove.push({ row: i, col: targetCol });
               }
             }
           }
@@ -270,12 +270,12 @@ export const blockElimination = (
 
   // 检查每一行
   for (let row = 0; row < 9; row++) {
-    const rowCandidates: {[key: number]: {col: number}[]} = {};
+    const rowCandidates: { [key: number]: { col: number }[] } = {};
     for (let col = 0; col < 9; col++) {
       if (board[row]?.[col]?.value === null) {
         board[row]?.[col]?.draft?.forEach(num => {
           rowCandidates[num] = rowCandidates[num] || [];
-          rowCandidates[num].push({col});
+          rowCandidates[num].push({ col });
         });
       }
     }
@@ -284,7 +284,7 @@ export const blockElimination = (
       if (cells.length >= 2 && cells.length <= 3) {
         const boxCol = Math.floor(cells[0].col / 3);
         if (cells.every(cell => Math.floor(cell.col / 3) === boxCol)) {
-          const positionsToRemove: {row: number; col: number}[] = [];
+          const positionsToRemove: { row: number; col: number }[] = [];
           for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
               const checkRow = Math.floor(row / 3) * 3 + i;
@@ -295,7 +295,7 @@ export const blockElimination = (
                   cell?.value === null &&
                   cell?.draft?.includes?.(Number(num))
                 ) {
-                  positionsToRemove.push({row: checkRow, col: checkCol});
+                  positionsToRemove.push({ row: checkRow, col: checkCol });
                 }
               }
             }
@@ -303,7 +303,7 @@ export const blockElimination = (
           if (positionsToRemove.length > 0) {
             return {
               position: positionsToRemove,
-              prompt: cells.map(cell => ({row, col: cell.col})),
+              prompt: cells.map(cell => ({ row, col: cell.col })),
               method: SOLUTION_METHODS.BLOCK_ELIMINATION_BOX_ROW,
               target: [Number(num)],
               isFill: false,
@@ -317,12 +317,12 @@ export const blockElimination = (
 
   // 检查每一列
   for (let col = 0; col < 9; col++) {
-    const colCandidates: {[key: number]: {row: number}[]} = {};
+    const colCandidates: { [key: number]: { row: number }[] } = {};
     for (let row = 0; row < 9; row++) {
       if (board[row]?.[col]?.value === null) {
         board[row]?.[col]?.draft?.forEach(num => {
           colCandidates[num] = colCandidates[num] || [];
-          colCandidates[num].push({row});
+          colCandidates[num].push({ row });
         });
       }
     }
@@ -331,7 +331,7 @@ export const blockElimination = (
       if (cells.length >= 2 && cells.length <= 3) {
         const boxRow = Math.floor(cells[0].row / 3);
         if (cells.every(cell => Math.floor(cell.row / 3) === boxRow)) {
-          const positionsToRemove: {row: number; col: number}[] = [];
+          const positionsToRemove: { row: number; col: number }[] = [];
           for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
               const checkRow = boxRow * 3 + i;
@@ -342,7 +342,7 @@ export const blockElimination = (
                   cell?.value === null &&
                   cell?.draft?.includes?.(Number(num))
                 ) {
-                  positionsToRemove.push({row: checkRow, col: checkCol});
+                  positionsToRemove.push({ row: checkRow, col: checkCol });
                 }
               }
             }
@@ -350,7 +350,7 @@ export const blockElimination = (
           if (positionsToRemove.length > 0) {
             return {
               position: positionsToRemove,
-              prompt: cells.map(cell => ({row: cell.row, col})),
+              prompt: cells.map(cell => ({ row: cell.row, col })),
               method: SOLUTION_METHODS.BLOCK_ELIMINATION_BOX_COLUMN,
               target: [Number(num)],
               isFill: false,
@@ -386,8 +386,8 @@ export const nakedPair = (
 
       // 检查行、列、宫
       const units = [
-        {type: 'row', value: cell1.row},
-        {type: 'col', value: cell1.col},
+        { type: 'row', value: cell1.row },
+        { type: 'col', value: cell1.col },
         {
           type: 'box',
           value: Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3),
@@ -398,7 +398,7 @@ export const nakedPair = (
         const unitCells =
           (
             candidateMap[num][
-              unit.type as keyof (typeof candidateMap)[number]
+            unit.type as keyof (typeof candidateMap)[number]
             ] as Map<number, CandidateStats>
           )?.get?.(unit.value)?.positions ?? [];
         // 在同一单元中找到另一个具有相同候选数的方格
@@ -445,8 +445,8 @@ export const nakedPair = (
               col: c.col,
             }));
             const prompt = [
-              {row: cell1.row, col: cell1.col},
-              {row: cell2.row, col: cell2.col},
+              { row: cell1.row, col: cell1.col },
+              { row: cell2.row, col: cell2.col },
             ];
             const getMethodKey = (unitType: string): string => {
               switch (unitType) {
@@ -462,9 +462,9 @@ export const nakedPair = (
             };
             const method =
               SOLUTION_METHODS[
-                `NAKED_PAIR_${getMethodKey(
-                  unit.type,
-                )}` as keyof typeof SOLUTION_METHODS
+              `NAKED_PAIR_${getMethodKey(
+                unit.type,
+              )}` as keyof typeof SOLUTION_METHODS
               ];
             const target = [num1, num2];
 
@@ -513,7 +513,7 @@ const checkNakedTriple1 = (
   unitType: 'row' | 'col' | 'box',
 ): Result | null => {
   for (let unit = 0; unit < 9; unit++) {
-    const cellsWithCandidates: {pos: Position; candidates: number[]}[] = [];
+    const cellsWithCandidates: { pos: Position; candidates: number[] }[] = [];
 
     // 收集单元内的候选数和位置
     for (let i = 0; i < 9; i++) {
@@ -521,8 +521,8 @@ const checkNakedTriple1 = (
         unitType === 'row'
           ? [unit, i]
           : unitType === 'col'
-          ? [i, unit]
-          : [
+            ? [i, unit]
+            : [
               Math.floor(unit / 3) * 3 + Math.floor(i / 3),
               (unit % 3) * 3 + (i % 3),
             ];
@@ -532,7 +532,7 @@ const checkNakedTriple1 = (
         cell.draft?.length >= 2 &&
         cell.draft?.length <= 3
       ) {
-        cellsWithCandidates.push({pos: {row, col}, candidates: cell.draft});
+        cellsWithCandidates.push({ pos: { row, col }, candidates: cell.draft });
       }
     }
 
@@ -617,8 +617,8 @@ const checkNakedTriple1 = (
                   unitType === 'row'
                     ? [unit, m]
                     : unitType === 'col'
-                    ? [m, unit]
-                    : [
+                      ? [m, unit]
+                      : [
                         Math.floor(unit / 3) * 3 + Math.floor(m / 3),
                         (unit % 3) * 3 + (m % 3),
                       ];
@@ -628,7 +628,7 @@ const checkNakedTriple1 = (
                   !prompt.some(p => p.row === row && p.col === col) &&
                   cell.draft?.some(num => [a, b, c].includes(num))
                 ) {
-                  affectedPositions.push({row, col});
+                  affectedPositions.push({ row, col });
                 }
               }
 
@@ -648,9 +648,9 @@ const checkNakedTriple1 = (
 
                 const method =
                   SOLUTION_METHODS[
-                    `NAKED_TRIPLE_${getMethodKey(
-                      unitType,
-                    )}` as keyof typeof SOLUTION_METHODS
+                  `NAKED_TRIPLE_${getMethodKey(
+                    unitType,
+                  )}` as keyof typeof SOLUTION_METHODS
                   ];
 
                 return {
@@ -699,21 +699,21 @@ const checkNakedTriple2 = (
   unitType: 'row' | 'col' | 'box',
 ): Result | null => {
   for (let unit = 0; unit < 9; unit++) {
-    const cellsWithCandidates: {pos: Position; candidates: number[]}[] = [];
+    const cellsWithCandidates: { pos: Position; candidates: number[] }[] = [];
 
     for (let i = 0; i < 9; i++) {
       const [row, col] =
         unitType === 'row'
           ? [unit, i]
           : unitType === 'col'
-          ? [i, unit]
-          : [
+            ? [i, unit]
+            : [
               Math.floor(unit / 3) * 3 + Math.floor(i / 3),
               (unit % 3) * 3 + (i % 3),
             ];
       const cell = board[row]?.[col];
       if (cell?.value === null && cell.draft?.length === 2) {
-        cellsWithCandidates.push({pos: {row, col}, candidates: cell.draft});
+        cellsWithCandidates.push({ pos: { row, col }, candidates: cell.draft });
       }
     }
 
@@ -742,8 +742,8 @@ const checkNakedTriple2 = (
                 unitType === 'row'
                   ? [unit, m]
                   : unitType === 'col'
-                  ? [m, unit]
-                  : [
+                    ? [m, unit]
+                    : [
                       Math.floor(unit / 3) * 3 + Math.floor(m / 3),
                       (unit % 3) * 3 + (m % 3),
                     ];
@@ -753,7 +753,7 @@ const checkNakedTriple2 = (
                 !prompt.some(p => p.row === row && p.col === col) &&
                 cell.draft?.some(num => [a, b, c].includes(num))
               ) {
-                affectedPositions.push({row, col});
+                affectedPositions.push({ row, col });
               }
             }
 
@@ -772,9 +772,9 @@ const checkNakedTriple2 = (
               };
               const method =
                 SOLUTION_METHODS[
-                  `NAKED_TRIPLE_${getMethodKey(
-                    unitType,
-                  )}` as keyof typeof SOLUTION_METHODS
+                `NAKED_TRIPLE_${getMethodKey(
+                  unitType,
+                )}` as keyof typeof SOLUTION_METHODS
                 ];
 
               return {
@@ -825,7 +825,7 @@ const checkNakedQuadruple = (
   unitType: 'row' | 'col' | 'box',
 ): Result | null => {
   for (let unit = 0; unit < 9; unit++) {
-    const cellsWithCandidates: {pos: Position; candidates: number[]}[] = [];
+    const cellsWithCandidates: { pos: Position; candidates: number[] }[] = [];
 
     // 收集单元内的候选数和位置
     for (let i = 0; i < 9; i++) {
@@ -833,8 +833,8 @@ const checkNakedQuadruple = (
         unitType === 'row'
           ? [unit, i]
           : unitType === 'col'
-          ? [i, unit]
-          : [
+            ? [i, unit]
+            : [
               Math.floor(unit / 3) * 3 + Math.floor(i / 3),
               (unit % 3) * 3 + (i % 3),
             ];
@@ -844,7 +844,7 @@ const checkNakedQuadruple = (
         cell.draft?.length >= 2 &&
         cell.draft?.length <= 4
       ) {
-        cellsWithCandidates.push({pos: {row, col}, candidates: cell.draft});
+        cellsWithCandidates.push({ pos: { row, col }, candidates: cell.draft });
       }
     }
 
@@ -898,8 +898,8 @@ const checkNakedQuadruple = (
                     unitType === 'row'
                       ? [unit, m]
                       : unitType === 'col'
-                      ? [m, unit]
-                      : [
+                        ? [m, unit]
+                        : [
                           Math.floor(unit / 3) * 3 + Math.floor(m / 3),
                           (unit % 3) * 3 + (m % 3),
                         ];
@@ -909,7 +909,7 @@ const checkNakedQuadruple = (
                     !prompt.some(p => p.row === row && p.col === col) &&
                     cell.draft?.some(num => [a, b, c, d].includes(num))
                   ) {
-                    affectedPositions.push({row, col});
+                    affectedPositions.push({ row, col });
                   }
                 }
 
@@ -929,9 +929,9 @@ const checkNakedQuadruple = (
 
                   const method =
                     SOLUTION_METHODS[
-                      `NAKED_QUADRUPLE_${getMethodKey(
-                        unitType,
-                      )}` as keyof typeof SOLUTION_METHODS
+                    `NAKED_QUADRUPLE_${getMethodKey(
+                      unitType,
+                    )}` as keyof typeof SOLUTION_METHODS
                     ];
 
                   return {
@@ -1034,9 +1034,9 @@ const checkHiddenPair = (
                 prompt,
                 method:
                   SOLUTION_METHODS[
-                    `HIDDEN_PAIR_${getMethodKey(
-                      unitType,
-                    )}` as keyof typeof SOLUTION_METHODS
+                  `HIDDEN_PAIR_${getMethodKey(
+                    unitType,
+                  )}` as keyof typeof SOLUTION_METHODS
                   ],
                 target: [...new Set(targetNumbers)],
                 isFill: false,
@@ -1316,9 +1316,9 @@ const checkHiddenTriple2 = (
                   };
                   const method =
                     SOLUTION_METHODS[
-                      `HIDDEN_TRIPLE_${getMethodKey(
-                        unitType,
-                      )}2` as keyof typeof SOLUTION_METHODS
+                    `HIDDEN_TRIPLE_${getMethodKey(
+                      unitType,
+                    )}2` as keyof typeof SOLUTION_METHODS
                     ];
                   return {
                     position: positionsArray,
@@ -1368,7 +1368,7 @@ const checkXWing = (board: CellData[][], isRow: boolean): Result | null => {
         const [row, col] = isRow ? [i, j] : [j, i];
         const cell = board[row]?.[col];
         if (cell?.value === null && cell.draft?.includes(num)) {
-          positions.push({row, col});
+          positions.push({ row, col });
         }
       }
       if (positions.length === 2) {
@@ -1392,11 +1392,11 @@ const checkXWing = (board: CellData[][], isRow: boolean): Result | null => {
                 k !== pos3[isRow ? 'row' : 'col']
               ) {
                 const checkPos1 = isRow
-                  ? {row: k, col: pos1.col}
-                  : {row: pos1.row, col: k};
+                  ? { row: k, col: pos1.col }
+                  : { row: pos1.row, col: k };
                 const checkPos2 = isRow
-                  ? {row: k, col: pos2.col}
-                  : {row: pos2.row, col: k};
+                  ? { row: k, col: pos2.col }
+                  : { row: pos2.row, col: k };
 
                 const cell1 = board[checkPos1.row]?.[checkPos1.col];
                 const cell2 = board[checkPos2.row]?.[checkPos2.col];
@@ -1519,7 +1519,7 @@ const checkXWingVarient = (
                   for (let r = cdBoxRow * 3; r < cdBoxRow * 3 + 3; r++) {
                     for (let c = cdBoxCol * 3; c < cdBoxCol * 3 + 3; c++) {
                       if (isNotABCD(r, c) && board[r][c].draft?.includes(num)) {
-                        positionsToExclude.push({row: r, col: c});
+                        positionsToExclude.push({ row: r, col: c });
                       }
                     }
                   }
@@ -1533,7 +1533,7 @@ const checkXWingVarient = (
                         isNotABCD(r, targetCol) &&
                         board[r][targetCol].draft?.includes(num)
                       ) {
-                        positionsToExclude.push({row: r, col: targetCol});
+                        positionsToExclude.push({ row: r, col: targetCol });
                       }
                     }
                   } else {
@@ -1544,7 +1544,7 @@ const checkXWingVarient = (
                         isNotABCD(targetRow, c) &&
                         board[targetRow][c].draft?.includes(num)
                       ) {
-                        positionsToExclude.push({row: targetRow, col: c});
+                        positionsToExclude.push({ row: targetRow, col: c });
                       }
                     }
                   }
@@ -1553,9 +1553,9 @@ const checkXWingVarient = (
                 if (
                   positionsToExclude.length > 0 &&
                   Math.floor(groupD[0].row / 3) ===
-                    Math.floor(positionsToExclude[0].row / 3) &&
+                  Math.floor(positionsToExclude[0].row / 3) &&
                   Math.floor(groupD[0].col / 3) ===
-                    Math.floor(positionsToExclude[0].col / 3)
+                  Math.floor(positionsToExclude[0].col / 3)
                 ) {
                   return {
                     position: positionsToExclude,
@@ -1591,7 +1591,7 @@ export const xyWing = (
     for (let col = 0; col < 9; col++) {
       const cell = board[row]?.[col];
       if (cell?.value === null && cell.draft?.length === 2) {
-        cellsWithTwoCandidates.push({row, col});
+        cellsWithTwoCandidates.push({ row, col });
       }
     }
   }
@@ -1657,8 +1657,8 @@ export const xyWing = (
               )
                 continue;
 
-              const isInSameUnitWithB = areCellsInSameUnit(cellB, {row, col});
-              const isInSameUnitWithC = areCellsInSameUnit(cellC, {row, col});
+              const isInSameUnitWithB = areCellsInSameUnit(cellB, { row, col });
+              const isInSameUnitWithC = areCellsInSameUnit(cellC, { row, col });
 
               if (isInSameUnitWithB && isInSameUnitWithC) {
                 const cell = board[row]?.[col];
@@ -1666,7 +1666,7 @@ export const xyWing = (
                   cell?.value === null &&
                   cell.draft?.includes(targetNumber)
                 ) {
-                  affectedPositions.push({row, col});
+                  affectedPositions.push({ row, col });
                 }
               }
             }
@@ -1721,8 +1721,8 @@ export const xyWing = (
               )
                 continue;
 
-              const isInSameUnitWithA = areCellsInSameUnit(cellA, {row, col});
-              const isInSameUnitWithC = areCellsInSameUnit(cellC, {row, col});
+              const isInSameUnitWithA = areCellsInSameUnit(cellA, { row, col });
+              const isInSameUnitWithC = areCellsInSameUnit(cellC, { row, col });
 
               if (isInSameUnitWithA && isInSameUnitWithC) {
                 const cell = board[row]?.[col];
@@ -1730,7 +1730,7 @@ export const xyWing = (
                   cell?.value === null &&
                   cell.draft?.includes(targetNumber)
                 ) {
-                  affectedPositions.push({row, col});
+                  affectedPositions.push({ row, col });
                 }
               }
             }
@@ -1785,8 +1785,8 @@ export const xyWing = (
               )
                 continue;
 
-              const isInSameUnitWithA = areCellsInSameUnit(cellA, {row, col});
-              const isInSameUnitWithB = areCellsInSameUnit(cellB, {row, col});
+              const isInSameUnitWithA = areCellsInSameUnit(cellA, { row, col });
+              const isInSameUnitWithB = areCellsInSameUnit(cellB, { row, col });
 
               if (isInSameUnitWithA && isInSameUnitWithB) {
                 const cell = board[row]?.[col];
@@ -1794,7 +1794,7 @@ export const xyWing = (
                   cell?.value === null &&
                   cell.draft?.includes(targetNumber)
                 ) {
-                  affectedPositions.push({row, col});
+                  affectedPositions.push({ row, col });
                 }
               }
             }
@@ -1853,7 +1853,7 @@ export const xyzWing = (
         if (cellB.row === cellA.row && cellB.col === cellA.col) continue;
         const cellBDraft = board[cellB.row][cellB.col].draft;
         if (cellBDraft.length !== 2) continue;
-        
+
         // 检查B的候选数是否为xy或xz
         const hasXY = cellBDraft.includes(x) && cellBDraft.includes(y);
         const hasXZ = cellBDraft.includes(x) && cellBDraft.includes(z);
@@ -1880,7 +1880,7 @@ export const xyzWing = (
 
           // 寻找受影响的方格D
           const affectedPositions: Position[] = [];
-          
+
           // 在A所在宫中寻找D
           for (let row = boxRow * 3; row < boxRow * 3 + 3; row++) {
             for (let col = boxCol * 3; col < boxCol * 3 + 3; col++) {
@@ -1891,8 +1891,8 @@ export const xyzWing = (
               ) continue;
 
               // D必须与A和C的共同行或列上
-              const isInSameLineWithAC = 
-                (row === cellA.row && row === cellC.row) || 
+              const isInSameLineWithAC =
+                (row === cellA.row && row === cellC.row) ||
                 (col === cellA.col && col === cellC.col);
 
               if (isInSameLineWithAC) {
@@ -2126,12 +2126,12 @@ export const findStrongLink = (
   board: CellData[][],
   candidateMap: CandidateMap,
 ): StrongLink | null => {
-  for (const [num, {all}] of Object.entries(candidateMap)) {
+  for (const [num, { all }] of Object.entries(candidateMap)) {
     const positions = all;
     for (let i = 0; i < positions.length - 1; i++) {
       for (let j = i + 1; j < positions.length; j++) {
-        const position1 = {row: positions[i].row, col: positions[i].col};
-        const position2 = {row: positions[j].row, col: positions[j].col};
+        const position1 = { row: positions[i].row, col: positions[i].col };
+        const position2 = { row: positions[j].row, col: positions[j].col };
         if (
           isUnitStrongLink(
             board,
@@ -2141,7 +2141,7 @@ export const findStrongLink = (
             candidateMap,
           )
         ) {
-          return {positions: [position1, position2], num: Number(num)};
+          return { positions: [position1, position2], num: Number(num) };
         }
       }
     }
@@ -2425,13 +2425,13 @@ export const checkStrongLinkParity = (
   const startNodes = graph[num] ?? [];
 
   for (const startNode of startNodes) {
-    const queue: {node: GraphNode; depth: number}[] = [
-      {node: startNode, depth: 0},
+    const queue: { node: GraphNode; depth: number }[] = [
+      { node: startNode, depth: 0 },
     ];
     const visited: Set<string> = new Set();
 
     while (queue.length > 0) {
-      const {node: currentNode, depth} = queue.shift()!;
+      const { node: currentNode, depth } = queue.shift()!;
       const key = `${currentNode.row},${currentNode.col}`;
 
       if (visited.has(key)) {
@@ -2445,13 +2445,13 @@ export const checkStrongLinkParity = (
         currentNode.col === position1.col
       ) {
         // 找到第一个位置，继续搜索第二个位置
-        const subQueue: {node: GraphNode; depth: number}[] = [
-          {node: currentNode, depth: 0},
+        const subQueue: { node: GraphNode; depth: number }[] = [
+          { node: currentNode, depth: 0 },
         ];
         const subVisited: Set<string> = new Set();
 
         while (subQueue.length > 0) {
-          const {node: subNode, depth: subDepth} = subQueue.shift()!;
+          const { node: subNode, depth: subDepth } = subQueue.shift()!;
           const subKey = `${subNode.row},${subNode.col}`;
 
           if (subVisited.has(subKey)) {
@@ -2466,13 +2466,13 @@ export const checkStrongLinkParity = (
           }
 
           for (const nextNode of subNode.next) {
-            subQueue.push({node: nextNode, depth: subDepth + 1});
+            subQueue.push({ node: nextNode, depth: subDepth + 1 });
           }
         }
       }
 
       for (const nextNode of currentNode.next) {
-        queue.push({node: nextNode, depth: depth + 1});
+        queue.push({ node: nextNode, depth: depth + 1 });
       }
     }
   }
@@ -2641,7 +2641,7 @@ export const skyscraper2 = (
 
         nodesArr.push(nodes);
       }
-      
+
       for (let i = 0; i < nodesArr.length - 1; i++) {
         for (let j = i + 1; j < nodesArr.length; j++) {
           for (let k = 0; k < nodesArr[i].length; k++) {
@@ -2714,9 +2714,9 @@ export const isInSameBox = (
 ): boolean => {
   return (
     Math.floor((pos1 as Position).row / 3) ===
-      Math.floor((pos2 as Position).row / 3) &&
+    Math.floor((pos2 as Position).row / 3) &&
     Math.floor((pos1 as Position).col / 3) ===
-      Math.floor((pos2 as Position).col / 3)
+    Math.floor((pos2 as Position).col / 3)
   );
 };
 
@@ -3049,10 +3049,10 @@ const findCommonAffectedPositions = (
       const cell = board[row]?.[col];
       if (cell?.value === null && cell.draft?.includes(num)) {
         if (
-          areCellsInSameUnit({row, col}, pos1) &&
-          areCellsInSameUnit({row, col}, pos2)
+          areCellsInSameUnit({ row, col }, pos1) &&
+          areCellsInSameUnit({ row, col }, pos2)
         ) {
-          affectedPositions.push({row, col});
+          affectedPositions.push({ row, col });
         }
       }
     }
@@ -3179,8 +3179,8 @@ const checkSwordfish = (
               for (const index of uniqueIndices) {
                 for (let m = 0; m < 9; m++) {
                   const checkPos = isRow
-                    ? {row: m, col: index}
-                    : {row: index, col: m};
+                    ? { row: m, col: index }
+                    : { row: index, col: m };
                   if (
                     !combinedPositions.some(
                       pos =>
@@ -3419,20 +3419,20 @@ export const trialAndErrorDIY = (
   let minPosition: Position | null = null;
   let minValue: number | null = null;
 
-  for(let row = 0; row < 9; row++){
-    for(let col = 0; col < 9; col++){
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
       const cell = board[row][col];
-      if(cell.value === null && cell.draft?.length) {
-        if(cell.draft.length < minLength) {
+      if (cell.value === null && cell.draft?.length) {
+        if (cell.draft.length < minLength) {
           minLength = cell.draft.length;
-          minPosition = {row, col};
+          minPosition = { row, col };
           minValue = board[row][col].draft[0];
         }
       }
     }
   }
 
-  if(minPosition && minValue) {
+  if (minPosition && minValue) {
     return {
       position: [minPosition],
       prompt: [minPosition],
@@ -3450,25 +3450,25 @@ export const trialAndError = (
   graph: Graph,
   answerBoard?: CellData[][],
 ): Result | null => {
-  if(!answerBoard) return null;
+  if (!answerBoard) return null;
   let minLength = 10;
   let minPosition: Position | null = null;
   let minValue: number | null = null;
 
-  for(let row = 0; row < 9; row++){
-    for(let col = 0; col < 9; col++){
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
       const cell = board[row][col];
-      if(cell.value === null && cell.draft?.length) {
-        if(cell.draft.length < minLength) {
+      if (cell.value === null && cell.draft?.length) {
+        if (cell.draft.length < minLength) {
           minLength = cell.draft.length;
-          minPosition = {row, col};
+          minPosition = { row, col };
           minValue = answerBoard[row][col].value;
         }
       }
     }
   }
 
-  if(minPosition && minValue) {
+  if (minPosition && minValue) {
     return {
       position: [minPosition],
       prompt: [minPosition],

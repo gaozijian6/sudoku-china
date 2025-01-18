@@ -80,13 +80,8 @@ const Home: React.FC<HomeProps> = ({
 
   return (
     <View style={[styles.container]}>
-      <View style={styles.tarbar}>
-        {/* <Pressable onPressIn={openSetting}>
-          <Image
-            source={require('../assets/icon/setting.png')}
-            style={styles.logo}
-          />
-        </Pressable> */}
+      <View style={styles.title1}>
+        <Text style={styles.sudoku}>Sudoku Custom</Text>
       </View>
       <View style={styles.buttonContainer}>
         <Pressable
@@ -131,6 +126,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'rgb(246,247,251)',
+    // backgroundColor: 'red',
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
     top: StatusBar.currentHeight || 0,
@@ -238,7 +234,7 @@ const styles = StyleSheet.create({
   },
   arrowIcon: {
     position: 'relative' as const,
-    top: -2,
+    top: 1,
     fontSize: 18,
     color: '#666666',
     opacity: 0.8,
@@ -248,6 +244,23 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  title1: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    backgroundColor: 'rgb(91,139,241)',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 40,
+    width: '100%',
+  },
+  sudoku: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 

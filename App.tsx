@@ -1,24 +1,29 @@
-import React, {useCallback, useState, useRef, useEffect} from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import {
   StatusBar,
   SafeAreaView,
   StyleSheet,
   Animated,
+  Platform,
+  View,
+  Text,
 } from 'react-native';
 import Sudoku from './src/views/sudoku';
 import SudokuDIY from './src/views/sudokuDIY';
 import Home from './src/views/Home';
 import Login from './src/views/Login';
 import Setting from './src/views/setting';
-import {initSounds} from './src/tools/Sound';
-import {useSudokuStore} from './src/store';
+import { initSounds } from './src/tools/Sound';
+import { useSudokuStore } from './src/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PauseOverlay from './src/components/PauseOverlay';
 import './src/i18n';
 import NetInfo from '@react-native-community/netinfo';
+import TarBars from './src/components/tarBars';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 function App() {
-  const {resultVisible, pauseVisible, setIsHasContinue, setIsConnected} =
+  const { isHome, resultVisible, pauseVisible, setIsHasContinue, setIsConnected } =
     useSudokuStore();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const slideAnim1 = useRef(new Animated.Value(800)).current;
@@ -106,16 +111,13 @@ function App() {
   }, []);
 
   return (
-    <>
-      <SafeAreaView style={styles.container}>
-        <StatusBar
-          translucent
-          backgroundColor={
-            resultVisible || pauseVisible
-              ? styles.background1.backgroundColor
-              : styles.background2.backgroundColor
-          }
-        />
+    <SafeAreaProvider>
+      <TarBars />
+      <SafeAreaView
+        style={
+          styles.container
+        }
+      >
         {isLoggedIn ? (
           <Login setIsLoggedIn={setIsLoggedIn} />
         ) : (
@@ -140,7 +142,7 @@ function App() {
         )}
       </SafeAreaView>
       {pauseVisible && <PauseOverlay />}
-    </>
+    </SafeAreaProvider>
   );
 }
 
@@ -154,6 +156,7 @@ const styles = StyleSheet.create({
   background2: {
     backgroundColor: 'rgb(91,139,241)',
   },
+
 });
 
 export default App;
