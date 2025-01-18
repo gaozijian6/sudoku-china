@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import {Text, View, Pressable} from 'react-native';
+import {Text, View, Pressable, Image} from 'react-native';
 import styles from '../views/sudokuStyles';
 
 const Buttons = memo(
@@ -24,7 +24,7 @@ const Buttons = memo(
             onPressIn={() => handleNumberSelect(number)}
             style={[
               styles.numberButton,
-              remainingCounts[number - 1] === 0 && styles.numberButtonDisabled, // 禁用状态
+              remainingCounts[number - 1] === 0 && styles.numberButtonDisabled,
               selectionMode === 1 &&
                 selectedNumber === number && {
                   backgroundColor: '#1890ff',
@@ -36,25 +36,30 @@ const Buttons = memo(
                 styles.selectedNumberButton,
                 !draftMode &&
                   remainingCounts[number - 1] === 0 &&
-                  styles.selectedNumberButtonDisabled, // 禁用状态
+                  styles.selectedNumberButtonDisabled,
                 selectionMode === 1 &&
                   selectedNumber === number &&
                   styles.selectedNumberText,
               ]}>
               {number}
             </Text>
-            <Text
-              style={[
-                styles.remainingCount,
-                !draftMode &&
+            {draftMode ? (
+              <Text style={styles.remainingCount}>
+                ✏️
+              </Text>
+            ) : (
+              <Text
+                style={[
+                  styles.remainingCount,
                   remainingCounts[number - 1] === 0 &&
-                  styles.remainingCountDisabled, // 禁用状态
-                selectionMode === 1 &&
-                  selectedNumber === number &&
-                  styles.selectedNumberText,
-              ]}>
-              {remainingCounts[number - 1]}
-            </Text>
+                    styles.remainingCountDisabled,
+                  selectionMode === 1 &&
+                    selectedNumber === number &&
+                    styles.selectedNumberText,
+                ]}>
+                {remainingCounts[number - 1]}
+              </Text>
+            )}
           </Pressable>
         ))}
       </View>

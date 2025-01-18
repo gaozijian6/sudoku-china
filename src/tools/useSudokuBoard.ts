@@ -1,4 +1,4 @@
-import {useState, useRef, useCallback} from 'react';
+import { useState, useRef, useCallback } from 'react';
 import {
   CellData,
   BoardHistory,
@@ -92,7 +92,7 @@ export const useSudokuBoard = () => {
               map: Map<number, CandidateStats>,
               index: number,
             ) => {
-              const stats = map.get(index) ?? {count: 0, positions: []};
+              const stats = map.get(index) ?? { count: 0, positions: [] };
               stats.count++;
               stats.positions.push(candidate);
               map.set(index, stats);
@@ -118,7 +118,7 @@ export const useSudokuBoard = () => {
     if (sudokuData) {
       const data = JSON.parse(sudokuData);
       setBoard(data.board);
-      answerBoard.current = data.answerBoard; 
+      answerBoard.current = data.answerBoard;
       history.current = data.history;
       setCurrentStep(data.currentStep);
       setRemainingCounts(data.remainingCounts);
@@ -231,6 +231,7 @@ export const useSudokuBoard = () => {
   const initializeBoard2 = useCallback(
     (puzzle: string, answer: string) => {
       const newBoard = convertStringToBoard(puzzle);
+      history.current = [{board: newBoard, action: '生成新棋盘'}];
       setBoard(newBoard);
       updateRemainingCounts(newBoard);
       setTimeout(() => {

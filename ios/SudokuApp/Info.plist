@@ -27,9 +27,15 @@
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
-		<false/>
-		<key>NSAllowsLocalNetworking</key>
 		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>localhost</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
@@ -51,5 +57,11 @@
 	<string>ca-app-pub-7074198277688532~9436927387</string>
 	<key>GADIsAdManagerApp</key>
 	<true/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>需要访问相册以便上传反馈图片</string>
 </dict>
 </plist>

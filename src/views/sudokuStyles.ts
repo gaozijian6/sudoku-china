@@ -260,6 +260,14 @@ const sudokuStyles = StyleSheet.create({
     marginTop: 2,
     color: 'rgb(125,123,134)',
   },
+  remainingCountDraft: {
+    width: 15,
+    height: 15,
+    fontSize: 12,
+    marginTop: 2,
+    tintColor: 'rgb(125,123,134)',
+    opacity: 0,
+  },
   remainingCountDisabled: {
     color: 'rgba(0, 0, 0, 0.25)',
   },

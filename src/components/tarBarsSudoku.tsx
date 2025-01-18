@@ -1,6 +1,7 @@
-import React, {FC, useCallback} from 'react';
-import {Text, StyleSheet, View, Image, Pressable} from 'react-native';
-import {useSudokuStore} from '../store';
+import React, { FC, useCallback } from 'react';
+import { Text, StyleSheet, View, Image, Pressable } from 'react-native';
+import { useSudokuStore } from '../store';
+import TarBars from './tarBars';
 
 interface TarBarsSudokuProps {
   onBack: () => void;
@@ -25,7 +26,6 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
     setIsLevel,
   } = useSudokuStore();
   const backToHome = useCallback(async () => {
-    console.log('backToHome');
     await saveData();
     onBack();
     stop();
@@ -50,8 +50,9 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
   ]);
 
   return (
-    <View style={[styles.container]}>
-      <>
+    <>
+      <TarBars />
+      <View style={[styles.container]}>
         <Pressable style={[styles.leftSection]} onPressIn={backToHome}>
           <Image
             source={require('../assets/icon/back.png')}
@@ -72,17 +73,17 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
               style={styles.pauseIcon}
             />
           </Pressable>
-          {/* <Pressable
+          <Pressable
             onPressIn={openSetting}
             style={styles.settingIconContainer}>
             <Image
               source={require('../assets/icon/setting.png')}
               style={styles.settingIcon}
             />
-          </Pressable> */}
+          </Pressable>
         </View>
-      </>
-    </View>
+      </View>
+    </>
   );
 };
 
@@ -93,6 +94,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     height: 40,
+    position: 'relative',
+    width: '100%',
   },
   sudoku: {
     color: 'white',

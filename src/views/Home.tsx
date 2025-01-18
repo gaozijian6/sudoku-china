@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, Pressable, StatusBar, StyleSheet} from 'react-native';
+import {View, Text, Pressable, StatusBar, StyleSheet, Image} from 'react-native';
 import Level from './Level';
 import {playSound} from '../tools/Sound';
 import {useSudokuStore} from '../store';
@@ -82,7 +82,16 @@ const Home: React.FC<HomeProps> = ({
     <View style={[styles.container]}>
       <View style={styles.title1}>
         <Text style={styles.sudoku}>Sudoku Custom</Text>
+        <Pressable
+          style={styles.settingIconContainer}
+          onPressIn={openSetting}>
+          <Image
+            source={require('../assets/icon/setting.png')}
+            style={styles.settingIcon}
+          />
+        </Pressable>
       </View>
+      
       <View style={styles.buttonContainer}>
         <Pressable
           style={styles.startButton}
@@ -131,7 +140,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center' as const,
     top: StatusBar.currentHeight || 0,
     left: 0,
-    position: 'absolute',
+    position: 'relative',
     width: '100%',
     height: '100%',
     zIndex: 1,
@@ -252,15 +261,32 @@ const styles = StyleSheet.create({
     left: 0,
     backgroundColor: 'rgb(91,139,241)',
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
     height: 40,
     width: '100%',
+    paddingHorizontal: 15,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   sudoku: {
     color: 'white',
     fontSize: 20,
     fontWeight: 'bold',
+    width: '100%',
+    textAlign: 'center',
+  },
+  settingIconContainer: {
+    height: '100%',
+    zIndex: 1,
+    position: 'absolute',
+    right: 15,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  settingIcon: {
+    width: 26,
+    height: 26,
   },
 });
 

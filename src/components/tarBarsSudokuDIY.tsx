@@ -1,6 +1,7 @@
-import React, {FC, useCallback} from 'react';
-import {Text, StyleSheet, View, Image, Pressable} from 'react-native';
-import {useSudokuStore} from '../store';
+import React, { FC, useCallback } from 'react';
+import { Text, StyleSheet, View, Image, Pressable } from 'react-native';
+import { useSudokuStore } from '../store';
+import TarBars from './tarBars';
 
 interface TarBarsSudokuProps {
   onBack: () => void;
@@ -15,7 +16,7 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
   saveDataDIY,
   resetSudoku,
 }) => {
-  const {setIsHome, setIsDIY} = useSudokuStore();
+  const { setIsHome, setIsDIY } = useSudokuStore();
   const backToHome = useCallback(() => {
     saveDataDIY();
     setIsHome(true);
@@ -24,8 +25,9 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
   }, [saveDataDIY, setIsHome, setIsDIY, onBack]);
 
   return (
-    <View style={styles.container}>
-      <>
+    <>
+      <TarBars />
+      <View style={[styles.container]}>
         <Pressable style={[styles.leftSection]} onPressIn={backToHome}>
           <Image
             source={require('../assets/icon/back.png')}
@@ -42,7 +44,6 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
               style={styles.pauseIcon}
             />
           </Pressable>
-{/* 
           <Pressable
             onPressIn={openSetting}
             style={styles.settingIconContainer}>
@@ -50,10 +51,10 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
               source={require('../assets/icon/setting.png')}
               style={styles.settingIcon}
             />
-          </Pressable> */}
+          </Pressable>
         </View>
-      </>
-    </View>
+      </View>
+    </>
   );
 };
 

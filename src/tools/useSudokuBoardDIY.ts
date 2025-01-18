@@ -243,6 +243,7 @@ export const useSudokuBoardDIY = () => {
 
         history.current = newHistory;
         setCurrentStep(newHistory.length - 1);
+        console.log('currentStep', newHistory.length - 1);
       }
 
       setBoard(newBoard);

@@ -1,5 +1,20 @@
 import i18n from 'i18next';
 import {initReactI18next} from 'react-i18next';
+import {NativeModules, Platform} from 'react-native';
+
+// 获取设备语言的辅助函数
+const getDeviceLanguage = () => {
+  // iOS
+  if (Platform.OS === 'ios') {
+    const locale =
+      NativeModules.SettingsManager.settings.AppleLocale ||
+      NativeModules.SettingsManager.settings.AppleLanguages[0];
+    console.log(locale);
+    return locale.split('_')[0];
+  }
+  // Android
+  return NativeModules.I18nManager.localeIdentifier.split('_')[0];
+};
 
 const resources = {
   en: {
@@ -188,6 +203,13 @@ const resources = {
       next: 'Next',
       errorDraft: 'The notes contain errors. Please correct them first.',
       pleaseConnectNetwork: 'Please connect to the network first.',
+      setting: 'Setting',
+      removeAD: 'Remove AD',
+      sound: 'Sound',
+      notice: 'Notice',
+      privacyPolicy: 'Privacy Policy',
+      serviceTerms: 'Service Terms',
+      language: 'Language',
     },
   },
   zh: {
@@ -375,14 +397,21 @@ const resources = {
       next: '下一关',
       errorDraft: '笔记有错误，请先修正',
       pleaseConnectNetwork: '请先连接网络',
+      setting: '设置',
+      removeAD: '移除广告',
+      sound: '音效',
+      notice: '通知',
+      privacyPolicy: '隐私政策',
+      serviceTerms: '服务条款',
+      language: '语言',
     },
   },
 };
 
 i18n.use(initReactI18next).init({
   resources,
-  lng: 'en', // 改为英文
-  fallbackLng: 'zh',
+  lng: getDeviceLanguage() || 'en',
+  fallbackLng: 'en',
   interpolation: {
     escapeValue: false,
   },

@@ -21,6 +21,7 @@ import './src/i18n';
 import NetInfo from '@react-native-community/netinfo';
 import TarBars from './src/components/tarBars';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Orientation from 'react-native-orientation-locker';
 
 function App() {
   const { isHome, resultVisible, pauseVisible, setIsHasContinue, setIsConnected } =
@@ -35,6 +36,25 @@ function App() {
       setIsConnected(state.isConnected ?? false);
     });
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        await Orientation.lockToPortrait();
+      } catch (error) {
+        console.warn('Orientation lock failed:', error);
+      }
+    };
+    init();
+
+    return () => {
+      try {
+        Orientation.unlockAllOrientations();
+      } catch (error) {
+        console.warn('Orientation unlock failed:', error);
+      }
+    };
   }, []);
 
   const openSudoku = useCallback(() => {
@@ -113,34 +133,28 @@ function App() {
   return (
     <SafeAreaProvider>
       <TarBars />
-      <SafeAreaView
-        style={
-          styles.container
-        }
-      >
-        {isLoggedIn ? (
-          <Login setIsLoggedIn={setIsLoggedIn} />
-        ) : (
-          <>
-            <Home
-              openSudoku={openSudoku}
-              openSudokuDIY={openSudokuDIY}
-              openSetting={openSetting}
-            />
-            <Sudoku
-              slideAnim={slideAnim1}
-              closeSudoku={closeSudoku}
-              openSetting={openSetting}
-            />
-            <SudokuDIY
-              slideAnim={slideAnim2}
-              closeSudokuDIY={closeSudokuDIY}
-              openSetting={openSetting}
-            />
-            <Setting slideAnim={settingSlideAnim} closeSetting={closeSetting} />
-          </>
-        )}
-      </SafeAreaView>
+      {isLoggedIn ? (
+        <Login setIsLoggedIn={setIsLoggedIn} />
+      ) : (
+        <>
+          <Home
+            openSudoku={openSudoku}
+            openSudokuDIY={openSudokuDIY}
+            openSetting={openSetting}
+          />
+          <Sudoku
+            slideAnim={slideAnim1}
+            closeSudoku={closeSudoku}
+            openSetting={openSetting}
+          />
+          <SudokuDIY
+            slideAnim={slideAnim2}
+            closeSudokuDIY={closeSudokuDIY}
+            openSetting={openSetting}
+          />
+          <Setting slideAnim={settingSlideAnim} closeSetting={closeSetting} />
+        </>
+      )}
       {pauseVisible && <PauseOverlay />}
     </SafeAreaProvider>
   );

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,10 @@ import {
   StatusBar,
 } from 'react-native';
 import {useSudokuStore} from '../store';
+import TarBars from '../components/tarBars';
+import FeedbackModal from '../components/FeedbackModal';
+import {useTranslation} from 'react-i18next';
+import LanguageModal from '../components/LanguageModal';
 
 interface SettingProps {
   slideAnim: Animated.Value;
@@ -21,6 +25,9 @@ const Setting: React.FC<SettingProps> = ({
   closeSetting,
 }) => {
   const {isSound, setIsSound} = useSudokuStore();
+  const [feedbackVisible, setFeedbackVisible] = useState(false);
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
+  const {t, i18n} = useTranslation();
 
   const toogleSound = useCallback(() => {
     setIsSound(!isSound);
@@ -37,6 +44,7 @@ const Setting: React.FC<SettingProps> = ({
           ],
         },
       ]}>
+      <TarBars />
       <View style={styles.tarbar}>
         <Pressable onPressIn={closeSetting} style={styles.backIconContainer}>
           <Image
@@ -44,16 +52,16 @@ const Setting: React.FC<SettingProps> = ({
             style={styles.backIcon}
           />
         </Pressable>
-        <Text style={styles.tarbarText}>设置</Text>
+        <Text style={styles.tarbarText}>{t('setting')}</Text>
       </View>
 
       <View style={styles.content}>
-        <Pressable style={[styles.item, {backgroundColor: 'rgb(251,245,223)'}]}>
+        <Pressable style={[styles.item]}>
           <Image
             source={require('../assets/icon/closeAD.png')}
             style={styles.leftIcon}
           />
-          <Text style={styles.itemText}>移除广告</Text>
+          <Text style={styles.itemText}>{t('removeAD')}</Text>
           <Image
             source={require('../assets/icon/arrow.png')}
             style={styles.arrow}
@@ -65,7 +73,7 @@ const Setting: React.FC<SettingProps> = ({
             source={require('../assets/icon/sound.png')}
             style={styles.leftIcon}
           />
-          <Text style={styles.itemText}>音效</Text>
+          <Text style={styles.itemText}>{t('sound')}</Text>
           <Switch
             value={isSound}
             onValueChange={toogleSound}
@@ -76,6 +84,38 @@ const Setting: React.FC<SettingProps> = ({
 
         <Pressable style={styles.item}>
           <Image
+            source={require('../assets/icon/notice.png')}
+            style={styles.leftIcon}
+          />
+          <Text style={styles.itemText}>{t('notice')}</Text>
+          <Switch
+            value={isSound}
+            onValueChange={toogleSound}
+            trackColor={{false: '#f0f0f0', true: 'rgb(91,139,241)'}}
+            thumbColor={isSound ? '#fff' : '#fff'}
+          />
+        </Pressable>
+
+        <Pressable 
+          style={styles.item}
+          onPress={() => setLanguageModalVisible(true)}
+        >
+          <Image
+            source={require('../assets/icon/language.png')}
+            style={styles.leftIcon}
+          />
+          <Text style={styles.itemText}>{t('language')}</Text>
+          <Image
+            source={require('../assets/icon/arrow.png')}
+            style={styles.arrow}
+          />
+        </Pressable>
+
+        {/* <Pressable 
+          style={styles.item} 
+          onPress={() => setFeedbackVisible(true)}
+        >
+          <Image
             source={require('../assets/icon/email.png')}
             style={styles.leftIcon}
           />
@@ -84,12 +124,34 @@ const Setting: React.FC<SettingProps> = ({
             source={require('../assets/icon/arrow.png')}
             style={styles.arrow}
           />
+        </Pressable> */}
+      </View>
+
+      <View style={styles.links}>
+        <Pressable>
+          <Text style={styles.linkText}>{t('privacyPolicy')}</Text>
+        </Pressable>
+        <Text style={styles.separator}>|</Text>
+        <Pressable>
+          <Text style={styles.linkText}>{t('serviceTerms')}</Text>
         </Pressable>
       </View>
 
-      <Pressable style={styles.logoutButton}>
-        <Text style={styles.logoutText}>退出登录</Text>
-      </Pressable>
+      <FeedbackModal 
+        visible={feedbackVisible}
+        onClose={() => setFeedbackVisible(false)}
+      />
+
+      <LanguageModal 
+        visible={languageModalVisible}
+        onClose={() => setLanguageModalVisible(false)}
+        currentLanguage={i18n.language}
+        onSelectLanguage={(lang) => {
+          i18n.changeLanguage(lang);
+          setLanguageModalVisible(false);
+        }}
+      />
+
     </Animated.View>
   );
 };
@@ -101,22 +163,19 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     zIndex: 10,
-    top: StatusBar.currentHeight || 0,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgb(239,239,245)',
   },
   tarbar: {
     backgroundColor: 'rgb(91,139,241)',
-    height: 50,
+    height: 40,
     width: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
+    position: 'relative',
     paddingHorizontal: 15,
     flexDirection: 'row',
     alignItems: 'center',
   },
   tarbarText: {
-    fontSize: 20,
+    fontSize: 30,
     color: '#fff',
     flex: 1,
     textAlign: 'center',
@@ -126,17 +185,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginHorizontal: 15,
     borderRadius: 8,
+    position: 'relative',
+    top: -40,
   },
   item: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingVertical: 15,
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
     paddingHorizontal: 15,
     borderRadius: 8,
-    backgroundColor: 'rgb(243,247,250)',
+    backgroundColor: '#fff',
   },
   itemText: {
     fontSize: 20,
@@ -169,26 +230,29 @@ const styles = StyleSheet.create({
     height: 20,
     width: 20,
   },
-  logoutButton: {
-    marginHorizontal: 15,
-    height: 50,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 50,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgb(243,247,250)',
-  },
-  logoutText: {
-    fontSize: 20,
-    color: '#ff4d4f',
-  },
   leftIcon: {
     width: 30,
     height: 30,
     marginRight: 10,
+  },
+  links: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 15,
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    right: 0,
+  },
+  linkText: {
+    fontSize: 14,
+    color: '#666',
+    paddingHorizontal: 10,
+  },
+  separator: {
+    color: '#666',
+    fontSize: 14,
   },
 });
 

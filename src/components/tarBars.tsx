@@ -21,7 +21,12 @@ const TarBars: FC<TarBarsProps> = () => {
 
 const styles = StyleSheet.create({
   container: {
+    position: 'relative',
+    top: 0,
+    left: 0,
+    right: 0,
     backgroundColor: 'rgb(91,139,241)',
+    // backgroundColor: 'red',
   },
 });
 
