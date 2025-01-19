@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useRef, memo} from 'react';
+import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Pressable,
   Animated,
   AppState,
+  ScrollView,
 } from 'react-native';
 import {
   checkNumberInRowColumnAndBox,
@@ -17,7 +18,7 @@ import {
   copyOfficialDraft,
   solve3,
 } from '../tools';
-import {useSudokuBoardDIY} from '../tools/useSudokuBoardDIY';
+import { useSudokuBoardDIY } from '../tools/useSudokuBoardDIY';
 import {
   hiddenSingle,
   singleCandidate,
@@ -40,18 +41,18 @@ import {
   combinationChain,
   trialAndErrorDIY,
 } from '../tools/solution';
-import type {CandidateMap, CellData, Graph, Position} from '../tools';
-import type {DifferenceMap, Result} from '../tools/solution';
+import type { CandidateMap, CellData, Graph, Position } from '../tools';
+import type { DifferenceMap, Result } from '../tools/solution';
 import styles from './sudokuStyles';
-import {handleHintContent} from '../tools/handleHintContent';
+import { handleHintContent } from '../tools/handleHintContent';
 import Cell from '../components/SudokuCell';
 import Buttons from '../components/Buttons';
-import {playSound} from '../tools/Sound';
+import { playSound } from '../tools/Sound';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useSudokuStore} from '../store';
+import { useSudokuStore } from '../store';
 import TarBarsSudokuDIY from '../components/tarBarsSudokuDIY';
-import {SUDOKU_STATUS} from '../constans';
-import {useTranslation} from 'react-i18next';
+import { SUDOKU_STATUS } from '../constans';
+import { useTranslation } from 'react-i18next';
 import handleHintMethod from '../tools/handleHintMethod';
 import rewardedVideo from '../tools/RewardedVideo';
 import WatchIcon from '../components/WatchIcon';
@@ -63,8 +64,8 @@ interface SudokuDIYProps {
 }
 
 const SudokuDIY: React.FC<SudokuDIYProps> = memo(
-  ({slideAnim, closeSudokuDIY, openSetting}) => {
-    const {t} = useTranslation();
+  ({ slideAnim, closeSudokuDIY, openSetting }) => {
+    const { t } = useTranslation();
     const {
       board,
       updateBoard,
@@ -91,13 +92,13 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     const [selectedCell, setSelectedCell] = useState<{
       row: number;
       col: number;
-    } | null>({row: 0, col: 0});
+    } | null>({ row: 0, col: 0 });
     const lastSelectedCell = useRef<{
       row: number;
       col: number;
     } | null>(null);
     const [selectionMode, setSelectionMode] = useState<1 | 2>(1);
-    const [errorCells, setErrorCells] = useState<{row: number; col: number}[]>(
+    const [errorCells, setErrorCells] = useState<{ row: number; col: number }[]>(
       [],
     );
     const [hintDrawerVisible, setHintDrawerVisible] = useState<boolean>(false);
@@ -110,7 +111,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     const [sudokuStatus, setSudokuStatus] = useState<
       keyof typeof SUDOKU_STATUS
     >(SUDOKU_STATUS.VOID);
-    const [isDown, setIsDown] = useState<boolean>(true);
 
     const isClickAutoNote = useRef<boolean>(false);
     const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
@@ -145,7 +145,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       wxyzWing,
       trialAndErrorDIY,
     ]);
-    const {errorCount, setErrorCount, isSound, isDIY, isConnected} =
+    const { errorCount, setErrorCount, isSound, isDIY, isConnected } =
       useSudokuStore();
     const [watchIconVisible, setWatchIconVisible] = useState<boolean>(false);
     const isFirstHint = useRef<boolean>(true);
@@ -158,7 +158,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         setErrorCount(0);
         setDraftMode(false);
         lastErrorTime.current = null;
-        setSelectedCell({row: 0, col: 0});
+        setSelectedCell({ row: 0, col: 0 });
         lastSelectedCell.current = null;
         setSelectionMode(1);
         setErrorCells([]);
@@ -302,7 +302,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     const handleCellChange = useCallback(
       (row: number, col: number) => {
         if (selectionMode === 2) {
-          setSelectedCell({row, col});
+          setSelectedCell({ row, col });
           if (board[row][col].value) {
             setSelectedNumber(board[row][col].value);
           } else {
@@ -362,7 +362,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             // 更新相关单元格的草稿数字
             updateRelatedCellsDraft(
               newBoard,
-              [{row, col}],
+              [{ row, col }],
               selectedNumber,
               getCandidates,
             );
@@ -406,7 +406,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     // 擦除
     const handleErase = useCallback(() => {
       if (selectedCell) {
-        const {row, col} = selectedCell;
+        const { row, col } = selectedCell;
         if (eraseEnabled) {
           playSound('erase', isSound);
           const newBoard = deepCopyBoard(board);
@@ -440,7 +440,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       (number: number) => {
         if (selectionMode === 2) {
           if (!selectedCell) return;
-          const {row, col} = selectedCell;
+          const { row, col } = selectedCell;
           const cell = board[row][col];
 
           if (cell.value) {
@@ -481,7 +481,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             newCell.draft = [];
             updateRelatedCellsDraft(
               newBoard,
-              [{row, col}],
+              [{ row, col }],
               number,
               getCandidates,
             );
@@ -526,17 +526,17 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         result: Result,
         type: 'position' | 'prompt' | 'both',
       ) => {
-        const {position, target, prompt} = result;
+        const { position, target, prompt } = result;
         const newBoard = deepCopyBoard(board);
         if (type === 'position' || type === 'both') {
-          position.forEach(({row, col}: Position) => {
+          position.forEach(({ row, col }: Position) => {
             newBoard[row][col].highlights = newBoard[row][col].highlights || [];
             newBoard[row][col].highlights.push('positionHighlight');
             newBoard[row][col].highlightCandidates = target;
           });
         }
         if (type === 'prompt' || type === 'both') {
-          prompt.forEach(({row, col}: Position) => {
+          prompt.forEach(({ row, col }: Position) => {
             newBoard[row][col].highlights = newBoard[row][col].highlights || [];
             newBoard[row][col].highlights.push('promptHighlight');
             newBoard[row][col].highlightCandidates = target;
@@ -667,10 +667,10 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         playSound('switch', isSound);
         return;
       } else if (result) {
-        const {position, target, isFill} = result;
+        const { position, target, isFill } = result;
         const newBoard = deepCopyBoard(board);
 
-        position.forEach(({row, col}) => {
+        position.forEach(({ row, col }) => {
           if (isFill) {
             newBoard[row][col].value = target[0];
             newBoard[row][col].draft = [];
@@ -678,7 +678,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             // 更新受影响的单元格
             const affectedCells = updateRelatedCellsDraft(
               newBoard,
-              [{row, col}],
+              [{ row, col }],
               target[0],
               getCandidates,
             );
@@ -752,7 +752,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
     useEffect(() => {
       if (!selectedCell) return;
-      const {row, col} = selectedCell;
+      const { row, col } = selectedCell;
       if (selectionMode === 1) {
         setEraseEnabled(false);
         return;
@@ -809,10 +809,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     useEffect(() => {
       setSudokuStatus(SUDOKU_STATUS.VOID);
     }, []);
-
-    const toggleDrawer = useCallback(() => {
-      setIsDown(!isDown);
-    }, [isDown]);
 
     useEffect(() => {
       setSudokuStatus(SUDOKU_STATUS.VOID);
@@ -901,7 +897,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         <View style={styles.selectMode}></View>
         <View style={styles.controlButtons}>
           <Pressable
-            style={[styles.buttonContainer]}
+            style={[styles.buttonContainerDIY]}
             onPressIn={handleUndo}
             disabled={currentStep === 0}>
             <Image
@@ -915,7 +911,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             <Text style={styles.buttonText}>{t('undo')}</Text>
           </Pressable>
 
-          <Pressable style={[styles.buttonContainer]} onPressIn={handleErase}>
+          <Pressable style={[styles.buttonContainerDIY]} onPressIn={handleErase}>
             <Image
               source={
                 eraseEnabled
@@ -928,20 +924,20 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           </Pressable>
 
           <Pressable
-            style={[styles.buttonContainer]}
+            style={[styles.buttonContainerDIY]}
             onPressIn={handleDraftMode}>
             <Image
               source={require('../assets/icon/draft.png')}
               style={[
                 styles.buttonIcon,
-                {tintColor: draftMode ? '#1890ff' : undefined},
+                { tintColor: draftMode ? '#1890ff' : undefined },
               ]}
             />
             <Text style={styles.buttonText}>{t('notes')}</Text>
           </Pressable>
 
           <Pressable
-            style={[styles.buttonContainer]}
+            style={[styles.buttonContainerDIY]}
             onPressIn={handleShowCandidates}>
             <Image
               source={require('../assets/icon/auto.png')}
@@ -951,7 +947,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           </Pressable>
 
           <Pressable
-            style={[styles.buttonContainer]}
+            style={[styles.buttonContainerDIY]}
             onPressIn={() => handleHintAndRewardedVideo(board)}>
             <WatchIcon top={0} right={10} visible={watchIconVisible} />
             <Image
@@ -961,7 +957,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             <Text style={styles.buttonText}>{t('hint')}</Text>
           </Pressable>
           <Pressable
-            style={[styles.buttonContainer]}
+            style={[styles.buttonContainerDIY]}
             onPressIn={() => getAnswer(board)}>
             <WatchIcon top={0} right={10} visible={watchIconVisible} />
             <Image
@@ -983,7 +979,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           <Switch
             value={selectionMode === 2}
             onValueChange={handleSelectionModeChange}
-            trackColor={{false: '#767577', true: '#81b0ff'}}
+            trackColor={{ false: '#767577', true: '#81b0ff' }}
             thumbColor={selectionMode === 2 ? '#1890ff' : '#f4f3f4'}
           />
         </View>
@@ -991,39 +987,32 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           animationType="slide"
           transparent={true}
           visible={hintDrawerVisible}>
-          <View
-            style={[styles.drawerContent, {height: isDown ? undefined : 50}]}
-            // 添加这个属性来阻止点击事件冒泡
-            onStartShouldSetResponder={() => true}
-            onTouchEnd={e => {
-              e.stopPropagation();
-            }}>
-            <Pressable
-              style={styles.drawerIconContainer}
-              onPressIn={toggleDrawer}>
-              {isDown ? (
-                <Image
-                  source={require('../assets/icon/arrow2.png')}
-                  style={styles.drawerIcon}
-                />
-              ) : (
-                <Image
-                  source={require('../assets/icon/arrow2.png')}
-                  style={[styles.drawerIcon, {transform: [{rotate: '180deg'}]}]}
-                />
-              )}
-            </Pressable>
-            <>
+          <View style={styles.modalContainer}>
+            <View
+              style={[styles.drawerContent]}
+              onStartShouldSetResponder={() => true}
+              onTouchEnd={e => {
+                e.stopPropagation();
+              }}>
               <View style={styles.drawerHeader}>
                 <Text style={styles.drawerTitle}>{hintMethod}</Text>
               </View>
-              <Text style={styles.drawerText}>{hintContent}</Text>
-              <View style={styles.drawerButtons}>
-                <Pressable
-                  onPressIn={handleApplyHint}
-                  style={[styles.drawerButton, styles.drawerButtonApply]}>
-                  <Text style={styles.drawerButtonTextApply}>{t('apply')}</Text>
+              <ScrollView
+                style={styles.drawerTextContainer}
+                contentContainerStyle={styles.drawerTextContentContainer}
+                showsVerticalScrollIndicator={true}
+                scrollEnabled={true}
+                nestedScrollEnabled={true} // 移除或设置为 false
+                bounces={true}
+                scrollEventThrottle={16} // 添加滚动事件节流
+                onStartShouldSetResponder={() => true} // 添加响应器
+                onMoveShouldSetResponder={() => true} // 添加响应器
+              >
+                <Pressable>
+                  <Text style={styles.drawerText}>{hintContent}</Text>
                 </Pressable>
+              </ScrollView>
+              <View style={styles.drawerButtons}>
                 <Pressable
                   onPressIn={handleCancelHint}
                   style={[styles.drawerButton, styles.drawerButtonCancel]}>
@@ -1031,8 +1020,13 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
                     {t('cancel')}
                   </Text>
                 </Pressable>
+                <Pressable
+                  onPressIn={handleApplyHint}
+                  style={[styles.drawerButton, styles.drawerButtonApply]}>
+                  <Text style={styles.drawerButtonTextApply}>{t('apply')}</Text>
+                </Pressable>
               </View>
-            </>
+            </View>
           </View>
         </Modal>
       </Animated.View>

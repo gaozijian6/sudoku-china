@@ -157,6 +157,7 @@ const sudokuStyles = StyleSheet.create({
     height: '33.33%',
     textAlign: 'center',
     position: 'absolute',
+    lineHeight: 12,
   },
   selectedCell: {
     borderWidth: 2,
@@ -201,13 +202,24 @@ const sudokuStyles = StyleSheet.create({
     flexWrap: 'wrap',
     width: '100%',
     justifyContent: 'space-evenly',
-    paddingHorizontal: 10,
     position: 'relative',
     top: -30,
+    height: 70,
+    display: 'flex',
+    alignItems: 'center',
   },
   buttonContainer: {
     alignItems: 'center',
-    width: 62,
+    width: 74,
+    height: '100%',
+    overflow: 'hidden',
+    display: 'flex',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  buttonContainerDIY: {
+    alignItems: 'center',
+    width: 65,
     height: 60,
     overflow: 'hidden',
     display: 'flex',
@@ -309,6 +321,10 @@ const sudokuStyles = StyleSheet.create({
     left: 0,
     right: 0,
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
   drawerContent: {
     position: 'relative',
     marginTop: 'auto',
@@ -318,8 +334,7 @@ const sudokuStyles = StyleSheet.create({
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     backgroundColor: '#fff',
-    minHeight: 50,
-    maxHeight: '80%',
+    maxHeight: 320,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -330,11 +345,29 @@ const sudokuStyles = StyleSheet.create({
     elevation: 24,
     flexDirection: 'column',
   },
+  drawerTextContainer: {
+    height: 200,
+    marginBottom: 20,
+    width: '100%',
+    backgroundColor: '#fff',
+  },
+  drawerTextContentContainer: {
+    paddingVertical: 10,
+    width: '100%',
+  },
+  drawerText: {
+    fontSize: 16,
+    color: '#000',
+    fontWeight: 'bold',
+    lineHeight: 24,
+    textAlign: 'center',
+    width: '100%',
+  },
   drawerIconContainer: {
     position: 'absolute',
     right: 20,
     width: 40,
-    height: 40,
+    // height: 40,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,
@@ -363,17 +396,6 @@ const sudokuStyles = StyleSheet.create({
     color: '#333',
     textAlign: 'center',
     flex: 1,
-  },
-  drawerText: {
-    fontSize: 16,
-    marginBottom: 20,
-    color: '#000',
-    fontWeight: 'bold',
-    lineHeight: 24,
-    textAlign: 'center',
-    alignSelf: 'center',
-    width: '100%',
-    flexGrow: 1,
   },
   drawerButtons: {
     flexDirection: 'row',
@@ -446,10 +468,7 @@ const sudokuStyles = StyleSheet.create({
     justifyContent: 'center',
     top: -10,
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
+
 });
 
 export default sudokuStyles;

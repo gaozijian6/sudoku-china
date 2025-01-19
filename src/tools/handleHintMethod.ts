@@ -2,6 +2,7 @@ import { SOLUTION_METHODS } from "../constans";
 import { TFunction } from "i18next";
 
 const handleHintMethod = (method: string, t: TFunction) => {
+  console.log(method);
   switch (method) {
     case SOLUTION_METHODS.CHECK_CANDIDATE:
       return t('CHECK_CANDIDATE');
@@ -29,6 +30,8 @@ const handleHintMethod = (method: string, t: TFunction) => {
       return t('NAKED_PAIR_BOX');
     case SOLUTION_METHODS.NAKED_TRIPLE_ROW1:
       return t('NAKED_TRIPLE_ROW1');
+    case SOLUTION_METHODS.NAKED_TRIPLE_COLUMN1:
+      return t('NAKED_TRIPLE_COLUMN1');
     case SOLUTION_METHODS.NAKED_TRIPLE_BOX1:
       return t('NAKED_TRIPLE_BOX1');
     case SOLUTION_METHODS.NAKED_TRIPLE_ROW2:

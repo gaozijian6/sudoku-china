@@ -1,17 +1,18 @@
-import React, {useEffect, useCallback} from 'react';
-import {View, Text, Pressable, StyleSheet, Animated} from 'react-native';
-import {useSudokuStore} from '../store';
-import {useTranslation} from 'react-i18next';
-import {generateBoard} from '../tools';
+import React, { useEffect, useCallback } from 'react';
+import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
+import { useSudokuStore } from '../store';
+import { useTranslation } from 'react-i18next';
+import { generateBoard } from '../tools';
 
 interface ResultProps {
   onBack: () => void;
   resetSudoku: () => void;
+  visible: boolean;
 }
 
-const ResultView: React.FC<ResultProps> = ({onBack, resetSudoku}) => {
-  const {t} = useTranslation();
-  const scaleAnim = new Animated.Value(0);
+const ResultView: React.FC<ResultProps> = ({ onBack, resetSudoku, visible }) => {
+  const { t } = useTranslation();
+  const scaleAnim = React.useRef(new Animated.Value(0)).current;
   const {
     time,
     errorCount,
@@ -29,13 +30,18 @@ const ResultView: React.FC<ResultProps> = ({onBack, resetSudoku}) => {
     initializeBoard2,
   } = useSudokuStore();
   useEffect(() => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-      friction: 8,
-      tension: 40,
-    }).start();
-  }, []);
+    if (visible) {
+      scaleAnim.setValue(0);
+      setTimeout(() => {
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          useNativeDriver: true,
+          friction: 8,
+          tension: 40,
+        }).start();
+      }, 0);
+    }
+  }, [visible]);
 
   const handleBack = useCallback(() => {
     setResultVisible(false);
@@ -77,45 +83,47 @@ const ResultView: React.FC<ResultProps> = ({onBack, resetSudoku}) => {
   ]);
 
   return (
-    <View style={styles.overlay}>
-      <Animated.View
-        style={[
-          styles.container,
-          {
-            transform: [
-              {
-                scale: scaleAnim,
-              },
-            ],
-          },
-        ]}>
-        <Text style={styles.title}>{t('congratulations')}</Text>
-        <View style={styles.content}>
-          <View style={styles.row}>
-            <Text style={styles.leftText}>{t('duration')}:</Text>
-            <Text style={styles.rightText}>{time}</Text>
+    visible && (
+      <View style={styles.overlay}>
+        <Animated.View
+          style={[
+            styles.container,
+            {
+              transform: [
+                {
+                  scale: scaleAnim,
+                },
+              ],
+            },
+          ]}>
+          <Text style={styles.title}>{t('congratulations')}</Text>
+          <View style={styles.content}>
+            <View style={styles.row}>
+              <Text style={styles.leftText}>{t('duration')}:</Text>
+              <Text style={styles.rightText}>{time}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.leftText}>{t('mistakes')}:</Text>
+              <Text style={styles.rightText}>{errorCount}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.leftText}>{t('hintCount')}:</Text>
+              <Text style={styles.rightText}>{hintCount}</Text>
+            </View>
           </View>
-          <View style={styles.row}>
-            <Text style={styles.leftText}>{t('mistakes')}:</Text>
-            <Text style={styles.rightText}>{errorCount}</Text>
+          <View style={styles.buttonContainer}>
+            <Pressable style={styles.button} onPressIn={handleBack}>
+              <Text style={styles.buttonText}>{t('back')}</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.button, styles.nextButton]}
+              onPressIn={handleNext}>
+              <Text style={styles.buttonText}>{t('next')}</Text>
+            </Pressable>
           </View>
-          <View style={styles.row}>
-            <Text style={styles.leftText}>{t('hintCount')}:</Text>
-            <Text style={styles.rightText}>{hintCount}</Text>
-          </View>
-        </View>
-        <View style={styles.buttonContainer}>
-          <Pressable style={styles.button} onPressIn={handleBack}>
-            <Text style={styles.buttonText}>{t('back')}</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.button, styles.nextButton]}
-            onPressIn={handleNext}>
-            <Text style={styles.buttonText}>{t('next')}</Text>
-          </Pressable>
-        </View>
-      </Animated.View>
-    </View>
+        </Animated.View>
+      </View>
+    )
   );
 };
 
@@ -145,7 +153,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   content: {
-    width: '100%',
     marginBottom: 20,
     alignItems: 'center',
   },

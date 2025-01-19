@@ -8,6 +8,8 @@ import {
     TouchableOpacity,
     ScrollView,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface LanguageModalProps {
     visible: boolean;
@@ -22,10 +24,11 @@ const LanguageModal: React.FC<LanguageModalProps> = ({
     currentLanguage,
     onSelectLanguage,
 }) => {
+    const { t } = useTranslation();
     const languages = [
         { code: 'en', label: 'English' }, // 英语
-        { code: 'zh', label: '中文（简体）' }, // 简体中文
-        { code: 'zh-TW', label: '中文（繁体）' }, // 繁体中文
+        { code: 'zh_CN', label: '中文（简体）' }, // 简体中文
+        { code: 'zh_TW', label: '中文（繁體）' }, // 繁体中文
         { code: 'ja', label: '日本語' }, // 日语
         { code: 'ko', label: '한국어' }, // 韩语
         { code: 'fr', label: 'Français' }, // 法语
@@ -34,10 +37,22 @@ const LanguageModal: React.FC<LanguageModalProps> = ({
         { code: 'it', label: 'Italiano' }, // 意大利语
         { code: 'pt', label: 'Português' }, // 葡萄牙语
         { code: 'ru', label: 'Русский' }, // 俄语
-        { code: 'ar', label: 'العربية' }, // 阿拉伯语
         { code: 'hi', label: 'हिन्दी' }, // 印地语
         { code: 'tr', label: 'Türkçe' }, // 土耳其语
+        { code: 'vi', label: 'Tiếng Việt' }, // 越南语
+        { code: 'th', label: 'ไทย' }, // 泰语
+        { code: 'uk', label: 'Українська' }, // 乌克兰语
+        { code: 'nl', label: 'Nederlands' }, // 荷兰语
     ];
+
+    const handleLanguageSelect = async (langCode: string) => {
+        try {
+            await AsyncStorage.setItem('userLanguage', langCode);
+            onSelectLanguage(langCode);
+        } catch (error) {
+            console.error('保存语言设置失败:', error);
+        }
+    };
 
     return (
         <Modal
@@ -53,7 +68,7 @@ const LanguageModal: React.FC<LanguageModalProps> = ({
                             <TouchableOpacity
                                 key={lang.code}
                                 style={styles.languageItem}
-                                onPress={() => onSelectLanguage(lang.code)}
+                                onPress={() => handleLanguageSelect(lang.code)}
                             >
                                 <Text style={styles.languageText}>{lang.label}</Text>
                                 {currentLanguage === lang.code && (
@@ -63,7 +78,7 @@ const LanguageModal: React.FC<LanguageModalProps> = ({
                         ))}
                     </ScrollView>
                     <Pressable style={styles.cancelButton} onPress={onClose}>
-                        <Text style={styles.cancelText}>取消</Text>
+                        <Text style={styles.cancelText}>{t('cancel')}</Text>
                     </Pressable>
                 </View>
             </View>

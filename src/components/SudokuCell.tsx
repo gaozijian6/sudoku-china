@@ -96,7 +96,6 @@ const Cell = memo(
               key={num}
               style={
                 [
-                  styles.draftCell,
                   styles.draftCellText,
                   {
                     left: `${((num - 1) % 3) * 33.33 + 2}%`,
@@ -133,6 +132,7 @@ const Cell = memo(
                     styles.candidateHighlightHint,
                   differenceMap[`${rowIndex},${colIndex}`]?.includes(num) &&
                     styles.candidateHighlightHintText,
+                  styles.draftCell,
                 ].filter(Boolean) as TextStyle[]
               }>
               {num}

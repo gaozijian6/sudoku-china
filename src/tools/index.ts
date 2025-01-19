@@ -1,13 +1,13 @@
-import {DIFFICULTY} from '../constans';
+import { DIFFICULTY } from '../constans';
 import easyBoard from '../mock/easy';
 import entryBoard from '../mock/entry';
 import extremeBoard from '../mock/extreme';
 import hardBoard from '../mock/hard';
 import mediumBoard from '../mock/medium';
-import {isUnitStrongLink, hiddenSingle} from './solution';
-import {NativeModules} from 'react-native';
+import { isUnitStrongLink, hiddenSingle } from './solution';
+import { NativeModules } from 'react-native';
 
-const {ComputeModule} = NativeModules;
+const { ComputeModule } = NativeModules;
 if (!ComputeModule) {
   console.error('ComputeModule is not available');
 }
@@ -70,7 +70,7 @@ export const createGraph = (
           subGraph.push(current);
 
           for (let j = 0; j < candidates.length; j++) {
-            const position1 = {row: current.row, col: current.col};
+            const position1 = { row: current.row, col: current.col };
             const position2 = {
               row: candidates[j].row,
               col: candidates[j].col,
@@ -269,8 +269,8 @@ export const solve3 = async (board: CellData[][]) => {
       let result = solveFunction(standardBoard, {}, {});
 
       if (result) {
-        const {isFill, position, target} = result;
-        position.forEach(({row, col}) => {
+        const { isFill, position, target } = result;
+        position.forEach(({ row, col }) => {
           if (isFill) {
             counts++;
             if (counts === 81) {
@@ -282,7 +282,7 @@ export const solve3 = async (board: CellData[][]) => {
             // 更新受影响的单元格
             const affectedCells = updateRelatedCellsDraft(
               standardBoard,
-              [{row, col}],
+              [{ row, col }],
               target[0],
               getCandidates,
             );
@@ -307,8 +307,11 @@ export const solve3 = async (board: CellData[][]) => {
   }
   const result = await ComputeModule.solveSudoku(standardBoard, standardBoard);
 
+  if (!result) {
+    return null;
+  }
+  return result;
 
-  
 };
 
 export const isRowFull = (board: CellData[][], row: number) => {
@@ -321,8 +324,8 @@ export const isColumnFull = (board: CellData[][], col: number) => {
 export const isBoxFull = (board: CellData[][], box: number) => {
   const startRow = Math.floor(box / 3) * 3;
   const startCol = (box % 3) * 3;
-  return Array.from({length: 3}, (_, i) =>
-    Array.from({length: 3}, (_, j) => board[startRow + i][startCol + j]),
+  return Array.from({ length: 3 }, (_, i) =>
+    Array.from({ length: 3 }, (_, j) => board[startRow + i][startCol + j]),
   ).every(row => row.every(cell => cell.value !== null));
 };
 
@@ -333,9 +336,8 @@ export const getCellClassName = (
   selectedNumber: number | null,
 ) => {
   const cell = board[rowIndex][colIndex];
-  const baseClass = `sudokuCell ${
-    cell.value === null ? 'emptySudokuCell' : ''
-  } ${cell.isGiven ? 'givenNumber' : ''}`;
+  const baseClass = `sudokuCell ${cell.value === null ? 'emptySudokuCell' : ''
+    } ${cell.isGiven ? 'givenNumber' : ''}`;
 
   if (selectedNumber !== null) {
     if (cell.value === selectedNumber) {
@@ -376,7 +378,7 @@ export const isSameBoard = (
       (cell, colIndex) =>
         cell.value === board2[rowIndex][colIndex].value &&
         JSON.stringify(cell.draft) ===
-          JSON.stringify(board2[rowIndex][colIndex].draft),
+        JSON.stringify(board2[rowIndex][colIndex].draft),
     ),
   );
 };
@@ -386,20 +388,20 @@ export const checkNumberInRowColumnAndBox = (
   row: number,
   col: number,
   num: number,
-): {row: number; col: number}[] => {
-  const conflictCells: {row: number; col: number}[] = [];
+): { row: number; col: number }[] => {
+  const conflictCells: { row: number; col: number }[] = [];
 
   // 检查行
   for (let i = 0; i < 9; i++) {
     if (board[row][i].value === num) {
-      conflictCells.push({row, col: i});
+      conflictCells.push({ row, col: i });
     }
   }
 
   // 检查列
   for (let i = 0; i < 9; i++) {
     if (board[i][col].value === num) {
-      conflictCells.push({row: i, col});
+      conflictCells.push({ row: i, col });
     }
   }
 
@@ -409,7 +411,7 @@ export const checkNumberInRowColumnAndBox = (
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
       if (board[boxRow + i][boxCol + j].value === num) {
-        conflictCells.push({row: boxRow + i, col: boxCol + j});
+        conflictCells.push({ row: boxRow + i, col: boxCol + j });
       }
     }
   }
@@ -420,21 +422,21 @@ export const checkNumberInRowColumnAndBox = (
 // 添加新的函数来更新相关单元格的草稿数字
 export const updateRelatedCellsDraft = (
   board: CellData[][],
-  position: {row: number; col: number}[],
+  position: { row: number; col: number }[],
   value: number,
   getCandidates: (board: CellData[][], row: number, col: number) => number[],
   isUndo: boolean = false,
 ) => {
-  const affectedCells: {row: number; col: number}[] = [];
+  const affectedCells: { row: number; col: number }[] = [];
 
   // 收集受影响的单元格
-  position.forEach(({row, col}) => {
+  position.forEach(({ row, col }) => {
     for (let i = 0; i < 9; i++) {
       if (i !== col && board[row][i].value === null) {
-        affectedCells.push({row, col: i});
+        affectedCells.push({ row, col: i });
       }
       if (i !== row && board[i][col].value === null) {
-        affectedCells.push({row: i, col});
+        affectedCells.push({ row: i, col });
       }
     }
 
@@ -443,7 +445,7 @@ export const updateRelatedCellsDraft = (
     for (let i = boxRow; i < boxRow + 3; i++) {
       for (let j = boxCol; j < boxCol + 3; j++) {
         if ((i !== row || j !== col) && board[i][j].value === null) {
-          affectedCells.push({row: i, col: j});
+          affectedCells.push({ row: i, col: j });
         }
       }
     }
@@ -454,11 +456,11 @@ export const updateRelatedCellsDraft = (
     new Set(affectedCells.map(cell => `${cell.row},${cell.col}`)),
   ).map(str => {
     const [row, col] = str.split(',');
-    return {row: Number(row), col: Number(col)};
+    return { row: Number(row), col: Number(col) };
   });
 
   // 更新受影响的单元格
-  uniqueAffectedCells.forEach(({row, col}) => {
+  uniqueAffectedCells.forEach(({ row, col }) => {
     const cell = board[row][col];
     const candidates = getCandidates(board, row, col);
     updateCellDraft(cell, value, candidates, isUndo);

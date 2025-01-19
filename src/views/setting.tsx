@@ -7,12 +7,12 @@ import {
   Pressable,
   Image,
   Animated,
-  StatusBar,
+  Linking,
+  Platform,
 } from 'react-native';
-import {useSudokuStore} from '../store';
+import { useSudokuStore } from '../store';
 import TarBars from '../components/tarBars';
-import FeedbackModal from '../components/FeedbackModal';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import LanguageModal from '../components/LanguageModal';
 
 interface SettingProps {
@@ -20,18 +20,35 @@ interface SettingProps {
   closeSetting: () => void;
 }
 
+const APP_VERSION = '1.0.0';
+
 const Setting: React.FC<SettingProps> = ({
   slideAnim,
   closeSetting,
 }) => {
-  const {isSound, setIsSound} = useSudokuStore();
-  const [feedbackVisible, setFeedbackVisible] = useState(false);
+  const { isSound, setIsSound } = useSudokuStore();
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
-  const {t, i18n} = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const toogleSound = useCallback(() => {
     setIsSound(!isSound);
   }, [isSound, setIsSound]);
+
+  const handleFeedback = useCallback(() => {
+    const email = 'gaozijian32@gmail.com';
+    const subject = `Feedback Sudoku ${APP_VERSION}`;
+    const body = `
+App Version: ${APP_VERSION}
+OS Version: ${Platform.OS} ${Platform.Version}
+Language: ${i18n.language}
+
+${t('feedbackMessage')}
+    `.trim();
+
+    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    Linking.openURL(mailtoUrl);
+  }, [i18n.language]);
+
   return (
     <Animated.View
       style={[
@@ -77,7 +94,7 @@ const Setting: React.FC<SettingProps> = ({
           <Switch
             value={isSound}
             onValueChange={toogleSound}
-            trackColor={{false: '#f0f0f0', true: 'rgb(91,139,241)'}}
+            trackColor={{ false: '#f0f0f0', true: 'rgb(91,139,241)' }}
             thumbColor={isSound ? '#fff' : '#fff'}
           />
         </View>
@@ -91,12 +108,12 @@ const Setting: React.FC<SettingProps> = ({
           <Switch
             value={isSound}
             onValueChange={toogleSound}
-            trackColor={{false: '#f0f0f0', true: 'rgb(91,139,241)'}}
+            trackColor={{ false: '#f0f0f0', true: 'rgb(91,139,241)' }}
             thumbColor={isSound ? '#fff' : '#fff'}
           />
         </Pressable>
 
-        <Pressable 
+        <Pressable
           style={styles.item}
           onPress={() => setLanguageModalVisible(true)}
         >
@@ -111,20 +128,20 @@ const Setting: React.FC<SettingProps> = ({
           />
         </Pressable>
 
-        {/* <Pressable 
-          style={styles.item} 
-          onPress={() => setFeedbackVisible(true)}
+        <Pressable
+          style={styles.item}
+          onPress={handleFeedback}
         >
           <Image
             source={require('../assets/icon/email.png')}
             style={styles.leftIcon}
           />
-          <Text style={styles.itemText}>意见反馈</Text>
+          <Text style={styles.itemText}>{t('feedback')}</Text>
           <Image
             source={require('../assets/icon/arrow.png')}
             style={styles.arrow}
           />
-        </Pressable> */}
+        </Pressable>
       </View>
 
       <View style={styles.links}>
@@ -137,12 +154,7 @@ const Setting: React.FC<SettingProps> = ({
         </Pressable>
       </View>
 
-      <FeedbackModal 
-        visible={feedbackVisible}
-        onClose={() => setFeedbackVisible(false)}
-      />
-
-      <LanguageModal 
+      <LanguageModal
         visible={languageModalVisible}
         onClose={() => setLanguageModalVisible(false)}
         currentLanguage={i18n.language}
