@@ -5,6 +5,9 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
@@ -20,7 +23,8 @@ target 'SudokuApp' do
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    :hermes_enabled => true
   )
 
   target 'SudokuAppTests' do
@@ -29,6 +33,7 @@ target 'SudokuApp' do
   end
 
   pod 'Google-Mobile-Ads-SDK'
+  pod 'RNIap', :path => '../node_modules/react-native-iap'
 
   post_install do |installer|
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202

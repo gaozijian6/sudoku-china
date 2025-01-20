@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,12 @@ import { useSudokuStore } from '../store';
 import TarBars from '../components/tarBars';
 import { useTranslation } from 'react-i18next';
 import LanguageModal from '../components/LanguageModal';
+import RNIap, {
+  purchaseErrorListener,
+  purchaseUpdatedListener,
+  ProductPurchase,
+  PurchaseError,
+} from 'react-native-iap';
 
 interface SettingProps {
   slideAnim: Animated.Value;
@@ -22,13 +28,20 @@ interface SettingProps {
 
 const APP_VERSION = '1.0.0';
 
+// 商品 ID
+const itemSKUs = Platform.select({
+  ios: ['sudokucustomAD'],
+  android: ['sudokucustomAD']
+});
+
 const Setting: React.FC<SettingProps> = ({
   slideAnim,
   closeSetting,
 }) => {
-  const { isSound, setIsSound } = useSudokuStore();
+  const { isSound, setIsSound, isRemoveAd, setIsRemoveAd } = useSudokuStore();
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const { t, i18n } = useTranslation();
+  const [purchasing, setPurchasing] = useState(false);
 
   const toogleSound = useCallback(() => {
     setIsSound(!isSound);
@@ -48,6 +61,74 @@ ${t('feedbackMessage')}
     const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     Linking.openURL(mailtoUrl);
   }, [i18n.language]);
+
+  // 初始化 IAP
+  useEffect(() => {
+    let purchaseUpdateSubscription: any;
+    let purchaseErrorSubscription: any;
+    
+    const initIAP = async () => {
+      try {
+        await RNIap.initConnection();
+        
+        // 监听购买更新
+        purchaseUpdateSubscription = purchaseUpdatedListener(
+          async (purchase: ProductPurchase) => {
+            if (purchase.transactionReceipt) {
+              await RNIap.finishTransaction({
+                purchase,
+                isConsumable: false,
+              });
+              setIsRemoveAd(true);
+              setPurchasing(false);
+            }
+          }
+        );
+
+        // 监听购买错误
+        purchaseErrorSubscription = purchaseErrorListener(
+          (error: PurchaseError) => {
+            console.warn('购买错误', error);
+            setPurchasing(false);
+          }
+        );
+
+      } catch (err) {
+        console.warn('初始化 IAP 错误:', err);
+      }
+    };
+
+    initIAP();
+
+    return () => {
+      purchaseUpdateSubscription?.remove();
+      purchaseErrorSubscription?.remove();
+      RNIap.endConnection();
+    };
+  }, [setIsRemoveAd]);
+
+  // 处理购买
+  const handlePurchase = async () => {
+    if (purchasing) return;
+    
+    try {
+      setPurchasing(true);
+      const products = await RNIap.getProducts(itemSKUs || []);
+      
+      if (products.length > 0) {
+        await RNIap.requestPurchase({
+          sku: products[0].productId,
+          andDangerouslyFinishTransactionAutomaticallyIOS: false
+        });
+      } else {
+        console.warn('没有可用商品');
+        setPurchasing(false);
+      }
+    } catch (err) {
+      console.warn('购买错误:', err);
+      setPurchasing(false);
+    }
+  };
 
   return (
     <Animated.View
@@ -73,12 +154,17 @@ ${t('feedbackMessage')}
       </View>
 
       <View style={styles.content}>
-        <Pressable style={[styles.item]}>
+        <Pressable 
+          style={[styles.item]}
+          onPress={handlePurchase}
+          disabled={purchasing}>
           <Image
             source={require('../assets/icon/closeAD.png')}
             style={styles.leftIcon}
           />
-          <Text style={styles.itemText}>{t('removeAD')}</Text>
+          <Text style={styles.itemText}>
+            {purchasing ? t('purchasing') : t('removeAD')}
+          </Text>
           <Image
             source={require('../assets/icon/arrow.png')}
             style={styles.arrow}
@@ -99,7 +185,7 @@ ${t('feedbackMessage')}
           />
         </View>
 
-        <Pressable style={styles.item}>
+        {/* <Pressable style={styles.item}>
           <Image
             source={require('../assets/icon/notice.png')}
             style={styles.leftIcon}
@@ -111,7 +197,7 @@ ${t('feedbackMessage')}
             trackColor={{ false: '#f0f0f0', true: 'rgb(91,139,241)' }}
             thumbColor={isSound ? '#fff' : '#fff'}
           />
-        </Pressable>
+        </Pressable> */}
 
         <Pressable
           style={styles.item}

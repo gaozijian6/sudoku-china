@@ -17,6 +17,7 @@
 		8B32459DC4AE09F3164643F8 /* libPods-SudokuApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19C1152CBAC8853AE7DE8677 /* libPods-SudokuApp.a */; };
 		A98AD9E62D3B7117008FA233 /* ComputeModule.h in Sources */ = {isa = PBXBuildFile; fileRef = A98AD9E42D3B7117008FA233 /* ComputeModule.h */; };
 		A98AD9E72D3B7117008FA233 /* ComputeModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = A98AD9E52D3B7117008FA233 /* ComputeModule.mm */; };
+		A9E17CE42D3EB04500A1014E /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9E17CE32D3EB04500A1014E /* StoreKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 		9DD94F7D027A857B0B72C006 /* Pods-SudokuApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SudokuApp.debug.xcconfig"; path = "Target Support Files/Pods-SudokuApp/Pods-SudokuApp.debug.xcconfig"; sourceTree = "<group>"; };
 		A98AD9E42D3B7117008FA233 /* ComputeModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ComputeModule.h; path = SudokuApp/ComputeModule.h; sourceTree = "<group>"; };
 		A98AD9E52D3B7117008FA233 /* ComputeModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = ComputeModule.mm; path = SudokuApp/ComputeModule.mm; sourceTree = "<group>"; };
+		A9E17CE32D3EB04500A1014E /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		BA203B08227B6C92C33CFBB2 /* Pods-SudokuApp-SudokuAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SudokuApp-SudokuAppTests.debug.xcconfig"; path = "Target Support Files/Pods-SudokuApp-SudokuAppTests/Pods-SudokuApp-SudokuAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -66,6 +68,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8B32459DC4AE09F3164643F8 /* libPods-SudokuApp.a in Frameworks */,
+				A9E17CE42D3EB04500A1014E /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,6 +109,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A9E17CE32D3EB04500A1014E /* StoreKit.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				19C1152CBAC8853AE7DE8677 /* libPods-SudokuApp.a */,
 				15E48B82C9056B998EAC0F7F /* libPods-SudokuApp-SudokuAppTests.a */,
@@ -439,6 +443,7 @@
 			baseConfigurationReference = BA203B08227B6C92C33CFBB2 /* Pods-SudokuApp-SudokuAppTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = FH8DM9J9B4;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -467,6 +472,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = FH8DM9J9B4;
 				INFOPLIST_FILE = SudokuAppTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -612,10 +618,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -684,10 +687,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

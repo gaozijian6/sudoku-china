@@ -2,7 +2,6 @@ import { SOLUTION_METHODS } from "../constans";
 import { TFunction } from "i18next";
 
 const handleHintMethod = (method: string, t: TFunction) => {
-  console.log(method);
   switch (method) {
     case SOLUTION_METHODS.CHECK_CANDIDATE:
       return t('CHECK_CANDIDATE');

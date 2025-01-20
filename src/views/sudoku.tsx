@@ -868,7 +868,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
     useEffect(() => {
       const subscription = AppState.addEventListener('change', nextAppState => {
         if (nextAppState === 'background' && (isSudoku || isContinue)) {
-          console.log('saveData');
           saveData();
         }
       });
