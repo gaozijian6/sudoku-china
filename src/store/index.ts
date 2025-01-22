@@ -42,8 +42,8 @@ interface SudokuState {
   setLoadData: (fn: () => void) => void;
   isConnected: boolean;
   setIsConnected: (value: boolean) => void;
-  isRemoveAd: boolean;
-  setIsRemoveAd: (value: boolean) => void;
+  isVip: boolean;
+  setIsVip: (value: boolean) => void;
 }
 
 export const useSudokuStore = create<SudokuState>(set => ({
@@ -85,8 +85,8 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setLoadData: (fn) => set({ loadData: fn }),
   isConnected: false,
   setIsConnected: value => set({isConnected: value}),
-  isRemoveAd: false,
-  setIsRemoveAd: value => set({isRemoveAd: value}),
+  isVip: false,
+  setIsVip: value => set({isVip: value}),
   
   start: (timeOffset: number) =>
     set(state => {

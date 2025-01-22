@@ -14,12 +14,13 @@ import { useSudokuStore } from '../store';
 import TarBars from '../components/tarBars';
 import { useTranslation } from 'react-i18next';
 import LanguageModal from '../components/LanguageModal';
-import RNIap, {
+import {
   purchaseErrorListener,
   purchaseUpdatedListener,
   ProductPurchase,
   PurchaseError,
 } from 'react-native-iap';
+import * as RNIap from 'react-native-iap';
 
 interface SettingProps {
   slideAnim: Animated.Value;
@@ -31,14 +32,13 @@ const APP_VERSION = '1.0.0';
 // 商品 ID
 const itemSKUs = Platform.select({
   ios: ['sudokucustomAD'],
-  android: ['sudokucustomAD']
 });
 
 const Setting: React.FC<SettingProps> = ({
   slideAnim,
   closeSetting,
 }) => {
-  const { isSound, setIsSound, isRemoveAd, setIsRemoveAd } = useSudokuStore();
+  const { isSound, setIsSound, isVip, setIsVip } = useSudokuStore();
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const { t, i18n } = useTranslation();
   const [purchasing, setPurchasing] = useState(false);
@@ -68,6 +68,11 @@ ${t('feedbackMessage')}
     let purchaseErrorSubscription: any;
     
     const initIAP = async () => {
+      if (typeof RNIap === 'undefined') {
+        console.warn('RNIap 模块未加载');
+        return;
+      }
+
       try {
         await RNIap.initConnection();
         
@@ -79,7 +84,7 @@ ${t('feedbackMessage')}
                 purchase,
                 isConsumable: false,
               });
-              setIsRemoveAd(true);
+              setIsVip(true);
               setPurchasing(false);
             }
           }
@@ -101,11 +106,13 @@ ${t('feedbackMessage')}
     initIAP();
 
     return () => {
-      purchaseUpdateSubscription?.remove();
-      purchaseErrorSubscription?.remove();
-      RNIap.endConnection();
+      if (typeof RNIap !== 'undefined') {
+        purchaseUpdateSubscription?.remove();
+        purchaseErrorSubscription?.remove();
+        RNIap.endConnection();
+      }
     };
-  }, [setIsRemoveAd]);
+  }, [setIsVip]);
 
   // 处理购买
   const handlePurchase = async () => {
@@ -113,7 +120,7 @@ ${t('feedbackMessage')}
     
     try {
       setPurchasing(true);
-      const products = await RNIap.getProducts(itemSKUs || []);
+      const products = await RNIap.getProducts({ skus: itemSKUs || [] });
       
       if (products.length > 0) {
         await RNIap.requestPurchase({

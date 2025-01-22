@@ -653,12 +653,12 @@ const Sudoku: React.FC<SudokuProps> = memo(
       }
     }, [isSudoku]);
 
-    const handleRewardedVideo = useCallback(() => {
+    const handleRewardedVideo = useCallback( () => {
       // 非第一次提示
       if (!isFirstHint.current) {
         if (watchIconVisible) {
           setWatchIconVisible(false);
-          rewardedVideo.show();
+          rewardedVideo.show()
         } else {
           setWatchIconVisible(rewardedVideo.isReady());
         }

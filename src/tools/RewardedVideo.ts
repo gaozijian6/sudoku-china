@@ -3,6 +3,7 @@ import mobileAds, {
   RewardedAd,
   RewardedAdEventType,
   TestIds,
+  AdEventType
 } from 'react-native-google-mobile-ads';
 
 class RewardedVideo {
@@ -30,6 +31,7 @@ class RewardedVideo {
     this.rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
       this.isLoaded = true;
       this.startLoadTime = Date.now();
+      console.log('广告加载成功');
     });
     this.rewardedAd.addAdEventListener(
       RewardedAdEventType.EARNED_REWARD,
@@ -40,18 +42,28 @@ class RewardedVideo {
         }, 0);
       },
     );
+    this.rewardedAd.addAdEventListener(AdEventType.OPENED, () => {
+      this.isLoaded = false;
+      setTimeout(() => {
+        this.load();
+      }, 0);
+    });
+    this.rewardedAd.addAdEventListener(AdEventType.ERROR, () => {
+      console.log('广告加载失败');
+    });
   }
 
   public async load(): Promise<void> {
     if (!this.isLoaded) {
+      console.log('广告加载中', this.isLoaded);
       await this.rewardedAd.load();
     }
   }
 
   public async show(): Promise<void> {
-    // if (this.isLoaded) {
-    //   await this.rewardedAd.show();
-    // }
+    if (this.isLoaded) {
+      await this.rewardedAd.show();
+    }
   }
 
   public isReady(): boolean {

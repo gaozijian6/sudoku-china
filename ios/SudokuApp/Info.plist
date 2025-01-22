@@ -57,13 +57,13 @@
 	<string>ca-app-pub-7074198277688532~9436927387</string>
 	<key>GADIsAdManagerApp</key>
 	<true/>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>需要访问相册以便上传反馈图片</string>
 	<key>SKPaymentTransactionObserverHasPendingTransactions</key>
 	<true/>
+	<key>SKAdNetworkItems</key>
+	<array>
+		<!-- 在这里添加您的SKAdNetwork标识符 -->
+	</array>
 </dict>
 </plist>
