@@ -9,15 +9,16 @@ import mobileAds, {
 class RewardedVideo {
   private static instance: RewardedVideo;
   private isLoaded: boolean = false;
-  private rewardedAd: RewardedAd;
+  public rewardedAd: RewardedAd;
+  public chance: number = 1;
   // private adUnitId: string = 'ca-app-pub-2981436674907454/8073755152'; // 实际广告ID
   private adUnitId: string = TestIds.REWARDED; // 测试广告ID
   private startLoadTime: number = 0;
   private constructor() {
-    // this.initAds();
-    // this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
-    // this.initListeners();
-    // this.load();
+    this.initAds();
+    this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
+    this.initListeners();
+    this.load();
   }
 
   public static getInstance(): RewardedVideo {
@@ -33,23 +34,12 @@ class RewardedVideo {
       this.startLoadTime = Date.now();
       console.log('广告加载成功');
     });
-    this.rewardedAd.addAdEventListener(
-      RewardedAdEventType.EARNED_REWARD,
-      () => {
-        this.isLoaded = false;
-        setTimeout(() => {
-          this.load();
-        }, 0);
-      },
-    );
-    this.rewardedAd.addAdEventListener(AdEventType.OPENED, () => {
-      this.isLoaded = false;
-      setTimeout(() => {
-        this.load();
-      }, 0);
+    this.rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
+      this.chance++;
     });
-    this.rewardedAd.addAdEventListener(AdEventType.ERROR, () => {
-      console.log('广告加载失败');
+    this.rewardedAd.addAdEventListener(AdEventType.CLOSED, () => {
+      console.log('广告关闭');
+      this.rewardedAd.load();
     });
   }
 

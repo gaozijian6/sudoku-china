@@ -561,6 +561,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
     useEffect(() => {
       if (isDIY && !rewardedVideo.isReady()) {
+        rewardedVideo.chance = 1;
         rewardedVideo.load();
       }
     }, [isDIY]);

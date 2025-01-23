@@ -18,19 +18,13 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
     setIsHome,
     setPauseVisible,
     pauseVisible,
-    setTime,
-    setTimeOffset,
     setIsSudoku,
     setIsContinue,
-    stop,
     setIsLevel,
   } = useSudokuStore();
   const backToHome = useCallback(async () => {
     await saveData();
     onBack();
-    stop();
-    setTime('00:00');
-    setTimeOffset(0);
     setTimeout(() => {
       setIsHome(true);
       setIsSudoku(false);
@@ -39,9 +33,6 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
     }, 0);
   }, [
     onBack,
-    stop,
-    setTime,
-    setTimeOffset,
     setIsLevel,
     saveData,
     setIsHome,

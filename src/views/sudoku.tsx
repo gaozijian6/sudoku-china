@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, memo, useMemo } from 'react';
 import {
   View,
   Text,
@@ -52,7 +52,6 @@ import styles from './sudokuStyles';
 import { handleHintContent } from '../tools/handleHintContent';
 import Cell from '../components/SudokuCell';
 import Buttons from '../components/Buttons';
-import Timer from '../components/Timer';
 import { playSound } from '../tools/Sound';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSudokuStore } from '../store';
@@ -61,6 +60,7 @@ import ResultView from '../components/ResultOverlay';
 import handleHintMethod from '../tools/handleHintMethod';
 import WatchIcon from '../components/WatchIcon';
 import rewardedVideo from '../tools/RewardedVideo';
+import { RewardedAdEventType } from 'react-native-google-mobile-ads';
 
 interface SudokuProps {
   slideAnim: Animated.Value;
@@ -115,6 +115,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
     const [positions, setPositions] = useState<number[]>([]);
     const [eraseEnabled, setEraseEnabled] = useState<boolean>(false);
     const [watchIconVisible, setWatchIconVisible] = useState<boolean>(false);
+
     // 记录是否在提示过程中
     const isHinting = useRef<boolean>(false);
 
@@ -153,7 +154,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
     const {
       difficulty,
       setResultVisible,
-      setTime,
       errorCount,
       setErrorCount,
       setHintCount,
@@ -251,7 +251,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
     const setSuccessResult = useCallback(
       (time: string, errorCount: number, hintCount: number) => {
         setResultVisible(true);
-        setTime(time);
         setErrorCount(errorCount);
         setHintCount(hintCount);
         setIsHasContinue(true);
@@ -259,7 +258,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       },
       [
         setResultVisible,
-        setTime,
         setErrorCount,
         setHintCount,
         setIsHasContinue,
@@ -649,11 +647,13 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
     useEffect(() => {
       if (isSudoku && !rewardedVideo.isReady()) {
+        setWatchIconVisible(false);
+        rewardedVideo.chance = 1;
         rewardedVideo.load();
       }
     }, [isSudoku]);
 
-    const handleRewardedVideo = useCallback( () => {
+    const handleRewardedVideo = useCallback(() => {
       // 非第一次提示
       if (!isFirstHint.current) {
         if (watchIconVisible) {
@@ -740,7 +740,10 @@ const Sudoku: React.FC<SudokuProps> = memo(
           return;
         }
         handleRewardedVideo();
-        handleHint(board);
+        if (rewardedVideo.chance > 0) {
+          handleHint(board);
+          rewardedVideo.chance--;
+        }
       },
       [handleHint, handleRewardedVideo, isConnected, t],
     );
@@ -876,8 +879,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
     useEffect(() => {
       if (isContinue) {
-        // loadSavedData();
-        // return;
         if (isHinting.current) {
           setHintDrawerVisible(true);
           return;
@@ -891,6 +892,12 @@ const Sudoku: React.FC<SudokuProps> = memo(
         loadSavedData();
       }
     }, [isLevel, isContinue]);
+
+    useEffect(() => {
+      if (isContinue) {
+        rewardedVideo.chance = 1;
+      }
+    }, [isContinue]);
 
     useEffect(() => {
       setLoadData(loadSavedData);
@@ -939,13 +946,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
             <Text style={styles.gameInfoText}>
               {t(`difficulty.${difficulty}`)}
             </Text>
-          </View>
-          <View style={[styles.gameInfoItem, styles.gameInfoItem3]}>
-            <Timer
-              setTimeFunction={setTimeFunction}
-              counts={counts}
-              playVictorySound={playVictorySound}
-            />
           </View>
         </View>
         <View style={styles.sudokuGrid}>

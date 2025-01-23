@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { View, Text, Pressable, StatusBar, StyleSheet, Image } from 'react-native';
 import Level from './Level';
 import { playSound } from '../tools/Sound';
@@ -18,8 +18,6 @@ const Home: React.FC<HomeProps> = memo(({
   openSudokuDIY,
   openSetting,
 }) => {
-  // console.log('123456789');
-
   const {
     setIsContinue,
     setDifficulty,
@@ -28,9 +26,6 @@ const Home: React.FC<HomeProps> = memo(({
     setIsDIY,
     isHome,
     setIsSudoku,
-    setTime,
-    setTimeOffset,
-    start,
     isHasContinue,
     setIsHasContinue,
     setIsLevel,
@@ -54,20 +49,10 @@ const Home: React.FC<HomeProps> = memo(({
     playSound('switch', isSound);
     setShowLevel(true);
     setIsLevel(true);
-    setTime('00:00');
-    setTimeOffset(0);
-    start(0);
-  }, [isSound, setIsLevel, setTime, setTimeOffset, start]);
+  }, [isSound, setIsLevel]);
 
   const handleContinue = () => {
     playSound('switch', isSound);
-    AsyncStorage.getItem('time').then(value => {
-      setTime(value || '00:00');
-    });
-    AsyncStorage.getItem('timeOffset').then(value => {
-      setTimeOffset(parseInt(value || '0'));
-      start(parseInt(value || '0'));
-    });
     setIsContinue(true);
     openSudoku();
     setIsHome(false);
@@ -139,7 +124,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'rgb(246,247,251)',
-    // backgroundColor: 'red',
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
     top: StatusBar.currentHeight || 0,
