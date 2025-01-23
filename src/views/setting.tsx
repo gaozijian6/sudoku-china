@@ -115,7 +115,7 @@ ${t('feedbackMessage')}
   }, [setIsVip]);
 
   // 处理购买
-  const handlePurchase = async () => {
+  const handlePurchase = useCallback(async () => {
     if (purchasing) return;
     
     try {
@@ -135,7 +135,7 @@ ${t('feedbackMessage')}
       console.warn('购买错误:', err);
       setPurchasing(false);
     }
-  };
+  }, [purchasing, setIsVip, setPurchasing]);
 
   return (
     <Animated.View

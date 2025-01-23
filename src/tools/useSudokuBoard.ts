@@ -231,6 +231,8 @@ export const useSudokuBoard = () => {
   const initializeBoard2 = useCallback(
     (puzzle: string, answer: string) => {
       const newBoard = convertStringToBoard(puzzle);
+      console.log(newBoard);
+      
       history.current = [{board: newBoard, action: '生成新棋盘'}];
       setBoard(newBoard);
       updateRemainingCounts(newBoard);

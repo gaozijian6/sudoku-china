@@ -5,6 +5,7 @@ module.exports = {
     'react-hooks'
   ],
   extends: [
+    '@react-native',
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended'
   ],

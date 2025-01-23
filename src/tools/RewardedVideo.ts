@@ -14,10 +14,10 @@ class RewardedVideo {
   private adUnitId: string = TestIds.REWARDED; // 测试广告ID
   private startLoadTime: number = 0;
   private constructor() {
-    this.initAds();
-    this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
-    this.initListeners();
-    this.load();
+    // this.initAds();
+    // this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
+    // this.initListeners();
+    // this.load();
   }
 
   public static getInstance(): RewardedVideo {

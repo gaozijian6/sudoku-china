@@ -1,17 +1,10 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
 import {
-  StatusBar,
-  SafeAreaView,
-  StyleSheet,
   Animated,
-  Platform,
-  View,
-  Text,
 } from 'react-native';
 import Sudoku from './src/views/sudoku';
 import SudokuDIY from './src/views/sudokuDIY';
 import Home from './src/views/Home';
-import Login from './src/views/Login';
 import Setting from './src/views/setting';
 import { initSounds } from './src/tools/Sound';
 import { useSudokuStore } from './src/store';
@@ -24,9 +17,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Orientation from 'react-native-orientation-locker';
 
 function App() {
-  const { isHome, resultVisible, pauseVisible, setIsHasContinue, setIsConnected } =
+  // console.log('66');
+  const { pauseVisible, setIsHasContinue, setIsConnected } =
     useSudokuStore();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const slideAnim1 = useRef(new Animated.Value(800)).current;
   const slideAnim2 = useRef(new Animated.Value(800)).current;
   const [settingSlideAnim] = useState(new Animated.Value(800));
@@ -133,44 +126,25 @@ function App() {
   return (
     <SafeAreaProvider>
       <TarBars />
-      {isLoggedIn ? (
-        <Login setIsLoggedIn={setIsLoggedIn} />
-      ) : (
-        <>
-          <Home
-            openSudoku={openSudoku}
-            openSudokuDIY={openSudokuDIY}
-            openSetting={openSetting}
-          />
-          <Sudoku
-            slideAnim={slideAnim1}
-            closeSudoku={closeSudoku}
-            openSetting={openSetting}
-          />
-          <SudokuDIY
+      <Home
+        openSudoku={openSudoku}
+        openSudokuDIY={openSudokuDIY}
+        openSetting={openSetting}
+      />
+      <Sudoku
+        slideAnim={slideAnim1}
+        closeSudoku={closeSudoku}
+        openSetting={openSetting}
+      />
+      <SudokuDIY
             slideAnim={slideAnim2}
             closeSudokuDIY={closeSudokuDIY}
             openSetting={openSetting}
           />
-          <Setting slideAnim={settingSlideAnim} closeSetting={closeSetting} />
-        </>
-      )}
+      <Setting slideAnim={settingSlideAnim} closeSetting={closeSetting} />
       {pauseVisible && <PauseOverlay />}
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  background1: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  background2: {
-    backgroundColor: 'rgb(91,139,241)',
-  },
-
-});
 
 export default App;

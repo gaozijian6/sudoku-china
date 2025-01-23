@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {View, Text, StyleSheet, Pressable, Animated} from 'react-native';
 import {DIFFICULTY} from '../constans';
 import {useTranslation} from 'react-i18next';
@@ -26,7 +26,7 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [showShadow, setShowShadow] = useState(true);
   const {t} = useTranslation();
-
+  console.log('1');
   useEffect(() => {
     if (visible) {
       Animated.parallel([
@@ -58,11 +58,11 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
     }
   }, [visible]);
 
-  const handleLevelSelect = (level: string) => {
+  const handleLevelSelect = useCallback((level: string) => {
     onLevelSelect(level);
-  };
+  }, [onLevelSelect]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setShowShadow(false);
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -81,7 +81,7 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
       onClose();
       setShowShadow(true);
     });
-  };
+  }, [onClose, setShowShadow]);
 
   return (
     <Animated.View

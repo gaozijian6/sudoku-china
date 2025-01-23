@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, Pressable, StatusBar, StyleSheet, Image} from 'react-native';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { View, Text, Pressable, StatusBar, StyleSheet, Image } from 'react-native';
 import Level from './Level';
-import {playSound} from '../tools/Sound';
-import {useSudokuStore} from '../store';
+import { playSound } from '../tools/Sound';
+import { useSudokuStore } from '../store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useTranslation} from 'react-i18next';
-import {generateBoard} from '../tools';
+import { useTranslation } from 'react-i18next';
+import { generateBoard } from '../tools';
 
 interface HomeProps {
   openSudoku: () => void;
@@ -13,11 +13,13 @@ interface HomeProps {
   openSetting: () => void;
 }
 
-const Home: React.FC<HomeProps> = ({
+const Home: React.FC<HomeProps> = memo(({
   openSudoku,
   openSudokuDIY,
   openSetting,
 }) => {
+  // console.log('123456789');
+
   const {
     setIsContinue,
     setDifficulty,
@@ -34,7 +36,7 @@ const Home: React.FC<HomeProps> = ({
     setIsLevel,
     initializeBoard2,
   } = useSudokuStore();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   const [showLevel, setShowLevel] = useState(false);
   const handleLevelSelect = (level: string) => {
@@ -48,14 +50,14 @@ const Home: React.FC<HomeProps> = ({
     AsyncStorage.setItem('isHasContinue', 'true');
   };
 
-  const handleStart = () => {
+  const handleStart = useCallback(() => {
     playSound('switch', isSound);
     setShowLevel(true);
     setIsLevel(true);
     setTime('00:00');
     setTimeOffset(0);
     start(0);
-  };
+  }, [isSound, setIsLevel, setTime, setTimeOffset, start]);
 
   const handleContinue = () => {
     playSound('switch', isSound);
@@ -91,7 +93,7 @@ const Home: React.FC<HomeProps> = ({
           />
         </Pressable>
       </View>
-      
+
       <View style={styles.buttonContainer}>
         <Pressable
           style={styles.startButton}
@@ -129,7 +131,9 @@ const Home: React.FC<HomeProps> = ({
       )}
     </View>
   );
-};
+}, (prevProps, nextProps) => {
+  return prevProps.openSudoku === nextProps.openSudoku && prevProps.openSudokuDIY === nextProps.openSudokuDIY && prevProps.openSetting === nextProps.openSetting;
+});
 
 const styles = StyleSheet.create({
   container: {
