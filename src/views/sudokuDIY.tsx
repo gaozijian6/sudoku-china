@@ -56,6 +56,7 @@ import { useTranslation } from 'react-i18next';
 import handleHintMethod from '../tools/handleHintMethod';
 import rewardedVideo from '../tools/RewardedVideo';
 import WatchIcon from '../components/WatchIcon';
+import { RewardedAdEventType } from 'react-native-google-mobile-ads';
 
 interface SudokuDIYProps {
   slideAnim: Animated.Value;
@@ -222,6 +223,12 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       isFirstHint,
     ]);
 
+    useEffect(() => {
+      rewardedVideo.rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
+        setWatchIconVisible(false);
+      });
+    }, []);
+
     const loadSavedData = useCallback(async () => {
       const sudokuData = await AsyncStorage.getItem('sudokuDataDIY1');
       if (sudokuData) {
@@ -247,6 +254,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         startTime.current = data.startTime;
         setWatchIconVisible(data.watchIconVisible);
         isFirstHint.current = data.isFirstHint;
+        if(!rewardedVideo.isReady()){
+          setWatchIconVisible(false);
+        }
       }
     }, [setErrorCount, t]);
 
@@ -561,31 +571,11 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
     useEffect(() => {
       if (isDIY && !rewardedVideo.isReady()) {
-        rewardedVideo.chance = 1;
+        setWatchIconVisible(false);
+        rewardedVideo.chance = true;
         rewardedVideo.load();
       }
     }, [isDIY]);
-
-    const handleRewardedVideo = useCallback(() => {
-      // 非第一次提示
-      if (!isFirstHint.current) {
-        if (watchIconVisible) {
-          setWatchIconVisible(false);
-          rewardedVideo.show();
-        } else {
-          setWatchIconVisible(rewardedVideo.isReady());
-        }
-      } else {
-        // 第一次提示
-        setWatchIconVisible(rewardedVideo.isReady());
-        isFirstHint.current = false;
-        if (!rewardedVideo.isReady()) {
-          rewardedVideo.load();
-        } else {
-          setWatchIconVisible(true);
-        }
-      }
-    }, [watchIconVisible]);
 
     const handleHint = useCallback(
       async (board: CellData[][]) => {
@@ -641,18 +631,32 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       ],
     );
 
+    // 提示和观看广告
     const handleHintAndRewardedVideo = useCallback(
       (board: CellData[][]) => {
         if (!isConnected) {
           setHintDrawerVisible(true);
-          setHintMethod('');
           setHintContent(t('pleaseConnectNetwork'));
           return;
         }
-        handleRewardedVideo();
-        handleHint(board);
+        if (rewardedVideo.chance) {
+          handleHint(board);
+          rewardedVideo.chance=false;
+          rewardedVideo.load();
+          if(isFirstHint.current){
+            isFirstHint.current = false;
+          }
+        }else if(rewardedVideo.isReady()&&watchIconVisible){
+          rewardedVideo.show();
+        }else{
+          rewardedVideo.load();
+          handleHint(board);
+        }
+        if(rewardedVideo.isReady()){
+          setWatchIconVisible(true);
+        }
       },
-      [handleHint, handleRewardedVideo, isConnected, t],
+      [handleHint, isConnected, t],
     );
 
     const handleApplyHint = useCallback(() => {
@@ -778,7 +782,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           setHintContent(t('pleaseConnectNetwork'));
           return;
         }
-        handleRewardedVideo();
         playSound('switch', isSound);
         setSudokuStatus(SUDOKU_STATUS.SOLVING);
         const standardBoard = copyOfficialDraft(board);
@@ -790,7 +793,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           setSudokuStatus(SUDOKU_STATUS.ILLEGAL);
         }
       },
-      [handleRewardedVideo, isConnected, isSound, t, updateBoard],
+      [isConnected, isSound, t, updateBoard],
     );
 
     useEffect(() => {

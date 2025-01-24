@@ -198,6 +198,8 @@ const Sudoku: React.FC<SudokuProps> = memo(
       resetSudokuBoard();
       setWatchIconVisible(false);
       isFirstHint.current = true;
+      rewardedVideo.chance = true;
+      setWatchIconVisible(false);
     }, [resetSudokuBoard, setErrorCount, t]);
 
     const saveData = useCallback(async () => {
@@ -225,6 +227,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         watchIconVisible,
         isFirstHint: isFirstHint.current,
         isHinting: isHinting.current,
+        chance: rewardedVideo.chance,
       };
 
       await AsyncStorage.setItem('sudokuData1', JSON.stringify(sudokuData));
@@ -246,10 +249,17 @@ const Sudoku: React.FC<SudokuProps> = memo(
       watchIconVisible,
       isFirstHint,
       isHinting,
+      rewardedVideo.chance,
     ]);
 
+    useEffect(() => {
+      rewardedVideo.rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
+        setWatchIconVisible(false);
+      });
+    }, []);
+
     const setSuccessResult = useCallback(
-      (time: string, errorCount: number, hintCount: number) => {
+      (errorCount: number, hintCount: number) => {
         setResultVisible(true);
         setErrorCount(errorCount);
         setHintCount(hintCount);
@@ -263,6 +273,15 @@ const Sudoku: React.FC<SudokuProps> = memo(
         setIsHasContinue,
       ],
     );
+
+    useEffect(() => {
+      if(counts==81){
+        setTimeout(() => {
+          playVictorySound();
+          setSuccessResult(errorCount, hintCount.current);
+        }, 200);
+      }
+    }, [counts]);
 
     const loadSavedData = useCallback(async () => {
       loadSavedData2();
@@ -291,6 +310,10 @@ const Sudoku: React.FC<SudokuProps> = memo(
         setWatchIconVisible(data.watchIconVisible);
         isFirstHint.current = data.isFirstHint;
         isHinting.current = data.isHinting;
+        rewardedVideo.chance = data.chance;
+        if(!rewardedVideo.isReady()){
+          setWatchIconVisible(false);
+        }
       }
     }, [loadSavedData2, setErrorCount, t, setDifficulty, setWatchIconVisible]);
 
@@ -648,31 +671,10 @@ const Sudoku: React.FC<SudokuProps> = memo(
     useEffect(() => {
       if (isSudoku && !rewardedVideo.isReady()) {
         setWatchIconVisible(false);
-        rewardedVideo.chance = 1;
+        rewardedVideo.chance = true;
         rewardedVideo.load();
       }
     }, [isSudoku]);
-
-    const handleRewardedVideo = useCallback(() => {
-      // 非第一次提示
-      if (!isFirstHint.current) {
-        if (watchIconVisible) {
-          setWatchIconVisible(false);
-          rewardedVideo.show()
-        } else {
-          setWatchIconVisible(rewardedVideo.isReady());
-        }
-      } else {
-        // 第一次提示
-        setWatchIconVisible(rewardedVideo.isReady());
-        isFirstHint.current = false;
-        if (!rewardedVideo.isReady()) {
-          rewardedVideo.load();
-        } else {
-          setWatchIconVisible(true);
-        }
-      }
-    }, [watchIconVisible]);
 
     const handleHint = useCallback(
       async (board: CellData[][]) => {
@@ -739,13 +741,24 @@ const Sudoku: React.FC<SudokuProps> = memo(
           setHintContent(t('pleaseConnectNetwork'));
           return;
         }
-        handleRewardedVideo();
-        if (rewardedVideo.chance > 0) {
+        if (rewardedVideo.chance) {
           handleHint(board);
-          rewardedVideo.chance--;
+          rewardedVideo.chance=false;
+          rewardedVideo.load();
+          if(isFirstHint.current){
+            isFirstHint.current = false;
+          }
+        }else if(rewardedVideo.isReady()&&watchIconVisible){
+          rewardedVideo.show();
+        }else{
+          rewardedVideo.load();
+          handleHint(board);
+        }
+        if(rewardedVideo.isReady()){
+          setWatchIconVisible(true);
         }
       },
-      [handleHint, handleRewardedVideo, isConnected, t],
+      [handleHint, isConnected, t],
     );
 
     const handleApplyHint = useCallback(() => {
@@ -857,13 +870,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
       }
     }, [board, selectedCell, selectionMode]);
 
-    const setTimeFunction = useCallback(
-      (time1: string) => {
-        setSuccessResult(time1, errorCount, hintCount.current);
-      },
-      [errorCount, setSuccessResult],
-    );
-
     const handleBack = useCallback(() => {
       closeSudoku();
     }, [closeSudoku]);
@@ -892,12 +898,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
         loadSavedData();
       }
     }, [isLevel, isContinue]);
-
-    useEffect(() => {
-      if (isContinue) {
-        rewardedVideo.chance = 1;
-      }
-    }, [isContinue]);
 
     useEffect(() => {
       setLoadData(loadSavedData);

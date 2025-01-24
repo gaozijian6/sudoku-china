@@ -8,12 +8,12 @@ import mobileAds, {
 
 class RewardedVideo {
   private static instance: RewardedVideo;
-  private isLoaded: boolean = false;
+  public isLoaded: boolean = false;
   public rewardedAd: RewardedAd;
-  public chance: number = 1;
+  public chance: boolean = true;
   // private adUnitId: string = 'ca-app-pub-2981436674907454/8073755152'; // 实际广告ID
   private adUnitId: string = TestIds.REWARDED; // 测试广告ID
-  private startLoadTime: number = 0;
+  public startLoadTime: number = 0;
   private constructor() {
     this.initAds();
     this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
@@ -35,11 +35,16 @@ class RewardedVideo {
       console.log('广告加载成功');
     });
     this.rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
-      this.chance++;
+      this.chance = true;
     });
     this.rewardedAd.addAdEventListener(AdEventType.CLOSED, () => {
       console.log('广告关闭');
-      this.rewardedAd.load();
+      this.isLoaded = false;
+      this.load();
+    });
+    this.rewardedAd.addAdEventListener(AdEventType.ERROR, (error) => {
+      this.isLoaded = false;
+      console.log('广告加载失败', error);
     });
   }
 

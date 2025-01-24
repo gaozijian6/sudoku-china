@@ -14,7 +14,6 @@ const ResultView: React.FC<ResultProps> = ({ onBack, resetSudoku, visible }) => 
   const { t } = useTranslation();
   const scaleAnim = React.useRef(new Animated.Value(0)).current;
   const {
-    time,
     errorCount,
     hintCount,
     setResultVisible,
@@ -24,10 +23,8 @@ const ResultView: React.FC<ResultProps> = ({ onBack, resetSudoku, visible }) => 
     setIsLevel,
     difficulty,
     setIsContinue,
-    setTime,
-    setTimeOffset,
-    start,
     initializeBoard2,
+    isContinue,
   } = useSudokuStore();
   useEffect(() => {
     if (visible) {
@@ -66,9 +63,6 @@ const ResultView: React.FC<ResultProps> = ({ onBack, resetSudoku, visible }) => 
     setIsHasContinue(true);
     setIsSudoku(true);
     setIsContinue(false);
-    setTime('00:00');
-    setTimeOffset(0);
-    start(0);
   }, [
     setResultVisible,
     resetSudoku,
@@ -77,9 +71,6 @@ const ResultView: React.FC<ResultProps> = ({ onBack, resetSudoku, visible }) => 
     setIsHasContinue,
     setIsSudoku,
     setIsContinue,
-    setTime,
-    setTimeOffset,
-    start,
   ]);
 
   return (
@@ -99,10 +90,6 @@ const ResultView: React.FC<ResultProps> = ({ onBack, resetSudoku, visible }) => 
           <Text style={styles.title}>{t('congratulations')}</Text>
           <View style={styles.content}>
             <View style={styles.row}>
-              <Text style={styles.leftText}>{t('duration')}:</Text>
-              <Text style={styles.rightText}>{time}</Text>
-            </View>
-            <View style={styles.row}>
               <Text style={styles.leftText}>{t('mistakes')}:</Text>
               <Text style={styles.rightText}>{errorCount}</Text>
             </View>
@@ -115,11 +102,11 @@ const ResultView: React.FC<ResultProps> = ({ onBack, resetSudoku, visible }) => 
             <Pressable style={styles.button} onPressIn={handleBack}>
               <Text style={styles.buttonText}>{t('back')}</Text>
             </Pressable>
-            <Pressable
-              style={[styles.button, styles.nextButton]}
+            {!isContinue&&(<Pressable
+              style={[styles.button]}
               onPressIn={handleNext}>
               <Text style={styles.buttonText}>{t('next')}</Text>
-            </Pressable>
+            </Pressable>)}
           </View>
         </Animated.View>
       </View>
@@ -176,10 +163,10 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     width: '100%',
-    paddingHorizontal: 20,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
   button: {
     backgroundColor: '#1890ff',
@@ -189,9 +176,6 @@ const styles = StyleSheet.create({
     minWidth: 120,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  nextButton: {
-    marginLeft: 20,
   },
   buttonText: {
     color: '#fff',

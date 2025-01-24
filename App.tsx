@@ -17,7 +17,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Orientation from 'react-native-orientation-locker';
 
 function App() {
-  // console.log('66');
   const { pauseVisible, setIsHasContinue, setIsConnected } =
     useSudokuStore();
   const slideAnim1 = useRef(new Animated.Value(800)).current;
@@ -137,10 +136,10 @@ function App() {
         openSetting={openSetting}
       />
       <SudokuDIY
-            slideAnim={slideAnim2}
-            closeSudokuDIY={closeSudokuDIY}
-            openSetting={openSetting}
-          />
+        slideAnim={slideAnim2}
+        closeSudokuDIY={closeSudokuDIY}
+        openSetting={openSetting}
+      />
       <Setting slideAnim={settingSlideAnim} closeSetting={closeSetting} />
       {pauseVisible && <PauseOverlay />}
     </SafeAreaProvider>
