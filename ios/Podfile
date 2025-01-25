@@ -32,7 +32,7 @@ target 'SudokuApp' do
     # Pods for testing
   end
 
-  # pod 'Google-Mobile-Ads-SDK'
+  pod 'Google-Mobile-Ads-SDK'
   pod 'RNIap', :path => '../node_modules/react-native-iap'
 
   post_install do |installer|
@@ -40,10 +40,14 @@ target 'SudokuApp' do
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
+      :mac_catalyst_enabled => false
     )
-
+    
+    # 添加以下配置来修复构建错误
+    installer.pods_project.build_configurations.each do |config|
+      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+    end
+    
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
