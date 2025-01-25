@@ -161,7 +161,7 @@ export const useSudokuBoard = () => {
       history: history.current,
       currentStep,
       remainingCounts,
-      counts,
+      counts: counts === 81 ? 0 : counts,
       standradBoard,
     };
     await AsyncStorage.setItem('sudokuData2', JSON.stringify(sudokuData));

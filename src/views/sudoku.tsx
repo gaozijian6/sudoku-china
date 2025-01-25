@@ -204,6 +204,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
     const saveData = useCallback(async () => {
       await saveSudokuData();
+
       const sudokuData = {
         lastSelectedNumber: lastSelectedNumber.current,
         errorCount,
@@ -228,6 +229,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         isFirstHint: isFirstHint.current,
         isHinting: isHinting.current,
         chance: rewardedVideo.chance,
+        resultVisible: false,
       };
 
       await AsyncStorage.setItem('sudokuData1', JSON.stringify(sudokuData));
@@ -250,6 +252,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       isFirstHint,
       isHinting,
       rewardedVideo.chance,
+      resultVisible,
     ]);
 
     useEffect(() => {
