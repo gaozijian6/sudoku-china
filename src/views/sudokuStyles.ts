@@ -1,4 +1,39 @@
 import {Dimensions, StatusBar, StyleSheet} from 'react-native';
+import DeviceInfo from 'react-native-device-info';
+
+const model = DeviceInfo.getModel();
+
+const getDrawerHeight = () => {
+  switch (true) {
+    case model.includes('Plus'):
+    case model.includes('Pro Max'):
+      return Dimensions.get('window').height * 0.4;
+    case model.includes('SE'):
+      return Dimensions.get('window').height * 0.32;
+    case model.includes('iPad'):
+      return Dimensions.get('window').height * 0.27;
+    default:
+      return Dimensions.get('window').height * 0.38;
+  }
+};
+
+const getMarginBottom = () => {
+  switch (true) {
+    case model.includes('SE'):
+      return 5;
+    default:
+      return 30;
+  }
+};
+
+const getGridWidth = () => {
+  switch (true) {
+    case model.includes('iPad'):
+      return Dimensions.get('window').width * 0.8;
+    default:
+      return Dimensions.get('window').width * 0.95;
+  }
+};
 
 const sudokuStyles = StyleSheet.create({
   container: {
@@ -14,7 +49,7 @@ const sudokuStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: Dimensions.get('window').width * 0.95,
+    width: getGridWidth(),
     marginBottom: 10,
     alignSelf: 'center',
     height: 30,
@@ -71,8 +106,8 @@ const sudokuStyles = StyleSheet.create({
     textAlign: 'center', // 添加文字居中
   },
   sudokuGrid: {
-    width: Dimensions.get('window').width * 0.95,
-    height: Dimensions.get('window').width * 0.95,
+    width: getGridWidth(),
+    height: getGridWidth(),
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignSelf: 'center',
@@ -116,20 +151,8 @@ const sudokuStyles = StyleSheet.create({
     borderLeftWidth: 0,
   },
   cellValue: {
-    fontSize: 30,
+    fontSize: Dimensions.get('window').width * 0.95 * 0.11 * 0.6,
     fontWeight: 'bold',
-  },
-  candidatesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    width: '100%',
-    height: '100%',
-  },
-  candidateCell: {
-    width: '33.33%',
-    height: '33.33%',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   givenNumber: {
     color: '#000',
@@ -152,12 +175,12 @@ const sudokuStyles = StyleSheet.create({
     alignItems: 'center',
   },
   draftCellText: {
-    fontSize: 8,
+    fontSize: Dimensions.get('window').width * 0.95 * 0.11 * 0.6 * 0.33 * 0.9,
     width: '33.33%',
     height: '33.33%',
     textAlign: 'center',
+    lineHeight: Dimensions.get('window').width * 0.95 * 0.11 * 0.6 * 0.5,
     position: 'absolute',
-    lineHeight: 12,
   },
   selectedCell: {
     borderWidth: 2,
@@ -322,8 +345,12 @@ const sudokuStyles = StyleSheet.create({
     right: 0,
   },
   modalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '85%',
+    zIndex: 100,
   },
   drawerContent: {
     position: 'relative',
@@ -334,7 +361,7 @@ const sudokuStyles = StyleSheet.create({
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     backgroundColor: '#fff',
-    maxHeight: 320,
+    height: getDrawerHeight(),
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -347,12 +374,11 @@ const sudokuStyles = StyleSheet.create({
   },
   drawerTextContainer: {
     height: 200,
-    marginBottom: 20,
+    marginBottom: 10,
     width: '100%',
     backgroundColor: '#fff',
   },
   drawerTextContentContainer: {
-    paddingVertical: 10,
     width: '100%',
   },
   drawerText: {
@@ -367,7 +393,6 @@ const sudokuStyles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     width: 40,
-    // height: 40,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,
@@ -401,7 +426,7 @@ const sudokuStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 20,
-    marginBottom: 30,
+    marginBottom: getMarginBottom(),
   },
   drawerButton: {
     width: 100,
@@ -441,7 +466,7 @@ const sudokuStyles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     display: 'flex',
-    width: Dimensions.get('window').width * 0.95,
+    width: getGridWidth(),
   },
   gameInfoTextDIY: {
     fontSize: 16,

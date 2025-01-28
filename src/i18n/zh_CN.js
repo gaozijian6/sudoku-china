@@ -194,5 +194,8 @@ export default {
         feedback: '反馈',
         feedbackMessage: '留言：',
         congratulations: '恭喜通关！',
+        restore: '恢复购买',
+        restoring: '恢复中...',
+        purchasing: '购买中...',
     },
 };

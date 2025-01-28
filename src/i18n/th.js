@@ -148,5 +148,8 @@ export default {
         feedback: 'ข้อแนะนำ',
         feedbackMessage: 'ข้อความ:',
         congratulations: 'ยินดีด้วย!',
+        restore: 'กู้คืนการซื้อ',
+        restoring: 'กู้คืนการซื้อ...',
+        purchasing: 'กำลังซื้อ...',
     },
 };

@@ -11,14 +11,14 @@ class RewardedVideo {
   public isLoaded: boolean = false;
   public rewardedAd: RewardedAd;
   public chance: boolean = true;
-  // private adUnitId: string = 'ca-app-pub-2981436674907454/8073755152'; // 实际广告ID
-  private adUnitId: string = TestIds.REWARDED; // 测试广告ID
+  private adUnitId: string = 'ca-app-pub-2981436674907454/3945346418'; // 实际广告ID
+  // private adUnitId: string = TestIds.REWARDED; // 测试广告ID
   public startLoadTime: number = 0;
+  private isVip: boolean = false;
   private constructor() {
     this.initAds();
     this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
     this.initListeners();
-    this.load();
   }
 
   public static getInstance(): RewardedVideo {
@@ -26,6 +26,14 @@ class RewardedVideo {
       RewardedVideo.instance = new RewardedVideo();
     }
     return RewardedVideo.instance;
+  }
+
+  public setIsVip(isVip: boolean): void {
+    this.isVip = isVip;
+  }
+
+  public getIsVip(): boolean {
+    return this.isVip;
   }
 
   private initListeners(): void {
@@ -49,14 +57,14 @@ class RewardedVideo {
   }
 
   public async load(): Promise<void> {
-    if (!this.isLoaded) {
+    if (!this.isLoaded && !this.isVip) {
       console.log('广告加载中', this.isLoaded);
       await this.rewardedAd.load();
     }
   }
 
   public async show(): Promise<void> {
-    if (this.isLoaded) {
+    if (this.isLoaded && !this.isVip) {
       await this.rewardedAd.show();
     }
   }

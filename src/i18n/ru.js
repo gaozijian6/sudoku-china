@@ -148,5 +148,8 @@ export default {
         feedback: 'Обратная связь',
         feedbackMessage: 'Сообщение:',
         congratulations: 'Поздравляем!',
+        restore: 'Восстановить покупку',
+        restoring: 'Восстанавливаем покупку...',
+        purchasing: 'Покупаем...',
     },
 };

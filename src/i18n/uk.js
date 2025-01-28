@@ -148,5 +148,8 @@ export default {
         feedback: 'Відгук',
         feedbackMessage: 'Повідомлення:',
         congratulations: 'Вітаємо!',
+        restore: 'Відновити покупку',
+        restoring: 'Відновлюємо покупку...',
+        purchasing: 'Купуємо...',
     },
 };

@@ -148,5 +148,8 @@ export default {
         feedback: 'Feedback',
         feedbackMessage: 'Messaggio:',
         congratulations: 'Congratulazioni!',
+        restore: 'Ripristina acquisto',
+        restoring: 'Ripristino acquisto...',
+        purchasing: 'Acquisto in corso...',
     },
 };

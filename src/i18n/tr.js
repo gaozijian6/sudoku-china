@@ -148,5 +148,8 @@ export default {
         feedback: 'Geri Bildirim',
         feedbackMessage: 'Mesaj:',
         congratulations: 'Tebrikler!',
+        restore: 'Satın Alınıyor...',
+        restoring: 'Satın Alınıyor...',
+        purchasing: 'Satın Alınıyor...',
     },
 };

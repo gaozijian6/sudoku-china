@@ -13,8 +13,6 @@ interface SudokuState {
   setErrorCount: (value: number) => void;
   hintCount: number;
   setHintCount: (value: number) => void;
-  pauseVisible: boolean;
-  setPauseVisible: (value: boolean) => void;
   isSound: boolean;
   setIsSound: (value: boolean) => void;
   isDIY: boolean;
@@ -48,8 +46,6 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setErrorCount: value => set({errorCount: value}),
   hintCount: 0,
   setHintCount: value => set({hintCount: value}),
-  pauseVisible: false,
-  setPauseVisible: value => set({pauseVisible: value}),
   isSound: true,
   setIsSound: value => set({isSound: value}),
   isDIY: false,

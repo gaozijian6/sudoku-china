@@ -148,5 +148,8 @@ export default {
         feedback: 'प्रतिक्रिया',
         feedbackMessage: 'संदेश:',
         congratulations: 'बधाई हो!',
+        restore: 'खरीदारी पुनर्स्थापित करें',
+        restoring: 'खरीदारी पुनर्स्थापित कर रहा है...',
+        purchasing: 'खरीदारी कर रहा है...',
     },
 };

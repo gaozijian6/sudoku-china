@@ -148,5 +148,8 @@ export default {
         feedback: 'Phản hồi',
         feedbackMessage: 'Lời nhắn:',
         congratulations: 'Chúc mừng!',
+        restore: 'Khôi phục mua hàng',
+        restoring: 'Khôi phục mua hàng...',
+        purchasing: 'Mua hàng...',
     },
 };

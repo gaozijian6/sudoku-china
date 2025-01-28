@@ -13,7 +13,6 @@ import initialBoard from '../views/initialBoard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import mockBoard from '../views/mock';
 import mockStandradBoard from '../views/standradBoard';
-import diy from './diy';
 
 // 创建一个新的 hook 来管理棋盘状态和历史
 export const useSudokuBoardDIY = () => {

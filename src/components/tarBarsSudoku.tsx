@@ -16,8 +16,6 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
 }) => {
   const {
     setIsHome,
-    setPauseVisible,
-    pauseVisible,
     setIsSudoku,
     setIsContinue,
     setIsLevel,
@@ -44,7 +42,9 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
     <>
       <TarBars />
       <View style={[styles.container]}>
-        <Pressable style={[styles.leftSection]} onPressIn={backToHome}>
+        <Pressable style={[styles.leftSection]} onPressIn={() => {
+          backToHome();
+        }}>
           <Image
             source={require('../assets/icon/back.png')}
             style={styles.backIcon}
@@ -54,16 +54,6 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
           <Text style={styles.sudoku}>Sudoku Custom</Text>
         </View>
         <View style={styles.rightSection}>
-          <Pressable
-            style={styles.pauseIconContainer}
-            onPressIn={() => {
-              setPauseVisible(!pauseVisible);
-            }}>
-            <Image
-              source={require('../assets/icon/pause.png')}
-              style={styles.pauseIcon}
-            />
-          </Pressable>
           <Pressable
             onPressIn={openSetting}
             style={styles.settingIconContainer}>
@@ -87,6 +77,7 @@ const styles = StyleSheet.create({
     height: 40,
     position: 'relative',
     width: '100%',
+    zIndex: 1000
   },
   sudoku: {
     color: 'white',
@@ -106,7 +97,8 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     position: 'absolute',
     left: 0,
-    zIndex: 100,
+    height:'100%',
+    zIndex:100
   },
   centerSection: {
     flex: 1,
@@ -122,13 +114,7 @@ const styles = StyleSheet.create({
     paddingRight: 5,
     position: 'absolute',
     right: 0,
-  },
-  pauseIconContainer: {
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
+    zIndex: 1000,
   },
   settingIconContainer: {
     height: '100%',

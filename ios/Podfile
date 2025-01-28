@@ -17,13 +17,18 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'SudokuApp' do
+def common_pods
   config = use_native_modules!
 
   use_react_native!(
     :path => config[:reactNativePath],
-    :hermes_enabled => true
+    :hermes_enabled => true,
+    :fabric_enabled => false
   )
+end
+
+target 'SudokuApp' do
+  common_pods
 
   target 'SudokuAppTests' do
     inherit! :complete
@@ -34,12 +39,7 @@ target 'SudokuApp' do
   pod 'RNIap', :path => '../node_modules/react-native-iap'
 
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
-    react_native_post_install(
-      installer,
-      config[:reactNativePath],
-      :mac_catalyst_enabled => false
-    )
+    react_native_post_install(installer)
     
     # 更新 deployment target 设置方式
     installer.pods_project.targets.each do |target|
@@ -54,6 +54,13 @@ target 'SudokuApp' do
         target.build_configurations.each do |config|
           config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
         end
+      end
+    end
+
+    # 添加这段来生成 dSYM
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
       end
     end
   end

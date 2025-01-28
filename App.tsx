@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
 import {
   Animated,
+  Dimensions,
 } from 'react-native';
 import Sudoku from './src/views/sudoku';
 import SudokuDIY from './src/views/sudokuDIY';
@@ -9,19 +10,20 @@ import Setting from './src/views/setting';
 import { initSounds } from './src/tools/Sound';
 import { useSudokuStore } from './src/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import PauseOverlay from './src/components/PauseOverlay';
 import './src/i18n';
 import NetInfo from '@react-native-community/netinfo';
 import TarBars from './src/components/tarBars';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import Orientation from 'react-native-orientation-locker';
+import rewardedVideo from './src/tools/RewardedVideo';
+
+const slideAnim = Dimensions.get('window').width;
 
 function App() {
-  const { pauseVisible, setIsHasContinue, setIsConnected } =
+  const { setIsHasContinue, setIsConnected, setIsVip } =
     useSudokuStore();
-  const slideAnim1 = useRef(new Animated.Value(800)).current;
-  const slideAnim2 = useRef(new Animated.Value(800)).current;
-  const [settingSlideAnim] = useState(new Animated.Value(800));
+  const slideAnim1 = useRef(new Animated.Value(slideAnim)).current;
+  const slideAnim2 = useRef(new Animated.Value(slideAnim)).current;
+  const [settingSlideAnim] = useState(new Animated.Value(slideAnim));
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
@@ -31,22 +33,15 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        await Orientation.lockToPortrait();
-      } catch (error) {
-        console.warn('Orientation lock failed:', error);
+    // AsyncStorage.clear();
+    const checkVip = async () => {
+      const isVip = await AsyncStorage.getItem('isVip');
+      if(isVip){
+        setIsVip(true);
+        rewardedVideo.setIsVip(true);
       }
     };
-    init();
-
-    return () => {
-      try {
-        Orientation.unlockAllOrientations();
-      } catch (error) {
-        console.warn('Orientation unlock failed:', error);
-      }
-    };
+    checkVip();
   }, []);
 
   const openSudoku = useCallback(() => {
@@ -61,7 +56,7 @@ function App() {
 
   const closeSudoku = useCallback(() => {
     Animated.spring(slideAnim1, {
-      toValue: 800,
+      toValue: slideAnim,
       useNativeDriver: true,
       tension: 20,
       friction: 8,
@@ -81,7 +76,7 @@ function App() {
 
   const closeSudokuDIY = useCallback(() => {
     Animated.spring(slideAnim2, {
-      toValue: 800,
+      toValue: slideAnim,
       useNativeDriver: true,
       tension: 20,
       friction: 8,
@@ -101,7 +96,7 @@ function App() {
 
   const closeSetting = useCallback(() => {
     Animated.spring(settingSlideAnim, {
-      toValue: 800,
+      toValue: slideAnim,
       useNativeDriver: true,
       tension: 20,
       friction: 8,
@@ -141,7 +136,6 @@ function App() {
         openSetting={openSetting}
       />
       <Setting slideAnim={settingSlideAnim} closeSetting={closeSetting} />
-      {pauseVisible && <PauseOverlay />}
     </SafeAreaProvider>
   );
 }

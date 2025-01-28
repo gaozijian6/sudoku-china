@@ -148,5 +148,8 @@ export default {
         feedback: '피드백',
         feedbackMessage: '메시지:',
         congratulations: '축하합니다!',
+        restore: '구매 복구',
+        restoring: '구매 복구 중...',
+        purchasing: '구매 중...',
     },
 }; 

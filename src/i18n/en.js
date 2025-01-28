@@ -194,5 +194,8 @@ export default {
         feedback: 'Feedback',
         feedbackMessage: 'Message:',
         congratulations: 'Congratulations!',
+        restore: 'Restore Purchase',
+        restoring: 'Restoring Purchase...',
+        purchasing: 'Purchasing...',
     },
 }

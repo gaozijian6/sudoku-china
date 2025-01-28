@@ -146,7 +146,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       wxyzWing,
       trialAndErrorDIY,
     ]);
-    const { errorCount, setErrorCount, isSound, isDIY, isConnected } =
+    const { errorCount, setErrorCount, isSound, isDIY, isConnected, isVip } =
       useSudokuStore();
     const [watchIconVisible, setWatchIconVisible] = useState<boolean>(false);
     const isFirstHint = useRef<boolean>(true);
@@ -222,6 +222,12 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       watchIconVisible,
       isFirstHint,
     ]);
+
+    useEffect(() => {
+      if(!isVip){
+        rewardedVideo.load();
+      }
+    }, []);
 
     useEffect(() => {
       rewardedVideo.rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
@@ -634,8 +640,13 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     // 提示和观看广告
     const handleHintAndRewardedVideo = useCallback(
       (board: CellData[][]) => {
-        if (!isConnected) {
+        if(counts<17){
+          setSudokuStatus(SUDOKU_STATUS.INCOMPLETE);
+          return;
+        }
+        if (!isConnected&&!rewardedVideo.getIsVip()) {
           setHintDrawerVisible(true);
+          setHintMethod('')
           setHintContent(t('pleaseConnectNetwork'));
           return;
         }
@@ -660,7 +671,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     );
 
     const handleApplyHint = useCallback(() => {
-      if (!isConnected) {
+      if (!isConnected&&!rewardedVideo.getIsVip()) {
         setHintDrawerVisible(false);
         return;
       }
@@ -776,6 +787,10 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
     const getAnswer = useCallback(
       async (board: CellData[][]) => {
+        if(counts<17){
+          setSudokuStatus(SUDOKU_STATUS.INCOMPLETE);
+          return;
+        }
         if (!isConnected) {
           setHintDrawerVisible(true);
           setHintMethod('');
@@ -815,7 +830,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     }, []);
 
     useEffect(() => {
-      setSudokuStatus(SUDOKU_STATUS.VOID);
+      if(counts!=81 ){
+        setSudokuStatus(SUDOKU_STATUS.VOID);
+      }
     }, [counts]);
 
     return (

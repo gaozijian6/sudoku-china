@@ -194,5 +194,8 @@ export default {
         feedback: 'フィードバック',
         feedbackMessage: 'メッセージ:',
         congratulations: 'おめでとうございます！',
+        restore: '購入を復元',
+        restoring: '購入を復元中...',
+        purchasing: '購入中...',
     },
 };

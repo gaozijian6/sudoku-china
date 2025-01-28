@@ -26,7 +26,6 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [showShadow, setShowShadow] = useState(true);
   const {t} = useTranslation();
-  console.log('1');
   useEffect(() => {
     if (visible) {
       Animated.parallel([
