@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -53,6 +53,10 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FECA06A5173E58EE75A20DFC /* Pods-SudokuApp-SudokuAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SudokuApp-SudokuAppTests.debug.xcconfig"; path = "Target Support Files/Pods-SudokuApp-SudokuAppTests/Pods-SudokuApp-SudokuAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A9F7EB652D4A850100AC13C0 /* Base */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Base; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		00E356EB1AD99517003FC87E /* Frameworks */ = {
@@ -127,6 +131,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				A9F7EB652D4A850100AC13C0 /* Base */,
 				A98AD9E42D3B7117008FA233 /* ComputeModule.h */,
 				A98AD9E52D3B7117008FA233 /* ComputeModule.mm */,
 				13B07FAE1A68108700A75B9A /* SudokuApp */,
@@ -202,6 +207,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				A9F7EB652D4A850100AC13C0 /* Base */,
+			);
 			name = "Sudoku Custom";
 			productName = SudokuApp;
 			productReference = 13B07F961A680F5B00A75B9A /* Sudoku Custom.app */;
@@ -230,7 +238,18 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				ja,
+				ko,
+				"zh-HK",
+				"zh-Hans",
+				"zh-Hant",
+				ru,
+				zh_CN,
+				"zh-Hant-TW",
 				Base,
+				zh,
+				"zh-Hans-CN",
+				zh_TW,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
