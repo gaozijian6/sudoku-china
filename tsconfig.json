@@ -3,7 +3,11 @@
   "compilerOptions": {
     "jsx": "react-native",
     "lib": ["DOM", "DOM.Iterable", "ESNext", "WebWorker"],
-    "forceConsistentCasingInFileNames": false
+    "forceConsistentCasingInFileNames": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "files": [
     "src/types/audio.d.ts"

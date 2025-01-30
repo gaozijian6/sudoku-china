@@ -7,12 +7,12 @@ import successSound2 from '../assets/audio/success2.wav';
 import successSound3 from '../assets/audio/success3.wav';
 
 interface SoundRefs {
-  errorSoundsRef: React.RefObject<Sound[]>;
-  successSoundsRef: React.RefObject<Sound[]>;
-  switchSoundsRef: React.RefObject<Sound[]>;
-  eraseSoundsRef: React.RefObject<Sound[]>;
-  successSoundsRef2: React.RefObject<Sound[]>;
-  successSoundsRef3: React.RefObject<Sound[]>;
+  errorSoundsRef: React.MutableRefObject<Sound[]>;
+  successSoundsRef: React.MutableRefObject<Sound[]>;
+  switchSoundsRef: React.MutableRefObject<Sound[]>;
+  eraseSoundsRef: React.MutableRefObject<Sound[]>;
+  successSoundsRef2: React.MutableRefObject<Sound[]>;
+  successSoundsRef3: React.MutableRefObject<Sound[]>;
 }
 
 type SoundType = 'error' | 'success' | 'switch' | 'erase' | 'success2' | 'success3';
@@ -28,11 +28,22 @@ const soundRefs: SoundRefs = {
 
 const createSound = (path: unknown): Promise<Sound> => {
   return new Promise((resolve, reject) => {
-    const sound = new Sound(path, error => {
-      if (error) {
-        console.log('加载音效失败:', error);
+    // 使用 require 方式加载的资源会返回一个数字 ID
+    const sound = new Sound(path as number, (error) => {
+      if (error) { 
+        console.error('音效加载失败:', {
+          path,
+          errorCode: error.code,
+          errorMessage: error.message,
+          errorDomain: error.domain
+        });
+        // 释放可能部分创建的音频资源
+        if (sound && typeof sound.release === 'function') {
+          sound.release();
+        }
         reject(error);
       } else {
+        console.log('音效加载成功:', path);
         sound.setVolume(1.0);
         sound.setNumberOfLoops(0);
         resolve(sound);
