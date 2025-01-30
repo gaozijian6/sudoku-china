@@ -5,6 +5,8 @@ import switchSound from '../assets/audio/switch.wav';
 import eraseSound from '../assets/audio/erase.wav';
 import successSound2 from '../assets/audio/success2.wav';
 import successSound3 from '../assets/audio/success3.wav';
+console.log(12321312313);
+
 
 interface SoundRefs {
   errorSoundsRef: React.MutableRefObject<Sound[]>;
