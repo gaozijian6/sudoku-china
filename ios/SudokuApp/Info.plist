@@ -84,10 +84,6 @@
 	<true/>
 	<key>UIRequiresPersistentWiFi</key>
 	<true/>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>audio</string>
-	</array>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>需要访问网络以检测网络连接状态</string>
 	<key>UIApplicationShortcutItems</key>

@@ -11,10 +11,10 @@ class RewardedVideo {
   public isLoaded: boolean = false;
   public rewardedAd: RewardedAd;
   public chance: boolean = true;
-  // private adUnitId: string = 'ca-app-pub-2981436674907454/3945346418'; // 实际广告ID
-  private adUnitId: string = TestIds.REWARDED; // 测试广告ID
+  private adUnitId: string = 'ca-app-pub-2981436674907454/3945346418'; // 实际广告ID
+  // private adUnitId: string = TestIds.REWARDED; // 测试广告ID
   public startLoadTime: number = 0;
-  private isVip: boolean = true;
+  private isVip: boolean = false;
   private constructor() {
     this.initAds();
     this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);

@@ -5,8 +5,6 @@ import switchSound from '../assets/audio/switch.wav';
 import eraseSound from '../assets/audio/erase.wav';
 import successSound2 from '../assets/audio/success2.wav';
 import successSound3 from '../assets/audio/success3.wav';
-console.log(12321312313);
-
 
 interface SoundRefs {
   errorSoundsRef: React.MutableRefObject<Sound[]>;
@@ -45,7 +43,6 @@ const createSound = (path: unknown): Promise<Sound> => {
         }
         reject(error);
       } else {
-        console.log('音效加载成功:', path);
         sound.setVolume(1.0);
         sound.setNumberOfLoops(0);
         resolve(sound);
@@ -55,6 +52,9 @@ const createSound = (path: unknown): Promise<Sound> => {
 };
 
 export const initSounds = async () => {
+  console.log(555);
+  
+  // console.log(errorSound, successSound, switchSound, eraseSound, successSound2, successSound3);
   soundRefs.errorSoundsRef.current = await Promise.all(
     Array(3).fill(0).map(() => createSound(errorSound))
   );
