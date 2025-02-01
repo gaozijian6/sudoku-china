@@ -1028,7 +1028,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             thumbColor={selectionMode === 2 ? '#1890ff' : '#f4f3f4'}
           />
         </View>
-        {!isIphoneSE && isDIY && (
+        {!isIphoneSE && isDIY && !isVip && (
           <View style={styles.bannerContainer}>
             <BannerAd
               // unitId={TestIds.BANNER}

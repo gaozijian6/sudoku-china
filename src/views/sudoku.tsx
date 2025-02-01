@@ -1084,7 +1084,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
             thumbColor={selectionMode === 2 ? '#1890ff' : '#f4f3f4'}
           />
         </View>
-        {!isIphoneSE && (isSudoku || isContinue) && (
+        {!isIphoneSE && (isSudoku || isContinue) && !isVip && (
           <View style={styles.bannerContainer}>
             <BannerAd
               // unitId={TestIds.BANNER}
