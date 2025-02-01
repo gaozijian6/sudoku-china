@@ -15,6 +15,7 @@ class RewardedVideo {
   // private adUnitId: string = TestIds.REWARDED; // 测试广告ID
   public startLoadTime: number = 0;
   private isVip: boolean = false;
+  private hintDrawerVisible: () => void = () => {};
   private constructor() {
     this.initAds();
     this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
@@ -26,6 +27,10 @@ class RewardedVideo {
       RewardedVideo.instance = new RewardedVideo();
     }
     return RewardedVideo.instance;
+  }
+
+  public setHintDrawerVisible(fn: () => void): void {
+    this.hintDrawerVisible = fn;
   }
 
   public setIsVip(isVip: boolean): void {
@@ -49,6 +54,7 @@ class RewardedVideo {
       console.log('广告关闭');
       this.isLoaded = false;
       this.load();
+      this.hintDrawerVisible();
     });
     this.rewardedAd.addAdEventListener(AdEventType.ERROR, (error) => {
       this.isLoaded = false;

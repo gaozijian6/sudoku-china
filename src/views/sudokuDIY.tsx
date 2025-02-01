@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, memo, useMemo } from 'react';
 import {
   View,
   Text,
@@ -56,7 +56,10 @@ import { useTranslation } from 'react-i18next';
 import handleHintMethod from '../tools/handleHintMethod';
 import rewardedVideo from '../tools/RewardedVideo';
 import WatchIcon from '../components/WatchIcon';
-import { RewardedAdEventType } from 'react-native-google-mobile-ads';
+import { BannerAd, BannerAdSize, RewardedAdEventType, TestIds } from 'react-native-google-mobile-ads';
+import DeviceInfo from 'react-native-device-info';
+
+const model = DeviceInfo.getModel();
 
 interface SudokuDIYProps {
   slideAnim: Animated.Value;
@@ -103,6 +106,10 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       [],
     );
     const [hintDrawerVisible, setHintDrawerVisible] = useState<boolean>(false);
+    const isIphoneSE = useMemo(() => {
+      return model.includes('SE');
+    }, []);
+
     const [hintContent, setHintContent] = useState<string>('');
     const [hintMethod, setHintMethod] = useState<string>('');
     const [result, setResult] = useState<Result | null>(null);
@@ -148,6 +155,18 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     ]);
     const { errorCount, setErrorCount, isSound, isDIY, isConnected, isVip } =
       useSudokuStore();
+    useEffect(() => {
+      if (isDIY) {
+        rewardedVideo.setHintDrawerVisible(() => {
+          setHintDrawerVisible(true);
+        });
+      }
+    }, [isDIY]);
+    useEffect(() => {
+      if (hintDrawerVisible) {
+        handleHint(board);
+      }
+    }, [hintDrawerVisible]);
     const [watchIconVisible, setWatchIconVisible] = useState<boolean>(false);
     const isFirstHint = useRef<boolean>(true);
     const resetSudoku = useCallback(() => {
@@ -224,7 +243,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     ]);
 
     useEffect(() => {
-      if(!isVip){
+      if (!isVip) {
         rewardedVideo.load();
       }
     }, []);
@@ -260,7 +279,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         startTime.current = data.startTime;
         setWatchIconVisible(data.watchIconVisible);
         isFirstHint.current = data.isFirstHint;
-        if(!rewardedVideo.isReady()){
+        if (!rewardedVideo.isReady()) {
           setWatchIconVisible(false);
         }
       }
@@ -532,9 +551,13 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
     const handleShowCandidates = useCallback(() => {
       playSound('switch', isSound);
+      if (counts < 17) {
+        setSudokuStatus(SUDOKU_STATUS.INCOMPLETE);
+        return;
+      }
       isClickAutoNote.current = true;
       updateBoard(deepCopyBoard(standradBoard), '复制官方草稿', false);
-    }, [standradBoard, updateBoard, isSound]);
+    }, [standradBoard, updateBoard, isSound, counts]);
 
     const applyHintHighlight = useCallback(
       (
@@ -640,11 +663,12 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     // 提示和观看广告
     const handleHintAndRewardedVideo = useCallback(
       (board: CellData[][]) => {
-        if(counts<17){
+        if (counts < 17) {
+          playSound('switch', isSound);
           setSudokuStatus(SUDOKU_STATUS.INCOMPLETE);
           return;
         }
-        if (!isConnected&&!rewardedVideo.getIsVip()) {
+        if (!isConnected && !rewardedVideo.getIsVip()) {
           setHintDrawerVisible(true);
           setHintMethod('')
           setHintContent(t('pleaseConnectNetwork'));
@@ -652,26 +676,26 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         }
         if (rewardedVideo.chance) {
           handleHint(board);
-          rewardedVideo.chance=false;
+          rewardedVideo.chance = false;
           rewardedVideo.load();
-          if(isFirstHint.current){
+          if (isFirstHint.current) {
             isFirstHint.current = false;
           }
-        }else if(rewardedVideo.isReady()&&watchIconVisible){
+        } else if (rewardedVideo.isReady() && watchIconVisible) {
           rewardedVideo.show();
-        }else{
+        } else {
           rewardedVideo.load();
           handleHint(board);
         }
-        if(rewardedVideo.isReady()){
+        if (rewardedVideo.isReady()) {
           setWatchIconVisible(true);
         }
       },
-      [handleHint, isConnected, t],
+      [handleHint, isConnected, t, counts],
     );
 
     const handleApplyHint = useCallback(() => {
-      if (!isConnected&&!rewardedVideo.getIsVip()) {
+      if (!isConnected && !rewardedVideo.getIsVip()) {
         setHintDrawerVisible(false);
         return;
       }
@@ -787,7 +811,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
     const getAnswer = useCallback(
       async (board: CellData[][]) => {
-        if(counts<17){
+        if (counts < 17) {
+          playSound('switch', isSound);
           setSudokuStatus(SUDOKU_STATUS.INCOMPLETE);
           return;
         }
@@ -808,7 +833,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           setSudokuStatus(SUDOKU_STATUS.ILLEGAL);
         }
       },
-      [isConnected, isSound, t, updateBoard],
+      [isConnected, isSound, t, updateBoard, counts],
     );
 
     useEffect(() => {
@@ -830,7 +855,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     }, []);
 
     useEffect(() => {
-      if(counts!=81 ){
+      if (counts != 81) {
         setSudokuStatus(SUDOKU_STATUS.VOID);
       }
     }, [counts]);
@@ -980,7 +1005,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           <Pressable
             style={[styles.buttonContainerDIY]}
             onPressIn={() => getAnswer(board)}>
-            <WatchIcon top={0} right={10} visible={watchIconVisible} />
             <Image
               source={require('../assets/icon/answer.png')}
               style={styles.buttonIcon}
@@ -1004,6 +1028,18 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             thumbColor={selectionMode === 2 ? '#1890ff' : '#f4f3f4'}
           />
         </View>
+        {!isIphoneSE && isDIY && (
+          <View style={styles.bannerContainer}>
+            <BannerAd
+              // unitId={TestIds.BANNER}
+              unitId={'ca-app-pub-2981436674907454/7094926382'}
+              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+              requestOptions={{
+                requestNonPersonalizedAdsOnly: true,
+              }}
+            />
+          </View>
+        )}
         <Modal
           animationType="slide"
           transparent={true}

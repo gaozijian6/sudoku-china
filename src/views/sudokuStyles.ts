@@ -345,12 +345,8 @@ const sudokuStyles = StyleSheet.create({
     right: 0,
   },
   modalContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: '85%',
-    zIndex: 100,
+    flex: 1,
+    justifyContent: 'flex-end',
   },
   drawerContent: {
     position: 'relative',
@@ -369,7 +365,7 @@ const sudokuStyles = StyleSheet.create({
     },
     shadowOpacity: 1,
     shadowRadius: 15,
-    elevation: 24,
+    elevation: 5,
     flexDirection: 'column',
   },
   drawerTextContainer: {
@@ -493,6 +489,15 @@ const sudokuStyles = StyleSheet.create({
     justifyContent: 'center',
     top: -10,
   },
+  bannerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    marginTop: 20,
+    backgroundColor: '#fff',
+    minHeight: 50,
+    paddingVertical: 5,
+  }
 
 });
 

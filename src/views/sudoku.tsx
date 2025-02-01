@@ -60,7 +60,10 @@ import ResultView from '../components/ResultOverlay';
 import handleHintMethod from '../tools/handleHintMethod';
 import WatchIcon from '../components/WatchIcon';
 import rewardedVideo from '../tools/RewardedVideo';
-import { RewardedAdEventType } from 'react-native-google-mobile-ads';
+import { RewardedAdEventType, BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
+import DeviceInfo from 'react-native-device-info';
+
+const model = DeviceInfo.getModel();
 
 interface SudokuProps {
   slideAnim: Animated.Value;
@@ -90,6 +93,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       counts,
       initializeBoard2,
     } = useSudokuBoard();
+
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
     const [draftMode, setDraftMode] = useState<boolean>(false);
@@ -108,6 +112,10 @@ const Sudoku: React.FC<SudokuProps> = memo(
       [],
     );
     const [hintDrawerVisible, setHintDrawerVisible] = useState<boolean>(false);
+    const isIphoneSE = useMemo(() => {
+      return model.includes('SE');
+    }, []);
+
     const [hintContent, setHintContent] = useState<string>('');
     const [hintMethod, setHintMethod] = useState<string>('');
     const [result, setResult] = useState<Result | null>(null);
@@ -169,6 +177,18 @@ const Sudoku: React.FC<SudokuProps> = memo(
       isConnected,
       isVip,
     } = useSudokuStore();
+    useEffect(() => {
+      if (isSudoku) {
+        rewardedVideo.setHintDrawerVisible(() => {
+          setHintDrawerVisible(true);
+        });
+      }
+    }, [isSudoku]);
+    useEffect(() => {
+      if (hintDrawerVisible) {
+        handleHint(board);
+      }
+    }, [hintDrawerVisible]);
     const isFirstHint = useRef<boolean>(true);
 
     useEffect(() => {
@@ -257,7 +277,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
     ]);
 
     useEffect(() => {
-      if(!isVip){
+      if (!isVip) {
         rewardedVideo.load();
       }
     }, []);
@@ -285,7 +305,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
     );
 
     useEffect(() => {
-      if(counts==81){
+      if (counts == 81) {
         setTimeout(() => {
           playVictorySound();
           setSuccessResult(errorCount, hintCount.current);
@@ -321,7 +341,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         isFirstHint.current = data.isFirstHint;
         isHinting.current = data.isHinting;
         rewardedVideo.chance = data.chance;
-        if(!rewardedVideo.isReady()){
+        if (!rewardedVideo.isReady()) {
           setWatchIconVisible(false);
         }
       }
@@ -746,11 +766,11 @@ const Sudoku: React.FC<SudokuProps> = memo(
     // 提示和观看广告
     const handleHintAndRewardedVideo = useCallback(
       (board: CellData[][]) => {
-        if(rewardedVideo.getIsVip()){
+        if (rewardedVideo.getIsVip()) {
           handleHint(board);
           return;
         }
-        if (!isConnected&&!rewardedVideo.getIsVip()) {
+        if (!isConnected && !rewardedVideo.getIsVip()) {
           setHintDrawerVisible(true);
           setHintMethod('')
           setHintContent(t('pleaseConnectNetwork'));
@@ -758,18 +778,18 @@ const Sudoku: React.FC<SudokuProps> = memo(
         }
         if (rewardedVideo.chance) {
           handleHint(board);
-          rewardedVideo.chance=false;
+          rewardedVideo.chance = false;
           rewardedVideo.load();
-          if(isFirstHint.current){
+          if (isFirstHint.current) {
             isFirstHint.current = false;
           }
-        }else if(rewardedVideo.isReady()&&watchIconVisible){
+        } else if (rewardedVideo.isReady() && watchIconVisible) {
           rewardedVideo.show();
-        }else{
+        } else {
           rewardedVideo.load();
           handleHint(board);
         }
-        if(rewardedVideo.isReady()){
+        if (rewardedVideo.isReady()) {
           setWatchIconVisible(true);
         }
       },
@@ -777,7 +797,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
     );
 
     const handleApplyHint = useCallback(() => {
-      if (!isConnected&&!rewardedVideo.getIsVip()) {
+      if (!isConnected && !rewardedVideo.getIsVip()) {
         setHintDrawerVisible(false);
         return;
       }
@@ -1040,7 +1060,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
           <Pressable
             style={[styles.buttonContainer]}
             onPressIn={() => handleHintAndRewardedVideo(board)}>
-            <WatchIcon top={5} right={15} visible={watchIconVisible&&!isVip} />
+            <WatchIcon top={5} right={15} visible={watchIconVisible && !isVip} />
             <Image
               source={require('../assets/icon/prompt.png')}
               style={styles.buttonIcon}
@@ -1064,6 +1084,18 @@ const Sudoku: React.FC<SudokuProps> = memo(
             thumbColor={selectionMode === 2 ? '#1890ff' : '#f4f3f4'}
           />
         </View>
+        {!isIphoneSE && (isSudoku || isContinue) && (
+          <View style={styles.bannerContainer}>
+            <BannerAd
+              // unitId={TestIds.BANNER}
+              unitId={'ca-app-pub-2981436674907454/7094926382'}
+              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+              requestOptions={{
+                requestNonPersonalizedAdsOnly: true,
+              }}
+            />
+          </View>
+        )}
         <Modal
           animationType="slide"
           transparent={true}
