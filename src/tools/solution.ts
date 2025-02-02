@@ -3479,3 +3479,12 @@ export const trialAndError = (
   }
   return null;
 };
+
+export const Chain = (
+  board: CellData[][],
+  candidateMap: CandidateMap,
+  graph: Graph,
+): Result | null => {
+  // 3-2-2-2
+  
+};
