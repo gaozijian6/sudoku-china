@@ -94,6 +94,7 @@ export const SOLUTION_METHODS = {
   SWORDFISH_WITH_FIN_COLUMN: "Finned Swordfish(COLUMN)",
   WXYZ_WING: "WXYZ-Wing",
   TRIAL_AND_ERROR: "Trial and Error",
+  LOOP: "Loop",
 };
 
 

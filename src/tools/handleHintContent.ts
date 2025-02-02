@@ -1,7 +1,7 @@
-import {Result} from './solution';
-import {SOLUTION_METHODS} from '../constans';
-import {CellData} from './index';
-import {TFunction} from 'i18next';
+import { Result } from './solution';
+import { SOLUTION_METHODS } from '../constans';
+import { CellData } from './index';
+import { TFunction } from 'i18next';
 
 export const handleHintContent = (
   result: Result,
@@ -14,7 +14,7 @@ export const handleHintContent = (
   updateBoard: any,
   t: TFunction,
 ): string => {
-  const {position, target, method, prompt, isFill, isWeakLink, chainStructure} =
+  const { position, target, method, prompt, isFill, isWeakLink, chainStructure,label } =
     result;
   let posStr = '';
   let candStr = '';
@@ -64,6 +64,22 @@ export const handleHintContent = (
           target: target[0],
         });
         break;
+      case SOLUTION_METHODS.LOOP:
+        boardWithHighlight = applyHintHighlight(board, result, 'both');
+        if(label==='3-2-2'){
+          let nodeStr1=`R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1}C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`
+          let nodeStr2=`R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`
+          let nodeStr3=`R${prompt[5].row + 1}C${prompt[5].col + 1}、R${prompt[6].row + 1}C${prompt[6].col + 1}`
+          hintContent = t('hints.LOOP_3_2_2', {
+            target: target[0],
+            nodeStr1,
+            nodeStr2,
+            nodeStr3,
+            rootNodeStr: `R${position[0].row + 1}C${position[0].col + 1}`
+          });
+        }
+
+        break;
     }
   } else {
     setPositions(target);
@@ -72,13 +88,11 @@ export const handleHintContent = (
         setPrompts(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         if (prompt.length == 2) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}`;
         } else if (prompt.length == 3) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         }
         hintContent = t('hints.BLOCK_ELIMINATION_ROW', {
           box:
@@ -93,13 +107,11 @@ export const handleHintContent = (
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         setPrompts(target);
         if (prompt.length == 2) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}`;
         } else if (prompt.length == 3) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         }
         hintContent = t('hints.BLOCK_ELIMINATION_COLUMN', {
           box:
@@ -114,13 +126,11 @@ export const handleHintContent = (
         setPrompts(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         if (prompt.length == 2) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}`;
         } else if (prompt.length == 3) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         }
         hintContent = t('hints.BLOCK_ELIMINATION_BOX_ROW', {
           row: prompt[0].row + 1,
@@ -132,13 +142,11 @@ export const handleHintContent = (
         setPrompts(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         if (prompt.length == 2) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}`;
         } else if (prompt.length == 3) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         }
         hintContent = t('hints.BLOCK_ELIMINATION_BOX_COLUMN', {
           col: prompt[0].col + 1,
@@ -150,9 +158,8 @@ export const handleHintContent = (
         setPrompts(target);
         setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}`;
         hintContent = t('hints.NAKED_PAIR_ROW', {
           row: position[0].row + 1,
           target: target.join(','),
@@ -163,9 +170,8 @@ export const handleHintContent = (
         setPrompts(target);
         setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}`;
         hintContent = t('hints.NAKED_PAIR_COLUMN', {
           col: position[0].col + 1,
           target: target.join(','),
@@ -176,9 +182,8 @@ export const handleHintContent = (
         setPrompts(target);
         setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}`;
         hintContent = t('hints.NAKED_PAIR_BOX', {
           box:
             Math.floor(prompt[0].row / 3) * 3 +
@@ -192,9 +197,8 @@ export const handleHintContent = (
         setPrompts(target);
         setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         hintContent = t('hints.NAKED_TRIPLE_ROW1', {
           row: position[0].row + 1,
           target: target.join(','),
@@ -205,9 +209,8 @@ export const handleHintContent = (
         setPrompts(target);
         setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         hintContent = t('hints.NAKED_TRIPLE_COLUMN1', {
           col: position[0].col + 1,
           target: target.join(','),
@@ -218,9 +221,8 @@ export const handleHintContent = (
         setPrompts(target);
         setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         hintContent = t('hints.NAKED_TRIPLE_BOX1', {
           box:
             Math.floor(prompt[0].row / 3) * 3 +
@@ -234,9 +236,8 @@ export const handleHintContent = (
         setPrompts(target);
         setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         hintContent = t('hints.NAKED_TRIPLE_ROW2', {
           row: position[0].row + 1,
           target: target.join(','),
@@ -247,9 +248,8 @@ export const handleHintContent = (
         setPrompts(target);
         setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         hintContent = t('hints.NAKED_TRIPLE_COLUMN2', {
           col: position[0].col + 1,
           target: target.join(','),
@@ -260,9 +260,8 @@ export const handleHintContent = (
         setPrompts(target);
         setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         hintContent = t('hints.NAKED_TRIPLE_BOX2', {
           box:
             Math.floor(prompt[0].row / 3) * 3 +
@@ -283,9 +282,8 @@ export const handleHintContent = (
 
         setPrompts(uniquePromptCandidates);
         candStr = [...new Set(prompts)].join(',');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}`;
         hintContent = t('hints.HIDDEN_PAIR_ROW', {
           row: position[0].row + 1,
           candStr,
@@ -303,9 +301,8 @@ export const handleHintContent = (
 
         setPrompts(uniquePromptCandidates);
         candStr = [...new Set(prompts)].join(',');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}`;
         hintContent = t('hints.HIDDEN_PAIR_COLUMN', {
           col: position[0].col + 1,
           candStr,
@@ -322,9 +319,8 @@ export const handleHintContent = (
         );
 
         setPrompts(uniquePromptCandidates);
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}`;
         candStr = [...new Set(prompts)].join(',');
         hintContent = t('hints.HIDDEN_PAIR_BOX', {
           box:
@@ -345,9 +341,8 @@ export const handleHintContent = (
         );
 
         setPrompts(uniquePromptCandidates);
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = [...new Set(prompts)].join(',');
         hintContent = t('hints.HIDDEN_TRIPLE_ROW1', {
           row: position[0].row + 1,
@@ -365,9 +360,8 @@ export const handleHintContent = (
         );
 
         setPrompts(uniquePromptCandidates);
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = [...new Set(prompts)].join(',');
         hintContent = t('hints.HIDDEN_TRIPLE_COLUMN1', {
           col: position[0].col + 1,
@@ -385,9 +379,8 @@ export const handleHintContent = (
         );
 
         setPrompts(uniquePromptCandidates);
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = [...new Set(prompts)].join(',');
         hintContent = t('hints.HIDDEN_TRIPLE_BOX1', {
           box:
@@ -408,9 +401,8 @@ export const handleHintContent = (
         );
 
         setPrompts(uniquePromptCandidates);
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = [...new Set(prompts)].join(',');
         hintContent = t('hints.HIDDEN_TRIPLE_ROW2', {
           row: position[0].row + 1,
@@ -428,9 +420,8 @@ export const handleHintContent = (
         );
 
         setPrompts(uniquePromptCandidates);
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = [...new Set(prompts)].join(',');
         hintContent = t('hints.HIDDEN_TRIPLE_COLUMN2', {
           col: position[0].col + 1,
@@ -448,9 +439,8 @@ export const handleHintContent = (
         );
 
         setPrompts(uniquePromptCandidates);
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = [...new Set(prompts)].join(',');
         hintContent = t('hints.HIDDEN_TRIPLE_BOX2', {
           box:
@@ -463,11 +453,9 @@ export const handleHintContent = (
         break;
       case SOLUTION_METHODS.NAKED_QUADRUPLE_ROW:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
-          prompt[3].row + 1
-        }C${prompt[3].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${prompt[3].row + 1
+          }C${prompt[3].col + 1}`;
         candStr = [...new Set(target)].join(',');
         hintContent = t('hints.NAKED_QUADRUPLE_ROW', {
           row: position[0].row + 1,
@@ -477,11 +465,9 @@ export const handleHintContent = (
         break;
       case SOLUTION_METHODS.NAKED_QUADRUPLE_COLUMN:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
-          prompt[3].row + 1
-        }C${prompt[3].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${prompt[3].row + 1
+          }C${prompt[3].col + 1}`;
         candStr = [...new Set(target)].join(',');
         hintContent = t('hints.NAKED_QUADRUPLE_COLUMN', {
           col: position[0].col + 1,
@@ -491,11 +477,9 @@ export const handleHintContent = (
         break;
       case SOLUTION_METHODS.NAKED_QUADRUPLE_BOX:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
-          prompt[3].row + 1
-        }C${prompt[3].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${prompt[3].row + 1
+          }C${prompt[3].col + 1}`;
         candStr = [...new Set(target)].join(',');
         hintContent = t('hints.NAKED_QUADRUPLE_BOX', {
           box:
@@ -509,11 +493,9 @@ export const handleHintContent = (
       case SOLUTION_METHODS.X_WING_ROW:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         setPrompts(target);
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
-          prompt[3].row + 1
-        }C${prompt[3].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${prompt[3].row + 1
+          }C${prompt[3].col + 1}`;
         candStr = target.join(',');
         hintContent = t('hints.X_WING_ROW', {
           row1: prompt[0].row + 1,
@@ -525,11 +507,9 @@ export const handleHintContent = (
       case SOLUTION_METHODS.X_WING_COLUMN:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         setPrompts(target);
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
-          prompt[3].row + 1
-        }C${prompt[3].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${prompt[3].row + 1
+          }C${prompt[3].col + 1}`;
         candStr = target.join(',');
         hintContent = t('hints.X_WING_COLUMN', {
           col1: prompt[0].col + 1,
@@ -542,21 +522,15 @@ export const handleHintContent = (
       case SOLUTION_METHODS.X_WING_VARIENT_ROW:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         if (prompt.length === 5) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1
+            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}`;
         } else if (prompt.length === 6) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1
+            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1}`;
         }
         candStr = target.join(',');
         setPrompts(target);
@@ -571,16 +545,14 @@ export const handleHintContent = (
       case SOLUTION_METHODS.XY_WING:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         setPrompts(target);
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = target.join(',');
         if (position.length === 1) {
           deleteStr = `R${position[0].row + 1}C${position[0].col + 1}`;
         } else if (position.length === 2) {
-          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
-            position[1].row + 1
-          }C${position[1].col + 1}`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${position[1].row + 1
+            }C${position[1].col + 1}`;
         }
         hintContent = t('hints.XY_WING', {
           positions: posStr,
@@ -599,16 +571,14 @@ export const handleHintContent = (
             candidateCounts.set(num, (candidateCounts.get(num) || 0) + 1);
           });
         });
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
         candStr = target.join(',');
         if (position.length === 1) {
           deleteStr = `R${position[0].row + 1}C${position[0].col + 1}`;
         } else if (position.length === 2) {
-          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
-            position[1].row + 1
-          }C${position[1].col + 1}`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${position[1].row + 1
+            }C${position[1].col + 1}`;
         }
         hintContent = t('hints.XYZ_WING', {
           positions: posStr,
@@ -620,23 +590,18 @@ export const handleHintContent = (
       case SOLUTION_METHODS.SKYSCRAPER:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         setPrompts(target);
-        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
-          prompt[3].row + 1
-        }C${prompt[3].col + 1}`;
+        posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${prompt[3].row + 1
+          }C${prompt[3].col + 1}`;
         if (position.length === 1) {
           deleteStr = `R${position[0].row + 1}C${position[0].col + 1}`;
         } else if (position.length === 2) {
-          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
-            position[1].row + 1
-          }C${position[1].col + 1}`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${position[1].row + 1
+            }C${position[1].col + 1}`;
         } else if (position.length === 3) {
-          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
-            position[1].row + 1
-          }C${position[1].col + 1}、R${position[2].row + 1}C${
-            position[2].col + 1
-          }`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${position[1].row + 1
+            }C${position[1].col + 1}、R${position[2].row + 1}C${position[2].col + 1
+            }`;
         }
         hintContent = t('hints.SKYSCRAPER', {
           positions: posStr,
@@ -652,21 +617,16 @@ export const handleHintContent = (
         if (position.length === 1) {
           deleteStr = `R${position[0].row + 1}C${position[0].col + 1}`;
         } else if (position.length === 2) {
-          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
-            position[1].row + 1
-          }C${position[1].col + 1}`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${position[1].row + 1
+            }C${position[1].col + 1}`;
         } else if (position.length === 3) {
-          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
-            position[1].row + 1
-          }C${position[1].col + 1}、R${position[2].row + 1}C${
-            position[2].col + 1
-          }`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${position[1].row + 1
+            }C${position[1].col + 1}、R${position[2].row + 1}C${position[2].col + 1
+            }`;
         } else if (position.length === 4) {
-          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
-            position[1].row + 1
-          }C${position[1].col + 1}、R${position[2].row + 1}C${
-            position[2].col + 1
-          }、R${position[3].row + 1}C${position[3].col + 1}`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${position[1].row + 1
+            }C${position[1].col + 1}、R${position[2].row + 1}C${position[2].col + 1
+            }、R${position[3].row + 1}C${position[3].col + 1}`;
         }
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         setPrompts(target);
@@ -688,33 +648,26 @@ export const handleHintContent = (
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         setPositions(target);
         setPrompts(target);
-        const posStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[prompt.length - 1].row + 1
-        }C${prompt[prompt.length - 1].col + 1}`;
+        const posStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[prompt.length - 1].row + 1
+          }C${prompt[prompt.length - 1].col + 1}`;
         let posStr2 = '';
         if (position.length === 1) {
           posStr = `R${position[0].row + 1}C${position[0].col + 1}`;
         } else if (position.length === 2) {
-          posStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
-            position[1].row + 1
-          }C${position[1].col + 1}`;
+          posStr = `R${position[0].row + 1}C${position[0].col + 1}、R${position[1].row + 1
+            }C${position[1].col + 1}`;
         } else if (position.length === 3) {
-          posStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
-            position[1].row + 1
-          }C${position[1].col + 1}、R${position[2].row + 1}C${
-            position[2].col + 1
-          }`;
+          posStr = `R${position[0].row + 1}C${position[0].col + 1}、R${position[1].row + 1
+            }C${position[1].col + 1}、R${position[2].row + 1}C${position[2].col + 1
+            }`;
         }
         if (prompt.length === 4) {
-          posStr2 = `R${prompt[1].row + 1}C${prompt[1].col + 1}、R${
-            prompt[2].row + 1
-          }C${prompt[2].col + 1}`;
+          posStr2 = `R${prompt[1].row + 1}C${prompt[1].col + 1}、R${prompt[2].row + 1
+            }C${prompt[2].col + 1}`;
         } else if (prompt.length === 6) {
-          posStr2 = `R${prompt[1].row + 1}C${prompt[1].col + 1}、R${
-            prompt[2].row + 1
-          }C${prompt[2].col + 1}、R${prompt[3].row + 1}C${
-            prompt[3].col + 1
-          }、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
+          posStr2 = `R${prompt[1].row + 1}C${prompt[1].col + 1}、R${prompt[2].row + 1
+            }C${prompt[2].col + 1}、R${prompt[3].row + 1}C${prompt[3].col + 1
+            }、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
         }
         hintContent = t('hints.REMOTE_PAIR', {
           posStr,
@@ -730,9 +683,8 @@ export const handleHintContent = (
         if (position.length === 1) {
           posStr = `R${position[0].row + 1}C${position[0].col + 1}`;
         } else if (position.length === 2) {
-          posStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
-            position[1].row + 1
-          }C${position[1].col + 1}`;
+          posStr = `R${position[0].row + 1}C${position[0].col + 1}、R${position[1].row + 1
+            }C${position[1].col + 1}`;
         }
         // 组合方格
         let candStr1 = '';
@@ -746,15 +698,12 @@ export const handleHintContent = (
         let pivotStr2 = '';
 
         if (!isWeakLink && chainStructure === '3-2-1') {
-          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
-          candStr2 = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
-            prompt[3].row + 1
-          }C${prompt[3].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
-          candStr4 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
+          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}`;
+          candStr2 = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${prompt[3].row + 1
+            }C${prompt[3].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
+          candStr4 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
           hintContent = t('hints.COMBINATION_CHAIN_3_2_1_STRONG', {
             candStr1,
             candStr2,
@@ -763,19 +712,15 @@ export const handleHintContent = (
             target: target[0],
           });
         } else if (isWeakLink && chainStructure === '3-2-1') {
-          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
+          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}`;
           candStr2 = `R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr3 = `R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}`;
-          pivotStr = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
-            prompt[3].row + 1
-          }C${prompt[3].col + 1}`;
-          candStr4 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
+          candStr3 = `R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}`;
+          pivotStr = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${prompt[3].row + 1
+            }C${prompt[3].col + 1}`;
+          candStr4 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
           hintContent = t('hints.COMBINATION_CHAIN_3_2_1_WEAK', {
             candStr1,
             candStr2,
@@ -786,20 +731,16 @@ export const handleHintContent = (
             target: target[0],
           });
         } else if (isWeakLink && chainStructure === '3-2-2') {
-          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
+          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}`;
           candStr2 = `R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr3 = `R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}`;
+          candStr3 = `R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}`;
           pivotStr1 = `R${prompt[3].row + 1}C${prompt[3].col + 1}`;
-          pivotStr2 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
-          candStr4 = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}`;
+          pivotStr2 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}`;
+          candStr4 = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}`;
           hintContent = t('hints.COMBINATION_CHAIN_3_2_2_WEAK', {
             candStr1,
             candStr2,
@@ -811,20 +752,16 @@ export const handleHintContent = (
             target: target[0],
           });
         } else if (!isWeakLink && chainStructure === '3-2-2') {
-          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
+          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}`;
           candStr2 = `R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr3 = `R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}`;
+          candStr3 = `R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}`;
           pivotStr1 = `R${prompt[3].row + 1}C${prompt[3].col + 1}`;
-          pivotStr2 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
-          candStr4 = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}`;
+          pivotStr2 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}`;
+          candStr4 = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}`;
           hintContent = t('hints.COMBINATION_CHAIN_3_2_2_STRONG', {
             candStr1,
             candStr2,
@@ -836,19 +773,14 @@ export const handleHintContent = (
             target: target[0],
           });
         } else if (!isWeakLink && chainStructure === '3-4-1') {
-          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
-          candStr2 = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
-            prompt[3].row + 1
-          }C${prompt[3].col + 1}、R${prompt[4].row + 1}C${
-            prompt[4].col + 1
-          }、R${prompt[5].row + 1}C${prompt[5].col + 1}、R${
-            prompt[6].row + 1
-          }C${prompt[6].col + 1}`;
-          candStr4 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
+          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}`;
+          candStr2 = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${prompt[3].row + 1
+            }C${prompt[3].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1
+            }、R${prompt[5].row + 1}C${prompt[5].col + 1}、R${prompt[6].row + 1
+            }C${prompt[6].col + 1}`;
+          candStr4 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
           hintContent = t('hints.COMBINATION_CHAIN_3_2_1_STRONG', {
             candStr1,
             candStr2,
@@ -857,21 +789,16 @@ export const handleHintContent = (
             target: target[0],
           });
         } else if (isWeakLink && chainStructure === '3-4-1') {
-          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}`;
+          candStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}`;
           candStr2 = `R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-          candStr3 = `R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-            prompt[5].col + 1
-          }、R${prompt[6].row + 1}C${prompt[6].col + 1}`;
-          pivotStr = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
-            prompt[3].row + 1
-          }C${prompt[3].col + 1}`;
-          candStr4 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
+          candStr3 = `R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1
+            }、R${prompt[6].row + 1}C${prompt[6].col + 1}`;
+          pivotStr = `R${prompt[2].row + 1}C${prompt[2].col + 1}、R${prompt[3].row + 1
+            }C${prompt[3].col + 1}`;
+          candStr4 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`;
           hintContent = t('hints.COMBINATION_CHAIN_3_2_1_WEAK', {
             candStr1,
             candStr2,
@@ -886,47 +813,30 @@ export const handleHintContent = (
       case SOLUTION_METHODS.SWORDFISH_ROW:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         if (prompt.length === 6) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1
+            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1}`;
         } else if (prompt.length === 7) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-            prompt[5].col + 1
-          }、R${prompt[6].row + 1}C${prompt[6].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1
+            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1
+            }、R${prompt[6].row + 1}C${prompt[6].col + 1}`;
         } else if (prompt.length === 8) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-            prompt[5].col + 1
-          }、R${prompt[6].row + 1}C${prompt[6].col + 1}、R${
-            prompt[7].row + 1
-          }C${prompt[7].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1
+            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1
+            }、R${prompt[6].row + 1}C${prompt[6].col + 1}、R${prompt[7].row + 1
+            }C${prompt[7].col + 1}`;
         } else if (prompt.length === 9) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-            prompt[5].col + 1
-          }、R${prompt[6].row + 1}C${prompt[6].col + 1}、R${
-            prompt[7].row + 1
-          }C${prompt[7].col + 1}、R${prompt[8].row + 1}C${prompt[8].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1
+            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1
+            }、R${prompt[6].row + 1}C${prompt[6].col + 1}、R${prompt[7].row + 1
+            }C${prompt[7].col + 1}、R${prompt[8].row + 1}C${prompt[8].col + 1}`;
         }
         const columns = [...new Set(prompt.map(pos => pos.col + 1))];
         hintContent = t('hints.SWORDFISH_ROW', {
@@ -939,47 +849,30 @@ export const handleHintContent = (
       case SOLUTION_METHODS.SWORDFISH_COLUMN:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         if (prompt.length === 6) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1
+            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1}`;
         } else if (prompt.length === 7) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-            prompt[5].col + 1
-          }、R${prompt[6].row + 1}C${prompt[6].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1
+            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1
+            }、R${prompt[6].row + 1}C${prompt[6].col + 1}`;
         } else if (prompt.length === 8) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-            prompt[5].col + 1
-          }、R${prompt[6].row + 1}C${prompt[6].col + 1}、R${
-            prompt[7].row + 1
-          }C${prompt[7].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1
+            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1
+            }、R${prompt[6].row + 1}C${prompt[6].col + 1}、R${prompt[7].row + 1
+            }C${prompt[7].col + 1}`;
         } else if (prompt.length === 9) {
-          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-            prompt[1].row + 1
-          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${
-            prompt[2].col + 1
-          }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${
-            prompt[4].row + 1
-          }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${
-            prompt[5].col + 1
-          }、R${prompt[6].row + 1}C${prompt[6].col + 1}、R${
-            prompt[7].row + 1
-          }C${prompt[7].col + 1}、R${prompt[8].row + 1}C${prompt[8].col + 1}`;
+          posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+            }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1
+            }、R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1
+            }C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1
+            }、R${prompt[6].row + 1}C${prompt[6].col + 1}、R${prompt[7].row + 1
+            }C${prompt[7].col + 1}、R${prompt[8].row + 1}C${prompt[8].col + 1}`;
         }
         const rows = [...new Set(prompt.map(pos => pos.row + 1))];
         hintContent = t('hints.SWORDFISH_COLUMN', {
@@ -993,17 +886,14 @@ export const handleHintContent = (
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         setPositions(target);
         setPrompts(target);
-        candStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
-          prompt[1].row + 1
-        }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${
-          prompt[3].row + 1
-        }C${prompt[3].col + 1}`;
+        candStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1
+          }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}、R${prompt[3].row + 1
+          }C${prompt[3].col + 1}`;
         if (position.length === 1) {
           deleteStr = `R${position[0].row + 1}C${position[0].col + 1}`;
         } else if (position.length === 2) {
-          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${
-            position[1].row + 1
-          }C${position[1].col + 1}`;
+          deleteStr = `R${position[0].row + 1}C${position[0].col + 1}、R${position[1].row + 1
+            }C${position[1].col + 1}`;
         }
         hintContent = t('hints.WXYZ_WING', {
           candStr,
@@ -1013,6 +903,7 @@ export const handleHintContent = (
           col1: prompt[0].col + 1,
         });
         break;
+
     }
   }
 

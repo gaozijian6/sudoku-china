@@ -81,6 +81,7 @@ export default {
         SWORDFISH_WITH_FIN_ROW: '三阶带鳍鱼',
         SWORDFISH_WITH_FIN_COLUMN: '三阶带鳍鱼',
         WXYZ_WING: 'wxyz-wing',
+        LOOP: '环',
         TRIAL_AND_ERROR: '试错法',
         duration: '用时',
         mistakes: '错误次数',
@@ -178,6 +179,8 @@ export default {
                 '{{candStr1}}的组合与{{candStr2}}构成强链，{{candStr3}}两个方格构成强链，这两条强链通过{{pivotStr1}}与{{pivotStr2}}两方格的整体构成的弱链相连，无论{{candStr4}}内谁为真，候选数{{target}}都不能出现在{{posStr}}内',
             COMBINATION_CHAIN_3_2_2_STRONG:
                 '{{candStr1}}的组合与{{candStr2}}构成强链，{{candStr3}}两个方格构成强链，这两条强链通过{{pivotStr1}}与{{pivotStr2}}两方格的整体构成的强链相连，无论{{candStr4}}内谁为真，候选数{{target}}都不能出现在{{posStr}}内',
+            LOOP_3_2_2:
+                '{{nodeStr1}}构成一组强链，{{nodeStr2}}构成一组强链，{{nodeStr3}}构成一组强链，它们之间通过弱链相连构成一个环，假设{{rootNodeStr}}为假并以它为起点分别以顺时针和逆时针进行逻辑推导，最终会导致环上某个节点矛盾，因此{{rootNodeStr}}必须为真'
         },
         back: '返回',
         next: '下一关',

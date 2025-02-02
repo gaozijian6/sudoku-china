@@ -39,6 +39,7 @@ import {
   wxyzWing,
   remotePair,
   combinationChain,
+  Loop,
   trialAndErrorDIY,
 } from '../tools/solution';
 import type { CandidateMap, CellData, Graph, Position } from '../tools';
@@ -151,6 +152,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       combinationChain,
       swordfish,
       wxyzWing,
+      Loop,
       trialAndErrorDIY,
     ]);
     const { errorCount, setErrorCount, isSound, isDIY, isConnected, isVip } =
@@ -545,9 +547,11 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     );
 
     const handleDraftMode = useCallback(() => {
+      console.log(graph);
+      
       setDraftMode(!draftMode);
       playSound('switch', isSound);
-    }, [draftMode, isSound]);
+    }, [draftMode, isSound, graph]);
 
     const handleShowCandidates = useCallback(() => {
       playSound('switch', isSound);
@@ -1031,8 +1035,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         {!isIphoneSE && isDIY && !isVip && (
           <View style={styles.bannerContainer}>
             <BannerAd
-              // unitId={TestIds.BANNER}
-              unitId={'ca-app-pub-2981436674907454/7094926382'}
+              unitId={TestIds.BANNER}
+              // unitId={'ca-app-pub-2981436674907454/7094926382'}
               size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
               requestOptions={{
                 requestNonPersonalizedAdsOnly: true,
