@@ -549,7 +549,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     const handleDraftMode = useCallback(() => {
       setDraftMode(!draftMode);
       playSound('switch', isSound);
-    }, [draftMode, isSound, graph]);
+    }, [draftMode, isSound]);
 
     const handleShowCandidates = useCallback(() => {
       playSound('switch', isSound);
