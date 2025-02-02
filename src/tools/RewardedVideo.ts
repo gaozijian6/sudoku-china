@@ -14,7 +14,7 @@ class RewardedVideo {
   private adUnitId: string = 'ca-app-pub-2981436674907454/3945346418'; // 实际广告ID
   // private adUnitId: string = TestIds.REWARDED; // 测试广告ID
   public startLoadTime: number = 0;
-  private isVip: boolean = true;
+  private isVip: boolean = false;
   private hintDrawerVisible: () => void = () => {};
   private constructor() {
     this.initAds();

@@ -134,6 +134,7 @@ export default {
             COMBINATION_CHAIN_3_2_2_WEAK: '{{candStr1}} kombinasyonu ve {{candStr2}} güçlü bağ oluşturuyor, {{candStr3}} iki hücresi güçlü bağ oluşturuyor. Bu iki güçlü bağ {{pivotStr1}} ve {{pivotStr2}} hücrelerinin oluşturduğu zayıf bağla bağlanıyor. {{candStr4}} hangisi doğru olursa olsun, {{target}} adayı {{posStr}} konumunda bulunamaz',
             COMBINATION_CHAIN_3_2_2_STRONG: '{{candStr1}} kombinasyonu ve {{candStr2}} güçlü bağ oluşturuyor, {{candStr3}} iki hücresi güçlü bağ oluşturuyor. Bu iki güçlü bağ {{pivotStr1}} ve {{pivotStr2}} hücrelerinin oluşturduğu güçlü bağla bağlanıyor. {{candStr4}} hangisi doğru olursa olsun, {{target}} adayı {{posStr}} konumunda bulunamaz',
             LOOP_3_2_2: '{{nodeStr1}} bir güçlü zincir oluşturuyor, {{nodeStr2}} bir güçlü zincir oluşturuyor, {{nodeStr3}} bir güçlü zincir oluşturuyor. Bu üç güçlü zincir zayıf zincirle birlikte bir döngü oluşturuyor. {{rootNodeStr}} yanlışsa ve ondan başlarsanız, hem saat yönü hem ters yönde mantıksal çıkarım yapmanız sonunda döngüdeki bir çelişkiye yol açar, bu yüzden {{rootNodeStr}} doğru olmalıdır.',
+            LOOP_3_2: '{{nodeStr1}} bir güçlü zincir oluşturuyor, {{nodeStr2}} bir güçlü zincir oluşturuyor. Bu iki güçlü zincir zayıf zincirle birlikte bir döngü oluşturuyor. {{rootNodeStr}} yanlışsa ve ondan başlarsanız, hem saat yönü hem ters yönde mantıksal çıkarım yapmanız sonunda döngüdeki bir çelişkiye yol açar, bu yüzden {{rootNodeStr}} doğru olmalıdır.',
         },
         back: 'Geri',
         next: 'Sonraki',

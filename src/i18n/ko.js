@@ -134,6 +134,7 @@ export default {
             COMBINATION_CHAIN_3_2_2_WEAK: '{{candStr1}}의 조합과 {{candStr2}}이 강한 연결을 형성하고, {{candStr3}} 두 셀이 강한 연결을 형성합니다. 이 두 강한 연결은 {{pivotStr1}}과 {{pivotStr2}} 두 셀의 전체가 형성하는 약한 연결로 이어집니다. {{candStr4}} 중 어느 것이 참이든 {{target}}은 {{posStr}}에 올 수 없습니다',
             COMBINATION_CHAIN_3_2_2_STRONG: '{{candStr1}}의 조합과 {{candStr2}}이 강한 연결을 형성하고, {{candStr3}} 두 셀이 강한 연결을 형성합니다. 이 두 강한 연결은 {{pivotStr1}}과 {{pivotStr2}} 두 셀의 전체가 형성하는 강한 연결로 이어집니다. {{candStr4}} 중 어느 것이 참이든 {{target}}은 {{posStr}}에 올 수 없습니다',
             LOOP_3_2_2: '{{nodeStr1}}는 강한 연결을 형성하고, {{nodeStr2}}는 강한 연결을 형성하고, {{nodeStr3}}는 강한 연결을 형성합니다. 이 세 강한 연결은 약한 연결을 통해 사이클을 형성합니다. {{rootNodeStr}}가 거짓이며 이를 시작점으로 하여 시계 방향으로 방향으로 논리적 추론을 따르면 최종적으로 사이클에 대한 모순이 발생하므로 {{rootNodeStr}}은 참이어야 합니다',
+            LOOP_3_2: '{{nodeStr1}}는 강한 연결을 형성하고, {{nodeStr2}}는 강한 연결을 형성합니다. 이 두 강한 연결은 약한 연결을 통해 사이클을 형성합니다. {{rootNodeStr}}가 거짓이며 이를 시작점으로 하여 시계 방향과 반시계 방향으로 논리적 추론을 따르면 최종적으로 사이클에 대한 모순이 발생하므로 {{rootNodeStr}}은 참이어야 합니다',
         },
         back: '뒤로',
         next: '다음 레벨',

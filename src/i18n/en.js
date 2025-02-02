@@ -180,7 +180,9 @@ export default {
             COMBINATION_CHAIN_3_2_2_STRONG:
                 'The combination of two cells with {{candStr1}} forms a strong link with {{candStr2}}, two cells with {{candStr3}} form a strong link, these two strong links are connected through a strong link formed by the combination of two cells {{pivotStr1}} and {{pivotStr2}}. Regardless of which cell in {{candStr4}} is true, candidate {{target}} cannot appear in {{posStr}}.',
             LOOP_3_2_2:
-                '{{nodeStr1}} forms a strong link, {{nodeStr2}} forms a strong link, {{nodeStr3}} forms a strong link, they are connected through a weak link to form a loop. Assuming {{rootNodeStr}} is false and starts from it, the logical deduction in both clockwise and counterclockwise directions will eventually lead to a contradiction on the loop, so {{rootNodeStr}} must be true.'
+                '{{nodeStr1}} forms a strong link, {{nodeStr2}} forms a strong link, {{nodeStr3}} forms a strong link, they are connected through a weak link to form a loop. Assuming {{rootNodeStr}} is false and starts from it, the logical deduction in both clockwise and counterclockwise directions will eventually lead to a contradiction on the loop, so {{rootNodeStr}} must be true.',
+            LOOP_3_2:
+                '{{nodeStr1}} forms a strong link, {{nodeStr2}} forms a strong link, they are connected through a weak link to form a loop. Assuming {{rootNodeStr}} is false and starts from it, the logical deduction in both clockwise and counterclockwise directions will eventually lead to a contradiction on the loop, so {{rootNodeStr}} must be true.'
         },
         back: 'Back',
         next: 'Next',

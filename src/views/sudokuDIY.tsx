@@ -1035,8 +1035,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         {!isIphoneSE && isDIY && !isVip && (
           <View style={styles.bannerContainer}>
             <BannerAd
-              unitId={TestIds.BANNER}
-              // unitId={'ca-app-pub-2981436674907454/7094926382'}
+              // unitId={TestIds.BANNER}
+              unitId={'ca-app-pub-2981436674907454/7094926382'}
               size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
               requestOptions={{
                 requestNonPersonalizedAdsOnly: true,

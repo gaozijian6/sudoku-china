@@ -3508,16 +3508,13 @@ export const Loop = (
   candidateMap: CandidateMap,
   graph: Graph,
 ): Result | null => {
-  // 3-2-2
   for (const num in graph) {
     const startNodesArray = graph[num];
-    if (startNodesArray.length < 3) continue;
+    if (startNodesArray.length < 2) continue;
     for (let i = 0; i < startNodesArray.length; i++) {
       const someNode = startNodesArray[i];
       const graphNodesArray = getGraphNodesArray(someNode);
       if (graphNodesArray.length < 3) continue;
-
-
       for (const startNode of graphNodesArray) {
         const endNodesArray = findGraphNodeByDistance(startNode, 2);
         for (const endNode of endNodesArray) {
@@ -3543,6 +3540,28 @@ export const Loop = (
               }
             }
           }
+          // 3-2
+          if (startNode1 && endNode1 && isUnitStrongLink(board, { row: startNode1.row, col: startNode1.col }, { row: endNode1.row, col: endNode1.col }, Number(num), candidateMap)) {
+            let rootNodeArray1 = findGraphNodeByDistance(startNode, 1);
+            let rootNodeArray2 = findGraphNodeByDistance(endNode, 1);
+            if (rootNodeArray1.length && rootNodeArray2.length) {
+              for (const rootNode1 of rootNodeArray1) {
+                for (const rootNode2 of rootNodeArray2) {
+                  if (rootNode1.row === rootNode2.row && rootNode1.col === rootNode2.col) {
+                    return {
+                      label: '3-2',
+                      position: [{ row: rootNode1.row, col: rootNode1.col }],
+                      prompt: [{ row: rootNode1.row, col: rootNode1.col }, { row: startNode.row, col: startNode.col }, { row: endNode.row, col: endNode.col }, { row: startNode1.row, col: startNode1.col }, { row: endNode1.row, col: endNode1.col }],
+                      method: SOLUTION_METHODS.LOOP,
+                      isFill: true,
+                      target: [Number(num)],
+                    };
+                  }
+                }
+              }
+            }
+          }
+          // 3-2-2
           if (startNode1 && endNode1) {
             const startNodes2Array = findGraphNodeByDistance(startNode1, 1);
             const endNodes2Array = findGraphNodeByDistance(endNode1, 1);
@@ -3572,7 +3591,7 @@ export const Loop = (
                 }
               }
             }
-  
+
           }
         };
       }
