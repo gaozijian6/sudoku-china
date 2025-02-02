@@ -81,6 +81,7 @@ export default {
         SWORDFISH_WITH_FIN_ROW: 'フィンソードフィッシュ',
         SWORDFISH_WITH_FIN_COLUMN: 'フィンソードフィッシュ',
         WXYZ_WING: 'WXYZ-Wing',
+        LOOP: 'ループ',
         TRIAL_AND_ERROR: '試行錯誤法',
         duration: '経過時間',
         mistakes: 'ミス回数',
@@ -178,6 +179,10 @@ export default {
                 '{{candStr1}}の組み合わせと{{candStr2}}は強いリンクを形成し、{{candStr3}}の2マスは強いリンクを形成します。これら2つの強いリンクは{{pivotStr1}}と{{pivotStr2}}の2マスの全体による弱いリンクで接続されています。{{candStr4}}のどれが真になっても、候補数{{target}}は{{posStr}}には入りません',
             COMBINATION_CHAIN_3_2_2_STRONG:
                 '{{candStr1}}の組み合わせと{{candStr2}}は強いリンクを形成し、{{candStr3}}の2マスは強いリンクを形成します。これら2つの強いリンクは{{pivotStr1}}と{{pivotStr2}}の2マスの全体による強いリンクで接続されています。{{candStr4}}のどれが真になっても、候補数{{target}}は{{posStr}}には入りません',
+            LOOP_3_2_2:
+                '{{nodeStr1}}は強いリンクを形成し、{{nodeStr2}}は強いリンクを形成し、{{nodeStr3}}は強いリンクを形成します。これらは弱いリンクを通じて循環します。{{rootNodeStr}}が偽であり、それから始まると仮定すると、両方向の論理的推論は最終的に循環に矛盾をもたらし、{{rootNodeStr}}は真でなければなりません',
+            LOOP_3_2:
+                '{{nodeStr1}}は強いリンクを形成し、{{nodeStr2}}は強いリンクを形成します。これらは弱いリンクを通じて循環します。{{rootNodeStr}}が偽であり、それから始まると仮定すると、両方向の論理的推論は最終的に循環に矛盾をもたらし、{{rootNodeStr}}は真でなければなりません',
         },
         back: '戻る',
         next: '次のレベル',

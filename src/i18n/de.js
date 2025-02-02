@@ -81,6 +81,7 @@ export default {
         SWORDFISH_WITH_FIN_ROW: 'Schwertfisch mit Finne',
         SWORDFISH_WITH_FIN_COLUMN: 'Schwertfisch mit Finne',
         WXYZ_WING: 'WXYZ-Wing',
+        LOOP: 'Schleife',
         TRIAL_AND_ERROR: 'Versuch und Irrtum',
         duration: 'Zeit',
         mistakes: 'Fehler',
@@ -132,6 +133,8 @@ export default {
             COMBINATION_CHAIN_3_2_1_WEAK: 'Die Kombination {{candStr1}} und {{candStr2}} bildet eine starke Verkettung, {{candStr3}} bildet eine weitere starke Verkettung. Diese sind durch eine schwache Verkettung über {{pivotStr}} verbunden. Unabhängig davon, welches Element aus {{candStr4}} wahr ist, kann {{target}} nicht in {{posStr}} erscheinen',
             COMBINATION_CHAIN_3_2_2_WEAK: 'Die Kombination {{candStr1}} und {{candStr2}} bildet eine starke Verkettung, {{candStr3}} bildet eine weitere starke Verkettung. Diese sind durch eine schwache Verkettung über {{pivotStr1}} und {{pivotStr2}} verbunden. Unabhängig davon, welches Element aus {{candStr4}} wahr ist, kann {{target}} nicht in {{posStr}} erscheinen',
             COMBINATION_CHAIN_3_2_2_STRONG: 'Die Kombination {{candStr1}} und {{candStr2}} bildet eine starke Verkettung, {{candStr3}} bildet eine weitere starke Verkettung. Diese sind durch eine starke Verkettung über {{pivotStr1}} und {{pivotStr2}} verbunden. Unabhängig davon, welches Element aus {{candStr4}} wahr ist, kann {{target}} nicht in {{posStr}} erscheinen',
+            LOOP_3_2_2: '{{nodeStr1}} bilden eine starke Verkettung, {{nodeStr2}} bilden eine starke Verkettung, {{nodeStr3}} bilden eine starke Verkettung. Diese sind durch eine schwache Verkettung verbunden. Wenn {{rootNodeStr}} falsch ist und von ihm ausgeht, wird die logische Schlussfolgerung in beiden Richtungen schließlich zu einem Widerspruch auf der Schleife führen, so dass {{rootNodeStr}} wahr sein muss',
+            LOOP_3_2: '{{nodeStr1}} bilden eine starke Verkettung, {{nodeStr2}} bilden eine starke Verkettung. Diese sind durch eine schwache Verkettung verbunden. Wenn {{rootNodeStr}} falsch ist und von ihm ausgeht, wird die logische Schlussfolgerung in beiden Richtungen schließlich zu einem Widerspruch auf der Schleife führen, so dass {{rootNodeStr}} wahr sein muss'
         },
         back: 'Zurück',
         next: 'Nächstes Level',

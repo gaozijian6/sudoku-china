@@ -81,6 +81,7 @@ export default {
         SWORDFISH_WITH_FIN_ROW: '三階帶鰭魚',
         SWORDFISH_WITH_FIN_COLUMN: '三階帶鰭魚',
         WXYZ_WING: 'wxyz-wing',
+        LOOP: '環',
         TRIAL_AND_ERROR: '試錯法',
         duration: '用時',
         mistakes: '錯誤次數',
@@ -178,6 +179,10 @@ export default {
                 '{{candStr1}}的組合與{{candStr2}}構成強鏈，{{candStr3}}兩個方格構成強鏈，這兩條強鏈通過{{pivotStr1}}與{{pivotStr2}}兩方格的整體構成的弱鏈相連，無論{{candStr4}}內誰為真，候選數{{target}}都不能出現在{{posStr}}內',
             COMBINATION_CHAIN_3_2_2_STRONG:
                 '{{candStr1}}的組合與{{candStr2}}構成強鏈，{{candStr3}}兩個方格構成強鏈，這兩條強鏈通過{{pivotStr1}}與{{pivotStr2}}兩方格的整體構成的強鏈相連，無論{{candStr4}}內誰為真，候選數{{target}}都不能出現在{{posStr}}內',
+            LOOP_3_2_2:
+                '{{nodeStr1}}構成一組強鏈，{{nodeStr2}}構成一組強鏈，{{nodeStr3}}構成一組強鏈，它們之間通過弱鏈相連構成一個環，假設{{rootNodeStr}}為假并以它為起點分別以順時針和逆時針進行邏輯推導，最終會導致環上某個節點矛盾，因此{{rootNodeStr}}必須為真',
+            LOOP_3_2:
+                '{{nodeStr1}}構成一組強鏈，{{nodeStr2}}構成一組強鏈，它們之間通過弱鏈相連構成一個環，假設{{rootNodeStr}}為假并以它為起點分別以順時針和逆時針進行邏輯推導，最終會導致環上某個節點矛盾，因此{{rootNodeStr}}必須為真'
         },
         back: '返回',
         next: '下一關',

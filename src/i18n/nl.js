@@ -81,6 +81,7 @@ export default {
         SWORDFISH_WITH_FIN_ROW: 'Zwaardvis met Vin',
         SWORDFISH_WITH_FIN_COLUMN: 'Zwaardvis met Vin',
         WXYZ_WING: 'WXYZ-Wing',
+        LOOP: 'Loop',
         TRIAL_AND_ERROR: 'Trial en Error',
         duration: 'Tijd',
         mistakes: 'Fouten',
@@ -131,7 +132,9 @@ export default {
             COMBINATION_CHAIN_3_2_1_STRONG: 'De combinatie van {{candStr1}} en {{candStr2}} vormt een sterke ketting. Ongeacht welke van {{candStr4}} waar is, kan {{target}} niet voorkomen in {{posStr}}',
             COMBINATION_CHAIN_3_2_1_WEAK: 'De combinatie van {{candStr1}} en {{candStr2}} vormt een sterke ketting, {{candStr3}} vormt een sterke ketting tussen twee cellen. Deze kettingen zijn verbonden door een zwakke ketting via {{pivotStr}}. Ongeacht welke van {{candStr4}} waar is, kan {{target}} niet voorkomen in {{posStr}}',
             COMBINATION_CHAIN_3_2_2_WEAK: 'De combinatie van {{candStr1}} en {{candStr2}} vormt een sterke ketting, {{candStr3}} vormt een sterke ketting tussen twee cellen. Deze kettingen zijn verbonden door een zwakke ketting via de combinatie van {{pivotStr1}} en {{pivotStr2}}. Ongeacht welke van {{candStr4}} waar is, kan {{target}} niet voorkomen in {{posStr}}',
-            COMBINATION_CHAIN_3_2_2_STRONG: 'De combinatie van {{candStr1}} en {{candStr2}} vormt een sterke ketting, {{candStr3}} vormt een sterke ketting tussen twee cellen. Deze kettingen zijn verbonden door een sterke ketting via de combinatie van {{pivotStr1}} en {{pivotStr2}}. Ongeacht welke van {{candStr4}} waar is, kan {{target}} niet voorkomen in {{posStr}}'
+            COMBINATION_CHAIN_3_2_2_STRONG: 'De combinatie van {{candStr1}} en {{candStr2}} vormt een sterke ketting, {{candStr3}} vormt een sterke ketting tussen twee cellen. Deze kettingen zijn verbonden door een sterke ketting via de combinatie van {{pivotStr1}} en {{pivotStr2}}. Ongeacht welke van {{candStr4}} waar is, kan {{target}} niet voorkomen in {{posStr}}',
+            LOOP_3_2_2: '{{nodeStr1}} vormt een sterke ketting, {{nodeStr2}} vormt een sterke ketting, {{nodeStr3}} vormt een sterke ketting. Deze drie sterke kettingen zijn verbonden door een zwakke ketting voor een lus. Als {{rootNodeStr}} onwaar is en begint bij hem, zal de logische deductie in beide richtingen uiteindelijk tot een contradictie op de lus leiden, dus {{rootNodeStr}} moet waar zijn.',
+            LOOP_3_2: '{{nodeStr1}} vormt een sterke ketting, {{nodeStr2}} vormt een sterke ketting. Deze twee sterke kettingen zijn verbonden door een zwakke ketting voor een lus. Als {{rootNodeStr}} onwaar is en begint bij hem, zal de logische deductie in beide richtingen uiteindelijk tot een contradictie op de lus leiden, dus {{rootNodeStr}} moet waar zijn.'
         },
         back: 'Terug',
         next: 'Volgende',

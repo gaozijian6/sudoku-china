@@ -52,9 +52,6 @@ const createSound = (path: unknown): Promise<Sound> => {
 };
 
 export const initSounds = async () => {
-  console.log(555);
-  
-  // console.log(errorSound, successSound, switchSound, eraseSound, successSound2, successSound3);
   soundRefs.errorSoundsRef.current = await Promise.all(
     Array(3).fill(0).map(() => createSound(errorSound))
   );

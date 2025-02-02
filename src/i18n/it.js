@@ -81,6 +81,7 @@ export default {
         SWORDFISH_WITH_FIN_ROW: 'Pesce Spada con Pinna',
         SWORDFISH_WITH_FIN_COLUMN: 'Pesce Spada con Pinna',
         WXYZ_WING: 'WXYZ-Wing',
+        LOOP: 'Loop',
         TRIAL_AND_ERROR: 'Tentativi ed Errori',
         duration: 'Tempo',
         mistakes: 'Errori',
@@ -131,7 +132,9 @@ export default {
             COMBINATION_CHAIN_3_2_1_STRONG: 'La combinazione di {{candStr1}} e {{candStr2}} forma una catena forte. Qualunque sia il valore in {{candStr4}}, {{target}} non può apparire in {{posStr}}',
             COMBINATION_CHAIN_3_2_1_WEAK: 'La combinazione di {{candStr1}} e {{candStr2}} forma una catena forte, {{candStr3}} forma un\'altra catena forte, collegate da {{pivotStr}}. Qualunque sia il valore in {{candStr4}}, {{target}} non può apparire in {{posStr}}',
             COMBINATION_CHAIN_3_2_2_WEAK: 'La combinazione di {{candStr1}} e {{candStr2}} forma una catena forte, {{candStr3}} forma un\'altra catena forte, collegate da {{pivotStr1}} e {{pivotStr2}}. Qualunque sia il valore in {{candStr4}}, {{target}} non può apparire in {{posStr}}',
-            COMBINATION_CHAIN_3_2_2_STRONG: 'La combinazione di {{candStr1}} e {{candStr2}} forma una catena forte, {{candStr3}} forma un\'altra catena forte, collegate fortemente da {{pivotStr1}} e {{pivotStr2}}. Qualunque sia il valore in {{candStr4}}, {{target}} non può apparire in {{posStr}}'
+            COMBINATION_CHAIN_3_2_2_STRONG: 'La combinazione di {{candStr1}} e {{candStr2}} forma una catena forte, {{candStr3}} forma un\'altra catena forte, collegate fortemente da {{pivotStr1}} e {{pivotStr2}}. Qualunque sia il valore in {{candStr4}}, {{target}} non può apparire in {{posStr}}',
+            LOOP_3_2_2: '{{nodeStr1}} forma una catena forte, {{nodeStr2}} forma una catena forte, {{nodeStr3}} forma una catena forte. Sono collegate da una catena debole per formare un ciclo. Supponiamo che {{rootNodeStr}} sia falso e parta da esso, la deduzione logica in entrambe le direzioni finirà per portare a una contraddizione sul ciclo, quindi {{rootNodeStr}} deve essere vero.',
+            LOOP_3_2: '{{nodeStr1}} forma una catena forte, {{nodeStr2}} forma una catena forte. Sono collegate da una catena debole per formare un ciclo. Supponiamo che {{rootNodeStr}} sia falso e parta da esso, la deduzione logica in entrambe le direzioni finirà per portare a una contraddizione sul ciclo, quindi {{rootNodeStr}} deve essere vero.'
         },
         back: 'Indietro',
         next: 'Prossimo Livello',

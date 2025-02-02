@@ -93,6 +93,8 @@ const handleHintMethod = (method: string, t: TFunction) => {
       return t('SWORDFISH_WITH_FIN_COLUMN');
     case SOLUTION_METHODS.WXYZ_WING:
       return t('WXYZ_WING');
+    case SOLUTION_METHODS.LOOP:
+      return t('LOOP');
     case SOLUTION_METHODS.TRIAL_AND_ERROR:
       return t('TRIAL_AND_ERROR');
   }

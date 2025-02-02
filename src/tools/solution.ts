@@ -24,6 +24,7 @@ export interface Result {
   box?: number;
   isWeakLink?: boolean;
   chainStructure?: string;
+  label?: string;
 }
 
 export interface DifferenceMap {
@@ -3476,6 +3477,125 @@ export const trialAndError = (
       target: [minValue],
       isFill: true
     };
+  }
+  return null;
+};
+
+export const getGraphNodesArray = (graphNode: GraphNode): GraphNode[] => {
+  const resultNodes: GraphNode[] = [];
+  const visited = new Set<string>();
+  const queue: GraphNode[] = [graphNode];
+
+  while (queue.length > 0) {
+    const currentNode = queue.shift();
+    if (!currentNode) continue;
+
+    const key = `${currentNode.row}-${currentNode.col}`;
+    if (visited.has(key)) continue;
+    visited.add(key);
+    resultNodes.push(currentNode);
+
+    for (const nextNode of currentNode.next) {
+      queue.push(nextNode);
+    }
+  }
+
+  return resultNodes;
+};
+
+export const Loop = (
+  board: CellData[][],
+  candidateMap: CandidateMap,
+  graph: Graph,
+): Result | null => {
+  for (const num in graph) {
+    const startNodesArray = graph[num];
+    if (startNodesArray.length < 2) continue;
+    for (let i = 0; i < startNodesArray.length; i++) {
+      const someNode = startNodesArray[i];
+      const graphNodesArray = getGraphNodesArray(someNode);
+      if (graphNodesArray.length < 3) continue;
+      for (const startNode of graphNodesArray) {
+        const endNodesArray = findGraphNodeByDistance(startNode, 2);
+        for (const endNode of endNodesArray) {
+          let endNode1: GraphNode | null = null;
+          let startNode1: GraphNode | null = null;
+          let j = 0;
+          for (j = 0; j < startNodesArray.length; j++) {
+            if (j === i) continue;
+            const startNodesArray1 = getGraphNodesArray(startNodesArray[j]);
+            for (const node of startNodesArray1) {
+              if (isWeakLink(board, { row: endNode.row, col: endNode.col }, { row: node.row, col: node.col }, Number(num), candidateMap)) {
+                endNode1 = node;
+              }
+            }
+          }
+          let k = 0;
+          for (k = 0; k < startNodesArray.length; k++) {
+            if (k === i || k === j) continue;
+            const startNodesArray1 = getGraphNodesArray(startNodesArray[k]);
+            for (const node of startNodesArray1) {
+              if (isWeakLink(board, { row: startNode.row, col: startNode.col }, { row: node.row, col: node.col }, Number(num), candidateMap)) {
+                startNode1 = node;
+              }
+            }
+          }
+          // 3-2
+          if (startNode1 && endNode1 && isUnitStrongLink(board, { row: startNode1.row, col: startNode1.col }, { row: endNode1.row, col: endNode1.col }, Number(num), candidateMap)) {
+            let rootNodeArray1 = findGraphNodeByDistance(startNode, 1);
+            let rootNodeArray2 = findGraphNodeByDistance(endNode, 1);
+            if (rootNodeArray1.length && rootNodeArray2.length) {
+              for (const rootNode1 of rootNodeArray1) {
+                for (const rootNode2 of rootNodeArray2) {
+                  if (rootNode1.row === rootNode2.row && rootNode1.col === rootNode2.col) {
+                    return {
+                      label: '3-2',
+                      position: [{ row: rootNode1.row, col: rootNode1.col }],
+                      prompt: [{ row: rootNode1.row, col: rootNode1.col }, { row: startNode.row, col: startNode.col }, { row: endNode.row, col: endNode.col }, { row: startNode1.row, col: startNode1.col }, { row: endNode1.row, col: endNode1.col }],
+                      method: SOLUTION_METHODS.LOOP,
+                      isFill: true,
+                      target: [Number(num)],
+                    };
+                  }
+                }
+              }
+            }
+          }
+          // 3-2-2
+          if (startNode1 && endNode1) {
+            const startNodes2Array = findGraphNodeByDistance(startNode1, 1);
+            const endNodes2Array = findGraphNodeByDistance(endNode1, 1);
+            if (startNodes2Array.length && endNodes2Array.length) {
+              for (const startNode2 of startNodes2Array) {
+                for (const endNode2 of endNodes2Array) {
+                  if (isWeakLink(board, { row: startNode2.row, col: startNode2.col }, { row: endNode2.row, col: endNode2.col }, Number(num), candidateMap)) {
+                    let rootNodeArray1 = findGraphNodeByDistance(startNode, 1);
+                    let rootNodeArray2 = findGraphNodeByDistance(endNode, 1);
+                    if (rootNodeArray1.length && rootNodeArray2.length) {
+                      for (const rootNode1 of rootNodeArray1) {
+                        for (const rootNode2 of rootNodeArray2) {
+                          if (rootNode1.row === rootNode2.row && rootNode1.col === rootNode2.col) {
+                            return {
+                              label: '3-2-2',
+                              position: [{ row: rootNode1.row, col: rootNode1.col }],
+                              prompt: [{ row: rootNode1.row, col: rootNode1.col }, { row: startNode.row, col: startNode.col }, { row: endNode.row, col: endNode.col }, { row: startNode1.row, col: startNode1.col }, { row: startNode2.row, col: startNode2.col }, { row: endNode1.row, col: endNode1.col }, { row: endNode2.row, col: endNode2.col }],
+                              method: SOLUTION_METHODS.LOOP,
+                              isFill: true,
+                              target: [Number(num)],
+                            };
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+          }
+        };
+      }
+    }
   }
   return null;
 };

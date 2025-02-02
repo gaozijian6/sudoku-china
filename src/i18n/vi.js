@@ -81,6 +81,7 @@ export default {
         SWORDFISH_WITH_FIN_ROW: 'Cá kiếm có vây',
         SWORDFISH_WITH_FIN_COLUMN: 'Cá kiếm có vây',
         WXYZ_WING: 'WXYZ-Wing',
+        LOOP: 'Vòng',
         TRIAL_AND_ERROR: 'Thử và sai',
         duration: 'Thời gian',
         mistakes: 'Số lỗi',
@@ -131,7 +132,9 @@ export default {
             COMBINATION_CHAIN_3_2_1_STRONG: '{{candStr1}} kết hợp với {{candStr2}} tạo thành chuỗi mạnh, bất kể {{candStr4}} nào là đúng, số {{target}} không thể xuất hiện trong {{posStr}}',
             COMBINATION_CHAIN_3_2_1_WEAK: '{{candStr1}} kết hợp với {{candStr2}} tạo thành chuỗi mạnh, {{candStr3}} hai ô tạo thành chuỗi mạnh, hai chuỗi mạnh này được kết nối bởi chuỗi yếu qua {{pivotStr}}, bất kể {{candStr4}} nào là đúng, số {{target}} không thể xuất hiện trong {{posStr}}',
             COMBINATION_CHAIN_3_2_2_WEAK: '{{candStr1}} kết hợp với {{candStr2}} tạo thành chuỗi mạnh, {{candStr3}} hai ô tạo thành chuỗi mạnh, hai chuỗi mạnh này được kết nối bởi chuỗi yếu qua tổng thể của hai ô {{pivotStr1}} và {{pivotStr2}}, bất kể {{candStr4}} nào là đúng, số {{target}} không thể xuất hiện trong {{posStr}}',
-            COMBINATION_CHAIN_3_2_2_STRONG: '{{candStr1}} kết hợp với {{candStr2}} tạo thành chuỗi mạnh, {{candStr3}} hai ô tạo thành chuỗi mạnh, hai chuỗi mạnh này được kết nối bởi chuỗi mạnh qua tổng thể của hai ô {{pivotStr1}} và {{pivotStr2}}, bất kể {{candStr4}} nào là đúng, số {{target}} không thể xuất hiện trong {{posStr}}'
+            COMBINATION_CHAIN_3_2_2_STRONG: '{{candStr1}} kết hợp với {{candStr2}} tạo thành chuỗi mạnh, {{candStr3}} hai ô tạo thành chuỗi mạnh, hai chuỗi mạnh này được kết nối bởi chuỗi mạnh qua tổng thể của hai ô {{pivotStr1}} và {{pivotStr2}}, bất kể {{candStr4}} nào là đúng, số {{target}} không thể xuất hiện trong {{posStr}}',
+            LOOP_3_2_2: '{{nodeStr1}} tạo thành chuỗi mạnh, {{nodeStr2}} tạo thành chuỗi mạnh, {{nodeStr3}} tạo thành chuỗi mạnh. Ba chuỗi mạnh này được kết nối bởi chuỗi yếu, tạo thành vòng, giả sử {{rootNodeStr}} sai và bắt đầu từ nó, sau đó logic suy luận theo cả hai hướng sẽ dẫn đến mâu thuẫn trong vòng, do đó {{rootNodeStr}} phải đúng.',
+            LOOP_3_2: '{{nodeStr1}} tạo thành chuỗi mạnh, {{nodeStr2}} tạo thành chuỗi mạnh. Hai chuỗi mạnh này được kết nối bởi chuỗi yếu, tạo thành vòng, giả sử {{rootNodeStr}} sai và bắt đầu từ nó, sau đó logic suy luận theo cả hai hướng sẽ dẫn đến mâu thuẫn trong vòng, do đó {{rootNodeStr}} phải đúng.'
         },
         back: 'Quay lại',
         next: 'Tiếp theo',

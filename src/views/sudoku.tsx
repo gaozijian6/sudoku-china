@@ -44,6 +44,7 @@ import {
   wxyzWing,
   remotePair,
   combinationChain,
+  Loop,
 } from '../tools/solution';
 import { useTranslation } from 'react-i18next';
 import type { CandidateMap, CellData, Graph, Position } from '../tools';
@@ -157,6 +158,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       combinationChain,
       swordfish,
       wxyzWing,
+      Loop,
       trialAndError,
     ]);
     const {

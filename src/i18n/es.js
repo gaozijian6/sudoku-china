@@ -81,6 +81,7 @@ export default {
         SWORDFISH_WITH_FIN_ROW: 'Pez espada con aleta',
         SWORDFISH_WITH_FIN_COLUMN: 'Pez espada con aleta',
         WXYZ_WING: 'WXYZ-Wing',
+        LOOP: 'Bucle',
         TRIAL_AND_ERROR: 'Prueba y error',
         duration: 'Tiempo',
         mistakes: 'Errores',
@@ -131,7 +132,9 @@ export default {
             COMBINATION_CHAIN_3_2_1_STRONG: 'La combinación de {{candStr1}} y {{candStr2}} forma un enlace fuerte. Sin importar cuál de {{candStr4}} sea verdadero, {{target}} no puede aparecer en {{posStr}}',
             COMBINATION_CHAIN_3_2_1_WEAK: 'La combinación de {{candStr1}} y {{candStr2}} forma un enlace fuerte, {{candStr3}} forma un enlace fuerte entre dos celdas, estos dos enlaces fuertes están conectados por un enlace débil a través de {{pivotStr}}. Sin importar cuál de {{candStr4}} sea verdadero, {{target}} no puede aparecer en {{posStr}}',
             COMBINATION_CHAIN_3_2_2_WEAK: 'La combinación de {{candStr1}} y {{candStr2}} forma un enlace fuerte, {{candStr3}} forma un enlace fuerte entre dos celdas, estos dos enlaces fuertes están conectados por un enlace débil a través del conjunto de {{pivotStr1}} y {{pivotStr2}}. Sin importar cuál de {{candStr4}} sea verdadero, {{target}} no puede aparecer en {{posStr}}',
-            COMBINATION_CHAIN_3_2_2_STRONG: 'La combinación de {{candStr1}} y {{candStr2}} forma un enlace fuerte, {{candStr3}} forma un enlace fuerte entre dos celdas, estos dos enlaces fuertes están conectados por un enlace fuerte a través del conjunto de {{pivotStr1}} y {{pivotStr2}}. Sin importar cuál de {{candStr4}} sea verdadero, {{target}} no puede aparecer en {{posStr}}'
+            COMBINATION_CHAIN_3_2_2_STRONG: 'La combinación de {{candStr1}} y {{candStr2}} forma un enlace fuerte, {{candStr3}} forma un enlace fuerte entre dos celdas, estos dos enlaces fuertes están conectados por un enlace fuerte a través del conjunto de {{pivotStr1}} y {{pivotStr2}}. Sin importar cuál de {{candStr4}} sea verdadero, {{target}} no puede aparecer en {{posStr}}',
+            LOOP_3_2_2: '{{nodeStr1}} forma un enlace fuerte, {{nodeStr2}} forma un enlace fuerte, {{nodeStr3}} forma un enlace fuerte. Estos están conectados por un enlace débil para formar un bucle. Suponiendo que {{rootNodeStr}} es falso y comienza desde él, la deducción lógica en ambas direcciones finalmente conducirá a una contradicción en el bucle, por lo que {{rootNodeStr}} debe ser verdadero.',
+            LOOP_3_2: '{{nodeStr1}} forma un enlace fuerte, {{nodeStr2}} forma un enlace fuerte. Estos están conectados por un enlace débil para formar un bucle. Suponiendo que {{rootNodeStr}} es falso y comienza desde él, la deducción lógica en ambas direcciones finalmente conducirá a una contradicción en el bucle, por lo que {{rootNodeStr}} debe ser verdadero.'
         },
         back: 'Volver',
         next: 'Siguiente nivel',

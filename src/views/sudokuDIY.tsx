@@ -39,6 +39,7 @@ import {
   wxyzWing,
   remotePair,
   combinationChain,
+  Loop,
   trialAndErrorDIY,
 } from '../tools/solution';
 import type { CandidateMap, CellData, Graph, Position } from '../tools';
@@ -151,6 +152,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       combinationChain,
       swordfish,
       wxyzWing,
+      Loop,
       trialAndErrorDIY,
     ]);
     const { errorCount, setErrorCount, isSound, isDIY, isConnected, isVip } =

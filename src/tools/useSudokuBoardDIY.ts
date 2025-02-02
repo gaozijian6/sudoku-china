@@ -88,6 +88,7 @@ export const useSudokuBoardDIY = () => {
     setRemainingCounts(remainingCountsSync.current);
     setCurrentStep(0);
     countsSync.current = 0;
+    setCounts(0);
     setTimeout(() => {
       clearHistory(initialBoard);
       history.current = [
@@ -213,9 +214,10 @@ export const useSudokuBoardDIY = () => {
       remainingCounts,
       standradBoard,
       countsSync: countsSync.current,
+      counts,
     };
     AsyncStorage.setItem('sudokuDataDIY2', JSON.stringify(sudokuData));
-  }, [board, currentStep, remainingCounts, standradBoard]);
+  }, [board, currentStep, remainingCounts, standradBoard, counts]);
 
   const updateBoard = useCallback(
     (newBoard: CellData[][], action: string, isFill: boolean) => {
