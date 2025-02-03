@@ -2,6 +2,7 @@ import React, { FC, useCallback } from 'react';
 import { Text, StyleSheet, View, Image, Pressable } from 'react-native';
 import { useSudokuStore } from '../store';
 import TarBars from './tarBars';
+import { playSound } from '../tools/Sound';
 
 interface TarBarsSudokuProps {
   onBack: () => void;
@@ -16,13 +17,14 @@ const TarBarsSudoku: FC<TarBarsSudokuProps> = ({
   saveDataDIY,
   resetSudoku,
 }) => {
-  const { setIsHome, setIsDIY } = useSudokuStore();
+  const { setIsHome, setIsDIY, isSound } = useSudokuStore();
   const backToHome = useCallback(() => {
+    playSound('switch', isSound);
     saveDataDIY();
     setIsHome(true);
     setIsDIY(false);
     onBack();
-  }, [saveDataDIY, setIsHome, setIsDIY, onBack]);
+  }, [saveDataDIY, setIsHome, setIsDIY, onBack, isSound]);
 
   return (
     <>

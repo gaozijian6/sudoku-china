@@ -21,7 +21,7 @@ import {
   PurchaseError,
 } from 'react-native-iap';
 import * as RNIap from 'react-native-iap';
-import rewardedVideo from '../tools/RewardedVideo';
+// import rewardedVideo from '../tools/RewardedVideo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface SettingProps {
@@ -70,58 +70,58 @@ ${t('feedbackMessage')}
   }, [i18n.language]);
 
   // 初始化 IAP
-  useEffect(() => {
-    let purchaseUpdateSubscription: any;
-    let purchaseErrorSubscription: any;
+  // useEffect(() => {
+  //   let purchaseUpdateSubscription: any;
+  //   let purchaseErrorSubscription: any;
 
-    const initIAP = async () => {
-      if (typeof RNIap === 'undefined') {
-        console.warn('RNIap 模块未加载');
-        return;
-      }
+  //   const initIAP = async () => {
+  //     if (typeof RNIap === 'undefined') {
+  //       console.warn('RNIap 模块未加载');
+  //       return;
+  //     }
 
-      try {
-        await RNIap.initConnection();
+  //     try {
+  //       await RNIap.initConnection();
 
-        // 监听购买更新
-        purchaseUpdateSubscription = purchaseUpdatedListener(
-          async (purchase: ProductPurchase) => {
-            if (purchase.transactionReceipt) {
-              await RNIap.finishTransaction({
-                purchase,
-                isConsumable: false,
-              });
-              rewardedVideo.setIsVip(true);
-              setIsVip(true);
-              AsyncStorage.setItem('isVip', 'true');
-              setPurchasing(false);
-            }
-          }
-        );
+  //       // 监听购买更新
+  //       purchaseUpdateSubscription = purchaseUpdatedListener(
+  //         async (purchase: ProductPurchase) => {
+  //           if (purchase.transactionReceipt) {
+  //             await RNIap.finishTransaction({
+  //               purchase,
+  //               isConsumable: false,
+  //             });
+  //             rewardedVideo.setIsVip(true);
+  //             setIsVip(true);
+  //             AsyncStorage.setItem('isVip', 'true');
+  //             setPurchasing(false);
+  //           }
+  //         }
+  //       );
 
-        // 监听购买错误
-        purchaseErrorSubscription = purchaseErrorListener(
-          (error: PurchaseError) => {
-            console.warn('购买错误', error);
-            setPurchasing(false);
-          }
-        );
+  //       // 监听购买错误
+  //       purchaseErrorSubscription = purchaseErrorListener(
+  //         (error: PurchaseError) => {
+  //           console.warn('购买错误', error);
+  //           setPurchasing(false);
+  //         }
+  //       );
 
-      } catch (err) {
-        console.warn('初始化 IAP 错误:', err);
-      }
-    };
+  //     } catch (err) {
+  //       console.warn('初始化 IAP 错误:', err);
+  //     }
+  //   };
 
-    initIAP();
+  //   initIAP();
 
-    return () => {
-      if (typeof RNIap !== 'undefined') {
-        purchaseUpdateSubscription?.remove();
-        purchaseErrorSubscription?.remove();
-        RNIap.endConnection();
-      }
-    };
-  }, []);
+  //   return () => {
+  //     if (typeof RNIap !== 'undefined') {
+  //       purchaseUpdateSubscription?.remove();
+  //       purchaseErrorSubscription?.remove();
+  //       RNIap.endConnection();
+  //     }
+  //   };
+  // }, []);
 
   // 处理购买
   const handlePurchase = useCallback(async () => {
@@ -153,37 +153,37 @@ ${t('feedbackMessage')}
   }, [purchasing]);
 
   // 处理恢复购买
-  const handleRestore = useCallback(async () => {
-    if (restoring) {
-      return;
-    }
+  // const handleRestore = useCallback(async () => {
+  //   if (restoring) {
+  //     return;
+  //   }
 
-    try {
-      setRestoring(true);
+  //   try {
+  //     setRestoring(true);
 
-      // 确保连接已初始化
-      await RNIap.initConnection();
+  //     // 确保连接已初始化
+  //     await RNIap.initConnection();
 
-      const purchases = await RNIap.getAvailablePurchases();
+  //     const purchases = await RNIap.getAvailablePurchases();
 
-      if (purchases.length > 0) {
-        // 查找是否有移除广告的购买记录
-        const adRemovalPurchase = purchases.find(
-          purchase => itemSKUs?.includes(purchase.productId)
-        );
+  //     if (purchases.length > 0) {
+  //       // 查找是否有移除广告的购买记录
+  //       const adRemovalPurchase = purchases.find(
+  //         purchase => itemSKUs?.includes(purchase.productId)
+  //       );
 
-        if (adRemovalPurchase) {
-          rewardedVideo.setIsVip(true);
-          setIsVip(true);
-          AsyncStorage.setItem('isVip', 'true');
-        }
-      }
-    } catch (err) {
-      console.error('恢复购买错误:', err);
-    } finally {
-      setRestoring(false);
-    }
-  }, [restoring]);
+  //       if (adRemovalPurchase) {
+  //         rewardedVideo.setIsVip(true);
+  //         setIsVip(true);
+  //         AsyncStorage.setItem('isVip', 'true');
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.error('恢复购买错误:', err);
+  //   } finally {
+  //     setRestoring(false);
+  //   }
+  // }, [restoring]);
 
   const handlePrivacyPolicy = useCallback(() => {
     Linking.openURL(PRIVACY_POLICY_URL);
@@ -217,7 +217,7 @@ ${t('feedbackMessage')}
       </View>
 
       <View style={styles.content}>
-        <Pressable
+        {/* <Pressable
           style={[styles.item]}
           onPress={handlePurchase}
           disabled={purchasing}>
@@ -232,9 +232,9 @@ ${t('feedbackMessage')}
             source={require('../assets/icon/arrow.png')}
             style={styles.arrow}
           />
-        </Pressable>
+        </Pressable> */}
 
-        <Pressable
+        {/* <Pressable
           style={[styles.item]}
           onPress={handleRestore}
           disabled={restoring}>
@@ -249,7 +249,7 @@ ${t('feedbackMessage')}
             source={require('../assets/icon/arrow.png')}
             style={styles.arrow}
           />
-        </Pressable>
+        </Pressable> */}
 
         <View style={styles.item}>
           <Image

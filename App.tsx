@@ -7,7 +7,7 @@ import Sudoku from './src/views/sudoku';
 import SudokuDIY from './src/views/sudokuDIY';
 import Home from './src/views/Home';
 import Setting from './src/views/setting';
-import { initSounds } from './src/tools/Sound';
+import { initSounds, playSound } from './src/tools/Sound';
 import { useSudokuStore } from './src/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import './src/i18n';
@@ -19,7 +19,7 @@ import rewardedVideo from './src/tools/RewardedVideo';
 const slideAnim = Dimensions.get('window').width;
 
 function App() {
-  const { setIsHasContinue, setIsConnected, setIsVip } =
+  const { setIsHasContinue, setIsConnected, setIsVip, isSound } =
     useSudokuStore();
   const slideAnim1 = useRef(new Animated.Value(slideAnim)).current;
   const slideAnim2 = useRef(new Animated.Value(slideAnim)).current;
@@ -85,6 +85,7 @@ function App() {
   }, [slideAnim2]);
 
   const openSetting = useCallback(() => {
+    playSound('switch', isSound);
     Animated.spring(settingSlideAnim, {
       toValue: 0,
       useNativeDriver: true,
@@ -92,9 +93,10 @@ function App() {
       friction: 8,
       velocity: 0.5,
     }).start();
-  }, [settingSlideAnim]);
+  }, [settingSlideAnim,isSound]);
 
   const closeSetting = useCallback(() => {
+    playSound('switch', isSound);
     Animated.spring(settingSlideAnim, {
       toValue: slideAnim,
       useNativeDriver: true,
@@ -102,7 +104,7 @@ function App() {
       friction: 8,
       velocity: 0.5,
     }).start();
-  }, [settingSlideAnim]);
+  }, [settingSlideAnim,isSound]);
 
   useEffect(() => {
     initSounds();
