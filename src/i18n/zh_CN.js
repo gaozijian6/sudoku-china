@@ -130,13 +130,13 @@ export default {
             NAKED_QUADRUPLE_BOX:
                 '在第{{box}}宫中，因为候选数{{target}}只能出现在{{positions}}这四个方格中，所以此宫其他位置都不应出现候选数{{target}}',
             HIDDEN_PAIR_ROW:
-                '在第{{position[0].row + 1}}行中，因为候选数{{candStr}}只出现在{{positions}}这两个方格中，因此这两个方格不应出现其他候选数',
+                '在第{{row}}行中，因为候选数{{candStr}}只出现在{{positions}}这两个方格中，因此这两个方格不应出现其他候选数',
             HIDDEN_PAIR_COLUMN:
                 '在第{{col}}列中，因为候选数{{candStr}}只出现在{{positions}}这两个方格中，因此这两个方格不应出现其他候选数',
             HIDDEN_PAIR_BOX:
                 '在第{{box}}宫中，因为候选数{{candStr}}只出现在{{positions}}这两个方格中，因此这两个方格不应出现其他候选数',
             HIDDEN_TRIPLE_ROW1:
-                '在第{{position[0].row + 1}}行中，因为候选数{{candStr}}只出现在{{positions}}这三个方格中，因此这三个方格不应出现其他候选数',
+                '在第{{row}}行中，因为候选数{{candStr}}只出现在{{positions}}这三个方格中，因此这三个方格不应出现其他候选数',
             HIDDEN_TRIPLE_COLUMN1:
                 '在第{{col}}列中，因为候选数{{candStr}}只出现在{{positions}}这三个方格中，因此这三个方格不应出现其他候选数',
             HIDDEN_TRIPLE_BOX1:

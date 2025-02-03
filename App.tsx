@@ -25,12 +25,12 @@ function App() {
   const slideAnim2 = useRef(new Animated.Value(slideAnim)).current;
   const [settingSlideAnim] = useState(new Animated.Value(slideAnim));
 
-  useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(state => {
-      setIsConnected(state.isConnected ?? false);
-    });
-    return () => unsubscribe();
-  }, []);
+  // useEffect(() => {
+  //   const unsubscribe = NetInfo.addEventListener(state => {
+  //     setIsConnected(state.isConnected ?? false);
+  //   });
+  //   return () => unsubscribe();
+  // }, []);
 
   useEffect(() => {
     // AsyncStorage.clear();

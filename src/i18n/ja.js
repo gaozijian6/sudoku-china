@@ -130,13 +130,13 @@ export default {
             NAKED_QUADRUPLE_BOX:
                 'ブロック{{box}}内で候補数{{target}}は{{positions}}の4マスにしか現れないため、同じブロックの他のマスには{{target}}は入りません',
             HIDDEN_PAIR_ROW:
-                '{{position[0].row + 1}}行目で候補数{{candStr}}は{{positions}}の2マスにしか現れないため、これらのマスには他の候補数は入りません',
+                '{{row}}行目で候補数{{candStr}}は{{positions}}の2マスにしか現れないため、これらのマスには他の候補数は入りません',
             HIDDEN_PAIR_COLUMN:
                 '{{col}}列目で候補数{{candStr}}は{{positions}}の2マスにしか現れないため、これらのマスには他の候補数は入りません',
             HIDDEN_PAIR_BOX:
                 'ブロック{{box}}内で候補数{{candStr}}は{{positions}}の2マスにしか現れないため、これらのマスには他の候補数は入りません',
             HIDDEN_TRIPLE_ROW1:
-                '{{position[0].row + 1}}行目で候補数{{candStr}}は{{positions}}の3マスにしか現れないため、これらのマスには他の候補数は入りません',
+                '{{row}}行目で候補数{{candStr}}は{{positions}}の3マスにしか現れないため、これらのマスには他の候補数は入りません',
             HIDDEN_TRIPLE_COLUMN1:
                 '{{col}}列目で候補数{{candStr}}は{{positions}}の3マスにしか現れないため、これらのマスには他の候補数は入りません',
             HIDDEN_TRIPLE_BOX1:

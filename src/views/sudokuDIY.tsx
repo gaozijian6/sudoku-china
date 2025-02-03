@@ -670,12 +670,12 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           setSudokuStatus(SUDOKU_STATUS.INCOMPLETE);
           return;
         }
-        if (!isConnected && !rewardedVideo.getIsVip()) {
-          setHintDrawerVisible(true);
-          setHintMethod('')
-          setHintContent(t('pleaseConnectNetwork'));
-          return;
-        }
+        // if (!isConnected && !rewardedVideo.getIsVip()) {
+        //   setHintDrawerVisible(true);
+        //   setHintMethod('')
+        //   setHintContent(t('pleaseConnectNetwork'));
+        //   return;
+        // }
         if (rewardedVideo.chance) {
           handleHint(board);
           rewardedVideo.chance = false;
@@ -763,11 +763,11 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       isConnected,
     ]);
 
-    useEffect(() => {
-      if (isConnected) {
-        setHintDrawerVisible(false);
-      }
-    }, [isConnected]);
+    // useEffect(() => {
+    //   if (isConnected) {
+    //     setHintDrawerVisible(false);
+    //   }
+    // }, [isConnected]);
 
     const handleCancelHint = useCallback(() => {
       setDifferenceMap({});
@@ -818,12 +818,12 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           setSudokuStatus(SUDOKU_STATUS.INCOMPLETE);
           return;
         }
-        if (!isConnected) {
-          setHintDrawerVisible(true);
-          setHintMethod('');
-          setHintContent(t('pleaseConnectNetwork'));
-          return;
-        }
+        // if (!isConnected) {
+        //   setHintDrawerVisible(true);
+        //   setHintMethod('');
+        //   setHintContent(t('pleaseConnectNetwork'));
+        //   return;
+        // }
         playSound('switch', isSound);
         setSudokuStatus(SUDOKU_STATUS.SOLVING);
         const standardBoard = copyOfficialDraft(board);

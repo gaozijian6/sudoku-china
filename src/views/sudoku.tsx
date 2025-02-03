@@ -772,12 +772,12 @@ const Sudoku: React.FC<SudokuProps> = memo(
           handleHint(board);
           return;
         }
-        if (!isConnected && !rewardedVideo.getIsVip()) {
-          setHintDrawerVisible(true);
-          setHintMethod('')
-          setHintContent(t('pleaseConnectNetwork'));
-          return;
-        }
+        // if (!isConnected && !rewardedVideo.getIsVip()) {
+        //   setHintDrawerVisible(true);
+        //   setHintMethod('')
+        //   setHintContent(t('pleaseConnectNetwork'));
+        //   return;
+        // }
         if (rewardedVideo.chance) {
           handleHint(board);
           rewardedVideo.chance = false;
@@ -799,10 +799,10 @@ const Sudoku: React.FC<SudokuProps> = memo(
     );
 
     const handleApplyHint = useCallback(() => {
-      if (!isConnected && !rewardedVideo.getIsVip()) {
-        setHintDrawerVisible(false);
-        return;
-      }
+      // if (!isConnected && !rewardedVideo.getIsVip()) {
+      //   setHintDrawerVisible(false);
+      //   return;
+      // }
       if (Object.keys(differenceMap).length > 0) {
         setDifferenceMap({});
         const newBoard = deepCopyBoard(standradBoard);
@@ -867,11 +867,11 @@ const Sudoku: React.FC<SudokuProps> = memo(
       isConnected,
     ]);
 
-    useEffect(() => {
-      if (isConnected) {
-        setHintDrawerVisible(false);
-      }
-    }, [isConnected]);
+    // useEffect(() => {
+    //   if (isConnected) {
+    //     setHintDrawerVisible(false);
+    //   }
+    // }, [isConnected]);
 
     const handleCancelHint = useCallback(() => {
       setDifferenceMap({});
