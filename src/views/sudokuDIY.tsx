@@ -835,12 +835,12 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           setSudokuStatus(SUDOKU_STATUS.ILLEGAL);
         }
       },
-      [isConnected, isSound, t, updateBoard, counts],
+      [isSound, updateBoard, counts],
     );
 
     useEffect(() => {
       const subscription = AppState.addEventListener('change', nextAppState => {
-        if (nextAppState === 'background' && isDIY) {
+        if ((nextAppState === 'inactive') && isDIY) {
           saveDataDIY();
         }
       });

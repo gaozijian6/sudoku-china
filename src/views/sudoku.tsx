@@ -256,27 +256,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
       };
 
       await AsyncStorage.setItem('sudokuData1', JSON.stringify(sudokuData));
-    }, [
-      differenceMap,
-      draftMode,
-      eraseEnabled,
-      errorCells,
-      errorCount,
-      hintContent,
-      hintMethod,
-      positions,
-      prompts,
-      result,
-      saveSudokuData,
-      selectedCell,
-      selectionMode,
-      difficulty,
-      watchIconVisible,
-      isFirstHint,
-      isHinting,
-      rewardedVideo.chance,
-      resultVisible,
-    ]);
+    }, [differenceMap, draftMode, eraseEnabled, errorCells, errorCount, hintContent, hintMethod, positions, prompts, result, saveSudokuData, selectedCell, selectionMode, difficulty, watchIconVisible, isFirstHint, isHinting]);
 
     useEffect(() => {
       if (!isVip) {
@@ -852,20 +832,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
         lastSelectedCell.current = selectedCell;
         setResult(null); // 重置 result
       }
-    }, [
-      board,
-      differenceMap,
-      handleHint,
-      isSound,
-      playSuccessSound,
-      remainingCountsMinusOne,
-      removeHintHighlight,
-      result,
-      selectedCell,
-      standradBoard,
-      updateBoard,
-      isConnected,
-    ]);
+    }, [board, differenceMap, handleHint, isSound, playSuccessSound, remainingCountsMinusOne, removeHintHighlight, result, selectedCell, standradBoard, updateBoard]);
 
     // useEffect(() => {
     //   if (isConnected) {
@@ -913,7 +880,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
     useEffect(() => {
       const subscription = AppState.addEventListener('change', nextAppState => {
-        if (nextAppState === 'background' && (isSudoku || isContinue)) {
+        if ((nextAppState === 'inactive') && (isSudoku || isContinue)) {
           saveData();
         }
       });
