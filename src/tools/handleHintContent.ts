@@ -66,9 +66,21 @@ export const handleHintContent = (
         break;
       case SOLUTION_METHODS.LOOP:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
+        console.log(label);
+        
         if(label==='3-2'){
           let nodeStr1=`R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1}C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`
           let nodeStr2=`R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}`
+          hintContent = t('hints.LOOP_3_2', {
+            target: target[0],
+            nodeStr1,
+            nodeStr2,
+            rootNodeStr: `R${position[0].row + 1}C${position[0].col + 1}`
+          });
+        }
+        else if (label === '3-4') {
+          let nodeStr1 = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${prompt[1].row + 1}C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`
+          let nodeStr2 = `R${prompt[3].row + 1}C${prompt[3].col + 1}、R${prompt[4].row + 1}C${prompt[4].col + 1}、R${prompt[5].row + 1}C${prompt[5].col + 1}、R${prompt[6].row + 1}C${prompt[6].col + 1}`
           hintContent = t('hints.LOOP_3_2', {
             target: target[0],
             nodeStr1,

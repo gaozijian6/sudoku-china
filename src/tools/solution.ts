@@ -3540,6 +3540,9 @@ export const Loop = (
               }
             }
           }
+          if (startNode1 && endNode1 && startNode1.row === endNode1.row && startNode1.col === endNode1.col) {
+            continue;
+          }
           // 3-2
           if (startNode1 && endNode1 && isUnitStrongLink(board, { row: startNode1.row, col: startNode1.col }, { row: endNode1.row, col: endNode1.col }, Number(num), candidateMap)) {
             let rootNodeArray1 = findGraphNodeByDistance(startNode, 1);
@@ -3561,13 +3564,23 @@ export const Loop = (
               }
             }
           }
-          // 3-2-2
+          // 3-2-2 & 3-4
           if (startNode1 && endNode1) {
             const startNodes2Array = findGraphNodeByDistance(startNode1, 1);
             const endNodes2Array = findGraphNodeByDistance(endNode1, 1);
             if (startNodes2Array.length && endNodes2Array.length) {
               for (const startNode2 of startNodes2Array) {
+                if (startNode2.row === startNode1.row && startNode2.col === startNode1.col) {
+                  continue;
+                }
                 for (const endNode2 of endNodes2Array) {
+                  if (endNode2.row === endNode1.row && endNode2.col === endNode1.col) {
+                    continue;
+                  }
+                  if (endNode2.row === startNode2.row && endNode2.col === startNode2.col) {
+                    continue;
+                  }
+                  // 3-2-2
                   if (isWeakLink(board, { row: startNode2.row, col: startNode2.col }, { row: endNode2.row, col: endNode2.col }, Number(num), candidateMap)) {
                     let rootNodeArray1 = findGraphNodeByDistance(startNode, 1);
                     let rootNodeArray2 = findGraphNodeByDistance(endNode, 1);
@@ -3577,6 +3590,27 @@ export const Loop = (
                           if (rootNode1.row === rootNode2.row && rootNode1.col === rootNode2.col) {
                             return {
                               label: '3-2-2',
+                              position: [{ row: rootNode1.row, col: rootNode1.col }],
+                              prompt: [{ row: rootNode1.row, col: rootNode1.col }, { row: startNode.row, col: startNode.col }, { row: endNode.row, col: endNode.col }, { row: startNode1.row, col: startNode1.col }, { row: startNode2.row, col: startNode2.col }, { row: endNode1.row, col: endNode1.col }, { row: endNode2.row, col: endNode2.col }],
+                              method: SOLUTION_METHODS.LOOP,
+                              isFill: true,
+                              target: [Number(num)],
+                            };
+                          }
+                        }
+                      }
+                    }
+                  }
+                  // 3-4
+                  if (isUnitStrongLink(board, { row: startNode2.row, col: startNode2.col }, { row: endNode2.row, col: endNode2.col }, Number(num), candidateMap)) {
+                    let rootNodeArray1 = findGraphNodeByDistance(startNode, 1);
+                    let rootNodeArray2 = findGraphNodeByDistance(endNode, 1);
+                    if (rootNodeArray1.length && rootNodeArray2.length) {
+                      for (const rootNode1 of rootNodeArray1) {
+                        for (const rootNode2 of rootNodeArray2) {
+                          if (rootNode1.row === rootNode2.row && rootNode1.col === rootNode2.col) {
+                            return {
+                              label: '3-4',
                               position: [{ row: rootNode1.row, col: rootNode1.col }],
                               prompt: [{ row: rootNode1.row, col: rootNode1.col }, { row: startNode.row, col: startNode.col }, { row: endNode.row, col: endNode.col }, { row: startNode1.row, col: startNode1.col }, { row: startNode2.row, col: startNode2.col }, { row: endNode1.row, col: endNode1.col }, { row: endNode2.row, col: endNode2.col }],
                               method: SOLUTION_METHODS.LOOP,

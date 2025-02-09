@@ -25,12 +25,12 @@ interface SudokuState {
   setIsLevel: (value: boolean) => void;
   initializeBoard2: (puzzle: string, answer: string) => void;
   setInitializeBoard2: (fn: (puzzle: string, answer: string) => void) => void;
-  loadData: () => void;
-  setLoadData: (fn: () => void) => void;
   isConnected: boolean;
   setIsConnected: (value: boolean) => void;
   isVip: boolean;
   setIsVip: (value: boolean) => void;
+  isHighlight: boolean;
+  setIsHighlight: (value: boolean) => void;
 }
 
 export const useSudokuStore = create<SudokuState>(set => ({
@@ -58,10 +58,10 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setIsLevel: value => set({isLevel: value}),
   initializeBoard2: () => {},
   setInitializeBoard2: (fn) => set({ initializeBoard2: fn }),
-  loadData: () => {},
-  setLoadData: (fn) => set({ loadData: fn }),
   isConnected: false,
   setIsConnected: value => set({isConnected: value}),
   isVip: false,
   setIsVip: value => set({isVip: value}),
+  isHighlight: true,
+  setIsHighlight: value => set({isHighlight: value}),
 }));

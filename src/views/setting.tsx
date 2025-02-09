@@ -44,15 +44,31 @@ const Setting: React.FC<SettingProps> = ({
   slideAnim,
   closeSetting,
 }) => {
-  const { isSound, setIsSound, setIsVip } = useSudokuStore();
+  const { isSound, setIsSound, setIsVip, isHighlight, setIsHighlight } = useSudokuStore();
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const { t, i18n } = useTranslation();
   const [purchasing, setPurchasing] = useState(false);
   const [restoring, setRestoring] = useState(false);
 
   const toogleSound = useCallback(() => {
-    setIsSound(!isSound);
+    if (isSound) {
+      setIsSound(false);
+      AsyncStorage.setItem('isSound', 'false');
+    } else {
+      setIsSound(true);
+      AsyncStorage.setItem('isSound', 'true');
+    }
   }, [isSound, setIsSound]);
+
+  const toogleHighlight = useCallback(() => {
+    if (isHighlight) {
+      setIsHighlight(false);
+      AsyncStorage.setItem('isHighlight', 'false');
+    } else {
+      setIsHighlight(true);
+      AsyncStorage.setItem('isHighlight', 'true');
+    }
+  }, [isHighlight, setIsHighlight]);
 
   const handleFeedback = useCallback(() => {
     const email = 'gaozijian32@gmail.com';
@@ -262,6 +278,20 @@ ${t('feedbackMessage')}
             onValueChange={toogleSound}
             trackColor={{ false: '#f0f0f0', true: 'rgb(91,139,241)' }}
             thumbColor={isSound ? '#fff' : '#fff'}
+          />
+        </View>
+
+        <View style={styles.item}>
+          <Image
+            source={require('../assets/icon/highlight.png')}
+            style={styles.leftIcon}
+          />
+          <Text style={styles.itemText}>{t('highlight')}</Text>
+          <Switch
+            value={isHighlight}
+            onValueChange={toogleHighlight}
+            trackColor={{ false: '#f0f0f0', true: 'rgb(91,139,241)' }}
+            thumbColor={isHighlight ? '#fff' : '#fff'}
           />
         </View>
 

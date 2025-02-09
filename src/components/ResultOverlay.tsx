@@ -3,6 +3,9 @@ import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
 import { useSudokuStore } from '../store';
 import { useTranslation } from 'react-i18next';
 import { generateBoard } from '../tools';
+import DeviceInfo from 'react-native-device-info';
+
+const model = DeviceInfo.getModel();
 
 interface ResultProps {
   onBack: () => void;
@@ -130,8 +133,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 8,
     padding: 20,
-    width: '80%',
     alignItems: 'center',
+    width: model.includes('iPad') ? '60%' : 300,
   },
   title: {
     fontSize: 20,
@@ -145,22 +148,19 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    width: '100%',
+    width: '80%',
     marginBottom: 12,
+    justifyContent: 'flex-start',
   },
   leftText: {
     fontSize: 16,
     color: '#666',
-    width: 100, // 固定左侧文字宽度
-    textAlign: 'right',
-    paddingRight: 8,
+    textAlign: 'left',
+    marginRight: 8,
   },
   rightText: {
     fontSize: 16,
     color: '#666',
-    width: 100, // 固定右侧文字宽度
-    textAlign: 'left',
   },
   buttonContainer: {
     width: '100%',
@@ -183,5 +183,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
 
 export default ResultView;

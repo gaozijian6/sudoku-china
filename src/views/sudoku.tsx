@@ -173,11 +173,11 @@ const Sudoku: React.FC<SudokuProps> = memo(
       isLevel,
       resultVisible,
       setInitializeBoard2,
-      setLoadData,
       isContinue,
       isSudoku,
       isConnected,
       isVip,
+      isHighlight,
     } = useSudokuStore();
     useEffect(() => {
       if (isSudoku) {
@@ -904,10 +904,6 @@ const Sudoku: React.FC<SudokuProps> = memo(
     }, [isLevel, isContinue]);
 
     useEffect(() => {
-      setLoadData(loadSavedData);
-    }, [loadSavedData, setLoadData]);
-
-    useEffect(() => {
       if (hintDrawerVisible) {
         isHinting.current = true;
       } else {
@@ -970,11 +966,13 @@ const Sudoku: React.FC<SudokuProps> = memo(
                 positions={positions}
                 resultBoard={standradBoard}
                 differenceMap={differenceMap}
+                isHighlight={isHighlight}
               />
             )),
           )}
         </View>
-        <View style={styles.selectMode}></View>
+        <View style={styles.selectMode}>
+        </View>
         <View style={styles.controlButtons}>
           <Pressable
             style={[styles.buttonContainer]}

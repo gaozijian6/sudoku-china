@@ -20,6 +20,7 @@ const Cell = memo(
     positions,
     resultBoard,
     differenceMap,
+    isHighlight,
   }: {
     cell: CellData;
     rowIndex: number;
@@ -34,6 +35,7 @@ const Cell = memo(
     positions: number[];
     resultBoard: CellData[][];
     differenceMap: DifferenceMap;
+    isHighlight: boolean;
   }) => {
     return (
       <Pressable
@@ -60,6 +62,7 @@ const Cell = memo(
           // 后应用高亮和选中样式，确保它们能覆盖边框样式
           cell.draft.length > 0 &&
             cell.draft.includes(selectedNumber ?? 0) &&
+            isHighlight &&
             styles.candidateNumber,
           selectedNumber &&
             cell.value === selectedNumber &&
@@ -127,6 +130,7 @@ const Cell = memo(
                     board[rowIndex][colIndex].highlights?.includes(
                       'promptHighlight',
                     ) &&
+                    board[rowIndex][colIndex].draft.includes(num) &&
                     styles.candidateHighlightHintText,
                   differenceMap[`${rowIndex},${colIndex}`]?.includes(num) &&
                     styles.candidateHighlightHint,
@@ -168,6 +172,7 @@ const Cell = memo(
       prevProps.prompts.length === nextProps.prompts.length &&
       prevProps.positions.length === nextProps.positions.length &&
       prevProps.handleCellChange === nextProps.handleCellChange &&
+      prevProps.isHighlight === nextProps.isHighlight &&
       JSON.stringify(prevProps.differenceMap) ===
         JSON.stringify(nextProps.differenceMap) &&
       JSON.stringify(

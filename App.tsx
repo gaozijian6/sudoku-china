@@ -19,7 +19,7 @@ import rewardedVideo from './src/tools/RewardedVideo';
 const slideAnim = Dimensions.get('window').width;
 
 function App() {
-  const { setIsHasContinue, setIsConnected, setIsVip, isSound } =
+  const { setIsHasContinue, setIsConnected, setIsVip, isSound, setIsHighlight, setIsSound } =
     useSudokuStore();
   const slideAnim1 = useRef(new Animated.Value(slideAnim)).current;
   const slideAnim2 = useRef(new Animated.Value(slideAnim)).current;
@@ -117,6 +117,27 @@ function App() {
       }
     };
     checkContinue();
+  }, []);
+
+  useEffect(() => {
+    const checkSound = async () => {
+      const isSound = await AsyncStorage.getItem('isSound');
+      if (isSound == null) {
+        setIsSound(true);
+      } else {
+        setIsSound(isSound === 'true');
+      }
+    };
+    checkSound();
+    const checkHighlight = async () => {
+      const isHighlight = await AsyncStorage.getItem('isHighlight');
+      if (isHighlight == null) {
+        setIsHighlight(true);
+      } else {
+        setIsHighlight(isHighlight === 'true');
+      }
+    };
+    checkHighlight();
   }, []);
 
   return (

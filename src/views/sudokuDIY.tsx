@@ -133,29 +133,29 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         graph: Graph,
       ) => Result | null)[]
     >([
-      singleCandidate,
-      hiddenSingle,
-      blockElimination,
-      nakedPair,
-      nakedTriple1,
-      nakedTriple2,
-      hiddenPair,
-      hiddenTriple1,
-      hiddenTriple2,
-      xWing,
-      xWingVarient,
-      xyWing,
-      nakedQuadruple,
-      skyscraper,
-      skyscraper2,
-      remotePair,
-      combinationChain,
-      swordfish,
-      wxyzWing,
+      // singleCandidate,
+      // hiddenSingle,
+      // blockElimination,
+      // nakedPair,
+      // nakedTriple1,
+      // nakedTriple2,
+      // hiddenPair,
+      // hiddenTriple1,
+      // hiddenTriple2,
+      // xWing,
+      // xWingVarient,
+      // xyWing,
+      // nakedQuadruple,
+      // skyscraper,
+      // skyscraper2,
+      // remotePair,
+      // combinationChain,
+      // swordfish,
+      // wxyzWing,
       Loop,
       trialAndErrorDIY,
     ]);
-    const { errorCount, setErrorCount, isSound, isDIY, isConnected, isVip } =
+    const { errorCount, setErrorCount, isSound, isDIY, isConnected, isVip, isHighlight } =
       useSudokuStore();
     useEffect(() => {
       if (isDIY) {
@@ -938,6 +938,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
                 positions={positions}
                 resultBoard={standradBoard}
                 differenceMap={differenceMap}
+                isHighlight={isHighlight}
               />
             )),
           )}

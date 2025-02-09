@@ -182,7 +182,7 @@ export default {
             LOOP_3_2_2:
                 '{{nodeStr1}}构成一组强链，{{nodeStr2}}构成一组强链，{{nodeStr3}}构成一组强链，它们之间通过弱链相连构成一个环，假设{{rootNodeStr}}为假并以它为起点分别以顺时针和逆时针进行逻辑推导，最终会导致环上某个节点矛盾，因此{{rootNodeStr}}必须为真',
             LOOP_3_2:
-                '{{nodeStr1}}构成一组强链，{{nodeStr2}}构成一组强链，它们之间通过弱链相连构成一个环，假设{{rootNodeStr}}为假并以它为起点分别以顺时针和逆时针进行逻辑推导，最终会导致环上某个节点矛盾，因此{{rootNodeStr}}必须为真'
+                '{{nodeStr1}}构成一组强链，{{nodeStr2}}构成一组强链，它们之间通过弱链相连构成一个环，假设{{rootNodeStr}}为假并以它为起点分别以顺时针和逆时针进行逻辑推导，最终会导致环上某个节点矛盾，因此{{rootNodeStr}}必须为真',
         },
         back: '返回',
         next: '下一关',
@@ -195,12 +195,13 @@ export default {
         privacyPolicy: '隐私政策',
         serviceTerms: '服务条款',
         language: '语言',
-        cancel: '取消',
         feedback: '反馈',
         feedbackMessage: '留言：',
         congratulations: '恭喜通关！',
         restore: '恢复购买',
         restoring: '恢复中...',
         purchasing: '购买中...',
+        illegalPrompt: '系统检测到您频繁退出程序，有规避广告的嫌疑，请等待一分钟后重试',
+        highlight: '高亮',
     },
 };
