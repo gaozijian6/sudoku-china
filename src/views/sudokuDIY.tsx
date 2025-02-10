@@ -405,12 +405,12 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             );
 
             playSound('switch', isSound);
+            remainingCountsMinusOne(selectedNumber);
             updateBoard(
               newBoard,
               `设置 (${row}, ${col}) 为 ${selectedNumber}`,
               true,
             );
-            remainingCountsMinusOne(selectedNumber);
           } else {
             handleErrorDraftAnimation(conflictCells);
             return;
@@ -522,11 +522,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
               number,
               getCandidates,
             );
-            updateBoard(newBoard, `设置 (${row}, ${col}) 为 ${number}`, true);
             setEraseEnabled(true);
-            setTimeout(() => {
-              remainingCountsMinusOne(number);
-            }, 0);
+            remainingCountsMinusOne(number);
+            updateBoard(newBoard, `设置 (${row}, ${col}) 为 ${number}`, true);
           }
         } else {
           playSound('switch', isSound);
