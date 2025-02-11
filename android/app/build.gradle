@@ -107,13 +107,20 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
-            minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
     buildFeatures {
         buildConfig true
+    }
+    
+    flavorDimensions "store"
+    productFlavors {
+        play {
+            dimension "store"
+        }
     }
 }
 
