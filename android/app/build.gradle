@@ -78,13 +78,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.sudoku_gzj.app2"
+    namespace "com.sudoku_gzj.app3"
     defaultConfig {
-        applicationId "com.sudoku_gzj.app2"
+        applicationId "com.sudoku_gzj.app3"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1"
+        versionCode 2
+        versionName "1.1"
         resValue "string", "google_web_client_id", "153933768237-ahlldb4iucnds60dv8rk5arnpbu2prb7.apps.googleusercontent.com"
         multiDexEnabled true
     }

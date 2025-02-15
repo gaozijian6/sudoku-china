@@ -1,4 +1,4 @@
-package com.sudoku_gzj.app2;  // 确保这里的包名和你的项目匹配
+package com.sudoku_gzj.app3;  // 确保这里的包名和你的项目匹配
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;

@@ -1,4 +1,4 @@
-package com.sudoku_gzj.app2
+package com.sudoku_gzj.app3
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
