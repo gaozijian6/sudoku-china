@@ -1,0 +1,24 @@
+{
+  "name": "react-native-cloud-store",
+  "version": "0.12.0",
+  "summary": "A react-native module for cloud operation",
+  "homepage": "https://github.com/XHMM/react-native-cloud-store#readme",
+  "license": "MIT",
+  "authors": "xhmm <super.xhmm@gmail.com> (https://github.com/XHMM)",
+  "platforms": {
+    "ios": "11.0"
+  },
+  "source": {
+    "git": "https://github.com/XHMM/react-native-cloud-store.git",
+    "tag": "0.12.0"
+  },
+  "source_files": "ios/**/*.{h,m,mm,swift}",
+  "resource_bundles": {
+    "RNCloudStore_resources": "ios/PrivacyInfo.xcprivacy"
+  },
+  "dependencies": {
+    "React-Core": [
+
+    ]
+  }
+}

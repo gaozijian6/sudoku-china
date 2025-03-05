@@ -1,0 +1,6 @@
+module react_native_cloud_store {
+  umbrella header "react-native-cloud-store-umbrella.h"
+
+  export *
+  module * { export * }
+}
