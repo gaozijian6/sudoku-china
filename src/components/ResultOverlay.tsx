@@ -13,7 +13,7 @@ interface ResultProps {
   visible: boolean;
 }
 
-const ResultView: React.FC<ResultProps> = ({ onBack, resetSudoku, visible }) => {
+function ResultView({ onBack, resetSudoku, visible }: ResultProps) {
   const { t } = useTranslation();
   const scaleAnim = React.useRef(new Animated.Value(0)).current;
   const {
@@ -50,6 +50,7 @@ const ResultView: React.FC<ResultProps> = ({ onBack, resetSudoku, visible }) => 
     setIsSudoku(false);
     setIsHome(true);
     setIsLevel(false);
+    setIsContinue(false);
   }, [
     onBack,
     setResultVisible,
@@ -57,6 +58,7 @@ const ResultView: React.FC<ResultProps> = ({ onBack, resetSudoku, visible }) => 
     setIsSudoku,
     setIsHome,
     setIsLevel,
+    setIsContinue,
   ]);
 
   const handleNext = useCallback(() => {
@@ -89,7 +91,8 @@ const ResultView: React.FC<ResultProps> = ({ onBack, resetSudoku, visible }) => 
                 },
               ],
             },
-          ]}>
+          ]}
+        >
           <Text style={styles.title}>{t('congratulations')}</Text>
           <View style={styles.content}>
             <View style={styles.row}>
@@ -105,17 +108,17 @@ const ResultView: React.FC<ResultProps> = ({ onBack, resetSudoku, visible }) => 
             <Pressable style={styles.button} onPressIn={handleBack}>
               <Text style={styles.buttonText}>{t('back')}</Text>
             </Pressable>
-            {!isContinue&&(<Pressable
-              style={[styles.button]}
-              onPressIn={handleNext}>
-              <Text style={styles.buttonText}>{t('next')}</Text>
-            </Pressable>)}
+            {!isContinue && (
+              <Pressable style={[styles.button]} onPressIn={handleNext}>
+                <Text style={styles.buttonText}>{t('next')}</Text>
+              </Pressable>
+            )}
           </View>
         </Animated.View>
       </View>
     )
   );
-};
+}
 
 const styles = StyleSheet.create({
   overlay: {
@@ -134,7 +137,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 20,
     alignItems: 'center',
-    width: model.includes('iPad') ? '60%' : 300,
+    width: model.includes('iPad') ? '60%' : 320,
   },
   title: {
     fontSize: 20,
@@ -171,9 +174,9 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#1890ff',
     paddingVertical: 8,
-    paddingHorizontal: 30,
+    paddingHorizontal: 10,
     borderRadius: 4,
-    minWidth: 120,
+    width: 130,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -183,6 +186,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
 
 export default ResultView;

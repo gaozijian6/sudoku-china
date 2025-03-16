@@ -1,6 +1,6 @@
 import i18n from 'i18next';
-import {initReactI18next} from 'react-i18next';
-import {NativeModules, Platform} from 'react-native';
+import { initReactI18next } from 'react-i18next';
+import { NativeModules, Platform } from 'react-native';
 import zh_CN from './zh_CN';
 import en from './en';
 import zh_TW from './zh_TW';
@@ -89,10 +89,11 @@ const getUserLanguage = async () => {
 // 初始化 i18n
 const initI18n = async () => {
   const savedLanguage = await getUserLanguage();
-  
+
   i18n.use(initReactI18next).init({
     resources,
     lng: savedLanguage || getDeviceLanguage() || 'en',
+    // lng: 'nl',
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false,

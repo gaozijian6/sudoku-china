@@ -1,4 +1,4 @@
-import {useState, useRef, useCallback} from 'react';
+import { useState, useRef, useCallback } from 'react';
 import {
   CellData,
   CandidateMap,
@@ -13,6 +13,26 @@ import initialBoard from '../views/initialBoard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import mockBoard from '../views/mock';
 import mockStandradBoard from '../views/standradBoard';
+import { useSudokuStore } from '../store';
+import { SudokuType } from '../constans';
+import { NativeModules } from 'react-native';
+
+const { CloudKitManager } = NativeModules;
+
+const initialCandidateMap: CandidateMap = {};
+
+for (let num = 1; num <= 9; num++) {
+  initialCandidateMap[num] = {
+    row: new Map(),
+    col: new Map(),
+    box: new Map(),
+    all: [],
+  };
+}
+
+const deepCopyCandidateMap = (candidateMap: CandidateMap): CandidateMap => {
+  return JSON.parse(JSON.stringify(candidateMap));
+};
 
 // 创建一个新的 hook 来管理棋盘状态和历史
 export const useSudokuBoardDIY = () => {
@@ -29,25 +49,10 @@ export const useSudokuBoardDIY = () => {
     },
   ]);
   const [currentStep, setCurrentStep] = useState<number>(0);
-  const [remainingCounts, setRemainingCounts] = useState<number[]>(
-    Array(9).fill(9),
-  );
+  const [remainingCounts, setRemainingCounts] = useState<number[]>(Array(9).fill(9));
   const remainingCountsSync = useRef<number[]>(Array(9).fill(9));
-  const [candidateMap, setCandidateMap] = useState<CandidateMap>(() => {
-    const initialCandidateMap: CandidateMap = {};
-    for (let num = 1; num <= 9; num++) {
-      initialCandidateMap[num] = {
-        row: new Map(),
-        col: new Map(),
-        box: new Map(),
-        all: [],
-      };
-    }
-    return initialCandidateMap;
-  });
-  const [graph, setGraph] = useState<Graph>(
-    createGraph(initialBoard, candidateMap),
-  );
+  const candidateMap = useRef<CandidateMap>(deepCopyCandidateMap(initialCandidateMap));
+  const graph = useRef<Graph>(createGraph(initialBoard, candidateMap.current));
   const [standradBoard, setStandradBoard] = useState<CellData[][]>(() => {
     return Array(9)
       .fill(null)
@@ -56,77 +61,23 @@ export const useSudokuBoardDIY = () => {
           .fill(null)
           .map(() => ({
             value: null,
-            draft: Array.from({length: 9}, (_, i) => i + 1),
+            draft: Array.from({ length: 9 }, (_, i) => i + 1),
             isGiven: false,
-          })),
+          }))
       );
   });
   // const [standradBoard, setStandradBoard] = useState<CellData[][]>(mockBoard);
   const [isValidBoard, setIsValidBoard] = useState<boolean>(false);
-
-  // 添加清空历史记录的函数
-  const clearHistory = useCallback(
-    (board: CellData[][]) => {
-      // 保存当前棋盘状态作为唯一的历史记录
-      const newHistory: BoardHistoryDIY[] = [
-        {
-          board,
-          action: '清空历史记录',
-          counts: countsSync.current,
-          remainingCounts: [...remainingCountsSync.current],
-        },
-      ];
-      history.current = newHistory;
-      setCurrentStep(0);
-    },
-    [remainingCountsSync],
-  );
-
-  const resetSudokuBoard = useCallback(() => {
-    setBoard(initialBoard);
-    remainingCountsSync.current = Array(9).fill(9);
-    setRemainingCounts(remainingCountsSync.current);
-    setCurrentStep(0);
-    countsSync.current = 0;
-    setCounts(0);
-    setTimeout(() => {
-      clearHistory(initialBoard);
-      history.current = [
-        {
-          board: initialBoard,
-          action: '生成新棋盘',
-          counts: countsSync.current,
-          remainingCounts: [...remainingCountsSync.current],
-        },
-      ];
-      setCandidateMap(() => {
-        const initialCandidateMap: CandidateMap = {};
-        for (let num = 1; num <= 9; num++) {
-          initialCandidateMap[num] = {
-            row: new Map(),
-            col: new Map(),
-            box: new Map(),
-            all: [],
-          };
-        }
-        return initialCandidateMap;
-      });
-      setGraph(createGraph(initialBoard, candidateMap));
-      setStandradBoard(
-        Array(9)
-          .fill(null)
-          .map(() =>
-            Array(9)
-              .fill(null)
-              .map(() => ({
-                value: null,
-                draft: Array.from({length: 9}, (_, i) => i + 1),
-                isGiven: false,
-              })),
-          ),
-      );
-    }, 0);
-  }, [candidateMap, clearHistory]);
+  const {
+    sudokuType,
+    myBoards,
+    currentIndex,
+    setMyBoards,
+    localsudokuDataDIY2,
+    setLocalsudokuDataDIY2,
+    setSudokuDataDIY2,
+    sudokuDataDIY2,
+  } = useSudokuStore();
 
   const updateAuxiliaryData = useCallback((newBoard: CellData[][]) => {
     const newCandidateMap: CandidateMap = {};
@@ -142,8 +93,7 @@ export const useSudokuBoardDIY = () => {
     newBoard.forEach((row, rowIndex) => {
       row.forEach((cell, colIndex) => {
         if (cell.value === null) {
-          const boxIndex =
-            Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3);
+          const boxIndex = Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3);
           const candidate: Candidate = {
             row: rowIndex,
             col: colIndex,
@@ -151,11 +101,8 @@ export const useSudokuBoardDIY = () => {
           };
 
           cell.draft.forEach(num => {
-            const updateStats = (
-              map: Map<number, CandidateStats>,
-              index: number,
-            ) => {
-              const stats = map.get(index) ?? {count: 0, positions: []};
+            const updateStats = (map: Map<number, CandidateStats>, index: number) => {
+              const stats = map.get(index) ?? { count: 0, positions: [] };
               stats.count++;
               stats.positions.push(candidate);
               map.set(index, stats);
@@ -171,16 +118,21 @@ export const useSudokuBoardDIY = () => {
     });
 
     setStandradBoard(copyOfficialDraft(newBoard));
-    setTimeout(() => {
-      setGraph(createGraph(newBoard, newCandidateMap));
-      setCandidateMap(newCandidateMap);
-    }, 0);
+    candidateMap.current = newCandidateMap;
+    graph.current = createGraph(newBoard, newCandidateMap);
   }, []);
 
   const loadSavedData2 = useCallback(async () => {
-    const sudokuData = await AsyncStorage.getItem('sudokuDataDIY2');
-    if (sudokuData) {
-      const data = JSON.parse(sudokuData);
+    let data;
+    switch (sudokuType) {
+      case SudokuType.DIY1:
+        data = localsudokuDataDIY2;
+        break;
+      case SudokuType.DIY2:
+        data = sudokuDataDIY2;
+        break;
+    }
+    if (data) {
       setBoard(data.board);
       history.current = data.history;
       setCurrentStep(data.currentStep);
@@ -191,7 +143,7 @@ export const useSudokuBoardDIY = () => {
       countsSync.current = data.countsSync;
       setCounts(countsSync.current);
     }
-  }, [updateAuxiliaryData]);
+  }, [sudokuType, localsudokuDataDIY2, sudokuDataDIY2, updateAuxiliaryData]);
 
   const updateRemainingCounts = useCallback((board: CellData[][]) => {
     const counts = Array(9).fill(9);
@@ -207,17 +159,66 @@ export const useSudokuBoardDIY = () => {
   }, []);
 
   const saveSudokuData = useCallback(() => {
-    const sudokuData = {
-      board,
-      history: history.current,
-      currentStep,
-      remainingCounts,
-      standradBoard,
-      countsSync: countsSync.current,
-      counts,
-    };
-    AsyncStorage.setItem('sudokuDataDIY2', JSON.stringify(sudokuData));
-  }, [board, currentStep, remainingCounts, standradBoard, counts]);
+    if (sudokuType === SudokuType.DIY1) {
+      const sudokuData = {
+        board,
+        history: history.current,
+        currentStep,
+        remainingCounts,
+        standradBoard,
+        countsSync: countsSync.current,
+        counts,
+      };
+      setLocalsudokuDataDIY2(sudokuData);
+      AsyncStorage.setItem('localsudokuDataDIY2', JSON.stringify(sudokuData));
+    } else if (sudokuType === SudokuType.DIY2) {
+      const sudokuData = {
+        board,
+        history: history.current,
+        currentStep,
+        remainingCounts,
+        standradBoard,
+        countsSync: countsSync.current,
+        counts,
+      };
+      setSudokuDataDIY2(sudokuData);
+      let puzzle = '';
+      board?.forEach(row => {
+        row.forEach(cell => {
+          puzzle += cell.value ? cell.value : '0';
+        });
+      });
+      const newMyBoards = [...myBoards];
+      newMyBoards[currentIndex].data = {
+        name: myBoards[currentIndex].data?.name,
+        puzzle,
+        sudokuDataDIY2: useSudokuStore.getState().sudokuDataDIY2,
+        sudokuDataDIY1: useSudokuStore.getState().sudokuDataDIY1,
+      };
+      setMyBoards(newMyBoards);
+      CloudKitManager.updateData(
+        myBoards[currentIndex].id,
+        JSON.stringify({
+          name: myBoards[currentIndex].data?.name,
+          puzzle,
+          sudokuDataDIY2: useSudokuStore.getState().sudokuDataDIY2,
+          sudokuDataDIY1: useSudokuStore.getState().sudokuDataDIY1,
+        })
+      );
+    }
+  }, [
+    sudokuType,
+    board,
+    currentStep,
+    remainingCounts,
+    standradBoard,
+    counts,
+    setLocalsudokuDataDIY2,
+    setSudokuDataDIY2,
+    myBoards,
+    currentIndex,
+    setMyBoards,
+  ]);
 
   const updateBoard = useCallback(
     (newBoard: CellData[][], action: string, isFill: boolean) => {
@@ -242,18 +243,42 @@ export const useSudokuBoardDIY = () => {
           counts: countsSync.current,
           remainingCounts: [...remainingCountsSync.current], // 确保存入当前的 remainingCounts
         });
+        if (newHistory.length > 100) {
+          newHistory.shift();
+        }
 
         history.current = newHistory;
         setCurrentStep(newHistory.length - 1);
       }
 
       setBoard(newBoard);
-      setTimeout(() => {
-        updateAuxiliaryData(newBoard);
-      }, 0);
+      updateAuxiliaryData(newBoard);
+      if (sudokuType === SudokuType.DIY1) {
+        setLocalsudokuDataDIY2({
+          board: newBoard,
+          history: history.current,
+          currentStep: history.current.length - 1,
+          remainingCounts: [...remainingCountsSync.current],
+          standradBoard: copyOfficialDraft(newBoard),
+          countsSync: countsSync.current,
+          counts: countsSync.current,
+        });
+      }
     },
-    [updateAuxiliaryData],
+    [updateAuxiliaryData, sudokuType, setLocalsudokuDataDIY2]
   );
+
+  const resetSudokuBoard = useCallback(() => {
+    setBoard(initialBoard);
+    remainingCountsSync.current = Array(9).fill(9);
+    setRemainingCounts(remainingCountsSync.current);
+    setCurrentStep(0);
+    countsSync.current = 0;
+    setCounts(0);
+    candidateMap.current = deepCopyCandidateMap(initialCandidateMap);
+    graph.current = createGraph(initialBoard, candidateMap.current);
+    updateBoard(initialBoard, '生成新棋盘', false);
+  }, [updateBoard]);
 
   const undo = useCallback(() => {
     if (currentStep > 0) {

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -9,19 +9,12 @@ import {
   Animated,
   Linking,
   Platform,
+  Share,
 } from 'react-native';
 import { useSudokuStore } from '../store';
 import TarBars from '../components/tarBars';
 import { useTranslation } from 'react-i18next';
 import LanguageModal from '../components/LanguageModal';
-import {
-  purchaseErrorListener,
-  purchaseUpdatedListener,
-  ProductPurchase,
-  PurchaseError,
-} from 'react-native-iap';
-import * as RNIap from 'react-native-iap';
-// import rewardedVideo from '../tools/RewardedVideo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface SettingProps {
@@ -29,26 +22,16 @@ interface SettingProps {
   closeSetting: () => void;
 }
 
-const APP_VERSION = '1.0.0';
-
-// 商品 ID
-const itemSKUs = Platform.select({
-  ios: ['sudoku'],
-  android: []
-});
+const APP_VERSION = '1.6';
 
 const PRIVACY_POLICY_URL = 'https://sites.google.com/view/sudokucustom';
 const TERMS_OF_SERVICE_URL = 'https://sites.google.com/view/sudoku-custom-terms';
 
-const Setting: React.FC<SettingProps> = ({
-  slideAnim,
-  closeSetting,
-}) => {
-  const { isSound, setIsSound, setIsVip, isHighlight, setIsHighlight } = useSudokuStore();
+function Setting({ slideAnim, closeSetting }: SettingProps) {
+  const { isSound, setIsSound, isHighlight, setIsHighlight } =
+    useSudokuStore();
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const { t, i18n } = useTranslation();
-  const [purchasing, setPurchasing] = useState(false);
-  const [restoring, setRestoring] = useState(false);
 
   const toogleSound = useCallback(() => {
     if (isSound) {
@@ -85,122 +68,6 @@ ${t('feedbackMessage')}
     Linking.openURL(mailtoUrl);
   }, [i18n.language]);
 
-  // 初始化 IAP
-  // useEffect(() => {
-  //   let purchaseUpdateSubscription: any;
-  //   let purchaseErrorSubscription: any;
-
-  //   const initIAP = async () => {
-  //     if (typeof RNIap === 'undefined') {
-  //       console.warn('RNIap 模块未加载');
-  //       return;
-  //     }
-
-  //     try {
-  //       await RNIap.initConnection();
-
-  //       // 监听购买更新
-  //       purchaseUpdateSubscription = purchaseUpdatedListener(
-  //         async (purchase: ProductPurchase) => {
-  //           if (purchase.transactionReceipt) {
-  //             await RNIap.finishTransaction({
-  //               purchase,
-  //               isConsumable: false,
-  //             });
-  //             rewardedVideo.setIsVip(true);
-  //             setIsVip(true);
-  //             AsyncStorage.setItem('isVip', 'true');
-  //             setPurchasing(false);
-  //           }
-  //         }
-  //       );
-
-  //       // 监听购买错误
-  //       purchaseErrorSubscription = purchaseErrorListener(
-  //         (error: PurchaseError) => {
-  //           console.warn('购买错误', error);
-  //           setPurchasing(false);
-  //         }
-  //       );
-
-  //     } catch (err) {
-  //       console.warn('初始化 IAP 错误:', err);
-  //     }
-  //   };
-
-  //   initIAP();
-
-  //   return () => {
-  //     if (typeof RNIap !== 'undefined') {
-  //       purchaseUpdateSubscription?.remove();
-  //       purchaseErrorSubscription?.remove();
-  //       RNIap.endConnection();
-  //     }
-  //   };
-  // }, []);
-
-  // 处理购买
-  const handlePurchase = useCallback(async () => {
-    if (purchasing) {
-      return;
-    }
-
-    try {
-      setPurchasing(true);
-
-      // 确保连接已初始化
-      await RNIap.initConnection();
-
-      const products = await RNIap.getProducts({ skus: itemSKUs || [] });
-
-      if (products.length === 0) {
-        throw new Error('没有找到可用商品');
-      }
-
-      await RNIap.requestPurchase({
-        sku: products[0].productId,
-        andDangerouslyFinishTransactionAutomaticallyIOS: false
-      });
-    } catch (err) {
-      console.error('购买错误:', err);
-      setPurchasing(false);
-      // 这里可以添加错误提示
-    }
-  }, [purchasing]);
-
-  // 处理恢复购买
-  // const handleRestore = useCallback(async () => {
-  //   if (restoring) {
-  //     return;
-  //   }
-
-  //   try {
-  //     setRestoring(true);
-
-  //     // 确保连接已初始化
-  //     await RNIap.initConnection();
-
-  //     const purchases = await RNIap.getAvailablePurchases();
-
-  //     if (purchases.length > 0) {
-  //       // 查找是否有移除广告的购买记录
-  //       const adRemovalPurchase = purchases.find(
-  //         purchase => itemSKUs?.includes(purchase.productId)
-  //       );
-
-  //       if (adRemovalPurchase) {
-  //         rewardedVideo.setIsVip(true);
-  //         setIsVip(true);
-  //         AsyncStorage.setItem('isVip', 'true');
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.error('恢复购买错误:', err);
-  //   } finally {
-  //     setRestoring(false);
-  //   }
-  // }, [restoring]);
-
   const handlePrivacyPolicy = useCallback(() => {
     Linking.openURL(PRIVACY_POLICY_URL);
   }, []);
@@ -208,6 +75,18 @@ ${t('feedbackMessage')}
   const handleTermsOfService = useCallback(() => {
     Linking.openURL(TERMS_OF_SERVICE_URL);
   }, []);
+
+  const handleRateApp = useCallback(() => {
+    Linking.openURL('https://apps.apple.com/cn/app/id6741408233?action=write-review');
+  }, []);
+
+  const handleShare = useCallback(() => {
+    Share.share({
+      title: '趣数独',
+      message: '趣数独',
+      url: 'https://apps.apple.com/cn/app/%E8%B6%A3%E6%95%B0%E7%8B%AC-%E7%BB%8F%E5%85%B8%E7%9A%84%E7%9B%8A%E6%99%BA%E8%A7%A3%E8%B0%9C%E5%B0%8F%E6%B8%B8%E6%88%8F/id6741408233',
+    });
+  }, [t]);
 
   return (
     <Animated.View
@@ -220,58 +99,19 @@ ${t('feedbackMessage')}
             },
           ],
         },
-      ]}>
+      ]}
+    >
       <TarBars />
       <View style={styles.tarbar}>
         <Pressable onPressIn={closeSetting} style={styles.backIconContainer}>
-          <Image
-            source={require('../assets/icon/back.png')}
-            style={styles.backIcon}
-          />
+          <Image source={require('../assets/icon/back.png')} style={styles.backIcon} />
         </Pressable>
         <Text style={styles.tarbarText}>{t('setting')}</Text>
       </View>
 
       <View style={styles.content}>
-        {/* <Pressable
-          style={[styles.item]}
-          onPress={handlePurchase}
-          disabled={purchasing}>
-          <Image
-            source={require('../assets/icon/closeAD.png')}
-            style={styles.leftIcon}
-          />
-          <Text style={styles.itemText}>
-            {purchasing ? t('purchasing') : t('removeAD')}
-          </Text>
-          <Image
-            source={require('../assets/icon/arrow.png')}
-            style={styles.arrow}
-          />
-        </Pressable> */}
-
-        {/* <Pressable
-          style={[styles.item]}
-          onPress={handleRestore}
-          disabled={restoring}>
-          <Image
-            source={require('../assets/icon/restore.png')}
-            style={styles.leftIcon}
-          />
-          <Text style={styles.itemText}>
-            {restoring ? t('restoring') : t('restore')}
-          </Text>
-          <Image
-            source={require('../assets/icon/arrow.png')}
-            style={styles.arrow}
-          />
-        </Pressable> */}
-
         <View style={styles.item}>
-          <Image
-            source={require('../assets/icon/sound.png')}
-            style={styles.leftIcon}
-          />
+          <Image source={require('../assets/icon/sound.png')} style={styles.leftIcon} />
           <Text style={styles.itemText}>{t('sound')}</Text>
           <Switch
             value={isSound}
@@ -282,10 +122,7 @@ ${t('feedbackMessage')}
         </View>
 
         <View style={styles.item}>
-          <Image
-            source={require('../assets/icon/highlight.png')}
-            style={styles.leftIcon}
-          />
+          <Image source={require('../assets/icon/highlight.png')} style={styles.leftIcon} />
           <Text style={styles.itemText}>{t('highlight')}</Text>
           <Switch
             value={isHighlight}
@@ -295,48 +132,28 @@ ${t('feedbackMessage')}
           />
         </View>
 
-        {/* <Pressable style={styles.item}>
-          <Image
-            source={require('../assets/icon/notice.png')}
-            style={styles.leftIcon}
-          />
-          <Text style={styles.itemText}>{t('notice')}</Text>
-          <Switch
-            value={isSound}
-            onValueChange={toogleSound}
-            trackColor={{ false: '#f0f0f0', true: 'rgb(91,139,241)' }}
-            thumbColor={isSound ? '#fff' : '#fff'}
-          />
-        </Pressable> */}
-
-        <Pressable
-          style={styles.item}
-          onPress={() => setLanguageModalVisible(true)}
-        >
-          <Image
-            source={require('../assets/icon/language.png')}
-            style={styles.leftIcon}
-          />
+        <Pressable style={styles.item} onPress={() => setLanguageModalVisible(true)}>
+          <Image source={require('../assets/icon/language.png')} style={styles.leftIcon} />
           <Text style={styles.itemText}>{t('language')}</Text>
-          <Image
-            source={require('../assets/icon/arrow.png')}
-            style={styles.arrow}
-          />
+          <Image source={require('../assets/icon/arrow.png')} style={styles.arrow} />
         </Pressable>
 
-        <Pressable
-          style={styles.item}
-          onPress={handleFeedback}
-        >
-          <Image
-            source={require('../assets/icon/email.png')}
-            style={styles.leftIcon}
-          />
+        <Pressable style={styles.item} onPress={handleFeedback}>
+          <Image source={require('../assets/icon/email.png')} style={styles.leftIcon} />
           <Text style={styles.itemText}>{t('feedback')}</Text>
-          <Image
-            source={require('../assets/icon/arrow.png')}
-            style={styles.arrow}
-          />
+          <Image source={require('../assets/icon/arrow.png')} style={styles.arrow} />
+        </Pressable>
+
+        <Pressable style={styles.item} onPress={handleRateApp}>
+          <Image source={require('../assets/icon/tongguo.png')} style={styles.leftIcon} />
+          <Text style={styles.itemText}>{t('encourage')}</Text>
+          <Image source={require('../assets/icon/arrow.png')} style={styles.arrow} />
+        </Pressable>
+
+        <Pressable style={styles.item} onPress={handleShare}>
+          <Image source={require('../assets/icon/share.png')} style={styles.leftIcon} />
+          <Text style={styles.itemText}>{t('share')}</Text>
+          <Image source={require('../assets/icon/arrow.png')} style={styles.arrow} />
         </Pressable>
       </View>
 
@@ -354,15 +171,14 @@ ${t('feedbackMessage')}
         visible={languageModalVisible}
         onClose={() => setLanguageModalVisible(false)}
         currentLanguage={i18n.language}
-        onSelectLanguage={(lang) => {
+        onSelectLanguage={lang => {
           i18n.changeLanguage(lang);
           setLanguageModalVisible(false);
         }}
       />
-
     </Animated.View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -370,7 +186,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    zIndex: 10,
+    zIndex: 30,
     backgroundColor: 'rgb(239,239,245)',
   },
   tarbar: {
