@@ -1,16 +1,11 @@
 import { DIFFICULTY } from '../constans';
-import easyBoard from '../mock/easy';
-import entryBoard from '../mock/entry';
-import extremeBoard from '../mock/extreme';
-import hardBoard from '../mock/hard';
-import mediumBoard from '../mock/medium';
-import { isUnitStrongLink, hiddenSingle } from './solution';
-import { NativeModules } from 'react-native';
-
-const { ComputeModule } = NativeModules;
-if (!ComputeModule) {
-  console.error('ComputeModule is not available');
-}
+import easyBoard from '../mock/2easy';
+import entryBoard from '../mock/1entry';
+import extremeBoard from '../mock/5extreme';
+import hardBoard from '../mock/4hard';
+import mediumBoard from '../mock/3medium';
+import { isUnitStrongLink } from './solution';
+import { SudokuSolver } from './DLX';
 
 export interface Position {
   row: number;
@@ -32,17 +27,24 @@ export interface CellData {
   highlightError?: string;
   highlights?: string[];
   highlightCandidates?: number[];
+  promptCandidates?: number[];
+  promptCandidates1?: number[];
+  promptCandidates2?: number[];
+  promptCandidates3?: number[];
 }
 
 export interface Graph {
   [key: number]: GraphNode[];
 }
 
+// 添加一个用于测量对象大小的函数
+export const getObjectSize = (obj: any): number => {
+  const str = JSON.stringify(obj);
+  return new Blob([str]).size;
+};
+
 // 创建图结构
-export const createGraph = (
-  board: CellData[][],
-  candidateMap: CandidateMap,
-): Graph => {
+export const createGraph = (board: CellData[][], candidateMap: CandidateMap): Graph => {
   const graph: Graph = {};
 
   for (let num = 1; num <= 9; num++) {
@@ -78,12 +80,9 @@ export const createGraph = (
             const key1 = `${position1.row},${position1.col}`;
             const key2 = `${position2.row},${position2.col}`;
 
-            if (
-              isUnitStrongLink(board, position1, position2, num, candidateMap)
-            ) {
+            if (isUnitStrongLink(board, position1, position2, num, candidateMap)) {
               let newNode = subGraph.find(
-                node =>
-                  node.row === position2.row && node.col === position2.col,
+                node => node.row === position2.row && node.col === position2.col
               );
 
               if (!newNode) {
@@ -97,18 +96,13 @@ export const createGraph = (
               }
 
               if (
-                !current.next.some(
-                  node =>
-                    node.row === newNode?.row && node.col === newNode?.col,
-                )
+                !current.next.some(node => node.row === newNode?.row && node.col === newNode?.col)
               ) {
                 current.next.push(newNode);
               }
 
               if (
-                !newNode.next.some(
-                  node => node.row === current.row && node.col === current.col,
-                )
+                !newNode.next.some(node => node.row === current.row && node.col === current.col)
               ) {
                 newNode.next.push(current);
               }
@@ -166,12 +160,7 @@ export const createGraph = (
   return graph;
 };
 
-export const isValid = (
-  board: CellData[][],
-  row: number,
-  col: number,
-  num: number,
-): boolean => {
+export const isValid = (board: CellData[][], row: number, col: number, num: number): boolean => {
   // 检查行
   for (let x = 0; x < 9; x++) {
     if (board[row][x].value === num) return false;
@@ -194,58 +183,7 @@ export const isValid = (
   return true;
 };
 
-export const solve = (board: CellData[][]): boolean => {
-  const standardBoard = copyOfficialDraft(board);
-  const s = (board: CellData[][]): boolean => {
-    for (let row = 0; row < 9; row++) {
-      for (let col = 0; col < 9; col++) {
-        if (board[row][col].value === null) {
-          for (let num = 1; num <= 9; num++) {
-            if (!standardBoard[row][col].draft.includes(num)) continue;
-            if (isValid(board, row, col, num)) {
-              board[row][col].value = num;
-              if (s(board)) {
-                return true;
-              }
-              board[row][col].value = null;
-            }
-          }
-          return false;
-        }
-      }
-    }
-    return true;
-  };
-  return s(board);
-};
-
-export const solve2 = (board: CellData[][]): boolean => {
-  const standardBoard = copyOfficialDraft(board);
-  const s = (board: CellData[][]): boolean => {
-    for (let row = 0; row < 9; row++) {
-      for (let col = 0; col < 9; col++) {
-        if (board[row][col].value === null) {
-          for (let num = 9; num >= 1; num--) {
-            if (!standardBoard[row][col].draft.includes(num)) continue;
-            if (isValid(board, row, col, num)) {
-              board[row][col].value = num;
-              if (s(board)) {
-                return true;
-              }
-              board[row][col].value = null;
-            }
-          }
-          return false;
-        }
-      }
-    }
-    return true;
-  };
-  return s(board);
-};
-
-export const solve3 = async (board: CellData[][]) => {
-  const solveFunctions = [hiddenSingle];
+export const solve3 = (board: CellData[][]) => {
   const getCounts = (board: CellData[][]) => {
     let counts = 0;
     for (let row = 0; row < 9; row++) {
@@ -261,57 +199,34 @@ export const solve3 = async (board: CellData[][]) => {
   let counts = getCounts(board);
   if (counts < 17) return null;
 
-  const standardBoard = copyOfficialDraft(board);
-
-  firstWhile: while (true) {
-    for (let i = 0; i < solveFunctions.length; i++) {
-      const solveFunction = solveFunctions[i];
-      let result = solveFunction(standardBoard, {}, {});
-
-      if (result) {
-        const { isFill, position, target } = result;
-        position.forEach(({ row, col }) => {
-          if (isFill) {
-            counts++;
-            if (counts === 81) {
-              return standardBoard;
-            }
-            standardBoard[row][col].value = target[0];
-            standardBoard[row][col].draft = [];
-
-            // 更新受影响的单元格
-            const affectedCells = updateRelatedCellsDraft(
-              standardBoard,
-              [{ row, col }],
-              target[0],
-              getCandidates,
-            );
-
-            // 将受影响的单元格合并到 position 中
-            position.push(...affectedCells);
-          } else {
-            standardBoard[row][col].draft =
-              standardBoard[row][col].draft?.filter(
-                num => !target.includes(num),
-              ) ?? [];
-          }
-        });
-        result = null;
-        continue firstWhile;
-      } else if (!result && i < solveFunctions.length - 1) {
-        continue;
-      } else {
-        break firstWhile;
-      }
+  let boardString = '';
+  for (const row of board) {
+    for (const cell of row) {
+      boardString += cell.value ? cell.value : '0';
     }
   }
-  const result = await ComputeModule.solveSudoku(standardBoard, standardBoard);
 
-  if (!result) {
+  const solver = new SudokuSolver();
+  const result = solver.solve(boardString);
+
+  if (result === undefined) {
     return null;
   }
-  return result;
+  const solvedBoard: CellData[][] = [];
+  for (let i = 0; i < 9; i++) {
+    const row: CellData[] = [];
+    for (let j = 0; j < 9; j++) {
+      const value = parseInt(result.charAt(i * 9 + j), 10);
+      row.push({
+        value: value === 0 ? null : value,
+        isGiven: false,
+        draft: [],
+      });
+    }
+    solvedBoard.push(row);
+  }
 
+  return solvedBoard;
 };
 
 export const isRowFull = (board: CellData[][], row: number) => {
@@ -325,7 +240,7 @@ export const isBoxFull = (board: CellData[][], box: number) => {
   const startRow = Math.floor(box / 3) * 3;
   const startCol = (box % 3) * 3;
   return Array.from({ length: 3 }, (_, i) =>
-    Array.from({ length: 3 }, (_, j) => board[startRow + i][startCol + j]),
+    Array.from({ length: 3 }, (_, j) => board[startRow + i][startCol + j])
   ).every(row => row.every(cell => cell.value !== null));
 };
 
@@ -333,11 +248,12 @@ export const getCellClassName = (
   board: CellData[][],
   rowIndex: number,
   colIndex: number,
-  selectedNumber: number | null,
+  selectedNumber: number | null
 ) => {
   const cell = board[rowIndex][colIndex];
-  const baseClass = `sudokuCell ${cell.value === null ? 'emptySudokuCell' : ''
-    } ${cell.isGiven ? 'givenNumber' : ''}`;
+  const baseClass = `sudokuCell ${
+    cell.value === null ? 'emptySudokuCell' : ''
+  } ${cell.isGiven ? 'givenNumber' : ''}`;
 
   if (selectedNumber !== null) {
     if (cell.value === selectedNumber) {
@@ -350,10 +266,7 @@ export const getCellClassName = (
   return baseClass;
 };
 
-export const checkDraftIsValid = (
-  board: CellData[][],
-  answerBoard: CellData[][],
-) => {
+export const checkDraftIsValid = (board: CellData[][], answerBoard: CellData[][]) => {
   for (let row = 0; row < 9; row++) {
     for (let col = 0; col < 9; col++) {
       const cell = board[row]?.[col];
@@ -369,17 +282,13 @@ export const checkDraftIsValid = (
   return true;
 };
 
-export const isSameBoard = (
-  board1: CellData[][],
-  board2: CellData[][],
-): boolean => {
+export const isSameBoard = (board1: CellData[][], board2: CellData[][]): boolean => {
   return board1.every((row, rowIndex) =>
     row.every(
       (cell, colIndex) =>
         cell.value === board2[rowIndex][colIndex].value &&
-        JSON.stringify(cell.draft) ===
-        JSON.stringify(board2[rowIndex][colIndex].draft),
-    ),
+        JSON.stringify(cell.draft) === JSON.stringify(board2[rowIndex][colIndex].draft)
+    )
   );
 };
 
@@ -387,7 +296,7 @@ export const checkNumberInRowColumnAndBox = (
   board: CellData[][],
   row: number,
   col: number,
-  num: number,
+  num: number
 ): { row: number; col: number }[] => {
   const conflictCells: { row: number; col: number }[] = [];
 
@@ -425,7 +334,7 @@ export const updateRelatedCellsDraft = (
   position: { row: number; col: number }[],
   value: number,
   getCandidates: (board: CellData[][], row: number, col: number) => number[],
-  isUndo: boolean = false,
+  isUndo: boolean = false
 ) => {
   const affectedCells: { row: number; col: number }[] = [];
 
@@ -453,7 +362,7 @@ export const updateRelatedCellsDraft = (
 
   // 去重受影响的单元格
   const uniqueAffectedCells = Array.from(
-    new Set(affectedCells.map(cell => `${cell.row},${cell.col}`)),
+    new Set(affectedCells.map(cell => `${cell.row},${cell.col}`))
   ).map(str => {
     const [row, col] = str.split(',');
     return { row: Number(row), col: Number(col) };
@@ -473,7 +382,7 @@ export const updateCellDraft = (
   cell: CellData,
   value: number,
   candidates: number[],
-  isUndo: boolean,
+  isUndo: boolean
 ) => {
   if (isUndo) {
     // 如果是撤销操作，添加候选数字
@@ -487,11 +396,7 @@ export const updateCellDraft = (
   }
 };
 
-export const getCandidates = (
-  board: CellData[][],
-  row: number,
-  col: number,
-): number[] => {
+export const getCandidates = (board: CellData[][], row: number, col: number): number[] => {
   if (board[row][col].value !== null) return [];
   const candidates: number[] = [];
   for (let num = 1; num <= 9; num++) {
@@ -508,7 +413,7 @@ export const deepCopyBoard = (board: CellData[][]): CellData[][] => {
     row.map(cell => ({
       ...cell,
       draft: [...cell.draft],
-    })),
+    }))
   );
 };
 
@@ -518,7 +423,7 @@ export const copyOfficialDraft = (board: CellData[][]): CellData[][] => {
     row.map((cell, colIndex) => ({
       ...cell,
       draft: getCandidates(board, rowIndex, colIndex),
-    })),
+    }))
   );
 };
 
@@ -549,10 +454,13 @@ export interface CandidateMap {
     all: Candidate[];
   };
 }
+export const getByteLength = (str: string): number => {
+  return Number((new Blob([str]).size / 1024).toFixed(2));
+};
 
 export const generateBoard = (
   difficulty: string,
-  initializeBoard2: (puzzle: string, answer: string) => void,
+  initializeBoard2: (puzzle: string, answer: string) => void
 ) => {
   let random: number;
   switch (difficulty) {
@@ -566,10 +474,7 @@ export const generateBoard = (
       break;
     case DIFFICULTY.MEDIUM:
       random = Math.floor(Math.random() * mediumBoard.length);
-      initializeBoard2(
-        mediumBoard[random].puzzle,
-        mediumBoard[random].solution,
-      );
+      initializeBoard2(mediumBoard[random].puzzle, mediumBoard[random].solution);
       break;
     case DIFFICULTY.HARD:
       random = Math.floor(Math.random() * hardBoard.length);
@@ -577,10 +482,12 @@ export const generateBoard = (
       break;
     case DIFFICULTY.EXTREME:
       random = Math.floor(Math.random() * extremeBoard.length);
-      initializeBoard2(
-        extremeBoard[random].puzzle,
-        extremeBoard[random].solution,
-      );
+      // random = 21;
+      initializeBoard2(extremeBoard[random].puzzle, extremeBoard[random].solution);
+      // initializeBoard2(
+      //   '274513968010296374963874152652137489030459627497628500789361245026745890040982706',
+      //   '547296831392718456618534927734689512625147398189325764285463179971832465463951287',
+      // );
       break;
   }
 };

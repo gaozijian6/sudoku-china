@@ -13,6 +13,21 @@ import {
 import initialBoard from '../views/initialBoard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const initialCandidateMap: CandidateMap = {};
+
+for (let num = 1; num <= 9; num++) {
+  initialCandidateMap[num] = {
+    row: new Map(),
+    col: new Map(),
+    box: new Map(),
+    all: [],
+  };
+}
+
+const deepCopyCandidateMap = (candidateMap: CandidateMap): CandidateMap => {
+  return JSON.parse(JSON.stringify(candidateMap));
+};
+
 // 创建一个新的 hook 来管理棋盘状态和历史
 export const useSudokuBoard = () => {
   const [board, setBoard] = useState<CellData[][]>(initialBoard);
@@ -20,47 +35,24 @@ export const useSudokuBoard = () => {
   const answerBoard = useRef<CellData[][]>(initialBoard);
   const history = useRef<BoardHistory[]>([]);
   const [currentStep, setCurrentStep] = useState<number>(0);
-  const [remainingCounts, setRemainingCounts] = useState<number[]>(
-    Array(9).fill(9),
-  );
-  const [candidateMap, setCandidateMap] = useState<CandidateMap>(() => {
-    const initialCandidateMap: CandidateMap = {};
-    for (let num = 1; num <= 9; num++) {
-      initialCandidateMap[num] = {
-        row: new Map(),
-        col: new Map(),
-        box: new Map(),
-        all: [],
-      };
-    }
-    return initialCandidateMap;
-  });
-  const [graph, setGraph] = useState<Graph>(
-    createGraph(initialBoard, candidateMap),
-  );
+  const [remainingCounts, setRemainingCounts] = useState<number[]>(Array(9).fill(9));
+  const candidateMap = useRef<CandidateMap>(deepCopyCandidateMap(initialCandidateMap));
+  const graph = useRef<Graph>(createGraph(initialBoard, candidateMap.current));
   const [counts, setCounts] = useState<number>(0);
-  const [standradBoard, setStandradBoard] =
-    useState<CellData[][]>(initialBoard);
+  const [standradBoard, setStandradBoard] = useState<CellData[][]>(initialBoard);
+  const countsSync = useRef<number>(0);
+  const remainingCountsSync = useRef<number[]>(Array(9).fill(9));
   const resetSudokuBoard = useCallback(() => {
     setBoard(initialBoard);
     answerBoard.current = initialBoard;
     history.current = [];
     setCurrentStep(0);
     setRemainingCounts(Array(9).fill(9));
-    setCandidateMap(() => {
-      const initialCandidateMap: CandidateMap = {};
-      for (let num = 1; num <= 9; num++) {
-        initialCandidateMap[num] = {
-          row: new Map(),
-          col: new Map(),
-          box: new Map(),
-          all: [],
-        };
-      }
-      return initialCandidateMap;
-    });
-    setGraph(createGraph(initialBoard, candidateMap));
+    remainingCountsSync.current = Array(9).fill(9);
+    candidateMap.current = deepCopyCandidateMap(initialCandidateMap);
+    graph.current = createGraph(initialBoard, candidateMap.current);
     setCounts(0);
+    countsSync.current = 0;
     setStandradBoard(initialBoard);
     setIsInitialized(false);
   }, [candidateMap]);
@@ -79,8 +71,7 @@ export const useSudokuBoard = () => {
     newBoard.forEach((row, rowIndex) => {
       row.forEach((cell, colIndex) => {
         if (cell.value === null) {
-          const boxIndex =
-            Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3);
+          const boxIndex = Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3);
           const candidate: Candidate = {
             row: rowIndex,
             col: colIndex,
@@ -88,10 +79,7 @@ export const useSudokuBoard = () => {
           };
 
           cell.draft.forEach(num => {
-            const updateStats = (
-              map: Map<number, CandidateStats>,
-              index: number,
-            ) => {
+            const updateStats = (map: Map<number, CandidateStats>, index: number) => {
               const stats = map.get(index) ?? { count: 0, positions: [] };
               stats.count++;
               stats.positions.push(candidate);
@@ -107,10 +95,10 @@ export const useSudokuBoard = () => {
       });
     });
 
-    setGraph(createGraph(newBoard, newCandidateMap));
+    graph.current = createGraph(newBoard, newCandidateMap);
 
     setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
-    setCandidateMap(newCandidateMap);
+    candidateMap.current = newCandidateMap;
   }, []);
 
   const loadSavedData2 = useCallback(async () => {
@@ -122,7 +110,9 @@ export const useSudokuBoard = () => {
       history.current = data.history;
       setCurrentStep(data.currentStep);
       setRemainingCounts(data.remainingCounts);
+      remainingCountsSync.current = data.remainingCounts;
       setCounts(data.counts);
+      countsSync.current = data.counts;
       setStandradBoard(data.standradBoard);
       setIsInitialized(true);
       updateCandidateMap(data.board);
@@ -152,6 +142,7 @@ export const useSudokuBoard = () => {
       });
     });
     setRemainingCounts(counts);
+    remainingCountsSync.current = counts;
   }, []);
 
   const saveSudokuData = useCallback(async () => {
@@ -169,30 +160,37 @@ export const useSudokuBoard = () => {
 
   const updateBoard = useCallback(
     (newBoard: CellData[][], action: string, isFill: boolean) => {
+      if (isFill) {
+        countsSync.current++;
+        setCounts(countsSync.current);
+      }
       if (!action.startsWith('取消') && !action.startsWith('提示')) {
         const newHistory = history.current.slice(0);
         newHistory.push({
           board: newBoard,
           action,
+          counts: countsSync.current,
+          remainingCounts: [...remainingCountsSync.current], // 确保存入当前的 remainingCounts
         });
 
         history.current = newHistory;
         setCurrentStep(newHistory.length - 1);
       }
-      if (isFill) {
-        clearHistory(newBoard);
-        setCounts(counts + 1);
-      }
 
       setBoard(newBoard);
       updateCandidateMap(newBoard);
     },
-    [clearHistory, counts, updateCandidateMap],
+    [updateCandidateMap]
   );
 
   const undo = useCallback(() => {
     if (currentStep > 0) {
-      const previousBoard = history.current[currentStep - 1].board;
+      const previousHistory = history.current[currentStep - 1];
+      const previousBoard = previousHistory.board;
+      remainingCountsSync.current = previousHistory.remainingCounts;
+      setRemainingCounts(remainingCountsSync.current);
+      countsSync.current = previousHistory.counts;
+      setCounts(countsSync.current);
       const newHistory = history.current.slice(0, currentStep);
       history.current = newHistory;
       setCurrentStep(currentStep - 1);
@@ -231,22 +229,24 @@ export const useSudokuBoard = () => {
   const initializeBoard2 = useCallback(
     (puzzle: string, answer: string) => {
       const newBoard = convertStringToBoard(puzzle);
-      history.current = [{board: newBoard, action: '生成新棋盘'}];
       setBoard(newBoard);
       updateRemainingCounts(newBoard);
-      setTimeout(() => {
-        answerBoard.current = convertStringToBoard(answer);
-        updateCandidateMap(newBoard);
-        setCounts(getCounts(puzzle));
-        setIsInitialized(true);
-      }, 1000);
+      updateCandidateMap(newBoard);
+      answerBoard.current = convertStringToBoard(answer);
+      setCounts(getCounts(puzzle));
+      countsSync.current = getCounts(puzzle);
+      setIsInitialized(true);
+      const newHistory = history.current.slice(0);
+      newHistory.push({
+        board: newBoard,
+        action: '生成新棋盘',
+        counts: countsSync.current,
+        remainingCounts: [...remainingCountsSync.current], // 确保存入当前的 remainingCounts
+      });
+      history.current = newHistory;
+      console.log(history.current.length);
     },
-    [
-      convertStringToBoard,
-      getCounts,
-      updateCandidateMap,
-      updateRemainingCounts,
-    ],
+    [convertStringToBoard, getCounts, updateCandidateMap, updateRemainingCounts]
   );
 
   return {
@@ -272,5 +272,7 @@ export const useSudokuBoard = () => {
     saveSudokuData,
     loadSavedData2,
     initializeBoard2,
+    countsSync,
+    remainingCountsSync,
   };
 };

@@ -23,19 +23,19 @@ const soundRefs: SoundRefs = {
   switchSoundsRef: { current: [] },
   eraseSoundsRef: { current: [] },
   successSoundsRef2: { current: [] },
-  successSoundsRef3: { current: [] }
+  successSoundsRef3: { current: [] },
 };
 
 const createSound = (path: unknown): Promise<Sound> => {
   return new Promise((resolve, reject) => {
     // 使用 require 方式加载的资源会返回一个数字 ID
-    const sound = new Sound(path as number, (error) => {
-      if (error) { 
+    const sound = new Sound(path as number, error => {
+      if (error) {
         console.error('音效加载失败:', {
           path,
           errorCode: error.code,
           errorMessage: error.message,
-          errorDomain: error.domain
+          errorDomain: error.domain,
         });
         // 释放可能部分创建的音频资源
         if (sound && typeof sound.release === 'function') {
@@ -53,22 +53,34 @@ const createSound = (path: unknown): Promise<Sound> => {
 
 export const initSounds = async () => {
   soundRefs.errorSoundsRef.current = await Promise.all(
-    Array(3).fill(0).map(() => createSound(errorSound))
+    Array(3)
+      .fill(0)
+      .map(() => createSound(errorSound))
   );
   soundRefs.successSoundsRef.current = await Promise.all(
-    Array(3).fill(0).map(() => createSound(successSound))
+    Array(3)
+      .fill(0)
+      .map(() => createSound(successSound))
   );
   soundRefs.switchSoundsRef.current = await Promise.all(
-    Array(3).fill(0).map(() => createSound(switchSound))
+    Array(3)
+      .fill(0)
+      .map(() => createSound(switchSound))
   );
   soundRefs.eraseSoundsRef.current = await Promise.all(
-    Array(3).fill(0).map(() => createSound(eraseSound))
+    Array(3)
+      .fill(0)
+      .map(() => createSound(eraseSound))
   );
   soundRefs.successSoundsRef2.current = await Promise.all(
-    Array(3).fill(0).map(() => createSound(successSound2))
+    Array(3)
+      .fill(0)
+      .map(() => createSound(successSound2))
   );
   soundRefs.successSoundsRef3.current = await Promise.all(
-    Array(1).fill(0).map(() => createSound(successSound3))
+    Array(1)
+      .fill(0)
+      .map(() => createSound(successSound3))
   );
 };
 
@@ -82,7 +94,7 @@ export const playSound = (type: SoundType, isSound: boolean) => {
     switch: soundRefs.switchSoundsRef,
     erase: soundRefs.eraseSoundsRef,
     success2: soundRefs.successSoundsRef2,
-    success3: soundRefs.successSoundsRef3
+    success3: soundRefs.successSoundsRef3,
   };
 
   const soundsRef = soundRefMap[type];
@@ -92,9 +104,7 @@ export const playSound = (type: SoundType, isSound: boolean) => {
     return;
   }
 
-  const availableSound = sounds.find(
-    sound => sound?.isPlaying?.() === false,
-  );
+  const availableSound = sounds.find(sound => sound?.isPlaying?.() === false);
   if (!availableSound) {
     return;
   }

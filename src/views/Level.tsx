@@ -1,7 +1,7 @@
-import React, {useState, useEffect, useRef, useCallback} from 'react';
-import {View, Text, StyleSheet, Pressable, Animated} from 'react-native';
-import {DIFFICULTY} from '../constans';
-import {useTranslation} from 'react-i18next';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
+import { DIFFICULTY } from '../constans';
+import { useTranslation } from 'react-i18next';
 
 interface LevelCardProps {
   level: string;
@@ -9,7 +9,7 @@ interface LevelCardProps {
   style?: any;
 }
 
-const LevelCard: React.FC<LevelCardProps> = ({level, onPressIn, style}) => (
+const LevelCard: React.FC<LevelCardProps> = ({ level, onPressIn, style }) => (
   <Pressable onPressIn={onPressIn} style={style}>
     <Text style={styles.cardText}>{level}</Text>
   </Pressable>
@@ -21,11 +21,11 @@ interface LevelProps {
   onLevelSelect: (level: string) => void;
 }
 
-const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
+const Level: React.FC<LevelProps> = ({ onClose, visible, onLevelSelect }) => {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [showShadow, setShowShadow] = useState(true);
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   useEffect(() => {
     if (visible) {
       Animated.parallel([
@@ -57,9 +57,12 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
     }
   }, [visible]);
 
-  const handleLevelSelect = useCallback((level: string) => {
-    onLevelSelect(level);
-  }, [onLevelSelect]);
+  const handleLevelSelect = useCallback(
+    (level: string) => {
+      onLevelSelect(level);
+    },
+    [onLevelSelect]
+  );
 
   const handleClose = useCallback(() => {
     setShowShadow(false);
@@ -91,15 +94,17 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
         },
       ]}
-      onTouchEnd={handleClose}>
+      onTouchEnd={handleClose}
+    >
       <Animated.View
         style={[
           styles.container,
           {
-            transform: [{scale: scaleAnim}],
+            transform: [{ scale: scaleAnim }],
           },
         ]}
-        onTouchEnd={e => e.stopPropagation()}>
+        onTouchEnd={e => e.stopPropagation()}
+      >
         <View style={styles.header}>
           <Text style={styles.title}>{t('difficulty.title')}</Text>
           <Pressable onPressIn={handleClose} style={styles.closeButton}>
@@ -139,12 +144,13 @@ const Level: React.FC<LevelProps> = ({onClose, visible, onLevelSelect}) => {
 const styles = StyleSheet.create({
   overlay: {
     position: 'absolute',
-    top: 0,
+    top: -100,
     left: 0,
     right: 0,
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 30,
   },
   container: {
     backgroundColor: '#fff',

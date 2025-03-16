@@ -17,6 +17,7 @@ import {
   deepCopyBoard,
   copyOfficialDraft,
   solve3,
+  checkDraftIsValid,
 } from '../tools';
 import { useSudokuBoardDIY } from '../tools/useSudokuBoardDIY';
 import {
@@ -30,17 +31,19 @@ import {
   xyWing,
   skyscraper,
   skyscraper2,
-  hiddenTriple1,
   nakedTriple1,
   nakedTriple2,
-  hiddenTriple2,
-  nakedQuadruple,
   swordfish,
-  wxyzWing,
-  remotePair,
   combinationChain,
   Loop,
-  trialAndErrorDIY,
+  uniqueRectangle,
+  BinaryUniversalGrave,
+  xyzWing,
+  findDifferenceDraft,
+  trialAndError,
+  doubleColorChain,
+  jellyfish,
+  hiddenTriple,
 } from '../tools/solution';
 import type { CandidateMap, CellData, Graph, Position } from '../tools';
 import type { DifferenceMap, Result } from '../tools/solution';
@@ -52,24 +55,19 @@ import { playSound } from '../tools/Sound';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSudokuStore } from '../store';
 import TarBarsSudokuDIY from '../components/tarBarsSudokuDIY';
-import { SUDOKU_STATUS } from '../constans';
+import { SOLUTION_METHODS, SUDOKU_STATUS, SudokuType } from '../constans';
 import { useTranslation } from 'react-i18next';
 import handleHintMethod from '../tools/handleHintMethod';
-import rewardedVideo from '../tools/RewardedVideo';
-import WatchIcon from '../components/WatchIcon';
-import { BannerAd, BannerAdSize, RewardedAdEventType, TestIds } from 'react-native-google-mobile-ads';
-import DeviceInfo from 'react-native-device-info';
-
-const model = DeviceInfo.getModel();
 
 interface SudokuDIYProps {
   slideAnim: Animated.Value;
   closeSudokuDIY: () => void;
   openSetting: () => void;
+  isMovingRef: React.MutableRefObject<boolean>;
 }
 
 const SudokuDIY: React.FC<SudokuDIYProps> = memo(
-  ({ slideAnim, closeSudokuDIY, openSetting }) => {
+  ({ slideAnim, closeSudokuDIY, openSetting, isMovingRef }) => {
     const { t } = useTranslation();
     const {
       board,
@@ -93,7 +91,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
     const lastSelectedNumber = useRef<number | null>(null);
     const [draftMode, setDraftMode] = useState<boolean>(false);
-    const lastErrorTime = useRef<number | null>(null);
     const [selectedCell, setSelectedCell] = useState<{
       row: number;
       col: number;
@@ -103,13 +100,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       col: number;
     } | null>(null);
     const [selectionMode, setSelectionMode] = useState<1 | 2>(1);
-    const [errorCells, setErrorCells] = useState<{ row: number; col: number }[]>(
-      [],
-    );
+    const [errorCells, setErrorCells] = useState<{ row: number; col: number }[]>([]);
     const [hintDrawerVisible, setHintDrawerVisible] = useState<boolean>(false);
-    const isIphoneSE = useMemo(() => {
-      return model.includes('SE');
-    }, []);
 
     const [hintContent, setHintContent] = useState<string>('');
     const [hintMethod, setHintMethod] = useState<string>('');
@@ -117,21 +109,26 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
     const [prompts, setPrompts] = useState<number[]>([]);
     const [positions, setPositions] = useState<number[]>([]);
     const [eraseEnabled, setEraseEnabled] = useState<boolean>(false);
-    const [sudokuStatus, setSudokuStatus] = useState<
-      keyof typeof SUDOKU_STATUS
-    >(SUDOKU_STATUS.VOID);
+    const answer = useMemo(() => {
+      return solve3(board);
+    }, [board]);
+
+    const sudokuStatus = useMemo(() => {
+      if (counts < 17) {
+        return SUDOKU_STATUS.INCOMPLETE;
+      }
+      if (answer) {
+        return SUDOKU_STATUS.SOLVED;
+      } else {
+        return SUDOKU_STATUS.ILLEGAL;
+      }
+    }, [answer, counts]);
 
     const isClickAutoNote = useRef<boolean>(false);
     const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
     const hintCount = useRef<number>(0);
-    const time = useRef<string>('00:00');
-    const startTime = useRef<number>(0);
     const solveFunctions = useRef<
-      ((
-        board: CellData[][],
-        candidateMap: CandidateMap,
-        graph: Graph,
-      ) => Result | null)[]
+      ((board: CellData[][], candidateMap: CandidateMap, graph: Graph) => Result | null)[]
     >([
       singleCandidate,
       hiddenSingle,
@@ -140,130 +137,141 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       nakedTriple1,
       nakedTriple2,
       hiddenPair,
-      hiddenTriple1,
-      hiddenTriple2,
+      hiddenTriple,
       xWing,
       xWingVarient,
       xyWing,
-      nakedQuadruple,
+      xyzWing,
       skyscraper,
       skyscraper2,
-      remotePair,
       combinationChain,
       swordfish,
-      wxyzWing,
+      jellyfish,
       Loop,
-      trialAndErrorDIY,
+      uniqueRectangle,
+      doubleColorChain,
+      BinaryUniversalGrave,
+      trialAndError,
     ]);
-    const { errorCount, setErrorCount, isSound, isDIY, isConnected, isVip, isHighlight } =
-      useSudokuStore();
-    useEffect(() => {
-      if (isDIY) {
-        rewardedVideo.setHintDrawerVisible(() => {
-          setHintDrawerVisible(true);
-        });
-      }
-    }, [isDIY]);
-    useEffect(() => {
-      if (hintDrawerVisible) {
-        handleHint(board);
-      }
-    }, [hintDrawerVisible]);
-    const [watchIconVisible, setWatchIconVisible] = useState<boolean>(false);
+    const {
+      setErrorCount,
+      isSound,
+      isHighlight,
+      sudokuType,
+      sudokuDataDIY1,
+      errorCount,
+      setSudokuDataDIY1,
+      localsudokuDataDIY1,
+      setLocalsudokuDataDIY1,
+      scaleValue2,
+      setIsHint,
+    } = useSudokuStore();
+
     const isFirstHint = useRef<boolean>(true);
     const resetSudoku = useCallback(() => {
       playSound('switch', isSound);
       setSelectedNumber(1);
       resetSudokuBoard();
-      setTimeout(() => {
-        lastSelectedNumber.current = null;
-        setErrorCount(0);
-        setDraftMode(false);
-        lastErrorTime.current = null;
-        setSelectedCell({ row: 0, col: 0 });
-        lastSelectedCell.current = null;
-        setSelectionMode(1);
-        setErrorCells([]);
-        setHintDrawerVisible(false);
-        setHintContent('');
-        setHintMethod(handleHintMethod('', t));
-        setResult(null);
-        setPrompts([]);
-        setPositions([]);
-        setEraseEnabled(false);
-        isClickAutoNote.current = false;
-        setDifferenceMap({});
-        hintCount.current = 0;
-        time.current = '00:00';
-        startTime.current = 0;
-      }, 0);
-    }, [isSound, resetSudokuBoard, setErrorCount, t]);
+      lastSelectedNumber.current = null;
+      setErrorCount(0);
+      setDraftMode(false);
+      setSelectedCell({ row: 0, col: 0 });
+      lastSelectedCell.current = null;
+      setSelectionMode(1);
+      setErrorCells([]);
+      setHintDrawerVisible(false);
+      setIsHint(false);
+      setHintContent('');
+      setHintMethod(handleHintMethod('', t));
+      setResult(null);
+      setPrompts([]);
+      setPositions([]);
+      setEraseEnabled(false);
+      isClickAutoNote.current = false;
+      setDifferenceMap({});
+      hintCount.current = 0;
+    }, [isSound, resetSudokuBoard, setErrorCount, t, setIsHint]);
 
     const saveDataDIY = useCallback(() => {
-      const sudokuData = {
-        lastSelectedNumber: lastSelectedNumber.current,
-        errorCount,
-        draftMode,
-        lastErrorTime: lastErrorTime.current,
-        selectedCell: selectedCell,
-        lastSelectedCell: lastSelectedCell.current,
-        selectionMode,
-        errorCells,
-        hintContent,
-        hintMethod,
-        result,
-        prompts,
-        positions,
-        eraseEnabled,
-        isClickAutoNote: isClickAutoNote.current,
-        differenceMap,
-        hintCount: hintCount.current,
-        time: time.current,
-        startTime: startTime.current,
-        watchIconVisible,
-        isFirstHint: isFirstHint.current,
-      };
-
-      AsyncStorage.setItem('sudokuDataDIY1', JSON.stringify(sudokuData));
-      saveSudokuData();
+      if (sudokuType === SudokuType.DIY1) {
+        const sudokuData = {
+          lastSelectedNumber: lastSelectedNumber.current,
+          errorCount,
+          draftMode,
+          selectedCell,
+          lastSelectedCell: lastSelectedCell.current,
+          selectionMode,
+          errorCells,
+          hintContent,
+          hintMethod,
+          result,
+          prompts,
+          positions,
+          eraseEnabled,
+          isClickAutoNote: isClickAutoNote.current,
+          differenceMap,
+          hintCount: hintCount.current,
+          isFirstHint: isFirstHint.current,
+          selectedNumber,
+        };
+        setLocalsudokuDataDIY1(sudokuData);
+        AsyncStorage.setItem('localsudokuDataDIY1', JSON.stringify(sudokuData));
+        saveSudokuData();
+      } else if (sudokuType === SudokuType.DIY2) {
+        const sudokuData = {
+          lastSelectedNumber: lastSelectedNumber.current,
+          errorCount,
+          draftMode,
+          selectedCell,
+          lastSelectedCell: lastSelectedCell.current,
+          selectionMode,
+          errorCells,
+          hintContent,
+          hintMethod,
+          result,
+          prompts,
+          positions,
+          eraseEnabled,
+          isClickAutoNote: isClickAutoNote.current,
+          differenceMap,
+          hintCount: hintCount.current,
+          isFirstHint: isFirstHint.current,
+          selectedNumber,
+        };
+        setSudokuDataDIY1(sudokuData);
+        saveSudokuData();
+      }
     }, [
-      differenceMap,
-      draftMode,
-      eraseEnabled,
-      errorCells,
+      sudokuType,
       errorCount,
-      hintContent,
-      hintMethod,
-      positions,
-      prompts,
-      result,
-      saveSudokuData,
+      draftMode,
       selectedCell,
       selectionMode,
-      watchIconVisible,
-      isFirstHint,
+      errorCells,
+      hintContent,
+      hintMethod,
+      result,
+      prompts,
+      positions,
+      eraseEnabled,
+      differenceMap,
+      selectedNumber,
+      setLocalsudokuDataDIY1,
+      saveSudokuData,
+      setSudokuDataDIY1,
     ]);
 
-    useEffect(() => {
-      if (!isVip) {
-        rewardedVideo.load();
-      }
-    }, []);
-
-    useEffect(() => {
-      rewardedVideo.rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
-        setWatchIconVisible(false);
-      });
-    }, []);
-
     const loadSavedData = useCallback(async () => {
-      const sudokuData = await AsyncStorage.getItem('sudokuDataDIY1');
-      if (sudokuData) {
-        const data = JSON.parse(sudokuData);
+      let data;
+      if (sudokuType === SudokuType.DIY1) {
+        data = localsudokuDataDIY1;
+      } else if (sudokuType === SudokuType.DIY2) {
+        data = sudokuDataDIY1;
+      }
+      if (data) {
         lastSelectedNumber.current = data.lastSelectedNumber;
         setErrorCount(data.errorCount);
         setDraftMode(data.draftMode);
-        lastErrorTime.current = data.lastErrorTime;
         setSelectedCell(data.selectedCell);
         lastSelectedCell.current = data.lastSelectedCell;
         setSelectionMode(data.selectionMode);
@@ -277,15 +285,10 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         isClickAutoNote.current = data.isClickAutoNote;
         setDifferenceMap(data.differenceMap);
         hintCount.current = data.hintCount;
-        time.current = data.time;
-        startTime.current = data.startTime;
-        setWatchIconVisible(data.watchIconVisible);
         isFirstHint.current = data.isFirstHint;
-        if (!rewardedVideo.isReady()) {
-          setWatchIconVisible(false);
-        }
+        setSelectedNumber(data.selectedNumber);
       }
-    }, [setErrorCount, t]);
+    }, [localsudokuDataDIY1, setErrorCount, sudokuDataDIY1, sudokuType, t]);
 
     const handleErrorDraftAnimation = useCallback(
       (conflictCells: Position[]) => {
@@ -293,7 +296,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         setTimeout(() => setErrorCells([]), 300);
         playSound('error', isSound);
       },
-      [isSound],
+      [isSound]
     );
 
     const jumpToNextNumber = useCallback(
@@ -305,15 +308,12 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         let nextNumber = selectedNumber;
         do {
           nextNumber = (nextNumber % 9) + 1;
-        } while (
-          newCounts[nextNumber - 1] === 0 &&
-          nextNumber !== selectedNumber
-        );
+        } while (newCounts[nextNumber - 1] === 0 && nextNumber !== selectedNumber);
 
         setSelectedNumber(nextNumber);
         lastSelectedNumber.current = nextNumber;
       },
-      [selectedNumber],
+      [selectedNumber]
     );
 
     const remainingCountsMinusOne = useCallback(
@@ -326,13 +326,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         remainingCountsSync.current = newCounts;
         setRemainingCounts(remainingCountsSync.current);
       },
-      [
-        jumpToNextNumber,
-        remainingCounts,
-        remainingCountsSync,
-        selectedNumber,
-        setRemainingCounts,
-      ],
+      [jumpToNextNumber, remainingCounts, remainingCountsSync, selectedNumber, setRemainingCounts]
     );
 
     // 点击方格的回调函数
@@ -357,12 +351,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
         // 处理草稿模式
         if (draftMode && selectedNumber) {
-          const conflictCells = checkNumberInRowColumnAndBox(
-            newBoard,
-            row,
-            col,
-            selectedNumber,
-          );
+          const conflictCells = checkNumberInRowColumnAndBox(newBoard, row, col, selectedNumber);
           if (conflictCells.length > 0) {
             handleErrorDraftAnimation(conflictCells);
             return;
@@ -375,21 +364,12 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             draftSet.add(selectedNumber);
           }
           cell.draft = Array.from(draftSet).sort((a, b) => a - b);
-          updateBoard(
-            newBoard,
-            `设置 (${row}, ${col}) 草稿为 ${cell.draft}`,
-            false,
-          );
+          updateBoard(newBoard, `设置 (${row}, ${col}) 草稿为 ${cell.draft}`, false);
           playSound('switch', isSound);
         }
         // 处理非草稿模式
         else if (selectedNumber) {
-          const conflictCells = checkNumberInRowColumnAndBox(
-            newBoard,
-            row,
-            col,
-            selectedNumber,
-          );
+          const conflictCells = checkNumberInRowColumnAndBox(newBoard, row, col, selectedNumber);
 
           // 验证填入的数字是否为有效候选数字
           if (!conflictCells.length) {
@@ -397,20 +377,11 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             cell.draft = [];
 
             // 更新相关单元格的草稿数字
-            updateRelatedCellsDraft(
-              newBoard,
-              [{ row, col }],
-              selectedNumber,
-              getCandidates,
-            );
+            updateRelatedCellsDraft(newBoard, [{ row, col }], selectedNumber, getCandidates);
 
             playSound('switch', isSound);
             remainingCountsMinusOne(selectedNumber);
-            updateBoard(
-              newBoard,
-              `设置 (${row}, ${col}) 为 ${selectedNumber}`,
-              true,
-            );
+            updateBoard(newBoard, `设置 (${row}, ${col}) 为 ${selectedNumber}`, true);
           } else {
             handleErrorDraftAnimation(conflictCells);
             return;
@@ -426,19 +397,18 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         isSound,
         handleErrorDraftAnimation,
         remainingCountsMinusOne,
-      ],
+      ]
     );
 
     // 撤销
     const handleUndo = useCallback(() => {
-      setSudokuStatus(SUDOKU_STATUS.VOID);
       const lastAction = history.current[currentStep]?.action;
       if (lastAction === '复制官方草稿') {
         isClickAutoNote.current = false;
       }
       undo();
       playSound('switch', isSound);
-    }, [history, currentStep, undo, isSound, setSudokuStatus]);
+    }, [history, currentStep, undo, isSound]);
 
     // 擦除
     const handleErase = useCallback(() => {
@@ -486,12 +456,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
           const newBoard = deepCopyBoard(board);
           const newCell = newBoard[row][col];
-          const conflictCells = checkNumberInRowColumnAndBox(
-            newBoard,
-            row,
-            col,
-            number,
-          );
+          const conflictCells = checkNumberInRowColumnAndBox(newBoard, row, col, number);
           if (conflictCells.length > 0) {
             handleErrorDraftAnimation(conflictCells);
             return;
@@ -507,21 +472,12 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             newCell.draft = Array.from(draftSet).sort((a, b) => a - b);
             playSound('switch', isSound);
 
-            updateBoard(
-              newBoard,
-              `设置 (${row}, ${col}) 草稿为 ${newCell.draft}`,
-              false,
-            );
+            updateBoard(newBoard, `设置 (${row}, ${col}) 草稿为 ${newCell.draft}`, false);
           } else {
             playSound('switch', isSound);
             newCell.value = number;
             newCell.draft = [];
-            updateRelatedCellsDraft(
-              newBoard,
-              [{ row, col }],
-              number,
-              getCandidates,
-            );
+            updateRelatedCellsDraft(newBoard, [{ row, col }], number, getCandidates);
             setEraseEnabled(true);
             remainingCountsMinusOne(number);
             updateBoard(newBoard, `设置 (${row}, ${col}) 为 ${number}`, true);
@@ -541,7 +497,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         updateBoard,
         handleErrorDraftAnimation,
         remainingCountsMinusOne,
-      ],
+      ]
     );
 
     const handleDraftMode = useCallback(() => {
@@ -551,28 +507,39 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
     const handleShowCandidates = useCallback(() => {
       playSound('switch', isSound);
-      if (counts < 17) {
-        setSudokuStatus(SUDOKU_STATUS.INCOMPLETE);
-        return;
-      }
       isClickAutoNote.current = true;
       updateBoard(deepCopyBoard(standradBoard), '复制官方草稿', false);
-    }, [standradBoard, updateBoard, isSound, counts]);
+    }, [standradBoard, updateBoard, isSound]);
 
     const applyHintHighlight = useCallback(
-      (
-        board: CellData[][],
-        result: Result,
-        type: 'position' | 'prompt' | 'both',
-      ) => {
-        const { position, target, prompt } = result;
+      (board: CellData[][], result: Result, type: 'position' | 'prompt' | 'both') => {
+        const { position, target, prompt, highlightPromts1, highlightPromts2 } = result;
         const newBoard = deepCopyBoard(board);
+
         if (type === 'position' || type === 'both') {
           position.forEach(({ row, col }: Position) => {
             newBoard[row][col].highlights = newBoard[row][col].highlights || [];
             newBoard[row][col].highlights.push('positionHighlight');
             newBoard[row][col].highlightCandidates = target;
           });
+        }
+        if (highlightPromts1 && highlightPromts2) {
+          const highlightPromts = [...highlightPromts1, ...highlightPromts2];
+          if (highlightPromts.length > 0) {
+            highlightPromts.forEach(
+              ({ row, col, value }: { row: number; col: number; value: number | null }) => {
+                newBoard[row][col].highlights = newBoard[row][col].highlights || [];
+                newBoard[row][col].highlights.push('promptHighlight');
+              }
+            );
+            highlightPromts1.forEach(({ row, col, value }: Position) => {
+              newBoard[row][col].promptCandidates1 = [value];
+            });
+            highlightPromts2.forEach(({ row, col, value }: Position) => {
+              newBoard[row][col].promptCandidates2 = [value];
+            });
+            return newBoard;
+          }
         }
         if (type === 'prompt' || type === 'both') {
           prompt.forEach(({ row, col }: Position) => {
@@ -584,7 +551,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
         return newBoard;
       },
-      [],
+      []
     );
 
     const removeHintHighlight = useCallback((board: CellData[][]) => {
@@ -593,23 +560,23 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         for (let col = 0; col < 9; col++) {
           delete updatedBoard[row][col].highlights;
           delete updatedBoard[row][col].highlightCandidates;
+          delete updatedBoard[row][col].promptCandidates;
+          delete updatedBoard[row][col].promptCandidates1;
+          delete updatedBoard[row][col].promptCandidates2;
+          delete updatedBoard[row][col].promptCandidates3;
         }
       }
       return updatedBoard;
     }, []);
 
-    useEffect(() => {
-      if (isDIY && !rewardedVideo.isReady()) {
-        setWatchIconVisible(false);
-        rewardedVideo.chance = true;
-        rewardedVideo.load();
-      }
-    }, [isDIY]);
-
     const handleHint = useCallback(
       async (board: CellData[][]) => {
-        if (countsSync.current < 17) {
-          setSudokuStatus(SUDOKU_STATUS.INCOMPLETE);
+        if (
+          countsSync.current < 17 ||
+          sudokuStatus === SUDOKU_STATUS.ILLEGAL ||
+          sudokuStatus === SUDOKU_STATUS.INCOMPLETE
+        ) {
+          playSound('switch', isSound);
           return;
         }
         if (!isClickAutoNote.current) {
@@ -617,11 +584,24 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           handleShowCandidates();
           handleHint(currentBoard);
           return;
+        } else if (!checkDraftIsValid(board, answer)) {
+          const differenceMap = findDifferenceDraft(board, standradBoard);
+          setDifferenceMap(differenceMap);
+          setHintMethod(handleHintMethod('', t));
+          setHintDrawerVisible(true);
+          setIsHint(true);
+          setHintContent(t('errorDraft'));
+          return;
         }
+
         let result: Result | null = null;
+        const startTime = performance.now();
         for (const solveFunction of solveFunctions.current) {
-          result = solveFunction(board, candidateMap, graph);
+          result = solveFunction(board, candidateMap.current, graph.current, answer);
           if (result) {
+            const endTime = performance.now();
+            const duration = endTime - startTime;
+            console.log(`${solveFunction.name} 用时: ${duration} 毫秒`);
             hintCount.current++;
             setResult(result);
             setSelectedNumber(null);
@@ -636,10 +616,11 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
                 setPositions,
                 applyHintHighlight,
                 updateBoard,
-                t,
-              ),
+                t
+              )
             );
             setHintDrawerVisible(true);
+            setIsHint(true);
             lastSelectedCell.current = selectedCell;
             setSelectedCell(null);
             break;
@@ -648,57 +629,23 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
       },
       [
         countsSync,
+        sudokuStatus,
+        answer,
+        isSound,
         standradBoard,
         handleShowCandidates,
+        t,
+        setIsHint,
         candidateMap,
         graph,
-        t,
         prompts,
         applyHintHighlight,
         updateBoard,
         selectedCell,
-      ],
-    );
-
-    // 提示和观看广告
-    const handleHintAndRewardedVideo = useCallback(
-      (board: CellData[][]) => {
-        if (counts < 17) {
-          playSound('switch', isSound);
-          setSudokuStatus(SUDOKU_STATUS.INCOMPLETE);
-          return;
-        }
-        // if (!isConnected && !rewardedVideo.getIsVip()) {
-        //   setHintDrawerVisible(true);
-        //   setHintMethod('')
-        //   setHintContent(t('pleaseConnectNetwork'));
-        //   return;
-        // }
-        if (rewardedVideo.chance) {
-          handleHint(board);
-          rewardedVideo.chance = false;
-          rewardedVideo.load();
-          if (isFirstHint.current) {
-            isFirstHint.current = false;
-          }
-        } else if (rewardedVideo.isReady() && watchIconVisible) {
-          rewardedVideo.show();
-        } else {
-          rewardedVideo.load();
-          handleHint(board);
-        }
-        if (rewardedVideo.isReady()) {
-          setWatchIconVisible(true);
-        }
-      },
-      [handleHint, isConnected, t, counts],
+      ]
     );
 
     const handleApplyHint = useCallback(() => {
-      if (!isConnected && !rewardedVideo.getIsVip()) {
-        setHintDrawerVisible(false);
-        return;
-      }
       if (Object.keys(differenceMap).length > 0) {
         setDifferenceMap({});
         const newBoard = deepCopyBoard(standradBoard);
@@ -707,34 +654,36 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         playSound('switch', isSound);
         return;
       } else if (result) {
-        const { position, target, isFill } = result;
+        const { position, isFill, method } = result;
+        // 创建 target 数组的本地副本
+        let targetValues = [...result.target];
+
         const newBoard = deepCopyBoard(board);
 
         position.forEach(({ row, col }) => {
           if (isFill) {
-            newBoard[row][col].value = target[0];
+            newBoard[row][col].value = targetValues[0];
             newBoard[row][col].draft = [];
 
             // 更新受影响的单元格
             const affectedCells = updateRelatedCellsDraft(
               newBoard,
               [{ row, col }],
-              target[0],
-              getCandidates,
+              targetValues[0],
+              getCandidates
             );
 
             // 将受影响的单元格合并到 position 中
             position.push(...affectedCells);
           } else {
             newBoard[row][col].draft =
-              newBoard[row][col].draft?.filter(num => !target.includes(num)) ??
-              [];
+              newBoard[row][col].draft?.filter(num => !targetValues.includes(num)) ?? [];
           }
         });
 
         if (isFill) {
           playSound('switch', isSound);
-          remainingCountsMinusOne(target[0]);
+          remainingCountsMinusOne(targetValues[0]);
         } else {
           playSound('erase', isSound);
         }
@@ -744,36 +693,32 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         updateBoard(updatedBoard, '应用提示完成', isFill);
 
         setHintDrawerVisible(false);
+        setIsHint(false);
         lastSelectedCell.current = selectedCell;
         setResult(null); // 重置 result
       }
     }, [
-      board,
       differenceMap,
+      result,
+      standradBoard,
       handleHint,
       isSound,
-      remainingCountsMinusOne,
+      board,
       removeHintHighlight,
-      result,
-      selectedCell,
-      standradBoard,
       updateBoard,
-      isConnected,
+      selectedCell,
+      remainingCountsMinusOne,
+      setIsHint,
     ]);
-
-    // useEffect(() => {
-    //   if (isConnected) {
-    //     setHintDrawerVisible(false);
-    //   }
-    // }, [isConnected]);
 
     const handleCancelHint = useCallback(() => {
       setDifferenceMap({});
       const updatedBoard = removeHintHighlight(board);
       updateBoard(updatedBoard, '取消提示', false);
       setHintDrawerVisible(false);
+      setIsHint(false);
       setSelectedCell(lastSelectedCell.current);
-    }, [board, removeHintHighlight, updateBoard]);
+    }, [board, removeHintHighlight, updateBoard, setIsHint]);
 
     // 切换模式回调函数
     const handleSelectionModeChange = useCallback(() => {
@@ -811,54 +756,39 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
     const getAnswer = useCallback(
       async (board: CellData[][]) => {
-        if (counts < 17) {
+        if (
+          counts < 17 ||
+          sudokuStatus === SUDOKU_STATUS.ILLEGAL ||
+          sudokuStatus === SUDOKU_STATUS.INCOMPLETE
+        ) {
           playSound('switch', isSound);
-          setSudokuStatus(SUDOKU_STATUS.INCOMPLETE);
           return;
         }
-        // if (!isConnected) {
-        //   setHintDrawerVisible(true);
-        //   setHintMethod('');
-        //   setHintContent(t('pleaseConnectNetwork'));
-        //   return;
-        // }
         playSound('switch', isSound);
-        setSudokuStatus(SUDOKU_STATUS.SOLVING);
         const standardBoard = copyOfficialDraft(board);
         const result = await solve3(standardBoard);
         if (result) {
-          setSudokuStatus(SUDOKU_STATUS.SOLVED);
           updateBoard(result, '答案', false);
-        } else {
-          setSudokuStatus(SUDOKU_STATUS.ILLEGAL);
         }
       },
-      [isSound, updateBoard, counts],
+      [counts, sudokuStatus, isSound, updateBoard]
     );
 
     useEffect(() => {
       const subscription = AppState.addEventListener('change', nextAppState => {
-        if ((nextAppState === 'inactive') && isDIY) {
+        if (nextAppState === 'inactive') {
           saveDataDIY();
         }
       });
       return () => subscription.remove();
-    }, [isDIY, saveDataDIY]);
+    }, [sudokuType, saveDataDIY]);
 
     useEffect(() => {
-      loadSavedData();
-      loadSavedData2();
-    }, []);
-
-    useEffect(() => {
-      setSudokuStatus(SUDOKU_STATUS.VOID);
-    }, []);
-
-    useEffect(() => {
-      if (counts != 81) {
-        setSudokuStatus(SUDOKU_STATUS.VOID);
+      if (sudokuType === SudokuType.DIY1 || sudokuType === SudokuType.DIY2) {
+        loadSavedData();
+        loadSavedData2();
       }
-    }, [counts]);
+    }, [sudokuType]);
 
     return (
       <Animated.View
@@ -873,9 +803,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             position: 'absolute',
             width: '100%',
             height: '100%',
-            zIndex: 5,
           },
-        ]}>
+        ]}
+      >
         <TarBarsSudokuDIY
           onBack={handleBack}
           openSetting={openSetting}
@@ -883,40 +813,22 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           resetSudoku={resetSudoku}
         />
         <View style={styles.gameInfoDIY}>
-          {sudokuStatus !== SUDOKU_STATUS.VOID &&
-            (sudokuStatus === SUDOKU_STATUS.SOLVED ? (
-              <View style={styles.gameInfoTextDIY}>
-                <Image
-                  source={require('../assets/icon/legal.png')}
-                  style={styles.gameInfoIcon}
-                />
-                <Text style={styles.gameInfoText}>{t('legal')}</Text>
-              </View>
-            ) : sudokuStatus === SUDOKU_STATUS.SOLVING ? (
-              <View style={styles.gameInfoTextDIY}>
-                <Image
-                  source={require('../assets/icon/waiting.png')}
-                  style={styles.gameInfoIcon}
-                />
-                <Text style={styles.gameInfoText}>{t('solving')}</Text>
-              </View>
-            ) : sudokuStatus === SUDOKU_STATUS.ILLEGAL ? (
-              <View style={styles.gameInfoTextDIY}>
-                <Image
-                  source={require('../assets/icon/illegal.png')}
-                  style={styles.gameInfoIcon}
-                />
-                <Text style={styles.gameInfoText}>{t('illegal')}</Text>
-              </View>
-            ) : (
-              <View style={styles.gameInfoTextDIY}>
-                <Image
-                  source={require('../assets/icon/illegal.png')}
-                  style={styles.gameInfoIcon}
-                />
-                <Text style={styles.gameInfoText}>{t('incomplete')}</Text>
-              </View>
-            ))}
+          {sudokuStatus === SUDOKU_STATUS.SOLVED ? (
+            <View style={styles.gameInfoTextDIY}>
+              <Image source={require('../assets/icon/legal.png')} style={styles.gameInfoIcon} />
+              <Text style={styles.gameInfoText}>{t('legal')}</Text>
+            </View>
+          ) : sudokuStatus === SUDOKU_STATUS.ILLEGAL ? (
+            <View style={styles.gameInfoTextDIY}>
+              <Image source={require('../assets/icon/illegal.png')} style={styles.gameInfoIcon} />
+              <Text style={styles.gameInfoText}>{t('illegal')}</Text>
+            </View>
+          ) : (
+            <View style={styles.gameInfoTextDIY}>
+              <Image source={require('../assets/icon/illegal.png')} style={styles.gameInfoIcon} />
+              <Text style={styles.gameInfoText}>{t('incomplete')}</Text>
+            </View>
+          )}
         </View>
         <View style={styles.sudokuGrid}>
           {board?.map((row, rowIndex) =>
@@ -937,16 +849,28 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
                 resultBoard={standradBoard}
                 differenceMap={differenceMap}
                 isHighlight={isHighlight}
+                scaleValue={scaleValue2}
+                isMovingRef={isMovingRef}
               />
-            )),
+            ))
           )}
         </View>
         <View style={styles.selectMode}></View>
         <View style={styles.controlButtons}>
           <Pressable
             style={[styles.buttonContainerDIY]}
-            onPressIn={handleUndo}
-            disabled={currentStep === 0}>
+            onPressIn={() => {
+              if (scaleValue2 === 1.0) {
+                handleUndo();
+              }
+            }}
+            onPress={() => {
+              if (scaleValue2 !== 1.0 && !isMovingRef.current) {
+                handleUndo();
+              }
+            }}
+            disabled={currentStep === 0}
+          >
             <Image
               source={
                 currentStep === 0
@@ -958,7 +882,19 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             <Text style={styles.buttonText}>{t('undo')}</Text>
           </Pressable>
 
-          <Pressable style={[styles.buttonContainerDIY]} onPressIn={handleErase}>
+          <Pressable
+            style={[styles.buttonContainerDIY]}
+            onPressIn={() => {
+              if (scaleValue2 === 1.0) {
+                handleErase();
+              }
+            }}
+            onPress={() => {
+              if (scaleValue2 !== 1.0 && !isMovingRef.current) {
+                handleErase();
+              }
+            }}
+          >
             <Image
               source={
                 eraseEnabled
@@ -972,44 +908,72 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
 
           <Pressable
             style={[styles.buttonContainerDIY]}
-            onPressIn={handleDraftMode}>
+            onPressIn={() => {
+              if (scaleValue2 === 1.0) {
+                handleDraftMode();
+              }
+            }}
+            onPress={() => {
+              if (scaleValue2 !== 1.0 && !isMovingRef.current) {
+                handleDraftMode();
+              }
+            }}
+          >
             <Image
               source={require('../assets/icon/draft.png')}
-              style={[
-                styles.buttonIcon,
-                { tintColor: draftMode ? '#1890ff' : undefined },
-              ]}
+              style={[styles.buttonIcon, { tintColor: draftMode ? '#1890ff' : undefined }]}
             />
             <Text style={styles.buttonText}>{t('notes')}</Text>
           </Pressable>
 
           <Pressable
             style={[styles.buttonContainerDIY]}
-            onPressIn={handleShowCandidates}>
-            <Image
-              source={require('../assets/icon/auto.png')}
-              style={styles.buttonIcon}
-            />
+            onPressIn={() => {
+              if (scaleValue2 === 1.0) {
+                handleShowCandidates();
+              }
+            }}
+            onPress={() => {
+              if (scaleValue2 !== 1.0 && !isMovingRef.current) {
+                handleShowCandidates();
+              }
+            }}
+          >
+            <Image source={require('../assets/icon/auto.png')} style={styles.buttonIcon} />
             <Text style={styles.buttonText}>{t('autoNote')}</Text>
           </Pressable>
 
           <Pressable
             style={[styles.buttonContainerDIY]}
-            onPressIn={() => handleHintAndRewardedVideo(board)}>
-            <WatchIcon top={0} right={10} visible={watchIconVisible} />
-            <Image
-              source={require('../assets/icon/prompt.png')}
-              style={styles.buttonIcon}
-            />
+            onPressIn={() => {
+              if (scaleValue2 === 1.0) {
+                handleHint(board);
+              }
+            }}
+            onPress={() => {
+              if (scaleValue2 !== 1.0 && !isMovingRef.current) {
+                handleHint(board);
+              }
+            }}
+          >
+            <Image source={require('../assets/icon/prompt.png')} style={styles.buttonIcon} />
             <Text style={styles.buttonText}>{t('hint')}</Text>
           </Pressable>
+
           <Pressable
             style={[styles.buttonContainerDIY]}
-            onPressIn={() => getAnswer(board)}>
-            <Image
-              source={require('../assets/icon/answer.png')}
-              style={styles.buttonIcon}
-            />
+            onPressIn={() => {
+              if (scaleValue2 === 1.0) {
+                getAnswer(board);
+              }
+            }}
+            onPress={() => {
+              if (scaleValue2 !== 1.0 && !isMovingRef.current) {
+                getAnswer(board);
+              }
+            }}
+          >
+            <Image source={require('../assets/icon/answer.png')} style={styles.buttonIcon} />
             <Text style={styles.buttonText}>{t('answer')}</Text>
           </Pressable>
         </View>
@@ -1019,6 +983,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           selectionMode={selectionMode}
           selectedNumber={selectedNumber}
           draftMode={draftMode}
+          scaleValue={scaleValue2}
+          isMovingRef={isMovingRef}
         />
         <View style={styles.selectionModeContainer}>
           <Text style={styles.selectionModeText}>{t('selectMode')}</Text>
@@ -1029,17 +995,15 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
             thumbColor={selectionMode === 2 ? '#1890ff' : '#f4f3f4'}
           />
         </View>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={hintDrawerVisible}>
+        <Modal animationType="slide" transparent={true} visible={hintDrawerVisible}>
           <View style={styles.modalContainer}>
             <View
               style={[styles.drawerContent]}
               onStartShouldSetResponder={() => true}
               onTouchEnd={e => {
                 e.stopPropagation();
-              }}>
+              }}
+            >
               <View style={styles.drawerHeader}>
                 <Text style={styles.drawerTitle}>{hintMethod}</Text>
               </View>
@@ -1061,14 +1025,14 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
               <View style={styles.drawerButtons}>
                 <Pressable
                   onPressIn={handleCancelHint}
-                  style={[styles.drawerButton, styles.drawerButtonCancel]}>
-                  <Text style={styles.drawerButtonTextCancel}>
-                    {t('cancel')}
-                  </Text>
+                  style={[styles.drawerButton, styles.drawerButtonCancel]}
+                >
+                  <Text style={styles.drawerButtonTextCancel}>{t('cancel')}</Text>
                 </Pressable>
                 <Pressable
                   onPressIn={handleApplyHint}
-                  style={[styles.drawerButton, styles.drawerButtonApply]}>
+                  style={[styles.drawerButton, styles.drawerButtonApply]}
+                >
                   <Text style={styles.drawerButtonTextApply}>{t('apply')}</Text>
                 </Pressable>
               </View>
@@ -1077,7 +1041,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
         </Modal>
       </Animated.View>
     );
-  },
+  }
 );
 
 export default SudokuDIY;

@@ -1,5 +1,5 @@
-import { SOLUTION_METHODS } from "../constans";
-import { TFunction } from "i18next";
+import { SOLUTION_METHODS } from '../constans';
+import { TFunction } from 'i18next';
 
 const handleHintMethod = (method: string, t: TFunction) => {
   switch (method) {
@@ -45,18 +45,12 @@ const handleHintMethod = (method: string, t: TFunction) => {
       return t('HIDDEN_PAIR_COLUMN');
     case SOLUTION_METHODS.HIDDEN_PAIR_BOX:
       return t('HIDDEN_PAIR_BOX');
-    case SOLUTION_METHODS.HIDDEN_TRIPLE_ROW1:
-      return t('HIDDEN_TRIPLE_ROW1');
-    case SOLUTION_METHODS.HIDDEN_TRIPLE_COLUMN1:
-      return t('HIDDEN_TRIPLE_COLUMN1');
-    case SOLUTION_METHODS.HIDDEN_TRIPLE_BOX1:
-      return t('HIDDEN_TRIPLE_BOX1');
-    case SOLUTION_METHODS.HIDDEN_TRIPLE_ROW2:
-      return t('HIDDEN_TRIPLE_ROW2');
-    case SOLUTION_METHODS.HIDDEN_TRIPLE_COLUMN2:
-      return t('HIDDEN_TRIPLE_COLUMN2');
-    case SOLUTION_METHODS.HIDDEN_TRIPLE_BOX2:
-      return t('HIDDEN_TRIPLE_BOX2');
+    case SOLUTION_METHODS.HIDDEN_TRIPLE_ROW:
+      return t('HIDDEN_TRIPLE_ROW');
+    case SOLUTION_METHODS.HIDDEN_TRIPLE_COLUMN:
+      return t('HIDDEN_TRIPLE_COLUMN');
+    case SOLUTION_METHODS.HIDDEN_TRIPLE_BOX:
+      return t('HIDDEN_TRIPLE_BOX');
     case SOLUTION_METHODS.NAKED_QUADRUPLE_ROW:
       return t('NAKED_QUADRUPLE_ROW');
     case SOLUTION_METHODS.NAKED_QUADRUPLE_COLUMN:
@@ -87,18 +81,26 @@ const handleHintMethod = (method: string, t: TFunction) => {
       return t('SWORDFISH_ROW');
     case SOLUTION_METHODS.SWORDFISH_COLUMN:
       return t('SWORDFISH_COLUMN');
-    case SOLUTION_METHODS.SWORDFISH_WITH_FIN_ROW:
-      return t('SWORDFISH_WITH_FIN_ROW');
-    case SOLUTION_METHODS.SWORDFISH_WITH_FIN_COLUMN:
-      return t('SWORDFISH_WITH_FIN_COLUMN');
     case SOLUTION_METHODS.WXYZ_WING:
       return t('WXYZ_WING');
     case SOLUTION_METHODS.LOOP:
       return t('LOOP');
     case SOLUTION_METHODS.TRIAL_AND_ERROR:
       return t('TRIAL_AND_ERROR');
+    case SOLUTION_METHODS.UNIQUE_RECTANGLE:
+      return t('UNIQUE_RECTANGLE');
+    case SOLUTION_METHODS.BINARY_UNIVERSAL_GRAVE:
+      return t('BINARY_UNIVERSAL_GRAVE');
+    case SOLUTION_METHODS.DOUBLE_COLOR_CHAIN:
+      return t('DOUBLE_COLOR_CHAIN');
+    case SOLUTION_METHODS.JELLYFISH_ROW:
+      return t('JELLYFISH_ROW');
+    case SOLUTION_METHODS.JELLYFISH_COLUMN:
+      return t('JELLYFISH_COLUMN');
+    case SOLUTION_METHODS.TRIPLE_COLOR_CHAIN:
+      return t('TRIPLE_COLOR_CHAIN');
   }
-  return ''
+  return '';
 };
 
 export default handleHintMethod;

@@ -1,4 +1,4 @@
-import {Dimensions, StatusBar, StyleSheet} from 'react-native';
+import { Dimensions, StatusBar, StyleSheet } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
 const model = DeviceInfo.getModel();
@@ -44,6 +44,7 @@ const sudokuStyles = StyleSheet.create({
     top: StatusBar.currentHeight || 0,
     left: 0,
     backgroundColor: 'white',
+    zIndex: 30,
   },
   gameInfo: {
     flexDirection: 'row',
@@ -64,8 +65,7 @@ const sudokuStyles = StyleSheet.create({
   gameInfoItem1: {
     alignItems: 'flex-start',
   },
-  gameInfoItem2: {
-  },
+  gameInfoItem2: {},
   gameInfoItem3: {
     alignItems: 'flex-end',
   },
@@ -173,13 +173,17 @@ const sudokuStyles = StyleSheet.create({
     height: '33.33%',
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 4,
+    overflow: 'hidden',
   },
   draftCellText: {
     fontSize: Dimensions.get('window').width * 0.95 * 0.11 * 0.6 * 0.33 * 0.9,
     width: '33.33%',
     height: '33.33%',
     textAlign: 'center',
-    lineHeight: Dimensions.get('window').width * 0.95 * 0.11 * 0.6 * 0.5,
+    lineHeight: model.includes('iPad')
+      ? Dimensions.get('window').width * 0.95 * 0.11 * 0.6 * 0.45
+      : Dimensions.get('window').width * 0.95 * 0.11 * 0.6 * 0.5,
     position: 'absolute',
   },
   selectedCell: {
@@ -242,7 +246,7 @@ const sudokuStyles = StyleSheet.create({
   },
   buttonContainerDIY: {
     alignItems: 'center',
-    width: 65,
+    width: 62,
     height: 60,
     overflow: 'hidden',
     display: 'flex',
@@ -310,18 +314,6 @@ const sudokuStyles = StyleSheet.create({
     marginTop: 20,
     alignSelf: 'center',
   },
-  visualHint2: {
-    backgroundColor: '#9bf9ab',
-  },
-  rowHighlight: {
-    backgroundColor: '#ffd700',
-  },
-  columnHighlight: {
-    backgroundColor: '#ffd700',
-  },
-  boxHighlight: {
-    backgroundColor: '#ffd700',
-  },
   candidateHighlightDelete: {
     backgroundColor: 'rgb(206, 71,100)',
     borderRadius: 8,
@@ -331,6 +323,16 @@ const sudokuStyles = StyleSheet.create({
   },
   candidateHighlightHint: {
     backgroundColor: 'rgb(77,104,182)',
+    borderRadius: 8,
+    opacity: 1,
+  },
+  candidateHighlightHint2: {
+    backgroundColor: 'rgb(32, 150, 112)',
+    borderRadius: 8,
+    opacity: 1,
+  },
+  candidateHighlightHint3: {
+    backgroundColor: 'rgb(255, 159, 10)',
     borderRadius: 8,
     opacity: 1,
   },
@@ -490,15 +492,15 @@ const sudokuStyles = StyleSheet.create({
     top: -10,
   },
   bannerContainer: {
+    position: 'absolute',
+    bottom: 30,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    marginTop: 20,
-    backgroundColor: '#fff',
-    minHeight: 50,
+    backgroundColor: 'transparent',
     paddingVertical: 5,
-  }
-
+    zIndex: 9000,
+  },
 });
 
 export default sudokuStyles;
