@@ -482,7 +482,7 @@ export const generateBoard = (
       break;
     case DIFFICULTY.EXTREME:
       random = Math.floor(Math.random() * extremeBoard.length);
-      // random = 21;
+      // random = 156;
       initializeBoard2(extremeBoard[random].puzzle, extremeBoard[random].solution);
       // initializeBoard2(
       //   '274513968010296374963874152652137489030459627497628500789361245026745890040982706',

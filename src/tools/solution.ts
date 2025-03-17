@@ -2184,6 +2184,7 @@ export const findGraphNodeByDistance = (
   const resultNodes: GraphNode[] = [];
   const visited = new Set<string>();
   const dfs = (node: GraphNode, currentDistance: number) => {
+    if (currentDistance > distance) return;
     const key = `${node.row}-${node.col}`;
     if (visited.has(key)) return;
     visited.add(key);
@@ -4172,7 +4173,6 @@ export const BinaryUniversalGrave = (
   return null;
 };
 
-// 给定坐标，获取影响区
 const getAffectedCells = (
   position: Position,
   num: number,
@@ -4181,29 +4181,25 @@ const getAffectedCells = (
   if (!num) {
     return [];
   }
+  const visitedMap = new Set<string>();
+  visitedMap.add(`${position.row}-${position.col}`);
   let affectedCells: Position[] = [];
   for (const pos of candidateMap[num].row.get(position.row)?.positions || []) {
-    if (pos.row === position.row && pos.col === position.col) continue;
-    const isHas = affectedCells.some(item => item.row === pos.row && item.col === pos.col);
-    if (!isHas) {
-      affectedCells.push(pos);
-    }
+    if (visitedMap.has(`${pos.row}-${pos.col}`)) continue;
+    visitedMap.add(`${pos.row}-${pos.col}`);
+    affectedCells.push(pos);
   }
   for (const pos of candidateMap[num].col.get(position.col)?.positions || []) {
-    if (pos.row === position.row && pos.col === position.col) continue;
-    const isHas = affectedCells.some(item => item.row === pos.row && item.col === pos.col);
-    if (!isHas) {
-      affectedCells.push(pos);
-    }
+    if (visitedMap.has(`${pos.row}-${pos.col}`)) continue;
+    visitedMap.add(`${pos.row}-${pos.col}`);
+    affectedCells.push(pos);
   }
   for (const pos of candidateMap[num].box.get(
     Math.floor(position.row / 3) * 3 + Math.floor(position.col / 3)
   )?.positions || []) {
-    if (pos.row === position.row && pos.col === position.col) continue;
-    const isHas = affectedCells.some(item => item.row === pos.row && item.col === pos.col);
-    if (!isHas) {
-      affectedCells.push(pos);
-    }
+    if (visitedMap.has(`${pos.row}-${pos.col}`)) continue;
+    visitedMap.add(`${pos.row}-${pos.col}`);
+    affectedCells.push(pos);
   }
   affectedCells = affectedCells.map(item => ({
     row: item.row,
@@ -4270,18 +4266,6 @@ const getAncestors = (
   return { ancestors, root: lastCurrent, label };
 };
 
-// 检查位置是否已经在祖先链中
-const isInAncestors = (node: Node, row: number, col: number): boolean => {
-  let current: Node | null = node;
-  while (current) {
-    if (current.row === row && current.col === col) {
-      return true;
-    }
-    current = current.father;
-  }
-  return false;
-};
-
 // 递归构建连锁反应树
 const buildChainTree = (
   node: Node,
@@ -4327,6 +4311,7 @@ const buildChainTree = (
   );
 
   for (const pos of affectedCells2) {
+    if (board[pos.row][pos.col].draft.length === 2) continue;
     // 检查是否已经在祖先链中，避免循环
     if (newVisitedMap2.has(`${pos.row}-${pos.col}`)) continue;
 
@@ -4340,6 +4325,13 @@ const buildChainTree = (
     const graphNode_noValue = getGraphNode(pos, noValue, graph);
     const nodesArray = findGraphNodeByDistance(graphNode_noValue, 1);
     for (const graphNode of nodesArray) {
+      if (
+        board[graphNode.row][graphNode.col].draft.length === 2 &&
+        board[pos.row][pos.col].draft.length === 2 &&
+        board[graphNode.row][graphNode.col].draft[0] === board[pos.row][pos.col].draft[0] &&
+        board[graphNode.row][graphNode.col].draft[1] === board[pos.row][pos.col].draft[1]
+      )
+        continue;
       // 检查是否已经在祖先链中，避免循环
       if (newVisitedMap3.has(`${graphNode.row}-${graphNode.col}`)) continue;
       const restCandidates = board[graphNode.row][graphNode.col].draft.filter(v => v !== noValue);

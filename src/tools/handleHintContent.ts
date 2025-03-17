@@ -42,6 +42,10 @@ export const handleHintContent = (
   let hintContent = '';
   let label1: string | undefined;
   let label2: string | undefined;
+  let arr1: number[] = [];
+  let arr2: number[] = [];
+  let arr3: number[] = [];
+  let set: Set<number> = new Set();
 
   if (isFill) {
     setPrompts(target);
@@ -371,7 +375,11 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-        candStr = [...new Set(prompts)].join(',');
+        arr1 = board[prompt[0].row][prompt[0].col].draft.filter(cand => !target.includes(cand));
+        arr2 = board[prompt[1].row][prompt[1].col].draft.filter(cand => !target.includes(cand));
+        arr3 = board[prompt[2].row][prompt[2].col].draft.filter(cand => !target.includes(cand));
+        set = new Set([...arr1, ...arr2, ...arr3]);
+        candStr = [...set].join(',');
         hintContent = t('hints.HIDDEN_TRIPLE_ROW', {
           row: position[0].row + 1,
           candStr,
@@ -387,7 +395,11 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-        candStr = [...new Set(prompts)].join(',');
+        arr1 = board[prompt[0].row][prompt[0].col].draft.filter(cand => !target.includes(cand));
+        arr2 = board[prompt[1].row][prompt[1].col].draft.filter(cand => !target.includes(cand));
+        arr3 = board[prompt[2].row][prompt[2].col].draft.filter(cand => !target.includes(cand));
+        set = new Set([...arr1, ...arr2, ...arr3]);
+        candStr = [...set].join(',');
         hintContent = t('hints.HIDDEN_TRIPLE_COLUMN', {
           col: position[0].col + 1,
           candStr,
@@ -403,7 +415,11 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}、R${prompt[2].row + 1}C${prompt[2].col + 1}`;
-        candStr = [...new Set(prompts)].join(',');
+        arr1 = board[prompt[0].row][prompt[0].col].draft.filter(cand => !target.includes(cand));
+        arr2 = board[prompt[1].row][prompt[1].col].draft.filter(cand => !target.includes(cand));
+        arr3 = board[prompt[2].row][prompt[2].col].draft.filter(cand => !target.includes(cand));
+        set = new Set([...arr1, ...arr2, ...arr3]);
+        candStr = [...set].join(',');
         hintContent = t('hints.HIDDEN_TRIPLE_BOX', {
           box: Math.floor(prompt[0].row / 3) * 3 + Math.floor(prompt[0].col / 3) + 1,
           candStr,
