@@ -648,10 +648,13 @@ const Sudoku: React.FC<SudokuProps> = memo(
           return;
         }
         let result: Result | null = null;
+        const startTime = performance.now();
         for (const solveFunction of solveFunctions.current) {
           result = solveFunction(board, candidateMap.current, graph.current, answerBoard.current);
           if (result) {
-            console.log('result', result);
+            console.log('result', result.label);
+            const endTime = performance.now();
+            console.log(`${solveFunction.name} 执行时间: ${endTime - startTime} 毫秒`);
 
             hintCount.current++;
             setResult(result);
