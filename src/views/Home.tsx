@@ -76,7 +76,7 @@ const Home: React.FC<HomeProps> = memo(
         style={[styles.container, { top: insets.top, zIndex: currentPage === Page.HOME ? 6 : 1 }]}
       >
         <View style={styles.title1}>
-          <Text style={styles.sudoku}>Sudoku Custom</Text>
+          <Text style={styles.sudoku}>趣数独</Text>
           <Pressable
             style={styles.settingIconContainer}
             onPressIn={openSetting}
