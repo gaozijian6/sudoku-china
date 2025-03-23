@@ -245,5 +245,9 @@ export default {
     period: '.',
     end1: '빨간 셀에는 후보 숫자 {{target}}이 올 수 없습니다',
     end2: '빨간 셀에는 여전히 후보 숫자 {{target}}이 올 수 없습니다',
+    theme: '테마',
+    selectTheme: '테마 선택',
+    lightMode: '라이트 모드',
+    darkMode: '다크 모드',
   },
 };

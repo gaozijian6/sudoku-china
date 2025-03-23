@@ -17,7 +17,6 @@ import { playSound } from '../tools/Sound';
 import DeviceInfo from 'react-native-device-info';
 
 const model = DeviceInfo.getModel();
-const isIphone = model.includes('iPhone');
 const isIpad = model.includes('iPad');
 
 const { CloudKitManager } = NativeModules;
@@ -27,7 +26,7 @@ interface MyBoardsProps {
   openSetting: () => void;
 }
 
-const MiniSudokuBoard = memo(({ puzzle }: { puzzle: string }) => {
+const MiniSudokuBoard = memo(({ puzzle, styles }: { puzzle: string; styles: any }) => {
   return (
     <View style={styles.miniBoard}>
       {Array(9)
@@ -66,20 +65,20 @@ const MiniSudokuBoard = memo(({ puzzle }: { puzzle: string }) => {
 
 const MyBoards = memo(({ openSudokuDIY, openSetting }: MyBoardsProps) => {
   const { t } = useTranslation();
-  const {
-    myBoards,
-    setMyBoards,
-    setIsDIY,
-    isConnected,
-    setSudokuType,
-    setSudokuDataDIY1,
-    setSudokuDataDIY2,
-    setCurrentIndex,
-    setCurrentName,
-    isSound,
-    initSudokuDataDIY1,
-    initSudokuDataDIY2,
-  } = useSudokuStore();
+  const myBoards = useSudokuStore(state => state.myBoards);
+  const setMyBoards = useSudokuStore(state => state.setMyBoards);
+  const setIsDIY = useSudokuStore(state => state.setIsDIY);
+  const isConnected = useSudokuStore(state => state.isConnected);
+  const setSudokuType = useSudokuStore(state => state.setSudokuType);
+  const setSudokuDataDIY1 = useSudokuStore(state => state.setSudokuDataDIY1);
+  const setSudokuDataDIY2 = useSudokuStore(state => state.setSudokuDataDIY2);
+  const setCurrentIndex = useSudokuStore(state => state.setCurrentIndex);
+  const setCurrentName = useSudokuStore(state => state.setCurrentName);
+  const isSound = useSudokuStore(state => state.isSound);
+  const initSudokuDataDIY1 = useSudokuStore(state => state.initSudokuDataDIY1);
+  const initSudokuDataDIY2 = useSudokuStore(state => state.initSudokuDataDIY2);
+  const isDark = useSudokuStore(state => state.isDark);
+  const styles = createStyles(isDark);
   const [isEditing, setIsEditing] = useState(false);
   const deletedBoardsRef = useRef<Board[]>([]);
   const myBoardsCopy = useRef<Board[]>([]);
@@ -199,7 +198,7 @@ const MyBoards = memo(({ openSudokuDIY, openSetting }: MyBoardsProps) => {
       return (
         <View style={styles.boardWrapper}>
           <Pressable style={styles.boardButton} onPress={() => handleSelectBoard(boardIndex)}>
-            <MiniSudokuBoard puzzle={item.data?.puzzle || ''} />
+            <MiniSudokuBoard puzzle={item.data?.puzzle || ''} styles={styles} />
           </Pressable>
           {isEditingThisName ? (
             <TextInput
@@ -230,15 +229,16 @@ const MyBoards = memo(({ openSudokuDIY, openSetting }: MyBoardsProps) => {
       );
     },
     [
-      handleSelectBoard,
-      handleDeleteBoard,
-      isEditing,
-      handleCreateNew,
-      t,
       editingNameIndex,
       editingName,
-      handleNamePress,
+      t,
+      isEditing,
+      handleCreateNew,
+      handleSelectBoard,
       handleNameSubmit,
+      handleNamePress,
+      handleDeleteBoard,
+      styles,
     ]
   );
 
@@ -375,227 +375,227 @@ const MyBoards = memo(({ openSudokuDIY, openSetting }: MyBoardsProps) => {
   );
 });
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'rgb(246,247,251)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    left: 0,
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    paddingBottom: 120,
-    zIndex: 2,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  editButton: {
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    borderRadius: 15,
-    backgroundColor: '#f0f0f0',
-  },
-  editText: {
-    color: '#666',
-    fontSize: 16,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  ScrollContainer: {
-    display: 'flex',
-    justifyContent: 'flex-start',
-  },
-  boardsContainer: {
-    paddingTop: 10,
-    width: '100%',
-    flexGrow: 1,
-    paddingBottom: 100,
-    position: 'relative',
-    top: 40,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-  },
-  columnWrapper: {
-    width: '100%',
-    gap: 10,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    flexWrap: 'wrap',
-    // backgroundColor: 'blue',
-  },
-  boardWrapper: {
-    width: isIpad ? '15%' : '22%',
-    aspectRatio: 1,
-    position: 'relative',
-    alignItems: 'center',
-    marginBottom: 20,
-    // backgroundColor: 'red',
-  },
-  boardButton: {
-    width: '100%',
-    aspectRatio: 1,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#666',
-  },
-  createButton: {
-    width: isIpad ? '15%' : '22%',
-    aspectRatio: 1,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  plusIcon: {
-    fontSize: 40,
-    color: '#666',
-  },
-  deleteButton: {
-    position: 'absolute',
-    top: -10,
-    right: -10,
-    backgroundColor: '#ff4444',
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1,
-  },
-  deleteText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  miniBoard: {
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-    borderRadius: 10,
-  },
-  miniBoardRow: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  miniBoardCell: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  miniBoardRightNormal: {
-    borderRightWidth: 0.5,
-    borderRightColor: '#ccc',
-  },
-  miniBoardBottomNormal: {
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#ccc',
-  },
-  miniBoardRightBorder: {
-    borderRightWidth: 1,
-    borderRightColor: '#666',
-  },
-  miniBoardBottomBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#666',
-  },
-  topLeftRadius: {
-    borderTopLeftRadius: 10,
-  },
-  topRightRadius: {
-    borderTopRightRadius: 10,
-  },
-  bottomLeftRadius: {
-    borderBottomLeftRadius: 10,
-  },
-  bottomRightRadius: {
-    borderBottomRightRadius: 10,
-  },
-  title1: {
-    backgroundColor: 'rgb(91,139,241)',
-    flexDirection: 'row',
-    height: 40,
-    width: '100%',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    zIndex: 1,
-  },
-  leftSection: {
-    flex: 1,
-  },
-  centerSection: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  rightSection: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    height: '100%',
-    paddingRight: 5,
-  },
-  sudoku: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-    width: 180,
-    textAlign: 'center',
-  },
-  iconContainer: {
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 40,
-    // backgroundColor: 'red',
-    marginRight: 5,
-  },
-  icon: {
-    width: 26,
-    height: 26,
-  },
-  boardName: {
-    marginTop: 4,
-    fontSize: 12,
-    color: '#333',
-    textAlign: 'center',
-    width: '100%',
-    height: 20,
-    overflow: 'hidden',
-  },
-  nameInput: {
-    marginTop: 4,
-    fontSize: 12,
-    color: '#333',
-    textAlign: 'center',
-    width: '100%',
-    padding: 2,
-    borderWidth: 1,
-    borderColor: 'rgb(91,139,241)',
-    borderRadius: 4,
-    backgroundColor: 'white',
-  },
-  miniCellText: {
-    fontSize: 8,
-    textAlign: 'center',
-    color: '#333',
-    lineHeight: 9,
-  },
-  boardNameWrapper: {
-    width: '100%',
-    height: '100%',
-  },
-});
+const createStyles = (isDark: boolean) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: isDark ? 'rgb(22,23,25)' : 'rgb(246,247,251)',
+      alignItems: 'center',
+      justifyContent: 'center',
+      left: 0,
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      paddingBottom: 120,
+      zIndex: 2,
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#333',
+    },
+    editButton: {
+      paddingHorizontal: 15,
+      paddingVertical: 5,
+      borderRadius: 15,
+      backgroundColor: '#f0f0f0',
+    },
+    editText: {
+      color: '#666',
+      fontSize: 16,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    ScrollContainer: {
+      display: 'flex',
+      justifyContent: 'flex-start',
+    },
+    boardsContainer: {
+      paddingTop: 10,
+      width: '100%',
+      flexGrow: 1,
+      paddingBottom: 100,
+      position: 'relative',
+      top: 40,
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
+    },
+    columnWrapper: {
+      width: '100%',
+      gap: 10,
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      marginBottom: 10,
+      paddingHorizontal: 10,
+      flexWrap: 'wrap',
+    },
+    boardWrapper: {
+      width: isIpad ? '15%' : '22%',
+      aspectRatio: 1,
+      position: 'relative',
+      alignItems: 'center',
+      marginBottom: 20,
+    },
+    boardButton: {
+      width: '100%',
+      aspectRatio: 1,
+      backgroundColor: 'white',
+      borderRadius: 10,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: '#666',
+    },
+    createButton: {
+      width: isIpad ? '15%' : '22%',
+      aspectRatio: 1,
+      backgroundColor: isDark ? '#666' : '#f0f0f0',
+      borderRadius: 10,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    plusIcon: {
+      fontSize: 40,
+      color: isDark ? '#888' : '#666',
+    },
+    deleteButton: {
+      position: 'absolute',
+      top: -10,
+      right: -10,
+      backgroundColor: isDark ? 'rgb(111, 30, 30)' : '#ff4444',
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1,
+    },
+    deleteText: {
+      color: isDark ? '#666' : '#fff',
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    miniBoard: {
+      width: '100%',
+      height: '100%',
+      overflow: 'hidden',
+      borderRadius: 10,
+      backgroundColor: isDark ? 'rgb( 32, 31, 33)' : 'white',
+    },
+    miniBoardRow: {
+      flex: 1,
+      flexDirection: 'row',
+    },
+    miniBoardCell: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    miniBoardRightNormal: {
+      borderRightWidth: 0.5,
+      borderRightColor: isDark ? '#666' : '#ccc',
+    },
+    miniBoardBottomNormal: {
+      borderBottomWidth: 0.5,
+      borderBottomColor: isDark ? '#666' : '#ccc',
+    },
+    miniBoardRightBorder: {
+      borderRightWidth: 1,
+      borderRightColor: isDark ? '#666' : '#666',
+    },
+    miniBoardBottomBorder: {
+      borderBottomWidth: 1,
+      borderBottomColor: isDark ? '#666' : '#666',
+    },
+    topLeftRadius: {
+      borderTopLeftRadius: 10,
+    },
+    topRightRadius: {
+      borderTopRightRadius: 10,
+    },
+    bottomLeftRadius: {
+      borderBottomLeftRadius: 10,
+    },
+    bottomRightRadius: {
+      borderBottomRightRadius: 10,
+    },
+    title1: {
+      backgroundColor: isDark ? 'rgb(39, 60, 95)' : 'rgb(91,139,241)',
+      flexDirection: 'row',
+      height: 40,
+      width: '100%',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      zIndex: 1,
+    },
+    leftSection: {
+      flex: 1,
+    },
+    centerSection: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    rightSection: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      height: '100%',
+      paddingRight: 5,
+    },
+    sudoku: {
+      color: isDark ? '#666' : '#fff',
+      fontSize: 20,
+      fontWeight: 'bold',
+      width: 180,
+      textAlign: 'center',
+    },
+    iconContainer: {
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 40,
+      marginRight: 5,
+    },
+    icon: {
+      width: 26,
+      height: 26,
+      tintColor: isDark ? '#666' : '#fff',
+    },
+    boardName: {
+      marginTop: 4,
+      fontSize: 12,
+      color: isDark ? '#666' : 'black',
+      textAlign: 'center',
+      width: '100%',
+      height: 20,
+      overflow: 'hidden',
+    },
+    nameInput: {
+      marginTop: 4,
+      fontSize: 12,
+      color: isDark ? '#666' : 'black',
+      textAlign: 'center',
+      width: '100%',
+      padding: 2,
+      borderWidth: 1,
+      borderColor: 'rgb(91,139,241)',
+      borderRadius: 4,
+      backgroundColor: 'white',
+    },
+    miniCellText: {
+      fontSize: 8,
+      textAlign: 'center',
+      color: isDark ? '#888' : '#333',
+      lineHeight: 9,
+    },
+    boardNameWrapper: {
+      width: '100%',
+      height: '100%',
+    },
+  });
 
 export default MyBoards;

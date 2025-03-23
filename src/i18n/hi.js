@@ -82,7 +82,7 @@ export default {
     UNIQUE_RECTANGLE: 'अद्वितीय आयत',
     BINARY_UNIVERSAL_GRAVE: 'बाइनरी अनिवार्य ग्रव',
     DOUBLE_COLOR_CHAIN: 'द्विरंगी श्रृंखला',
-    TRIPLE_COLOR_CHAIN: 'तिगुना कलर श्रृंखला',
+    TRIPLE_COLOR_CHAIN: 'त्रिरंगी श्रृंखला',
     TRIAL_AND_ERROR: 'परीक्षण और त्रुटि',
     duration: 'समय',
     mistakes: 'गलतियां',
@@ -246,5 +246,9 @@ export default {
     period: '.',
     end1: 'लाल सेल में {{target}} नहीं हो सकता',
     end2: 'लाल सेल में अभी भी {{target}} नहीं हो सकता',
+    theme: 'थीम',
+    selectTheme: 'थीम चुनें',
+    lightMode: 'हलकी थीम',
+    darkMode: 'गहरी थीम',
   },
 };

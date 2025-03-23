@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, memo, useMemo } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Animated,
   AppState,
   ScrollView,
+  NativeModules,
 } from 'react-native';
 import {
   checkNumberInRowColumnAndBox,
@@ -43,15 +44,13 @@ import {
   uniqueRectangle,
   BinaryUniversalGrave,
   xyzWing,
-  doubleColorChain,
-  tripleColorChain,
   jellyfish,
   hiddenTriple,
 } from '../tools/solution';
 import { useTranslation } from 'react-i18next';
 import type { CandidateMap, CellData, Graph, Position } from '../tools';
 import type { DifferenceMap, Result } from '../tools/solution';
-import styles from './sudokuStyles';
+import createStyles from './sudokuStyles';
 import { handleHintContent } from '../tools/handleHintContent';
 import Cell from '../components/SudokuCell';
 import Buttons from '../components/Buttons';
@@ -61,7 +60,8 @@ import { useSudokuStore } from '../store';
 import TarBarsSudoku from '../components/tarBarsSudoku';
 import ResultView from '../components/ResultOverlay';
 import handleHintMethod from '../tools/handleHintMethod';
-import { SOLUTION_METHODS } from '../constans';
+
+const { ColorChain } = NativeModules;
 
 interface SudokuProps {
   slideAnim: Animated.Value;
@@ -147,28 +147,27 @@ const Sudoku: React.FC<SudokuProps> = memo(
       jellyfish,
       Loop,
       uniqueRectangle,
-      doubleColorChain,
       BinaryUniversalGrave,
-      trialAndError,
     ]);
-    const {
-      difficulty,
-      setResultVisible,
-      errorCount,
-      setErrorCount,
-      setHintCount,
-      isSound,
-      setIsHasContinue,
-      setDifficulty,
-      isLevel,
-      resultVisible,
-      setInitializeBoard2,
-      isContinue,
-      isSudoku,
-      isHighlight,
-      setIsHint,
-      scaleValue1,
-    } = useSudokuStore();
+    const difficulty = useSudokuStore(state => state.difficulty);
+    const setResultVisible = useSudokuStore(state => state.setResultVisible);
+    const errorCount = useSudokuStore(state => state.errorCount);
+    const setErrorCount = useSudokuStore(state => state.setErrorCount);
+    const setHintCount = useSudokuStore(state => state.setHintCount);
+    const isSound = useSudokuStore(state => state.isSound);
+    const setIsHasContinue = useSudokuStore(state => state.setIsHasContinue);
+    const setDifficulty = useSudokuStore(state => state.setDifficulty);
+    const isLevel = useSudokuStore(state => state.isLevel);
+    const resultVisible = useSudokuStore(state => state.resultVisible);
+    const setInitializeBoard2 = useSudokuStore(state => state.setInitializeBoard2);
+    const isContinue = useSudokuStore(state => state.isContinue);
+    const isSudoku = useSudokuStore(state => state.isSudoku);
+    const isHighlight = useSudokuStore(state => state.isHighlight);
+    const setIsHint = useSudokuStore(state => state.setIsHint);
+    const scaleValue1 = useSudokuStore(state => state.scaleValue1);
+    const isDark = useSudokuStore(state => state.isDark);
+
+    const styles = createStyles(isDark);
 
     const isFirstHint = useRef<boolean>(true);
 
@@ -249,6 +248,24 @@ const Sudoku: React.FC<SudokuProps> = memo(
       isFirstHint,
       isHinting,
     ]);
+
+    const cleanBoard = useMemo(() => {
+      return deepCopyBoard(board).map(row =>
+        row.map(cell => ({
+          ...cell,
+          highlights: undefined,
+          highlightCandidates: undefined,
+          promptCandidates: undefined,
+        }))
+      );
+    }, [board]);
+
+    const colorChainResult = useRef<Result | null>(null);
+    useEffect(() => {
+      ColorChain.solve(cleanBoard).then(result => {
+        colorChainResult.current = result;
+      });
+    }, [cleanBoard]);
 
     const setSuccessResult = useCallback(
       (errorCount: number, hintCount: number) => {
@@ -575,9 +592,9 @@ const Sudoku: React.FC<SudokuProps> = memo(
 
     const applyHintHighlight = useCallback(
       (board: CellData[][], result: Result, type: 'position' | 'prompt' | 'both') => {
-        const { position, target, prompt, highlightPromts1, highlightPromts2 } = result;
+        const { position, target, prompt, highlightPromts1, highlightPromts2, highlightPromts3 } =
+          result;
         const newBoard = deepCopyBoard(board);
-
         if (type === 'position' || type === 'both') {
           position.forEach(({ row, col }: Position) => {
             newBoard[row][col].highlights = newBoard[row][col].highlights || [];
@@ -586,7 +603,12 @@ const Sudoku: React.FC<SudokuProps> = memo(
           });
         }
         if (highlightPromts1 && highlightPromts2) {
-          const highlightPromts = [...highlightPromts1, ...highlightPromts2];
+          let highlightPromts = [];
+          if (highlightPromts3) {
+            highlightPromts = [...highlightPromts1, ...highlightPromts2, ...highlightPromts3];
+          } else {
+            highlightPromts = [...highlightPromts1, ...highlightPromts2];
+          }
           if (highlightPromts.length > 0) {
             highlightPromts.forEach(
               ({ row, col, value }: { row: number; col: number; value: number | null }) => {
@@ -600,6 +622,11 @@ const Sudoku: React.FC<SudokuProps> = memo(
             highlightPromts2.forEach(({ row, col, value }: Position) => {
               newBoard[row][col].promptCandidates2 = [value];
             });
+            if (highlightPromts3) {
+              highlightPromts3.forEach(({ row, col, value }: Position) => {
+                newBoard[row][col].promptCandidates3 = [value];
+              });
+            }
             return newBoard;
           }
         }
@@ -648,14 +675,61 @@ const Sudoku: React.FC<SudokuProps> = memo(
           return;
         }
         let result: Result | null = null;
-        const startTime = performance.now();
         for (const solveFunction of solveFunctions.current) {
-          result = solveFunction(board, candidateMap.current, graph.current, answerBoard.current);
+          result = solveFunction(board, candidateMap.current, graph.current);
           if (result) {
-            console.log('result', result.label);
-            const endTime = performance.now();
-            console.log(`${solveFunction.name} 执行时间: ${endTime - startTime} 毫秒`);
+            // console.log(result);
+            hintCount.current++;
+            setResult(result);
+            setSelectedNumber(null);
+            setHintMethod(handleHintMethod(result.method, t));
+            setHintContent(
+              handleHintContent(
+                result,
+                board,
+                prompts,
+                setPrompts,
+                setSelectedNumber,
+                setPositions,
+                applyHintHighlight,
+                updateBoard,
+                t
+              )
+            );
 
+            setHintDrawerVisible(true);
+            setIsHint(true);
+            lastSelectedCell.current = selectedCell;
+            setSelectedCell(null);
+            return;
+          }
+        }
+        if (colorChainResult.current) {
+          hintCount.current++;
+          setResult(colorChainResult.current);
+          setSelectedNumber(null);
+          setHintMethod(handleHintMethod(colorChainResult.current.method, t));
+          setHintContent(
+            handleHintContent(
+              colorChainResult.current,
+              board,
+              prompts,
+              setPrompts,
+              setSelectedNumber,
+              setPositions,
+              applyHintHighlight,
+              updateBoard,
+              t
+            )
+          );
+          setHintDrawerVisible(true);
+          setIsHint(true);
+          lastSelectedCell.current = selectedCell;
+          setSelectedCell(null);
+          return;
+        } else {
+          result = trialAndError(board, candidateMap.current, graph.current, answerBoard.current);
+          if (result) {
             hintCount.current++;
             setResult(result);
             setSelectedNumber(null);
@@ -677,7 +751,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
             setIsHint(true);
             lastSelectedCell.current = selectedCell;
             setSelectedCell(null);
-            break;
+            return;
           }
         }
       },
@@ -886,6 +960,7 @@ const Sudoku: React.FC<SudokuProps> = memo(
                 isHighlight={isHighlight}
                 scaleValue={scaleValue1}
                 isMovingRef={isMovingRef}
+                isDark={isDark}
               />
             ))
           )}
@@ -909,8 +984,12 @@ const Sudoku: React.FC<SudokuProps> = memo(
             <Image
               source={
                 currentStep === 0
-                  ? require('../assets/icon/undo.png')
-                  : require('../assets/icon/undo_active.png')
+                  ? isDark
+                    ? require('../assets/icon/undo_active.png')
+                    : require('../assets/icon/undo.png')
+                  : isDark
+                    ? require('../assets/icon/undo.png')
+                    : require('../assets/icon/undo_active.png')
               }
               style={styles.buttonIcon}
             />
@@ -933,8 +1012,12 @@ const Sudoku: React.FC<SudokuProps> = memo(
             <Image
               source={
                 eraseEnabled
-                  ? require('../assets/icon/erase_active.png')
-                  : require('../assets/icon/erase.png')
+                  ? isDark
+                    ? require('../assets/icon/erase.png')
+                    : require('../assets/icon/erase_active.png')
+                  : isDark
+                    ? require('../assets/icon/erase_active.png')
+                    : require('../assets/icon/erase.png')
               }
               style={styles.buttonIcon}
             />
@@ -1003,14 +1086,15 @@ const Sudoku: React.FC<SudokuProps> = memo(
           draftMode={draftMode}
           scaleValue={scaleValue1}
           isMovingRef={isMovingRef}
+          isDark={isDark}
         />
         <View style={styles.selectionModeContainer}>
           <Text style={styles.selectionModeText}>{t('selectMode')}</Text>
           <Switch
             value={selectionMode === 2}
             onValueChange={handleSelectionModeChange}
-            trackColor={{ false: '#767577', true: '#81b0ff' }}
-            thumbColor={selectionMode === 2 ? '#1890ff' : '#f4f3f4'}
+            trackColor={{ false: '#f0f0f0', true: isDark ? 'rgb(39, 60, 95)' : 'rgb(91,139,241)' }}
+            thumbColor={selectionMode === 2 ? (isDark ? '#888' : '#fff') : isDark ? '#888' : '#fff'}
           />
         </View>
 

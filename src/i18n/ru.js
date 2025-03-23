@@ -82,7 +82,7 @@ export default {
     UNIQUE_RECTANGLE: 'Уникальный прямоугольник',
     BINARY_UNIVERSAL_GRAVE: 'Бинарная универсальная могила',
     DOUBLE_COLOR_CHAIN: 'Двухцветная цепь',
-    TRIPLE_COLOR_CHAIN: 'Цепь тройного цвета',
+    TRIPLE_COLOR_CHAIN: 'Трехцветная цепь',
     TRIAL_AND_ERROR: 'Метод проб и ошибок',
     duration: 'Время',
     mistakes: 'Ошибки',
@@ -247,5 +247,9 @@ export default {
     period: '.',
     end1: 'Красная клетка не может содержать {{target}}',
     end2: 'Красная клетка все еще не может содержать {{target}}',
+    theme: 'Тема',
+    selectTheme: 'Выбрать тему',
+    lightMode: 'Светлая тема',
+    darkMode: 'Темная тема',
   },
 };

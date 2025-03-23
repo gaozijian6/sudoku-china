@@ -82,7 +82,7 @@ export default {
     UNIQUE_RECTANGLE: 'Унікальний прямокутник',
     BINARY_UNIVERSAL_GRAVE: 'Бінарна універсальна могила',
     DOUBLE_COLOR_CHAIN: 'Двоколірний ланцюг',
-    TRIPLE_COLOR_CHAIN: 'ланцюг трикратного кольору',
+    TRIPLE_COLOR_CHAIN: 'Трьохколірний ланцюг',
     TRIAL_AND_ERROR: 'Метод спроб і помилок',
     duration: 'Час',
     mistakes: 'Помилки',
@@ -247,5 +247,9 @@ export default {
     period: '.',
     end1: 'Червона клітинка не може містити {{target}}',
     end2: 'Червона клітинка все ще не може містити {{target}}',
+    theme: 'Тема',
+    selectTheme: 'Вибрати тему',
+    lightMode: 'Світла тема',
+    darkMode: 'Темна тема',
   },
 };

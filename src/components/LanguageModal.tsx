@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSudokuStore } from '../store';
 
 interface LanguageModalProps {
   visible: boolean;
@@ -24,6 +25,8 @@ const LanguageModal: React.FC<LanguageModalProps> = ({
   currentLanguage,
   onSelectLanguage,
 }) => {
+  const { isDark } = useSudokuStore();
+  const styles = createStyles(isDark);
   const { t } = useTranslation();
   const languages = [
     { code: 'en', label: 'English' }, // 英语
@@ -79,52 +82,53 @@ const LanguageModal: React.FC<LanguageModalProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    width: '80%',
-    padding: 20,
-    maxHeight: '80%',
-    height: '60%',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  languageItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  languageText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  checkmark: {
-    color: 'rgb(91,139,241)',
-    fontSize: 18,
-  },
-  cancelButton: {
-    marginTop: 20,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  cancelText: {
-    color: 'rgb(91,139,241)',
-    fontSize: 16,
-  },
-});
+const createStyles = (isDark: boolean) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    content: {
+      borderRadius: 10,
+      width: '80%',
+      padding: 20,
+      maxHeight: '80%',
+      height: '60%',
+      backgroundColor: isDark ? 'rgb(105, 106, 108)' : 'white',
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      marginBottom: 20,
+    },
+    languageItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 15,
+      borderBottomWidth: 1,
+      borderBottomColor: isDark ? '#777' : '#f0f0f0',
+    },
+    languageText: {
+      fontSize: 16,
+      color: '#333',
+    },
+    checkmark: {
+      color: 'rgb(91,139,241)',
+      fontSize: 18,
+    },
+    cancelButton: {
+      marginTop: 20,
+      paddingVertical: 10,
+      alignItems: 'center',
+    },
+    cancelText: {
+      color: 'rgb(91,139,241)',
+      fontSize: 16,
+    },
+  });
 
 export default LanguageModal;

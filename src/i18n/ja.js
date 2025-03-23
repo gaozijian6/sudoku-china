@@ -243,5 +243,9 @@ export default {
     period: '.',
     end1: '赤いマスには候補数{{target}}が入りません',
     end2: '赤いマスにはやはり候補数{{target}}が入りません',
+    theme: 'テーマ',
+    selectTheme: 'テーマを選択',
+    lightMode: 'ライトモード',
+    darkMode: 'ダークモード',
   },
 };

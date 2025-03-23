@@ -82,7 +82,7 @@ export default {
     UNIQUE_RECTANGLE: 'Eindeutige Rechtecke',
     BINARY_UNIVERSAL_GRAVE: 'Binäre Universale Grube',
     DOUBLE_COLOR_CHAIN: 'Zweifarbige Kette',
-    TRIPLE_COLOR_CHAIN: 'Dreifache Farbketten',
+    TRIPLE_COLOR_CHAIN: 'Dreifarbige Kette',
     TRIAL_AND_ERROR: 'Versuch und Irrtum',
     duration: 'Zeit',
     mistakes: 'Fehler',
@@ -247,5 +247,9 @@ export default {
     period: '.',
     end1: 'Die rote Zelle kann nicht den Wert {{target}} enthalten',
     end2: 'Die rote Zelle kann immer noch nicht den Wert {{target}} enthalten',
+    theme: 'Thema',
+    selectTheme: 'Thema auswählen',
+    lightMode: 'Hellmodus',
+    darkMode: 'Dunkelmodus',
   },
 };

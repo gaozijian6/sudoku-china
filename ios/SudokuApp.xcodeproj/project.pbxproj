@@ -17,6 +17,8 @@
 		A931703F2D7746E0002D9F92 /* CloudKitManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A931703B2D7746E0002D9F92 /* CloudKitManager.m */; };
 		A93170402D7746E0002D9F92 /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A931703C2D7746E0002D9F92 /* CloudKitManager.swift */; };
 		A9E17CE42D3EB04500A1014E /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9E17CE32D3EB04500A1014E /* StoreKit.framework */; };
+		A9EB5D422D904BE000508F04 /* ColorChain.m in Sources */ = {isa = PBXBuildFile; fileRef = A9EB5D402D904BDF00508F04 /* ColorChain.m */; };
+		A9EB5D432D904BE000508F04 /* ColorChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EB5D412D904BE000508F04 /* ColorChain.swift */; };
 		AF37A8CD3A9D0AEC4EF0B99D /* libPods-SudokuApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1F8EE34BDECD795CA7C094 /* libPods-SudokuApp.a */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +52,8 @@
 		A931703C2D7746E0002D9F92 /* CloudKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CloudKitManager.swift; path = SudokuApp/CloudKitManager.swift; sourceTree = "<group>"; };
 		A93170492D774BE1002D9F92 /* SudokuAppDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SudokuAppDebug.entitlements; path = SudokuApp/SudokuAppDebug.entitlements; sourceTree = "<group>"; };
 		A9E17CE32D3EB04500A1014E /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		A9EB5D402D904BDF00508F04 /* ColorChain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ColorChain.m; path = SudokuApp/ColorChain.m; sourceTree = "<group>"; };
+		A9EB5D412D904BE000508F04 /* ColorChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ColorChain.swift; path = SudokuApp/ColorChain.swift; sourceTree = "<group>"; };
 		ABA9F3C35AA2E0E3988ABFA5 /* Pods-SudokuApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SudokuApp.release.xcconfig"; path = "Target Support Files/Pods-SudokuApp/Pods-SudokuApp.release.xcconfig"; sourceTree = "<group>"; };
 		BE1F8EE34BDECD795CA7C094 /* libPods-SudokuApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SudokuApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -135,6 +139,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				A9EB5D402D904BDF00508F04 /* ColorChain.m */,
+				A9EB5D412D904BE000508F04 /* ColorChain.swift */,
 				A931703B2D7746E0002D9F92 /* CloudKitManager.m */,
 				A931703C2D7746E0002D9F92 /* CloudKitManager.swift */,
 				A9F7EB652D4A850100AC13C0 /* Base */,
@@ -443,6 +449,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9EB5D422D904BE000508F04 /* ColorChain.m in Sources */,
+				A9EB5D432D904BE000508F04 /* ColorChain.swift in Sources */,
 				A931703F2D7746E0002D9F92 /* CloudKitManager.m in Sources */,
 				A93170402D7746E0002D9F92 /* CloudKitManager.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
@@ -522,7 +530,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SudokuApp/SudokuAppDebug.entitlements;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.6;
+				CURRENT_PROJECT_VERSION = 1.8;
 				DEVELOPMENT_TEAM = FH8DM9J9B4;
 				ENABLE_BITCODE = NO;
 				ENABLE_TESTABILITY = YES;
@@ -533,7 +541,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6;
+				MARKETING_VERSION = 1.8;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -560,7 +568,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SudokuApp/SudokuApp.entitlements;
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 1.6;
+				CURRENT_PROJECT_VERSION = 1.8;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = FH8DM9J9B4;
 				ENABLE_BITCODE = NO;
@@ -572,7 +580,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6;
+				MARKETING_VERSION = 1.8;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

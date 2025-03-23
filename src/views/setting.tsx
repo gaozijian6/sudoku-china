@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -22,14 +22,19 @@ interface SettingProps {
   closeSetting: () => void;
 }
 
-const APP_VERSION = '1.7';
+const APP_VERSION = '1.8';
 
 const PRIVACY_POLICY_URL = 'https://sites.google.com/view/sudokucustom';
 const TERMS_OF_SERVICE_URL = 'https://sites.google.com/view/sudoku-custom-terms';
 
 function Setting({ slideAnim, closeSetting }: SettingProps) {
-  const { isSound, setIsSound, isHighlight, setIsHighlight } =
-    useSudokuStore();
+  const isSound = useSudokuStore(state => state.isSound);
+  const setIsSound = useSudokuStore(state => state.setIsSound);
+  const isHighlight = useSudokuStore(state => state.isHighlight);
+  const setIsHighlight = useSudokuStore(state => state.setIsHighlight);
+  const isDark = useSudokuStore(state => state.isDark);
+  const setIsDark = useSudokuStore(state => state.setIsDark);
+  const styles = createStyles(isDark);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const { t, i18n } = useTranslation();
 
@@ -88,6 +93,14 @@ ${t('feedbackMessage')}
     });
   }, [t]);
 
+  useEffect(() => {
+    AsyncStorage.getItem('isDark').then(value => {
+      if (value) {
+        setIsDark(value === 'true');
+      }
+    });
+  }, []);
+
   return (
     <Animated.View
       style={[
@@ -116,8 +129,11 @@ ${t('feedbackMessage')}
           <Switch
             value={isSound}
             onValueChange={toogleSound}
-            trackColor={{ false: '#f0f0f0', true: 'rgb(91,139,241)' }}
-            thumbColor={isSound ? '#fff' : '#fff'}
+            trackColor={{
+              false: '#f0f0f0',
+              true: isDark ? 'rgb(39, 60, 95)' : 'rgb(91,139,241)',
+            }}
+            thumbColor={isDark ? '#888' : '#f4f3f4'}
           />
         </View>
 
@@ -127,9 +143,32 @@ ${t('feedbackMessage')}
           <Switch
             value={isHighlight}
             onValueChange={toogleHighlight}
-            trackColor={{ false: '#f0f0f0', true: 'rgb(91,139,241)' }}
-            thumbColor={isHighlight ? '#fff' : '#fff'}
+            trackColor={{ false: '#f0f0f0', true: isDark ? 'rgb(39, 60, 95)' : 'rgb(91,139,241)' }}
+            thumbColor={isDark ? '#888' : '#f4f3f4'}
           />
+        </View>
+
+        <View style={[styles.item, styles.modeSelector]}>
+          <Pressable
+            style={[styles.modeButton, !isDark && styles.activeMode]}
+            onPressIn={() => {
+              setIsDark(false);
+              AsyncStorage.setItem('isDark', 'false');
+            }}
+          >
+            <Image source={require('../assets/icon/sun.png')} style={styles.sunIcon} />
+            <Text style={[styles.modeText]}>{t('lightMode')}</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.modeButton, isDark && styles.activeMode]}
+            onPressIn={() => {
+              setIsDark(true);
+              AsyncStorage.setItem('isDark', 'true');
+            }}
+          >
+            <Image source={require('../assets/icon/moon.png')} style={styles.moonIcon} />
+            <Text style={[styles.modeText]}>{t('darkMode')}</Text>
+          </Pressable>
         </View>
 
         <Pressable style={styles.item} onPress={() => setLanguageModalVisible(true)}>
@@ -180,104 +219,141 @@ ${t('feedbackMessage')}
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    zIndex: 30,
-    backgroundColor: 'rgb(239,239,245)',
-  },
-  tarbar: {
-    backgroundColor: 'rgb(91,139,241)',
-    height: 40,
-    width: '100%',
-    position: 'relative',
-    paddingHorizontal: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  tarbarText: {
-    fontSize: 30,
-    color: '#fff',
-    flex: 1,
-    textAlign: 'center',
-  },
-  content: {
-    marginTop: 60,
-    backgroundColor: '#fff',
-    marginHorizontal: 15,
-    borderRadius: 8,
-    position: 'relative',
-    top: -40,
-  },
-  item: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-    paddingHorizontal: 15,
-    borderRadius: 8,
-    backgroundColor: '#fff',
-  },
-  itemText: {
-    fontSize: 20,
-    color: '#333',
-    flex: 1,
-    marginLeft: 10,
-  },
-  arrow: {
-    width: 20,
-    height: 20,
-  },
-  headerLogo: {
-    position: 'absolute',
-    right: 15,
-    top: 12,
-    width: 25,
-    height: 25,
-  },
-  backIconContainer: {
-    width: 30,
-    height: 30,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-    left: 10,
-    zIndex: 10,
-  },
-  backIcon: {
-    height: 20,
-    width: 20,
-  },
-  leftIcon: {
-    width: 30,
-    height: 30,
-    marginRight: 10,
-  },
-  links: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 15,
-    position: 'absolute',
-    bottom: 20,
-    left: 0,
-    right: 0,
-  },
-  linkText: {
-    fontSize: 14,
-    color: '#666',
-    paddingHorizontal: 10,
-  },
-  separator: {
-    color: '#666',
-    fontSize: 14,
-  },
-});
-
+const createStyles = (isDark: boolean) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      zIndex: 30,
+      backgroundColor: isDark ? 'rgb(22,23,25)' : 'rgb(239,239,245)',
+    },
+    tarbar: {
+      backgroundColor: isDark ? 'rgb(39, 60, 95)' : 'rgb(91,139,241)',
+      height: 40,
+      width: '100%',
+      position: 'relative',
+      paddingHorizontal: 15,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    tarbarText: {
+      fontSize: 30,
+      color: isDark ? '#888' : '#fff',
+      flex: 1,
+      textAlign: 'center',
+    },
+    content: {
+      marginTop: 60,
+      backgroundColor: isDark ? 'rgb( 32, 31, 33)' : '#fff',
+      marginHorizontal: 15,
+      borderRadius: 8,
+      position: 'relative',
+      top: -40,
+    },
+    item: {
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      paddingVertical: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: isDark ? 'rgb(47, 47, 49)' : '#f0f0f0',
+      paddingHorizontal: 15,
+      borderRadius: 8,
+      backgroundColor: isDark ? 'rgb( 32, 31, 33)' : '#fff',
+    },
+    itemText: {
+      fontSize: 20,
+      color: isDark ? 'rgb(148,148,150)' : '#333',
+      flex: 1,
+      marginLeft: 10,
+    },
+    arrow: {
+      width: 20,
+      height: 20,
+      tintColor: 'rgb(148,148,150)',
+    },
+    headerLogo: {
+      position: 'absolute',
+      right: 15,
+      top: 12,
+      width: 25,
+      height: 25,
+    },
+    backIconContainer: {
+      width: 30,
+      height: 30,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'absolute',
+      left: 10,
+      zIndex: 10,
+    },
+    backIcon: {
+      height: 20,
+      width: 20,
+      tintColor: isDark ? '#888' : '#fff',
+    },
+    leftIcon: {
+      width: 30,
+      height: 30,
+      marginRight: 10,
+      opacity: isDark ? 0.5 : 1,
+    },
+    links: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 15,
+      position: 'absolute',
+      bottom: 20,
+      left: 0,
+      right: 0,
+    },
+    linkText: {
+      fontSize: 14,
+      color: '#666',
+      paddingHorizontal: 10,
+    },
+    separator: {
+      color: '#666',
+      fontSize: 14,
+    },
+    modeSelector: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 0,
+      paddingHorizontal: 0,
+      paddingVertical: 0,
+    },
+    modeButton: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 10,
+      borderRadius: 0,
+    },
+    activeMode: {
+      backgroundColor: isDark ? 'rgb(39, 60, 95)' : 'rgb(91,139,241)',
+    },
+    modeText: {
+      fontSize: 18,
+      color: isDark ? '#888' : 'black',
+      marginLeft: 5,
+    },
+    sunIcon: {
+      width: 30,
+      height: 30,
+      tintColor: isDark ? '#999' : 'white',
+    },
+    moonIcon: {
+      width: 30,
+      height: 30,
+      tintColor: 'black',
+    },
+  });
 export default Setting;
