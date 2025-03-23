@@ -7,7 +7,8 @@ import i18n from '../i18n';
 const { t } = i18n;
 
 function BottomTabs() {
-  const { currentPage, setCurrentPage, setSudokuType } = useSudokuStore();
+  const { currentPage, setCurrentPage, setSudokuType, isDark } = useSudokuStore();
+  const styles = createStyles(isDark);
 
   const onPressHome = useCallback(() => {
     setCurrentPage(Page.HOME);
@@ -50,44 +51,50 @@ function BottomTabs() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    height: 70,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 20,
-    paddingBottom: 10,
-  },
-  tabItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  activeTab: {
-    backgroundColor: '#fff',
-  },
-  tabIcon: {
-    width: 24,
-    height: 24,
-    marginBottom: 4,
-    tintColor: '#666',
-  },
-  activeIcon: {
-    tintColor: 'rgb(91,139,241)',
-  },
-  tabText: {
-    fontSize: 12,
-    color: '#666',
-  },
-  activeText: {
-    color: 'rgb(91,139,241)',
-  },
-});
+const createStyles = (isDark: boolean) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      height: 70,
+      // backgroundColor: '#fff',
+      backgroundColor: isDark ? 'rgb( 23, 23, 24)' : '#fff',
+      borderTopWidth: 1,
+      // borderTopColor: '#eee',
+      borderTopColor: isDark ? 'rgb(40, 40, 42)' : '#eee',
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 20,
+      paddingBottom: 10,
+    },
+    tabItem: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    activeTab: {
+      // backgroundColor: '#fff',
+      backgroundColor: isDark ? 'rgb( 23, 23, 24)' : '#fff',
+    },
+    tabIcon: {
+      width: 24,
+      height: 24,
+      marginBottom: 4,
+      tintColor: '#666',
+    },
+    activeIcon: {
+      // tintColor: 'rgb(91,139,241)',
+      tintColor: isDark ? 'rgb(47, 82, 158)' : 'rgb(91,139,241)',
+    },
+    tabText: {
+      fontSize: 12,
+      color: '#666',
+    },
+    activeText: {
+      // color: 'rgb(91,139,241)',
+      color: isDark ? 'rgb(47, 82, 158)' : 'rgb(91,139,241)',
+    },
+  });
 
 export default BottomTabs;

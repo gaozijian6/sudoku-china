@@ -81,7 +81,7 @@ export default {
     UNIQUE_RECTANGLE: 'Unique Rectangle',
     BINARY_UNIVERSAL_GRAVE: 'Binary Universal Grave',
     DOUBLE_COLOR_CHAIN: 'Bicolor Chain',
-    TRIPLE_COLOR_CHAIN: 'Triple Color Chain',
+    TRIPLE_COLOR_CHAIN: 'Tricolor Chain',
     TRIAL_AND_ERROR: 'Trial and Error',
     duration: 'Duration',
     mistakes: 'Mistakes',
@@ -246,5 +246,9 @@ export default {
     period: '.',
     end1: 'The red cell cannot contain {{target}}',
     end2: 'The red cell still cannot contain {{target}}',
+    theme: 'Theme',
+    selectTheme: 'Select Theme',
+    lightMode: 'Light Mode',
+    darkMode: 'Dark Mode',
   },
 };

@@ -1541,7 +1541,6 @@ export const xyzWing = (
   return null;
 };
 
-// 给定两个坐标和候选数，判断是否为同区域的强连接
 export const isUnitStrongLink = (
   board: CellData[][],
   position1: Position,
@@ -1549,192 +1548,33 @@ export const isUnitStrongLink = (
   num: number,
   candidateMap: CandidateMap
 ): boolean => {
-  const cell1 = board[position1.row]?.[position1.col];
-  const cell2 = board[position2.row]?.[position2.col];
   if (position1.row === position2.row && position1.col === position2.col) {
     return false;
   }
-
-  // 检查是否在同一行、同一列或同一宫
-  const isSameRow = position1.row === position2.row;
-  const isSameCol = position1.col === position2.col;
-  const isSameBox =
-    Math.floor(position1.row / 3) === Math.floor(position2.row / 3) &&
-    Math.floor(position1.col / 3) === Math.floor(position2.col / 3);
-
-  if (!(isSameRow || isSameCol || isSameBox)) {
+  if (!board[position1.row][position1.col].draft.includes(num)) {
     return false;
   }
-
-  // 情况一：检查两个单元格是否都只有两个候选数，且包含相同的候选数12 12
-  if (
-    cell1.draft.length === 2 &&
-    cell2.draft.length === 2 &&
-    cell1.draft.every(n => cell2.draft.includes(n))
-  ) {
-    return true;
+  if (!board[position2.row][position2.col].draft.includes(num)) {
+    return false;
   }
-
-  // 情况二：检查是否存在第三个单元格C，其候选数为AB的候选数的并集12 23 13
-  if (
-    cell1.draft.length === 2 &&
-    cell2.draft.length === 2 &&
-    cell1.draft.includes(num) &&
-    cell2.draft.includes(num)
-  ) {
-    const otherNum1 = cell1.draft.find(n => n !== num);
-    const otherNum2 = cell2.draft.find(n => n !== num);
-
-    if (otherNum1 && otherNum2) {
-      // 检查共同行、列和宫
-      const checkCellC = (row: number, col: number) => {
-        const cellC = board[row]?.[col];
-        if (
-          cellC?.draft.length === 2 &&
-          cellC.draft.includes(otherNum1) &&
-          cellC.draft.includes(otherNum2)
-        ) {
-          return true;
-        }
-      };
-
-      if (isSameRow) {
-        for (let col = 0; col < 9; col++) {
-          if (col !== position1.col && col !== position2.col && checkCellC(position1.row, col)) {
-            return true;
-          }
-        }
-      }
-
-      if (isSameCol) {
-        for (let row = 0; row < 9; row++) {
-          if (row !== position1.row && row !== position2.row && checkCellC(row, position1.col)) {
-            return true;
-          }
-        }
-      }
-
-      if (isSameBox) {
-        const startRow = Math.floor(position1.row / 3) * 3;
-        const startCol = Math.floor(position1.col / 3) * 3;
-        for (let i = 0; i < 3; i++) {
-          for (let j = 0; j < 3; j++) {
-            const row = startRow + i;
-            const col = startCol + j;
-            if (
-              (row !== position1.row || col !== position1.col) &&
-              (row !== position2.row || col !== position2.col) &&
-              checkCellC(row, col)
-            ) {
-              return true;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // 情况三：格子A有候选数a、b、num，B有num、a或b，在格子AB所处的共同行或共同列或共同宫内寻找格子C，要求C的候选数为a、b
-  const cellA = cell1.draft.length === 3 ? cell1 : cell2;
-  const cellB = cellA === cell1 ? cell2 : cell1;
-  const positionA = cellA === cell1 ? position1 : position2;
-  const positionB = cellB === cell2 ? position2 : position1;
-
-  if (cellA.draft.length === 3 && cellB.draft.length === 2) {
-    const [a, b] = cellA.draft.filter(n => n !== num);
-    if (cellB.draft.includes(num) && (cellB.draft.includes(a) || cellB.draft.includes(b))) {
-      const units = getCommonUnits(positionA, positionB, board);
-      for (const unit of units) {
-        const cellC = board[unit.row]?.[unit.col];
-        if (cellC.draft.includes(num)) continue;
-        if (cellC.draft.length === 2) {
-          if (cellA.draft.includes(cellC.draft[0]) && cellA.draft.includes(cellC.draft[1])) {
-            return true;
-          }
-        }
-      }
-    }
-  } else if (cellA.draft.length === 3 && cellB.draft.length === 3) {
-    if (cellA.draft.every(n => cellB.draft.includes(n))) {
-      const units = getCommonUnits(positionA, positionB, board);
-      for (const unit of units) {
-        const cellC = board[unit.row]?.[unit.col];
-        if (cellC.draft.includes(num)) continue;
-        if (
-          cellC.draft.length === 2 &&
-          cellA.draft.includes(cellC.draft[0]) &&
-          cellA.draft.includes(cellC.draft[1])
-        ) {
-          return true;
-        }
-        if (cellC.draft.length === 3) {
-          if (
-            cellA.draft.includes(cellC.draft[0]) &&
-            cellA.draft.includes(cellC.draft[1]) &&
-            cellA.draft.includes(cellC.draft[2])
-          ) {
-            return true;
-          }
-        }
-      }
-    }
-  }
-
-  // 情况四：如果两个方格所在的行或列或宫只有它们俩，返回true
-  // 检查行
+  let flag1 = false;
+  let flag2 = false;
+  let flag3 = false;
   if (position1.row === position2.row) {
-    const rowCandidates = candidateMap[num]?.row?.get(position1.row);
-    if (rowCandidates?.count === 2) {
-      return true;
-    }
+    flag1 = candidateMap[num].row.get(position1.row)?.count === 2;
   }
-
-  // 检查列
-
   if (position1.col === position2.col) {
-    const colCandidates = candidateMap[num]?.col?.get(position1.col);
-
-    if (colCandidates?.count === 2) {
-      return true;
-    }
+    flag2 = candidateMap[num].col.get(position1.col)?.count === 2;
   }
-
-  // 检查宫
-  const box1 = Math.floor(position1.row / 3) * 3 + Math.floor(position1.col / 3);
-  const box2 = Math.floor(position2.row / 3) * 3 + Math.floor(position2.col / 3);
-  if (box1 === box2) {
-    const boxCandidates = candidateMap[num]?.box?.get(box1);
-    if (boxCandidates?.count === 2) {
-      return true;
-    }
+  if (
+    Math.floor(position1.row / 3) === Math.floor(position2.row / 3) &&
+    Math.floor(position1.col / 3) === Math.floor(position2.col / 3)
+  ) {
+    flag3 =
+      candidateMap[num].box.get(Math.floor(position1.row / 3) * 3 + Math.floor(position1.col / 3))
+        ?.count === 2;
   }
-
-  return false;
-};
-
-interface StrongLink {
-  positions: Position[];
-  num: number;
-}
-
-// 寻找强连接
-export const findStrongLink = (
-  board: CellData[][],
-  candidateMap: CandidateMap
-): StrongLink | null => {
-  for (const [num, { all }] of Object.entries(candidateMap)) {
-    const positions = all;
-    for (let i = 0; i < positions.length - 1; i++) {
-      for (let j = i + 1; j < positions.length; j++) {
-        const position1 = { row: positions[i].row, col: positions[i].col };
-        const position2 = { row: positions[j].row, col: positions[j].col };
-        if (isUnitStrongLink(board, position1, position2, Number(num), candidateMap)) {
-          return { positions: [position1, position2], num: Number(num) };
-        }
-      }
-    }
-  }
-  return null;
+  return flag1 || flag2 || flag3;
 };
 
 // 给定两个坐标和候选数，判断是否为强连接
@@ -1829,101 +1669,6 @@ export const getGraphNode = (pos: Position, num: number, graph: Graph): GraphNod
   }
 
   return null;
-};
-
-export const getGraphNodePaths = (
-  graphNode1: GraphNode | null,
-  graphNode2: GraphNode | null
-): Position[][] => {
-  if (!graphNode1 || !graphNode2) return [];
-  const paths: Position[][] = [];
-  const dfs = (
-    currentNode: GraphNode,
-    targetNode: GraphNode,
-    visited: Set<string>,
-    currentPath: Position[]
-  ) => {
-    if (currentNode.row === targetNode.row && currentNode.col === targetNode.col) {
-      paths.push([...currentPath]);
-      return;
-    }
-
-    for (const nextNode of currentNode.next) {
-      const key = `${nextNode.row},${nextNode.col}`;
-      if (!visited.has(key)) {
-        visited.add(key);
-        currentPath.push({ row: nextNode.row, col: nextNode.col });
-        dfs(nextNode, targetNode, visited, currentPath);
-        currentPath.pop();
-        visited.delete(key);
-      }
-    }
-  };
-
-  const visited = new Set<string>();
-  const startKey = `${graphNode1.row},${graphNode1.col}`;
-  visited.add(startKey);
-  dfs(graphNode1, graphNode2, visited, [{ row: graphNode1.row, col: graphNode1.col }]);
-
-  return paths;
-};
-
-// 检查强连接的奇偶性
-export const checkStrongLinkParity = (
-  position1: Position,
-  position2: Position,
-  num: number,
-  graph: Graph
-): 0 | 1 | 2 => {
-  const startNodes = graph[num] ?? [];
-
-  for (const startNode of startNodes) {
-    const queue: { node: GraphNode; depth: number }[] = [{ node: startNode, depth: 0 }];
-    const visited: Set<string> = new Set();
-
-    while (queue.length > 0) {
-      const { node: currentNode, depth } = queue.shift()!;
-      const key = `${currentNode.row},${currentNode.col}`;
-
-      if (visited.has(key)) {
-        continue;
-      }
-
-      visited.add(key);
-
-      if (currentNode.row === position1.row && currentNode.col === position1.col) {
-        // 找到第一个位置，继续搜索第二个位置
-        const subQueue: { node: GraphNode; depth: number }[] = [{ node: currentNode, depth: 0 }];
-        const subVisited: Set<string> = new Set();
-
-        while (subQueue.length > 0) {
-          const { node: subNode, depth: subDepth } = subQueue.shift()!;
-          const subKey = `${subNode.row},${subNode.col}`;
-
-          if (subVisited.has(subKey)) {
-            continue;
-          }
-
-          subVisited.add(subKey);
-
-          if (subNode.row === position2.row && subNode.col === position2.col) {
-            // 找到第二个位置，判断奇偶性
-            return subDepth % 2 === 0 ? 2 : 1;
-          }
-
-          for (const nextNode of subNode.next) {
-            subQueue.push({ node: nextNode, depth: subDepth + 1 });
-          }
-        }
-      }
-
-      for (const nextNode of currentNode.next) {
-        queue.push({ node: nextNode, depth: depth + 1 });
-      }
-    }
-  }
-
-  return 0;
 };
 
 // 摩天楼
@@ -4277,75 +4022,74 @@ const buildChainTree = (
 ): void => {
   if (node.depth >= depth) return;
 
-  visitedMap.add(`${node.row}-${node.col}`);
+  if (node.value) {
+    visitedMap.add(`${node.row}-${node.col}-value-${node.value}`);
+  }
+  if (node.noValue.length) {
+    for (const noValue of node.noValue) {
+      visitedMap.add(`${node.row}-${node.col}-noValue-${noValue}`);
+    }
+  }
   // 创建一个新的visitedMap副本，以避免修改原始集合
-  const newVisitedMap1 = new Set<string>(visitedMap);
-  const newVisitedMap2 = new Set<string>(visitedMap);
-  const newVisitedMap3 = new Set<string>(visitedMap);
   const pos: Position = { row: node.row, col: node.col };
 
-  // 1. 处理双数置换 (sons1)
-  const affectedCells1 = getAffectedCells(pos, node.value, candidateMap);
+  if (node.value) {
+    // 1. 处理双数置换 (sons1)
+    const affectedCells1 = getAffectedCells(pos, node.value, candidateMap);
 
-  for (const pos of affectedCells1) {
-    // 检查是否已经在祖先链中，避免循环
-    if (newVisitedMap1.has(`${pos.row}-${pos.col}`)) continue;
+    for (const pos of affectedCells1) {
+      // 如果单元格包含当前节点的值作为候选数
+      if (board[pos.row][pos.col].draft.length === 2) {
+        const other =
+          node.value === board[pos.row][pos.col].draft[0]
+            ? board[pos.row][pos.col].draft[1]
+            : board[pos.row][pos.col].draft[0];
 
-    // 如果单元格包含当前节点的值作为候选数
-    if (board[pos.row][pos.col].draft.length === 2) {
-      const other =
-        node.value === board[pos.row][pos.col].draft[0]
-          ? board[pos.row][pos.col].draft[1]
-          : board[pos.row][pos.col].draft[0];
-      const son = new Node(pos.row, pos.col, other, node.depth + 1, node, [node.value], '双');
-      node.sons1.push(son);
-      buildChainTree(son, board, candidateMap, graph, depth, newVisitedMap1);
+        if (visitedMap.has(`${pos.row}-${pos.col}-value-${other}`)) continue;
+        const son = new Node(pos.row, pos.col, other, node.depth + 1, node, [node.value], '双');
+        node.sons1.push(son);
+        buildChainTree(son, board, candidateMap, graph, depth, visitedMap);
+      }
+    }
+
+    // 2. 处理消除候选数 (sons2)
+    const affectedCells2 = getAffectedCells(
+      { row: node.row, col: node.col },
+      node.value,
+      candidateMap
+    );
+
+    for (const pos of affectedCells2) {
+      // 检查是否已经在祖先链中，避免循环
+      if (visitedMap.has(`${pos.row}-${pos.col}-noValue-${node.value}`)) continue;
+
+      const son = new Node(pos.row, pos.col, null, node.depth + 1, node, [node.value], '弱');
+      node.sons2.push(son);
+      buildChainTree(son, board, candidateMap, graph, depth, visitedMap);
     }
   }
 
-  // 2. 处理消除候选数 (sons2)
-  const affectedCells2 = getAffectedCells(
-    { row: node.row, col: node.col },
-    node.value,
-    candidateMap
-  );
-
-  for (const pos of affectedCells2) {
-    if (board[pos.row][pos.col].draft.length === 2) continue;
-    // 检查是否已经在祖先链中，避免循环
-    if (newVisitedMap2.has(`${pos.row}-${pos.col}`)) continue;
-
-    const son = new Node(pos.row, pos.col, null, node.depth + 1, node, [node.value], '弱');
-    node.sons2.push(son);
-    buildChainTree(son, board, candidateMap, graph, depth, newVisitedMap2);
-  }
-
-  // 3. 处理强链关系 (sons3)
-  for (const noValue of node.noValue) {
-    const graphNode_noValue = getGraphNode(pos, noValue, graph);
-    const nodesArray = findGraphNodeByDistance(graphNode_noValue, 1);
-    for (const graphNode of nodesArray) {
-      if (
-        board[graphNode.row][graphNode.col].draft.length === 2 &&
-        board[pos.row][pos.col].draft.length === 2 &&
-        board[graphNode.row][graphNode.col].draft[0] === board[pos.row][pos.col].draft[0] &&
-        board[graphNode.row][graphNode.col].draft[1] === board[pos.row][pos.col].draft[1]
-      )
-        continue;
-      // 检查是否已经在祖先链中，避免循环
-      if (newVisitedMap3.has(`${graphNode.row}-${graphNode.col}`)) continue;
-      const restCandidates = board[graphNode.row][graphNode.col].draft.filter(v => v !== noValue);
-      const son = new Node(
-        graphNode.row,
-        graphNode.col,
-        noValue,
-        node.depth + 1,
-        node,
-        restCandidates,
-        '强'
-      );
-      node.sons3.push(son);
-      buildChainTree(son, board, candidateMap, graph, depth, newVisitedMap3);
+  if (node.noValue.length) {
+    // 3. 处理强链关系 (sons3)
+    for (const noValue of node.noValue) {
+      const graphNode_noValue = getGraphNode(pos, noValue, graph);
+      const nodesArray = findGraphNodeByDistance(graphNode_noValue, 1);
+      for (const graphNode of nodesArray) {
+        // 检查是否已经在祖先链中，避免循环
+        if (visitedMap.has(`${graphNode.row}-${graphNode.col}-value-${noValue}`)) continue;
+        const restCandidates = board[graphNode.row][graphNode.col].draft.filter(v => v !== noValue);
+        const son = new Node(
+          graphNode.row,
+          graphNode.col,
+          noValue,
+          node.depth + 1,
+          node,
+          restCandidates,
+          '强'
+        );
+        node.sons3.push(son);
+        buildChainTree(son, board, candidateMap, graph, depth, visitedMap);
+      }
     }
   }
 };

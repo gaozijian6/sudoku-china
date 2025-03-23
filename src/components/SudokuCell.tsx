@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import type { CellData } from '../tools';
 import { Text, TextStyle, Pressable } from 'react-native';
-import styles from '../views/sudokuStyles';
+import createStyles from '../views/sudokuStyles';
 import { getCellClassName } from '../tools';
 import type { DifferenceMap } from '../tools/solution';
 
@@ -23,6 +23,7 @@ const Cell = memo(
     isHighlight,
     scaleValue,
     isMovingRef,
+    isDark,
   }: {
     cell: CellData;
     rowIndex: number;
@@ -40,7 +41,9 @@ const Cell = memo(
     isHighlight: boolean;
     scaleValue: number;
     isMovingRef: React.MutableRefObject<boolean>;
+    isDark: boolean;
   }) => {
+    const styles = createStyles(isDark);
     return (
       <Pressable
         key={`${rowIndex}-${colIndex}`}
@@ -151,7 +154,7 @@ const Cell = memo(
     );
   },
   (prevProps, nextProps) => {
-    if (prevProps.cell.value !== null) {
+    if (prevProps.cell.value !== null && prevProps.isDark === nextProps.isDark) {
       return (
         prevProps.cell.value === nextProps.cell.value &&
         prevProps.selectedNumber === nextProps.selectedNumber &&
@@ -180,7 +183,8 @@ const Cell = memo(
       JSON.stringify(prevProps.resultBoard[prevProps.rowIndex][prevProps.colIndex]) ===
         JSON.stringify(nextProps.resultBoard[nextProps.rowIndex][nextProps.colIndex]) &&
       prevProps.isMovingRef === nextProps.isMovingRef &&
-      prevProps.scaleValue === nextProps.scaleValue
+      prevProps.scaleValue === nextProps.scaleValue &&
+      prevProps.isDark === nextProps.isDark
     );
   }
 );

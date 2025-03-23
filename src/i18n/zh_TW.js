@@ -240,5 +240,9 @@ export default {
     period: '。',
     end1: '紅色方格不能取{{target}}',
     end2: '紅色方格還是不能取{{target}}',
+    theme: '主題',
+    selectTheme: '選擇主題',
+    lightMode: '淺色模式',
+    darkMode: '深色模式',
   },
 };

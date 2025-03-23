@@ -23,24 +23,24 @@ interface TarBarsSudokuProps {
 }
 
 function TarBarsSudoku({ onBack, openSetting, saveDataDIY, resetSudoku }: TarBarsSudokuProps) {
-  const {
-    setIsHome,
-    setIsDIY,
-    myBoards,
-    setMyBoards,
-    setSudokuType,
-    sudokuType,
-    currentName,
-    isConnected,
-    localsudokuDataDIY1,
-    localsudokuDataDIY2,
-    scaleValue2,
-    setScaleValue2,
-    setIsEnlarge,
-    isHint,
-    isSetting,
-    isDIY,
-  } = useSudokuStore();
+  const setIsHome = useSudokuStore(state => state.setIsHome);
+  const setIsDIY = useSudokuStore(state => state.setIsDIY);
+  const myBoards = useSudokuStore(state => state.myBoards);
+  const setMyBoards = useSudokuStore(state => state.setMyBoards);
+  const setSudokuType = useSudokuStore(state => state.setSudokuType);
+  const sudokuType = useSudokuStore(state => state.sudokuType);
+  const currentName = useSudokuStore(state => state.currentName);
+  const isConnected = useSudokuStore(state => state.isConnected);
+  const localsudokuDataDIY1 = useSudokuStore(state => state.localsudokuDataDIY1);
+  const localsudokuDataDIY2 = useSudokuStore(state => state.localsudokuDataDIY2);
+  const scaleValue2 = useSudokuStore(state => state.scaleValue2);
+  const setScaleValue2 = useSudokuStore(state => state.setScaleValue2);
+  const setIsEnlarge = useSudokuStore(state => state.setIsEnlarge);
+  const isHint = useSudokuStore(state => state.isHint);
+  const isSetting = useSudokuStore(state => state.isSetting);
+  const isDark = useSudokuStore(state => state.isDark);
+
+  const styles = createStyles(isDark);
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(scaleValue2);
@@ -244,140 +244,150 @@ function TarBarsSudoku({ onBack, openSetting, saveDataDIY, resetSudoku }: TarBar
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'rgb(91,139,241)',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 40,
-    zIndex: 1000,
-  },
-  sudoku: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-    width: 200,
-    textAlign: 'center',
-  },
-  sudokuContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    paddingHorizontal: 15,
-  },
-  leftSection: {
-    flex: 1,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    paddingLeft: 15,
-    position: 'absolute',
-    left: 0,
-    zIndex: 100,
-  },
-  centerSection: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  rightSection: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    height: '100%',
-    position: 'absolute',
-    right: 0,
-    zIndex: 1000,
-  },
-  resetIconContainer: {
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 40,
-    // backgroundColor: 'red',
-  },
-  saveIconContainer: {
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 40,
-  },
-  settingIconContainer: {
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
-    width: 40,
-    // backgroundColor: 'red',
-  },
-  resetIcon: {
-    width: 30,
-    height: 30,
-  },
-  saveIcon: {
-    width: 28,
-    height: 28,
-  },
-  backIcon: {
-    width: 22,
-    height: 22,
-    marginRight: 10,
-  },
-  settingIcon: {
-    width: 26,
-    height: 26,
-    marginRight: 10,
-  },
-  dropdownContainer: {
-    width: 90,
-    marginRight: 10,
-    zIndex: 3000,
-    elevation: 3,
-  },
-  dropdown: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderWidth: 0,
-    minHeight: 30,
-    height: 30,
-  },
-  dropdownText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  dropdownMenu: {
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 8,
-    position: 'absolute',
-    top: 30,
-    zIndex: 9999,
-    paddingVertical: 5,
-  },
-  dropdownLabel: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  dropdownItemLabel: {
-    color: '#333',
-    fontSize: 14,
-  },
-  placeholderStyle: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-});
+const createStyles = (isDark: boolean) =>
+  StyleSheet.create({
+    container: {
+      // backgroundColor: 'rgb(91,139,241)',
+      backgroundColor: isDark ? 'rgb(39, 60, 95)' : 'rgb(91,139,241)',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      height: 40,
+      zIndex: 1000,
+    },
+    sudoku: {
+      color: isDark ? '#777' : 'white',
+      fontSize: 20,
+      fontWeight: 'bold',
+      width: 200,
+      textAlign: 'center',
+    },
+    sudokuContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      width: '100%',
+      paddingHorizontal: 15,
+    },
+    leftSection: {
+      flex: 1,
+      alignItems: 'flex-start',
+      justifyContent: 'center',
+      paddingLeft: 15,
+      position: 'absolute',
+      left: 0,
+      zIndex: 100,
+    },
+    centerSection: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    rightSection: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      height: '100%',
+      position: 'absolute',
+      right: 0,
+      zIndex: 1000,
+    },
+    resetIconContainer: {
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 40,
+    },
+    saveIconContainer: {
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 40,
+    },
+    settingIconContainer: {
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 10,
+      width: 40,
+    },
+    resetIcon: {
+      width: 30,
+      height: 30,
+      // tintColor: 'white',
+      tintColor: isDark ? '#666' : '#fff',
+    },
+    saveIcon: {
+      width: 28,
+      height: 28,
+      tintColor: isDark ? '#666' : '#fff',
+    },
+    backIcon: {
+      width: 22,
+      height: 22,
+      marginRight: 10,
+      tintColor: isDark ? '#666' : '#fff',
+    },
+    settingIcon: {
+      width: 26,
+      height: 26,
+      marginRight: 10,
+      tintColor: isDark ? '#666' : '#fff',
+    },
+    dropdownContainer: {
+      width: 90,
+      marginRight: 10,
+      zIndex: 3000,
+      elevation: 3,
+    },
+    dropdown: {
+      // backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      backgroundColor: isDark ? 'rgba(124, 124, 124, 0.2)' : 'rgba(255, 255, 255, 0.2)',
+      borderWidth: 0,
+      minHeight: 30,
+      height: 30,
+    },
+    dropdownText: {
+      color: 'white',
+      fontSize: 14,
+      fontWeight: 'bold',
+    },
+    dropdownMenu: {
+      // backgroundColor: 'white',
+      backgroundColor: isDark ? 'rgb(39, 60, 95)' : 'white',
+      borderWidth: 1,
+      borderColor: '#e0e0e0',
+      borderRadius: 8,
+      // shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 6,
+      elevation: 8,
+      position: 'absolute',
+      top: 30,
+      zIndex: 9999,
+      paddingVertical: 5,
+    },
+    dropdownLabel: {
+      // color: 'white',
+      color: isDark ? '#666' : '#fff',
+      fontSize: 14,
+      fontWeight: 'bold',
+    },
+    dropdownItemLabel: {
+      // color: '#333',
+      color: isDark ? '#666' : '#333',
+      fontSize: 14,
+    },
+    placeholderStyle: {
+      // color: 'white',
+      color: isDark ? '#666' : '#fff',
+      fontSize: 14,
+      fontWeight: 'bold',
+    },
+  });
 
 export default TarBarsSudoku;

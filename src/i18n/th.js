@@ -82,7 +82,7 @@ export default {
     UNIQUE_RECTANGLE: 'สี่เหลี่ยมผืนผ้าที่เป็นเอกลักษณ์',
     BINARY_UNIVERSAL_GRAVE: 'สี่เหลี่ยมผืนผ้าที่เป็นเอกลักษณ์',
     DOUBLE_COLOR_CHAIN: 'ห่วงโซ่สองสี',
-    TRIPLE_COLOR_CHAIN: 'ห่วงโซ่สีสาม',
+    TRIPLE_COLOR_CHAIN: 'ห่วงโซ่สามสี',
     TRIAL_AND_ERROR: 'ลองผิดลองถูก',
     duration: 'เวลา',
     mistakes: 'ข้อผิดพลาด',
@@ -246,5 +246,9 @@ export default {
     period: '.',
     end1: 'ช่องสีแดงไม่สามารถมีค่า {{target}} ได้',
     end2: 'ช่องสีแดงยังคงไม่สามารถมีค่า {{target}} ได้',
+    theme: 'ธีม',
+    selectTheme: 'เลือกธีม',
+    lightMode: 'ธีมสีขาว',
+    darkMode: 'ธีมสีดำ',
   },
 };

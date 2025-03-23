@@ -28,7 +28,9 @@ function ResultView({ onBack, resetSudoku, visible }: ResultProps) {
     setIsContinue,
     initializeBoard2,
     isContinue,
+    isDark,
   } = useSudokuStore();
+  const styles = createStyles(isDark);
   useEffect(() => {
     if (visible) {
       scaleAnim.setValue(0);
@@ -120,71 +122,72 @@ function ResultView({ onBack, resetSudoku, visible }: ResultProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1000,
-  },
-  container: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 20,
-    alignItems: 'center',
-    width: model.includes('iPad') ? '60%' : 320,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
-  },
-  content: {
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  row: {
-    flexDirection: 'row',
-    width: '80%',
-    marginBottom: 12,
-    justifyContent: 'flex-start',
-  },
-  leftText: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'left',
-    marginRight: 8,
-  },
-  rightText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  buttonContainer: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  button: {
-    backgroundColor: '#1890ff',
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderRadius: 4,
-    width: 130,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-});
+const createStyles = (isDark: boolean) =>
+  StyleSheet.create({
+    overlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1000,
+    },
+    container: {
+      backgroundColor: isDark ? 'rgb( 32, 31, 33)' : '#fff',
+      borderRadius: 8,
+      padding: 20,
+      alignItems: 'center',
+      width: model.includes('iPad') ? '60%' : 320,
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: isDark ? '#888' : '#333',
+      marginBottom: 15,
+    },
+    content: {
+      marginBottom: 20,
+      alignItems: 'center',
+    },
+    row: {
+      flexDirection: 'row',
+      width: '80%',
+      marginBottom: 12,
+      justifyContent: 'flex-start',
+    },
+    leftText: {
+      fontSize: 16,
+      color: '#666',
+      textAlign: 'left',
+      marginRight: 8,
+    },
+    rightText: {
+      fontSize: 16,
+      color: '#666',
+    },
+    buttonContainer: {
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+    },
+    button: {
+      backgroundColor: isDark ? 'rgb(58, 88, 155)' : 'rgb(91,139,241)',
+      paddingVertical: 8,
+      paddingHorizontal: 10,
+      borderRadius: 4,
+      width: 130,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    buttonText: {
+      color: isDark ? '#999' : '#fff',
+      fontSize: 16,
+      textAlign: 'center',
+    },
+  });
 
 export default ResultView;

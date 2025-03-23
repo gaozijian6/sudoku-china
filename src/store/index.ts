@@ -105,6 +105,8 @@ interface SudokuState {
   setIsHint: (value: boolean) => void;
   isConnected: boolean;
   setIsConnected: (value: boolean) => void;
+  isDark: boolean;
+  setIsDark: (value: boolean) => void;
 }
 
 export const useSudokuStore = create<SudokuState>(set => ({
@@ -215,4 +217,6 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setIsHint: value => set({ isHint: value }),
   isConnected: false,
   setIsConnected: value => set({ isConnected: value }),
+  isDark: false,
+  setIsDark: value => set({ isDark: value }),
 }));

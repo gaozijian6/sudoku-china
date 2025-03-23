@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Text, View, Pressable } from 'react-native';
-import styles from '../views/sudokuStyles';
+import createStyles from '../views/sudokuStyles';
 
 const Buttons = memo(
   ({
@@ -11,6 +11,7 @@ const Buttons = memo(
     draftMode,
     scaleValue,
     isMovingRef,
+    isDark,
   }: {
     handleNumberSelect: (number: number) => void;
     remainingCounts: number[];
@@ -19,7 +20,9 @@ const Buttons = memo(
     draftMode: boolean;
     scaleValue: number;
     isMovingRef: React.MutableRefObject<boolean>;
+    isDark: boolean;
   }) => {
+    const styles = createStyles(isDark);
     return (
       <View style={styles.numberButtons}>
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(number => (
@@ -40,7 +43,8 @@ const Buttons = memo(
               remainingCounts?.[number - 1] === 0 && styles.numberButtonDisabled,
               selectionMode === 1 &&
                 selectedNumber === number && {
-                  backgroundColor: '#1890ff',
+                  // backgroundColor: '#1890ff',
+                  backgroundColor: isDark ? 'rgb(40, 61, 129)' : '#1890ff',
                 },
             ]}
             disabled={!draftMode && remainingCounts?.[number - 1] === 0}
