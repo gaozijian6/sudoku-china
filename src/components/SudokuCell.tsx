@@ -3,7 +3,7 @@ import type { CellData } from '../tools';
 import { Text, TextStyle, Pressable } from 'react-native';
 import createStyles from '../views/sudokuStyles';
 import { getCellClassName } from '../tools';
-import type { DifferenceMap } from '../tools/solution';
+import type { DifferenceMap, FalseCells } from '../tools/solution';
 
 const Cell = memo(
   ({
@@ -24,6 +24,7 @@ const Cell = memo(
     scaleValue,
     isMovingRef,
     isDark,
+    falseCells,
   }: {
     cell: CellData;
     rowIndex: number;
@@ -42,6 +43,7 @@ const Cell = memo(
     scaleValue: number;
     isMovingRef: React.MutableRefObject<boolean>;
     isDark: boolean;
+    falseCells?: FalseCells[];
   }) => {
     const styles = createStyles(isDark);
     return (
@@ -81,6 +83,9 @@ const Cell = memo(
             selectedCell?.col === colIndex &&
             styles.selectedCell,
           errorCells?.some(errorCell => errorCell.row === rowIndex && errorCell.col === colIndex) &&
+            styles.errorCell,
+          ...(cell.highlights?.map(highlight => styles[highlight as keyof typeof styles]) || []),
+          falseCells?.some(falseCell => falseCell.row === rowIndex && falseCell.col === colIndex) &&
             styles.errorCell,
           ...(cell.highlights?.map(highlight => styles[highlight as keyof typeof styles]) || []),
         ]}
@@ -160,7 +165,8 @@ const Cell = memo(
         prevProps.selectedNumber === nextProps.selectedNumber &&
         prevProps.errorCells?.length === nextProps.errorCells?.length &&
         prevProps.selectedCell?.row === nextProps.selectedCell?.row &&
-        prevProps.selectedCell?.col === nextProps.selectedCell?.col
+        prevProps.selectedCell?.col === nextProps.selectedCell?.col &&
+        prevProps.falseCells?.length === nextProps.falseCells?.length
       );
     }
 

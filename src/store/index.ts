@@ -67,6 +67,12 @@ interface SudokuState {
   setIsLevel: (value: boolean) => void;
   initializeBoard2: (puzzle: string, answer: string) => void;
   setInitializeBoard2: (fn: (puzzle: string, answer: string) => void) => void;
+  isConnected: boolean;
+  setIsConnected: (value: boolean) => void;
+  isVip: boolean;
+  setIsVip: (value: boolean) => void;
+  isIllegal: boolean;
+  setIsIllegal: (value: boolean) => void;
   isHighlight: boolean;
   setIsHighlight: (value: boolean) => void;
   isSetting: boolean;
@@ -103,10 +109,10 @@ interface SudokuState {
   setScaleValue2: (value: number) => void;
   isHint: boolean;
   setIsHint: (value: boolean) => void;
-  isConnected: boolean;
-  setIsConnected: (value: boolean) => void;
   isDark: boolean;
   setIsDark: (value: boolean) => void;
+  isReason: boolean;
+  setIsReason: (value: boolean) => void;
 }
 
 export const useSudokuStore = create<SudokuState>(set => ({
@@ -134,6 +140,12 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setIsLevel: value => set({ isLevel: value }),
   initializeBoard2: () => {},
   setInitializeBoard2: fn => set({ initializeBoard2: fn }),
+  isConnected: false,
+  setIsConnected: value => set({ isConnected: value }),
+  isVip: false,
+  setIsVip: value => set({ isVip: value }),
+  isIllegal: false,
+  setIsIllegal: value => set({ isIllegal: value }),
   isHighlight: true,
   setIsHighlight: value => set({ isHighlight: value }),
   isSetting: false,
@@ -215,8 +227,8 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setScaleValue2: value => set({ scaleValue2: value }),
   isHint: false,
   setIsHint: value => set({ isHint: value }),
-  isConnected: false,
-  setIsConnected: value => set({ isConnected: value }),
   isDark: false,
   setIsDark: value => set({ isDark: value }),
+  isReason: false,
+  setIsReason: value => set({ isReason: value }),
 }));

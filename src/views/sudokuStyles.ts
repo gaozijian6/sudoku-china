@@ -171,6 +171,11 @@ const sudokuStyles = (isDark: boolean) =>
     },
     errorCell: {
       backgroundColor: '#ffccc7',
+      borderColor: '#ffccc7',
+      borderLeftColor: '#ffccc7',
+      borderRightColor: '#ffccc7',
+      borderTopColor: '#ffccc7',
+      borderBottomColor: '#ffccc7',
     },
     draftGrid: {
       flexDirection: 'row',
@@ -536,6 +541,30 @@ const sudokuStyles = (isDark: boolean) =>
       backgroundColor: 'transparent',
       paddingVertical: 5,
       zIndex: 9000,
+      opacity: isDark ? 0.5 : 1,
+    },
+    tooltipPressable: {
+      position: 'relative',
+      marginLeft: 10,
+      width: 32,
+      height: 32,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    hintIcon: {
+      width: 28,
+      height: 28,
+      opacity: isDark ? 0.5 : 1,
+    },
+    tooltipText: {
+      fontSize: 18,
+      color: 'black',
+    },
+    tooltip: {
+      backgroundColor: isDark ? 'rgb(39, 60, 95)' : 'white',
+    },
+    tooltipBackground: {
+      backgroundColor: isDark ? 'rgb(39, 60, 95)' : 'white',
     },
   });
 

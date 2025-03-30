@@ -250,5 +250,11 @@ export default {
     selectTheme: 'Select Theme',
     lightMode: 'Light Mode',
     darkMode: 'Dark Mode',
+    strictMode: 'Strict Mode',
+    reasonMode: 'Reasoning Mode',
+    strictText:
+      'Strict Mode: When the number you enter does not match the answer, it will prompt an error',
+    reasonText:
+      'Reasoning Mode: When the number you enter does not match the answer, it will not prompt an error',
   },
 };

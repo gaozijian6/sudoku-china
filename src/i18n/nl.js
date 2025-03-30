@@ -250,5 +250,11 @@ export default {
     selectTheme: 'Thema selecteren',
     lightMode: 'Lichtmodus',
     darkMode: 'Donkermodus',
+    strictMode: 'Strenge Modus',
+    reasonMode: 'Beweismodus',
+    strictText:
+      'Strenge Modus: Wanneer de waarde die u invoert niet overeenkomt met de oplossing, wordt een foutbericht weergegeven',
+    reasonText:
+      'Beweismodus: Wanneer de waarde die u invoert niet overeenkomt met de oplossing, wordt geen foutbericht weergegeven',
   },
 };

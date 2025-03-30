@@ -22,7 +22,7 @@ interface SettingProps {
   closeSetting: () => void;
 }
 
-const APP_VERSION = '1.8';
+const APP_VERSION = '1.9';
 
 const PRIVACY_POLICY_URL = 'https://sites.google.com/view/sudokucustom';
 const TERMS_OF_SERVICE_URL = 'https://sites.google.com/view/sudoku-custom-terms';
@@ -34,6 +34,8 @@ function Setting({ slideAnim, closeSetting }: SettingProps) {
   const setIsHighlight = useSudokuStore(state => state.setIsHighlight);
   const isDark = useSudokuStore(state => state.isDark);
   const setIsDark = useSudokuStore(state => state.setIsDark);
+  const isReason = useSudokuStore(state => state.isReason);
+  const setIsReason = useSudokuStore(state => state.setIsReason);
   const styles = createStyles(isDark);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const { t, i18n } = useTranslation();
@@ -60,7 +62,7 @@ function Setting({ slideAnim, closeSetting }: SettingProps) {
 
   const handleFeedback = useCallback(() => {
     const email = 'gaozijian32@gmail.com';
-    const subject = `Feedback Sudoku ${APP_VERSION}`;
+    const subject = `趣数独反馈 ${APP_VERSION}`;
     const body = `
 App Version: ${APP_VERSION}
 OS Version: ${Platform.OS} ${Platform.Version}
@@ -97,6 +99,11 @@ ${t('feedbackMessage')}
     AsyncStorage.getItem('isDark').then(value => {
       if (value) {
         setIsDark(value === 'true');
+      }
+    });
+    AsyncStorage.getItem('isReason').then(value => {
+      if (value) {
+        setIsReason(value === 'true');
       }
     });
   }, []);
@@ -168,6 +175,29 @@ ${t('feedbackMessage')}
           >
             <Image source={require('../assets/icon/moon.png')} style={styles.moonIcon} />
             <Text style={[styles.modeText]}>{t('darkMode')}</Text>
+          </Pressable>
+        </View>
+
+        <View style={[styles.item, styles.modeSelector]}>
+          <Pressable
+            style={[styles.modeButton, !isReason && styles.activeMode]}
+            onPressIn={() => {
+              setIsReason(false);
+              AsyncStorage.setItem('isReason', 'false');
+            }}
+          >
+            <Image source={require('../assets/icon/strict.png')} style={styles.strictIcon} />
+            <Text style={[styles.modeText]}>{t('strictMode')}</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.modeButton, isReason && styles.activeMode]}
+            onPressIn={() => {
+              setIsReason(true);
+              AsyncStorage.setItem('isReason', 'true');
+            }}
+          >
+            <Image source={require('../assets/icon/reason.png')} style={styles.reasonIcon} />
+            <Text style={[styles.modeText]}>{t('reasonMode')}</Text>
           </Pressable>
         </View>
 
@@ -332,10 +362,11 @@ const createStyles = (isDark: boolean) =>
     modeButton: {
       flex: 1,
       flexDirection: 'row',
-      justifyContent: 'center',
       alignItems: 'center',
       paddingVertical: 10,
+      paddingLeft: 15,
       borderRadius: 0,
+      height: '100%',
     },
     activeMode: {
       backgroundColor: isDark ? 'rgb(39, 60, 95)' : 'rgb(91,139,241)',
@@ -348,12 +379,22 @@ const createStyles = (isDark: boolean) =>
     sunIcon: {
       width: 30,
       height: 30,
-      tintColor: isDark ? '#999' : 'white',
+      opacity: isDark ? 0.5 : 1,
     },
     moonIcon: {
       width: 30,
       height: 30,
-      tintColor: 'black',
+      opacity: isDark ? 0.5 : 1,
+    },
+    strictIcon: {
+      width: 30,
+      height: 30,
+      opacity: isDark ? 0.5 : 1,
+    },
+    reasonIcon: {
+      width: 30,
+      height: 30,
+      opacity: isDark ? 0.5 : 1,
     },
   });
 export default Setting;

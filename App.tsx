@@ -19,24 +19,22 @@ import NetInfo from '@react-native-community/netinfo';
 const slideAnim = Dimensions.get('window').width;
 
 function App() {
-  const {
-    setIsHasContinue,
-    setIsSound,
-    setIsHighlight,
-    setIsSetting,
-    setIsBackground,
-    setIsInactive,
-    setLocalsudokuDataDIY1,
-    setLocalsudokuDataDIY2,
-    initSudokuDataDIY1,
-    initSudokuDataDIY2,
-    isSudoku,
-    isContinue,
-    scaleValue1,
-    scaleValue2,
-    sudokuType,
-    setIsConnected
-  } = useSudokuStore();
+  const setIsHasContinue = useSudokuStore(state => state.setIsHasContinue);
+  const setIsSound = useSudokuStore(state => state.setIsSound);
+  const setIsHighlight = useSudokuStore(state => state.setIsHighlight);
+  const setIsSetting = useSudokuStore(state => state.setIsSetting);
+  const setIsBackground = useSudokuStore(state => state.setIsBackground);
+  const setIsInactive = useSudokuStore(state => state.setIsInactive);
+  const setLocalsudokuDataDIY1 = useSudokuStore(state => state.setLocalsudokuDataDIY1);
+  const setLocalsudokuDataDIY2 = useSudokuStore(state => state.setLocalsudokuDataDIY2);
+  const initSudokuDataDIY1 = useSudokuStore(state => state.initSudokuDataDIY1);
+  const initSudokuDataDIY2 = useSudokuStore(state => state.initSudokuDataDIY2);
+  const isSudoku = useSudokuStore(state => state.isSudoku);
+  const isContinue = useSudokuStore(state => state.isContinue);
+  const scaleValue1 = useSudokuStore(state => state.scaleValue1);
+  const scaleValue2 = useSudokuStore(state => state.scaleValue2);
+  const sudokuType = useSudokuStore(state => state.sudokuType);
+  const setIsConnected = useSudokuStore(state => state.setIsConnected);
   const slideAnim1 = useRef(new Animated.Value(slideAnim)).current;
   const slideAnim2 = useRef(new Animated.Value(slideAnim)).current;
   const isMovingRef = useRef(false);

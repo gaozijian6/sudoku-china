@@ -249,5 +249,9 @@ export default {
     selectTheme: '테마 선택',
     lightMode: '라이트 모드',
     darkMode: '다크 모드',
+    strictMode: '엄격한 모드',
+    reasonMode: '추론 모드',
+    strictText: '엄격한 모드: 입력한 숫자가 답과 일치하지 않으면 오류 메시지가 표시됩니다',
+    reasonText: '추론 모드: 입력한 숫자가 답과 일치하지 않으면 오류 메시지가 표시되지 않습니다',
   },
 };

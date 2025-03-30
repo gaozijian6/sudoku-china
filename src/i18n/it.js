@@ -251,5 +251,11 @@ export default {
     selectTheme: 'Seleziona Tema',
     lightMode: 'Modalità Chiaro',
     darkMode: 'Modalità Scuro',
+    strictMode: 'Modalità stretta',
+    reasonMode: 'Modalità deduzione',
+    strictText:
+      'Modalità stretta: Quando il valore che inserisci non corrisponde alla risposta, viene visualizzato un messaggio di errore',
+    reasonText:
+      'Modalità deduzione: Quando il valore che inserisci non corrisponde alla risposta, non viene visualizzato un messaggio di errore',
   },
 };

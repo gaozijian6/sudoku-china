@@ -247,5 +247,9 @@ export default {
     selectTheme: 'テーマを選択',
     lightMode: 'ライトモード',
     darkMode: 'ダークモード',
+    strictMode: '厳格モード',
+    reasonMode: '推論モード',
+    strictText: '厳格モード: 入力した数字が答えと一致しない場合、エラーメッセージが表示されます',
+    reasonText: '推論モード: 入力した数字が答えと一致しない場合、エラーメッセージが表示されません',
   },
 };

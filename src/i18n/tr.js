@@ -254,5 +254,9 @@ export default {
     selectTheme: 'Tema seç',
     lightMode: 'Açık tema',
     darkMode: 'Koyu tema',
+    strictMode: 'Kesinlikle',
+    reasonMode: 'Neden',
+    strictText: 'Kesinlikle: Girilen değer doğru değilse, hata mesajı görüntülenir',
+    reasonText: 'Neden: Girilen değer doğru değilse, hata mesajı görüntülenmez',
   },
 };
