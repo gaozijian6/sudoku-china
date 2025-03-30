@@ -244,5 +244,9 @@ export default {
     selectTheme: '選擇主題',
     lightMode: '淺色模式',
     darkMode: '深色模式',
+    strictMode: '嚴格模式',
+    reasonMode: '推理模式',
+    strictText: '嚴格模式:當您輸入的數字與答案不符時，會提示錯誤',
+    reasonText: '推理模式:當您輸入的數字與答案不符時，不會提示錯誤',
   },
 };

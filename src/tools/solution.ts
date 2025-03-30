@@ -52,6 +52,11 @@ export interface DifferenceMap {
   [key: string]: number[];
 }
 
+export interface FalseCells {
+  row: number;
+  col: number;
+}
+
 // 检查两个格子是否在同一宫或行或列
 export const areCellsInSameUnit = (cell1: Position, cell2: Position) => {
   // 检查是否在同一行
@@ -70,19 +75,81 @@ export const areCellsInSameUnit = (cell1: Position, cell2: Position) => {
 
 export const findDifferenceDraft = (
   beforeBoard: CellData[][],
-  afterBoard: CellData[][]
+  afterBoard: CellData[][],
+  answerBoard: CellData[][]
 ): DifferenceMap => {
   const differenceMap: DifferenceMap = {};
   for (let row = 0; row < 9; row++) {
     for (let col = 0; col < 9; col++) {
       const beforeDraft = beforeBoard[row]?.[col]?.draft || [];
       const afterDraft = afterBoard[row]?.[col]?.draft || [];
-      const newCandidates = afterDraft.filter(num => !beforeDraft.includes(num));
-      afterDraft.forEach(num => {
-        if (!beforeDraft.includes(num)) {
-          newCandidates.push(num);
-        }
-      });
+      const newCandidates: number[] = [];
+      if (!beforeDraft.includes(answerBoard[row][col].value!)) {
+        newCandidates.push(...afterDraft.filter(num => !beforeDraft.includes(num)));
+      }
+      if (newCandidates.length > 0) {
+        differenceMap[`${row},${col}`] = newCandidates;
+      }
+    }
+  }
+  return differenceMap;
+};
+
+export const findDifferenceDraftAll = (
+  beforeBoard: CellData[][],
+  afterBoard: CellData[][],
+  answerBoard: CellData[][]
+): DifferenceMap => {
+  const differenceMap: DifferenceMap = {};
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      const beforeDraft = beforeBoard[row]?.[col]?.draft || [];
+      const afterDraft = afterBoard[row]?.[col]?.draft || [];
+      const newCandidates: number[] = [];
+      if (JSON.stringify(beforeDraft) !== JSON.stringify(afterDraft)) {
+        newCandidates.push(...afterDraft.filter(num => !beforeDraft.includes(num)));
+      }
+      if (newCandidates.length > 0) {
+        differenceMap[`${row},${col}`] = newCandidates;
+      }
+    }
+  }
+  return differenceMap;
+};
+
+export const findDifferenceCells = (
+  beforeBoard: CellData[][],
+  afterBoard: CellData[][],
+  answerBoard: CellData[][]
+): FalseCells[] => {
+  const falseCells: FalseCells[] = [];
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (
+        beforeBoard[row][col].value &&
+        answerBoard[row][col].value !== afterBoard[row][col].value
+      ) {
+        falseCells.push({ row, col });
+      }
+    }
+  }
+  return falseCells;
+};
+
+export const findDifferenceDraftDIY = (
+  beforeBoard: CellData[][],
+  afterBoard: CellData[][],
+  answerBoard: CellData[][]
+): DifferenceMap => {
+  const differenceMap: DifferenceMap = {};
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      const beforeDraft = beforeBoard[row]?.[col]?.draft || [];
+      const afterDraft = afterBoard[row]?.[col]?.draft || [];
+      const newCandidates: number[] = [];
+      if (!beforeDraft.includes(answerBoard[row][col].value!)) {
+        newCandidates.push(...afterDraft.filter(num => !beforeDraft.includes(num)));
+      }
       if (newCandidates.length > 0) {
         differenceMap[`${row},${col}`] = newCandidates;
       }

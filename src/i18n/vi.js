@@ -250,5 +250,11 @@ export default {
     selectTheme: 'Chọn chủ đề',
     lightMode: 'Chủ đề sáng',
     darkMode: 'Chủ đề tối',
+    strictMode: 'Chế độ chặt chẽ',
+    reasonMode: 'Chế độ suy luận',
+    strictText:
+      'Chế độ chặt chẽ: Khi giá trị bạn nhập không khớp với đáp án, sẽ hiển thị thông báo lỗi',
+    reasonText:
+      'Chế độ suy luận: Khi giá trị bạn nhập không khớp với đáp án, không hiển thị thông báo lỗi',
   },
 };

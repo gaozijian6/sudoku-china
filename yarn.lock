@@ -4002,6 +4002,7 @@ __metadata:
     react-native-safe-area-context: ^5.1.0
     react-native-sound: ^0.11.2
     react-native-svg: ^15.8.0
+    react-native-walkthrough-tooltip: ^1.6.0
     react-test-renderer: 18.3.1
     typescript: 5.0.4
     zustand: ^5.0.1
@@ -11015,7 +11016,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:15.8.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:15.8.1, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -11217,6 +11218,13 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
   checksum: 298954ecd8f78288dcaece05e88b570014d8f6dce5db6f66e6ee91448debeb59dcd31561dddb354eee47e6c1bb234669459060deb238ed0213497146e555a0b9
+  languageName: node
+  linkType: hard
+
+"react-fast-compare@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "react-fast-compare@npm:2.0.4"
+  checksum: 06046595f90a4e3e3a56f40a8078c00aa71bdb064ddb98343f577f546aa22e888831fd45f009c93b34707cc842b4c637737e956fd13d6f80607ee92fb9cf9a1c
   languageName: node
   linkType: hard
 
@@ -11466,6 +11474,18 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: ad9d6093f3aef0d53c5e2a562afb7805009f2bf50fd4ec6e77f8c18a6cb7e06a7793d55cc66d523c7d30c77cae170ee26767c72ad5b1a1f07032420ccf4162fe
+  languageName: node
+  linkType: hard
+
+"react-native-walkthrough-tooltip@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "react-native-walkthrough-tooltip@npm:1.6.0"
+  dependencies:
+    prop-types: ^15.6.1
+    react-fast-compare: ^2.0.4
+  peerDependencies:
+    "@types/react": ">=16.8.24"
+  checksum: 568d4ef95128e36b0237180a8ea4ee040b74c2912a5916f446f9de611b9179368f168d6f12ae93cd90cf700b9464868df8d5af5a99f9029fd9b99dffdd1c2144
   languageName: node
   linkType: hard
 

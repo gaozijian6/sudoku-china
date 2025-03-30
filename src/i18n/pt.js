@@ -251,5 +251,11 @@ export default {
     selectTheme: 'Selecionar Tema',
     lightMode: 'Modo Claro',
     darkMode: 'Modo Escuro',
+    strictMode: 'Modo Estrito',
+    reasonMode: 'Modo de Razonamento',
+    strictText:
+      'Modo estrito: Quando o valor que você insere não corresponde à resposta, uma mensagem de erro será exibida',
+    reasonText:
+      'Modo de razonamento: Quando o valor que você insere não corresponde à resposta, uma mensagem de erro não será exibida',
   },
 };

@@ -40,6 +40,7 @@ export const useSudokuBoard = () => {
   const graph = useRef<Graph>(createGraph(initialBoard, candidateMap.current));
   const [counts, setCounts] = useState<number>(0);
   const [standradBoard, setStandradBoard] = useState<CellData[][]>(initialBoard);
+  const standradBoardRef = useRef<CellData[][]>(initialBoard);
   const countsSync = useRef<number>(0);
   const remainingCountsSync = useRef<number[]>(Array(9).fill(9));
   const resetSudokuBoard = useCallback(() => {
@@ -54,6 +55,7 @@ export const useSudokuBoard = () => {
     setCounts(0);
     countsSync.current = 0;
     setStandradBoard(initialBoard);
+    standradBoardRef.current = initialBoard;
     setIsInitialized(false);
   }, [candidateMap]);
 
@@ -97,7 +99,8 @@ export const useSudokuBoard = () => {
 
     graph.current = createGraph(newBoard, newCandidateMap);
 
-    setStandradBoard(copyOfficialDraft(deepCopyBoard(newBoard)));
+    standradBoardRef.current = copyOfficialDraft(deepCopyBoard(newBoard));
+    setStandradBoard(standradBoardRef.current);
     candidateMap.current = newCandidateMap;
   }, []);
 
@@ -114,6 +117,7 @@ export const useSudokuBoard = () => {
       setCounts(data.counts);
       countsSync.current = data.counts;
       setStandradBoard(data.standradBoard);
+      standradBoardRef.current = data.standradBoard;
       setIsInitialized(true);
       updateCandidateMap(data.board);
     }
@@ -141,8 +145,31 @@ export const useSudokuBoard = () => {
         }
       });
     });
+
     setRemainingCounts(counts);
     remainingCountsSync.current = counts;
+  }, []);
+
+  const getCounts = useCallback((puzzle: string): number => {
+    let count = 0;
+    for (let i = 0; i < puzzle.length; i++) {
+      if (puzzle[i] !== '0') {
+        count++;
+      }
+    }
+    return count;
+  }, []);
+
+  const getCounts2 = useCallback((board: CellData[][]): number => {
+    let count = 0;
+    board.forEach(row => {
+      row.forEach(cell => {
+        if (cell.value) {
+          count++;
+        }
+      });
+    });
+    return count;
   }, []);
 
   const saveSudokuData = useCallback(async () => {
@@ -160,10 +187,6 @@ export const useSudokuBoard = () => {
 
   const updateBoard = useCallback(
     (newBoard: CellData[][], action: string, isFill: boolean) => {
-      if (isFill) {
-        countsSync.current++;
-        setCounts(countsSync.current);
-      }
       if (!action.startsWith('取消') && !action.startsWith('提示')) {
         const newHistory = history.current.slice(0);
         newHistory.push({
@@ -177,10 +200,13 @@ export const useSudokuBoard = () => {
         setCurrentStep(newHistory.length - 1);
       }
 
+      countsSync.current = getCounts2(newBoard);
+      setCounts(countsSync.current);
       setBoard(newBoard);
       updateCandidateMap(newBoard);
+      updateRemainingCounts(newBoard);
     },
-    [updateCandidateMap]
+    [updateCandidateMap, updateRemainingCounts, getCounts2]
   );
 
   const undo = useCallback(() => {
@@ -214,16 +240,6 @@ export const useSudokuBoard = () => {
       }
     }
     return board;
-  }, []);
-
-  const getCounts = useCallback((puzzle: string): number => {
-    let count = 0;
-    for (let i = 0; i < puzzle.length; i++) {
-      if (puzzle[i] !== '0') {
-        count++;
-      }
-    }
-    return count;
   }, []);
 
   const initializeBoard2 = useCallback(
@@ -265,6 +281,7 @@ export const useSudokuBoard = () => {
     copyOfficialDraft,
     setBoard,
     standradBoard,
+    standradBoardRef,
     counts,
     resetSudokuBoard,
     setCounts,

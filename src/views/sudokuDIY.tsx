@@ -40,7 +40,7 @@ import {
   uniqueRectangle,
   BinaryUniversalGrave,
   xyzWing,
-  findDifferenceDraft,
+  findDifferenceDraftDIY,
   trialAndError,
   doubleColorChain,
   jellyfish,
@@ -615,7 +615,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(
           handleHint(currentBoard);
           return;
         } else if (!checkDraftIsValid(board, answer)) {
-          const differenceMap = findDifferenceDraft(board, standradBoard);
+          const differenceMap = findDifferenceDraftDIY(board, standradBoard, answer);
           setDifferenceMap(differenceMap);
           setHintMethod(handleHintMethod('', t));
           setHintDrawerVisible(true);

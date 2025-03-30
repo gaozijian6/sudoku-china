@@ -251,5 +251,11 @@ export default {
     selectTheme: 'Thema auswählen',
     lightMode: 'Hellmodus',
     darkMode: 'Dunkelmodus',
+    strictMode: 'Strenge Modus',
+    reasonMode: 'Beweismodus',
+    strictText:
+      'Strenge Modus: Wenn der Wert, den Sie eingeben, nicht mit der Lösung übereinstimmt, wird eine Fehlermeldung angezeigt',
+    reasonText:
+      'Beweismodus: Wenn der Wert, den Sie eingeben, nicht mit der Lösung übereinstimmt, wird keine Fehlermeldung angezeigt',
   },
 };
