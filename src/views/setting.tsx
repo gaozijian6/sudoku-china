@@ -22,7 +22,7 @@ interface SettingProps {
   closeSetting: () => void;
 }
 
-const APP_VERSION = '1.9';
+const APP_VERSION = '1.9.1';
 
 const PRIVACY_POLICY_URL = 'https://sites.google.com/view/sudokucustom';
 const TERMS_OF_SERVICE_URL = 'https://sites.google.com/view/sudoku-custom-terms';
