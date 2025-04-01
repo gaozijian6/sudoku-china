@@ -324,7 +324,10 @@ export const handleHintContent = (
         uniquePromptCandidates = promptCandidates.filter(cand => !target.includes(cand));
 
         setPrompts(uniquePromptCandidates);
-        candStr = [...new Set(prompts)].join(',');
+        arr1 = board[prompt[0].row][prompt[0].col].draft.filter(cand => !target.includes(cand));
+        arr2 = board[prompt[1].row][prompt[1].col].draft.filter(cand => !target.includes(cand));
+        set = new Set([...arr1, ...arr2]);
+        candStr = [...set].join(',');
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}`;
@@ -340,7 +343,10 @@ export const handleHintContent = (
         uniquePromptCandidates = promptCandidates.filter(cand => !target.includes(cand));
 
         setPrompts(uniquePromptCandidates);
-        candStr = [...new Set(prompts)].join(',');
+        arr1 = board[prompt[0].row][prompt[0].col].draft.filter(cand => !target.includes(cand));
+        arr2 = board[prompt[1].row][prompt[1].col].draft.filter(cand => !target.includes(cand));
+        set = new Set([...arr1, ...arr2]);
+        candStr = [...set].join(',');
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}`;
@@ -359,7 +365,10 @@ export const handleHintContent = (
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
         }C${prompt[1].col + 1}`;
-        candStr = [...new Set(prompts)].join(',');
+        arr1 = board[prompt[0].row][prompt[0].col].draft.filter(cand => !target.includes(cand));
+        arr2 = board[prompt[1].row][prompt[1].col].draft.filter(cand => !target.includes(cand));
+        set = new Set([...arr1, ...arr2]);
+        candStr = [...set].join(',');
         hintContent = t('hints.HIDDEN_PAIR_BOX', {
           box: Math.floor(prompt[0].row / 3) * 3 + Math.floor(prompt[0].col / 3) + 1,
           candStr,
