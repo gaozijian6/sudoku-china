@@ -84,16 +84,16 @@ ${t('feedbackMessage')}
   }, []);
 
   const handleRateApp = useCallback(() => {
-    Linking.openURL('https://apps.apple.com/cn/app/id6740772715?action=write-review');
+    Linking.openURL('https://apps.apple.com/cn/app/id6741408233?action=write-review');
   }, []);
 
   const handleShare = useCallback(() => {
     Share.share({
-      title: 'Sudoku Custom',
-      message: 'Sudoku Custom',
-      url: 'https://apps.apple.com/us/app/%E6%95%B0%E7%8B%AC-%E7%BB%8F%E5%85%B8%E7%9A%84%E7%9B%8A%E6%99%BA%E8%A7%A3%E8%B0%9C%E6%8E%A8%E7%90%86%E6%B8%B8%E6%88%8F/id6740772715',
+      title: '趣数独',
+      message: '趣数独',
+      url: 'https://apps.apple.com/cn/app/%E8%B6%A3%E6%95%B0%E7%8B%AC-%E7%BB%8F%E5%85%B8%E7%9A%84%E7%9B%8A%E6%99%BA%E8%A7%A3%E8%B0%9C%E5%B0%8F%E6%B8%B8%E6%88%8F/id6741408233',
     });
-  }, []);
+  }, [t]);
 
   return (
     <View style={styles.container}>
