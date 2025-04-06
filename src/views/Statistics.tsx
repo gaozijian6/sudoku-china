@@ -51,7 +51,10 @@ const Statistics = () => {
         {difficultyLevels.map(level => {
           const progress = calculateProgress(level.key as ProgressDifficulty);
           return (
-            <View key={level.key} style={localStyles.levelContainer}>
+            <View key={level.key} style={[
+              localStyles.levelContainer,
+              { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)' }
+            ]}>
               <View style={localStyles.levelHeader}>
                 <Text style={localStyles.emoji}>{level.emoji}</Text>
                 <Text style={[styles.text, localStyles.difficultyLabel]}>{level.label}</Text>
@@ -66,7 +69,10 @@ const Statistics = () => {
                 </Text>
               </View>
 
-              <View style={localStyles.progressBarBg}>
+              <View style={[
+                localStyles.progressBarBg,
+                { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }
+              ]}>
                 <View 
                   style={[
                     localStyles.progressBarFill, 
@@ -114,7 +120,6 @@ const localStyles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     marginBottom: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.03)',
     borderRadius: 12,
     padding: 10,
     shadowColor: "#000",
@@ -154,7 +159,6 @@ const localStyles = StyleSheet.create({
   progressBarBg: {
     width: '100%',
     height: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
     borderRadius: 4,
     overflow: 'hidden',
     marginTop: 8,
