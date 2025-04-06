@@ -156,7 +156,7 @@ const createStyles = (isDark: boolean) =>
       zIndex: 1000,
     },
     sudoku: {
-      color: 'white',
+      color: isDark ? '#888' : 'white',
       fontSize: 20,
       fontWeight: 'bold',
     },
