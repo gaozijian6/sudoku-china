@@ -3,7 +3,6 @@ import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
 import { useSudokuStore } from '../store';
 import { useTranslation } from 'react-i18next';
 import { generateBoard } from '../tools';
-import interstitialAdManager from '../tools/InterstitialAdManager';
 import DeviceInfo from 'react-native-device-info';
 
 const model = DeviceInfo.getModel();
@@ -70,7 +69,6 @@ function ResultView({ onBack, resetSudoku, visible, puzzleId, initializeBoard2 }
   ]);
 
   const handleNext = useCallback(() => {
-    interstitialAdManager.showAd();
     setResultVisible(false);
     resetSudoku();
     const { puzzleId: puzzleIdValue, currentIndex } = generateBoard(

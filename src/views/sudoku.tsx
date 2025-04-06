@@ -63,7 +63,6 @@ import TarBarsSudoku from '../components/tarBarsSudoku';
 import ResultView from '../components/ResultOverlay';
 import handleHintMethod from '../tools/handleHintMethod';
 import WatchIcon from '../components/WatchIcon';
-import rewardedVideo from '../tools/RewardedVideo';
 import { RewardedAdEventType } from 'react-native-google-mobile-ads';
 import createStyles from './sudokuStyles';
 import Tooltip from 'react-native-walkthrough-tooltip';
@@ -259,7 +258,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     resetSudokuBoard();
     setWatchIconVisible(false);
     isFirstHint.current = true;
-    rewardedVideo.chance = true;
     setWatchIconVisible(false);
   }, [resetSudokuBoard, setErrorCount, t, setIsHint]);
 
@@ -289,7 +287,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       watchIconVisible,
       isFirstHint: isFirstHint.current,
       isHinting: isHinting.current,
-      chance: rewardedVideo.chance,
       resultVisible: false,
       puzzleId: puzzleId.current,
       currentPuzzleIndex,
@@ -316,18 +313,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     isHinting,
     currentPuzzleIndex,
   ]);
-
-  useEffect(() => {
-    if (!isVip) {
-      rewardedVideo.load();
-    }
-  }, []);
-
-  useEffect(() => {
-    rewardedVideo.rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
-      setWatchIconVisible(false);
-    });
-  }, []);
 
   const cleanBoard = useMemo(() => {
     return deepCopyBoard(board).map(row =>
@@ -428,12 +413,8 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       setWatchIconVisible(data.watchIconVisible);
       isFirstHint.current = data.isFirstHint;
       isHinting.current = data.isHinting;
-      rewardedVideo.chance = data.chance;
       puzzleId.current = data.puzzleId;
       setCurrentPuzzleIndex(data.currentPuzzleIndex);
-      if (!rewardedVideo.isReady()) {
-        setWatchIconVisible(false);
-      }
     }
   }, [loadSavedData2, setErrorCount, t, setDifficulty, setWatchIconVisible, setCurrentPuzzleIndex]);
 
@@ -822,14 +803,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     return updatedBoard;
   }, []);
 
-  useEffect(() => {
-    if (isSudoku && !rewardedVideo.isReady() && !rewardedVideo.getIsVip()) {
-      setWatchIconVisible(false);
-      rewardedVideo.chance = true;
-      rewardedVideo.load();
-    }
-  }, [isSudoku]);
-
   const handleHint = useCallback(
     async (board: CellData[][]) => {
       if (!isClickAutoNote.current) {
@@ -976,83 +949,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       setIsHint,
     ]
   );
-
-  useEffect(() => {
-    if (isSudoku || isContinue) {
-      rewardedVideo.setHintDrawerVisible(() => {
-        setIsPlayingFinish(true);
-      });
-    }
-  }, [isSudoku, isContinue]);
-
-  useEffect(() => {
-    if (isConnected && !isIllegal && isPlayingFinish) {
-      handleHint(board);
-    }
-  }, [isPlayingFinish]);
-
-  // 提示和观看广告
-  const handleHintAndRewardedVideo = useCallback(
-    (board: CellData[][]) => {
-      if (isVip) {
-        handleHint(board);
-        return;
-      }
-      if (isIllegal && isContinue && !watchIconVisible) {
-        setHintDrawerVisible(true);
-        setIsHint(true);
-        const timer = setTimeout(() => {
-          setHintMethod('');
-          setHintContent(t('illegalPrompt'));
-        }, 0);
-        return () => clearTimeout(timer);
-      } else if (isIllegal && isContinue && watchIconVisible) {
-        setIsIllegal(false);
-      }
-      if (!isConnected && !rewardedVideo.getIsVip()) {
-        setHintDrawerVisible(true);
-        setIsHint(true);
-        setHintMethod('');
-        setHintContent(t('pleaseConnectNetwork'));
-        return;
-      }
-      if (rewardedVideo.chance) {
-        handleHint(board);
-        rewardedVideo.chance = false;
-        rewardedVideo.load();
-        if (isFirstHint.current) {
-          isFirstHint.current = false;
-        }
-      } else if (rewardedVideo.isReady() && watchIconVisible) {
-        setIsPlayingFinish(false);
-        rewardedVideo.show();
-      } else {
-        rewardedVideo.load();
-        handleHint(board);
-      }
-      if (rewardedVideo.isReady()) {
-        setWatchIconVisible(true);
-      }
-    },
-    [
-      handleHint,
-      isConnected,
-      t,
-      isIllegal,
-      setIsIllegal,
-      watchIconVisible,
-      isContinue,
-      isVip,
-      setIsHint,
-    ]
-  );
-
-  // 处理isIllegal下播放广告后自动展示提示点击应用没反应的情况
-  useEffect(() => {
-    if (hintDrawerVisible && isSudoku && isIllegal && !isVip) {
-      handleHint(board);
-    }
-  }, [hintDrawerVisible]);
 
   const handleApplyHint = useCallback(() => {
     if (!isConnected && !isVip) {
@@ -1424,12 +1320,12 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
           style={[styles.buttonContainer]}
           onPressIn={() => {
             if (scaleValue1 === 1.0) {
-              handleHintAndRewardedVideo(board);
+              handleHint(board);
             }
           }}
           onPress={() => {
             if (scaleValue1 !== 1.0 && !isMovingRef.current) {
-              handleHintAndRewardedVideo(board);
+              handleHint(board);
             }
           }}
         >

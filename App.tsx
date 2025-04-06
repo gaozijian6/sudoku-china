@@ -11,10 +11,7 @@ import { useSudokuStore } from './src/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import './src/i18n';
 import NetInfo from '@react-native-community/netinfo';
-import rewardedVideo from './src/tools/RewardedVideo';
-import interstitialAdManager from './src/tools/InterstitialAdManager';
 import MyBoards from './src/views/MyBoards';
-import { TestIds, BannerAdSize, BannerAd } from 'react-native-google-mobile-ads';
 import createStyles from './src/views/sudokuStyles';
 import DeviceInfo from 'react-native-device-info';
 import { State, GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
@@ -283,7 +280,6 @@ function App() {
   const { t } = useTranslation();
   const setIsHasContinue = useSudokuStore(state => state.setIsHasContinue);
   const setIsConnected = useSudokuStore(state => state.setIsConnected);
-  const setIsVip = useSudokuStore(state => state.setIsVip);
   const setIsIllegal = useSudokuStore(state => state.setIsIllegal);
   const setIsSound = useSudokuStore(state => state.setIsSound);
   const setIsHighlight = useSudokuStore(state => state.setIsHighlight);
@@ -293,11 +289,7 @@ function App() {
   const setLocalsudokuDataDIY2 = useSudokuStore(state => state.setLocalsudokuDataDIY2);
   const initSudokuDataDIY1 = useSudokuStore(state => state.initSudokuDataDIY1);
   const initSudokuDataDIY2 = useSudokuStore(state => state.initSudokuDataDIY2);
-  const isVip = useSudokuStore(state => state.isVip);
-  const isSetting = useSudokuStore(state => state.isSetting);
-  const isBackground = useSudokuStore(state => state.isBackground);
   const isSudoku = useSudokuStore(state => state.isSudoku);
-  const isDIY = useSudokuStore(state => state.isDIY);
   const isContinue = useSudokuStore(state => state.isContinue);
   const scaleValue1 = useSudokuStore(state => state.scaleValue1);
   const scaleValue2 = useSudokuStore(state => state.scaleValue2);
@@ -308,11 +300,7 @@ function App() {
   const setUserStatisticPass = useSudokuStore(state => state.setUserStatisticPass);
   const updateUserStatisticPassOnline = useSudokuStore(state => state.updateUserStatisticPassOnline);
 
-  const styles = createStyles(isDark);
   const isMovingRef = useRef(false);
-  const isIphoneSE = useMemo(() => {
-    return model.includes('SE');
-  }, [model]);
   const scale = useRef(new Animated.Value(1)).current;
   const baseScale = useRef(new Animated.Value(1)).current;
   const pinchScale = useRef(new Animated.Value(1)).current;
@@ -388,21 +376,6 @@ function App() {
       setIsConnected(state.isConnected || false);
     });
     return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const checkVip = async () => {
-      const isVip = await AsyncStorage.getItem('isVip');
-      if (isVip) {
-        setIsVip(true);
-        rewardedVideo.setIsVip(true);
-        interstitialAdManager.setIsVip(true);
-      } else {
-        rewardedVideo.loopLoad();
-        interstitialAdManager.loopLoad();
-      }
-    };
-    checkVip();
   }, []);
 
   useEffect(() => {
@@ -727,21 +700,6 @@ function App() {
                 }}
               />
             </RootStack.Navigator>
-            {!isIphoneSE &&
-              !isVip &&
-              !isSetting &&
-              !isBackground &&
-              (isSudoku || isDIY || isContinue) && (
-                <View style={[styles.bannerContainer]}>
-                  <BannerAd
-                    unitId={__DEV__ ? TestIds.BANNER : 'ca-app-pub-2981436674907454/7094926382'}
-                    size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-                    requestOptions={{
-                      requestNonPersonalizedAdsOnly: true,
-                    }}
-                  />
-                </View>
-              )}
           </NavigationContainer>
         </Animated.View>
       </PanGestureHandler>

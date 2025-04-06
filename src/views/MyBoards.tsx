@@ -15,7 +15,6 @@ import { useSudokuStore, Board } from '../store';
 import { SudokuType } from '../constans';
 import { playSound } from '../tools/Sound';
 import DeviceInfo from 'react-native-device-info';
-import interstitialAdManager from '../tools/InterstitialAdManager';
 import TarBars from '../components/tarBars';
 import { useNavigation } from '@react-navigation/native';
 
@@ -127,7 +126,6 @@ const MyBoards = memo(() => {
   const handleSelectBoard = useCallback(
     (index: number) => {
       if (isEditing) return;
-      interstitialAdManager.showAd();
       navigation.navigate('SudokuDIY');
       setIsDIY(true);
       setSudokuType(SudokuType.DIY2);

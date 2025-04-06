@@ -18,7 +18,6 @@ import mediumBoard from '../mock/3medium';
 import hardBoard from '../mock/4hard';
 import extremeBoard from '../mock/5extreme';
 import DeviceInfo from 'react-native-device-info';
-import interstitialAdManager from '../tools/InterstitialAdManager';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -122,7 +121,6 @@ const LocalGames = () => {
 
   const playGame = useCallback(
     (index: number) => {
-      interstitialAdManager.showAd();
       navigation.navigate('Sudoku', {
         difficulty_route: difficultyTabs[activeTab].difficulty,
         index_route: index,

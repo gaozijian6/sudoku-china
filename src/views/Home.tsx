@@ -5,7 +5,6 @@ import { playSound } from '../tools/Sound';
 import { useSudokuStore } from '../store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
-import interstitialAdManager from '../tools/InterstitialAdManager';
 import { Page, SudokuType } from '../constans';
 import { useNavigation } from '@react-navigation/native';
 
@@ -32,7 +31,6 @@ const Home: React.FC = memo(() => {
   const handleLevelSelect = useCallback(
     async (level: string) => {
       setShowLevel(false);
-      interstitialAdManager.showAd();
       navigation.navigate('Sudoku', {
         difficulty_route: level,
       });
@@ -59,7 +57,6 @@ const Home: React.FC = memo(() => {
   }, [isSound, setIsContinue, setIsHome, navigation]);
 
   const handleCustom = useCallback(() => {
-    interstitialAdManager.showAd();
     navigation.navigate('SudokuDIY');
     setSudokuType(SudokuType.DIY1);
     setIsDIY(true);

@@ -4,8 +4,8 @@ import React
 
 @objc(CloudKitManager)
 class CloudKitManager: NSObject {
-  private let container = CKContainer(identifier: "iCloud.sudokucustom")
-  private let database = CKContainer(identifier: "iCloud.sudokucustom").privateCloudDatabase
+  private let container = CKContainer(identifier: "iCloud.sudokucustomChina")
+  private let database = CKContainer(identifier: "iCloud.sudokucustomChina").privateCloudDatabase
 
   override init() {
     super.init()

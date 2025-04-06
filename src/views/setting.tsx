@@ -13,24 +13,9 @@ import {
 import { useSudokuStore } from '../store';
 import { useTranslation } from 'react-i18next';
 import LanguageModal from '../components/LanguageModal';
-import {
-  purchaseErrorListener,
-  purchaseUpdatedListener,
-  ProductPurchase,
-  PurchaseError,
-} from 'react-native-iap';
-import * as RNIap from 'react-native-iap';
-import rewardedVideo from '../tools/RewardedVideo';
-import interstitialAdManager from '../tools/InterstitialAdManager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const APP_VERSION = '2.0.9';
-
-// 商品 ID
-const itemSKUs = Platform.select({
-  ios: ['sudoku'],
-  android: [],
-});
+const APP_VERSION = '2.0';
 
 const PRIVACY_POLICY_URL = 'https://sites.google.com/view/sudokucustom';
 const TERMS_OF_SERVICE_URL = 'https://sites.google.com/view/sudoku-custom-terms';
@@ -38,7 +23,6 @@ const TERMS_OF_SERVICE_URL = 'https://sites.google.com/view/sudoku-custom-terms'
 function Setting() {
   const isSound = useSudokuStore(state => state.isSound);
   const setIsSound = useSudokuStore(state => state.setIsSound);
-  const setIsVip = useSudokuStore(state => state.setIsVip);
   const isHighlight = useSudokuStore(state => state.isHighlight);
   const setIsHighlight = useSudokuStore(state => state.setIsHighlight);
   const isDark = useSudokuStore(state => state.isDark);
@@ -49,8 +33,6 @@ function Setting() {
   const styles = createStyles(isDark);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const { t, i18n } = useTranslation();
-  const [purchasing, setPurchasing] = useState(false);
-  const [restoring, setRestoring] = useState(false);
   useEffect(() => {
     setIsSetting(true);
     return () => {
@@ -80,7 +62,7 @@ function Setting() {
 
   const handleFeedback = useCallback(() => {
     const email = 'gaozijian32@gmail.com';
-    const subject = `Feedback Sudoku ${APP_VERSION}`;
+    const subject = `趣数独反馈 ${APP_VERSION}`;
     const body = `
 App Version: ${APP_VERSION}
 OS Version: ${Platform.OS} ${Platform.Version}
@@ -92,123 +74,6 @@ ${t('feedbackMessage')}
     const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     Linking.openURL(mailtoUrl);
   }, [i18n.language, t]);
-
-  // 初始化 IAP
-  useEffect(() => {
-    let purchaseUpdateSubscription: any;
-    let purchaseErrorSubscription: any;
-
-    const initIAP = async () => {
-      if (typeof RNIap === 'undefined') {
-        console.warn('RNIap 模块未加载');
-        return;
-      }
-
-      try {
-        await RNIap.initConnection();
-
-        // 监听购买更新
-        purchaseUpdateSubscription = purchaseUpdatedListener(async (purchase: ProductPurchase) => {
-          if (purchase.transactionReceipt) {
-            await RNIap.finishTransaction({
-              purchase,
-              isConsumable: false,
-            });
-            rewardedVideo.setIsVip(true);
-            interstitialAdManager.setIsVip(true);
-            setIsVip(true);
-            rewardedVideo.clearTimer();
-            interstitialAdManager.clearTimer();
-            AsyncStorage.setItem('isVip', 'true');
-            setPurchasing(false);
-          }
-        });
-
-        // 监听购买错误
-        purchaseErrorSubscription = purchaseErrorListener((error: PurchaseError) => {
-          console.warn('购买错误', error);
-          setPurchasing(false);
-        });
-      } catch (err) {
-        console.warn('初始化 IAP 错误:', err);
-      }
-    };
-
-    initIAP();
-
-    return () => {
-      if (typeof RNIap !== 'undefined') {
-        purchaseUpdateSubscription?.remove();
-        purchaseErrorSubscription?.remove();
-        RNIap.endConnection();
-      }
-    };
-  }, []);
-
-  // 处理购买
-  const handlePurchase = useCallback(async () => {
-    if (purchasing) {
-      return;
-    }
-
-    try {
-      setPurchasing(true);
-
-      // 确保连接已初始化
-      await RNIap.initConnection();
-
-      const products = await RNIap.getProducts({ skus: itemSKUs || [] });
-
-      if (products.length === 0) {
-        throw new Error('没有找到可用商品');
-      }
-
-      await RNIap.requestPurchase({
-        sku: products[0].productId,
-        andDangerouslyFinishTransactionAutomaticallyIOS: false,
-      });
-    } catch (err) {
-      console.error('购买错误:', err);
-      setPurchasing(false);
-      // 这里可以添加错误提示
-    }
-  }, [purchasing]);
-
-  // 处理恢复购买
-  const handleRestore = useCallback(async () => {
-    if (restoring) {
-      return;
-    }
-
-    try {
-      setRestoring(true);
-
-      // 确保连接已初始化
-      await RNIap.initConnection();
-
-      const purchases = await RNIap.getAvailablePurchases();
-
-      if (purchases.length > 0) {
-        // 查找是否有移除广告的购买记录
-        const adRemovalPurchase = purchases.find(purchase =>
-          itemSKUs?.includes(purchase.productId)
-        );
-
-        if (adRemovalPurchase) {
-          rewardedVideo.setIsVip(true);
-          interstitialAdManager.setIsVip(true);
-          setIsVip(true);
-          rewardedVideo.clearTimer();
-          interstitialAdManager.clearTimer();
-          AsyncStorage.setItem('isVip', 'true');
-        }
-      }
-    } catch (err) {
-      console.error('恢复购买错误:', err);
-    } finally {
-      setRestoring(false);
-    }
-  }, [restoring, setIsVip]);
 
   const handlePrivacyPolicy = useCallback(() => {
     Linking.openURL(PRIVACY_POLICY_URL);
@@ -234,18 +99,6 @@ ${t('feedbackMessage')}
     <View style={styles.container}>
 
       <View style={styles.content}>
-        <Pressable style={[styles.item]} onPress={handlePurchase} disabled={purchasing}>
-          <Image source={require('../assets/icon/closeAD.png')} style={styles.leftIcon} />
-          <Text style={styles.itemText}>{purchasing ? t('purchasing') : t('removeAD')}</Text>
-          <Image source={require('../assets/icon/arrow.png')} style={styles.arrow} />
-        </Pressable>
-
-        <Pressable style={[styles.item]} onPress={handleRestore} disabled={restoring}>
-          <Image source={require('../assets/icon/restore.png')} style={styles.leftIcon} />
-          <Text style={styles.itemText}>{restoring ? t('restoring') : t('restore')}</Text>
-          <Image source={require('../assets/icon/arrow.png')} style={styles.arrow} />
-        </Pressable>
-
         <View style={styles.item}>
           <Image source={require('../assets/icon/sound.png')} style={styles.leftIcon} />
           <Text style={styles.itemText}>{t('sound')}</Text>
