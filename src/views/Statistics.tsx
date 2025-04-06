@@ -26,7 +26,6 @@ const Statistics = () => {
 
     const completedCount = (progressData.match(/1/g) || []).length;
     const totalCount = easyBoard.length;
-    console.log('totalCount', totalCount);
     
     const percentage = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 

@@ -332,8 +332,6 @@ export const useSudokuStore = create<SudokuState>(set => ({
         }
       }
     }
-    console.log('entryBoardUnPass',entryBoardUnPass);
-    
     
     set({
       entryBoardPass,

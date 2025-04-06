@@ -537,18 +537,6 @@ function App() {
   useEffect(() => {
     // AsyncStorage.clear();
     // iCloudStorage.clear();
-    iCloudStorage.getItem('test2').then(value => {
-      console.log('value', value);
-    });
-    if (!isIpad) {
-      iCloudStorage.setItem('test2', '999').then(value => {
-        console.log('success');
-      });
-    } else {
-      iCloudStorage.getItem('test2').then(value => {
-        console.log('value', value);
-      });
-    }
     const fetchUserStatisticPassData = async () => {
       const userStatisticPass_iCloud = await iCloudStorage.getItem('userStatisticPass');
       const userStatisticPass_AsyncStorage = await AsyncStorage.getItem('userStatisticPass');
