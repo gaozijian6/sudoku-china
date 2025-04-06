@@ -1,0 +1,254 @@
+import React, { useState, useCallback, useRef, useMemo } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  FlatList,
+  TouchableOpacity,
+  Dimensions,
+  ListRenderItem,
+} from 'react-native';
+import { useSudokuStore } from '../store';
+import { useTranslation } from 'react-i18next';
+import createStyles from './sudokuStyles';
+import entryBoard from '../mock/1entry';
+import easyBoard from '../mock/2easy';
+import mediumBoard from '../mock/3medium';
+import hardBoard from '../mock/4hard';
+import extremeBoard from '../mock/5extreme';
+import DeviceInfo from 'react-native-device-info';
+import interstitialAdManager from '../tools/InterstitialAdManager';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const model = DeviceInfo.getModel();
+const isIpad = model.includes('iPad');
+const numColumns = isIpad ? 10 : 6;
+const { width } = Dimensions.get('window');
+const itemMargin = 5; // 定义每个项目的边距
+const ITEM_SIZE = (width - 20 - itemMargin * 2 * numColumns) / numColumns; // 修改项目大小计算方式，考虑边距
+
+// 定义游戏项目类型
+interface GameItem {
+  puzzle: string;
+  solution: string;
+  date: string;
+}
+
+// 定义标签项目类型
+interface TabItem {
+  id: number;
+  title: string;
+  data: GameItem[];
+  difficulty: string;
+}
+
+const LocalGames = () => {
+  const { t } = useTranslation();
+  const isDark = useSudokuStore(state => state.isDark);
+  const setDifficulty = useSudokuStore(state => state.setDifficulty);
+  const setIsHome = useSudokuStore(state => state.setIsHome);
+  const setIsHasContinue = useSudokuStore(state => state.setIsHasContinue);
+  const setIsSudoku = useSudokuStore(state => state.setIsSudoku);
+  const userStatisticPass = useSudokuStore(state => state.userStatisticPass);
+  const styles = createStyles(isDark, false);
+  const navigation = useNavigation();
+
+  const [activeTab, setActiveTab] = useState(0);
+
+  // 难度标签数据
+  const difficultyTabs = useMemo<TabItem[]>(
+    () => [
+      { id: 0, title: t('entry'), data: entryBoard, difficulty: 'entry' },
+      { id: 1, title: t('easy'), data: easyBoard, difficulty: 'easy' },
+      { id: 2, title: t('medium'), data: mediumBoard, difficulty: 'medium' },
+      { id: 3, title: t('hard'), data: hardBoard, difficulty: 'hard' },
+      { id: 4, title: t('extreme'), data: extremeBoard, difficulty: 'extreme' },
+    ],
+    [t]
+  );
+
+  // 显示当前选中难度的数据
+  const currentBoardData = difficultyTabs[activeTab].data;
+
+  // 点击标签切换难度
+  const handleTabPress = useCallback((tabIndex: number) => {
+    setActiveTab(tabIndex);
+  }, []);
+
+  // 渲染顶部导航标签
+  const renderTabs = () => {
+    return (
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={localStyles.tabsContainer}
+      >
+        {difficultyTabs.map((tab, index) => (
+          <TouchableOpacity
+            key={tab.id}
+            style={[
+              localStyles.tabItem,
+              activeTab === index && localStyles.activeTab,
+              {
+                backgroundColor: isDark
+                  ? activeTab === index
+                    ? 'rgb(39, 60, 95)'
+                    : 'rgb(40, 40, 42)'
+                  : activeTab === index
+                  ? 'rgb(91,139,241)'
+                  : '#f0f0f0',
+              },
+            ]}
+            onPress={() => handleTabPress(index)}
+          >
+            <Text
+              style={[
+                localStyles.tabText,
+                {
+                  color:
+                    activeTab === index ? (isDark ? '#888' : '#fff') : isDark ? '#888' : '#666',
+                },
+              ]}
+            >
+              {tab.title}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    );
+  };
+
+  const playGame = useCallback(
+    (index: number) => {
+      interstitialAdManager.showAd();
+      navigation.navigate('Sudoku', {
+        difficulty_route: difficultyTabs[activeTab].difficulty,
+        index_route: index,
+      });
+      setDifficulty(difficultyTabs[activeTab].difficulty);
+      setIsHome(false);
+      setIsHasContinue(true);
+      setIsSudoku(true);
+      AsyncStorage.setItem('isHasContinue', 'true');
+    },
+    [navigation, difficultyTabs, activeTab, setDifficulty, setIsHome, setIsHasContinue, setIsSudoku]
+  );
+
+  // 渲染单个题目方块
+  const renderItem: ListRenderItem<GameItem> = useCallback(
+    ({ item: _item, index }) => {
+      const currentDifficulty = difficultyTabs[activeTab].difficulty;
+      // 检查当前难度对应字符串中的索引位置是否为1
+      const isPassed =
+        userStatisticPass[currentDifficulty as keyof typeof userStatisticPass]?.[index] === '1';
+
+      return (
+        <TouchableOpacity
+          style={[
+            localStyles.puzzleItem,
+            {
+              backgroundColor: isPassed
+                ? isDark
+                  ? 'rgb(39, 60, 95)'
+                  : 'rgb(91,139,241)'
+                : isDark
+                ? 'rgb(40, 40, 42)'
+                : '#fff',
+            },
+          ]}
+          onPress={() => playGame(index)}
+        >
+          <Text
+            style={[
+              styles.text,
+              localStyles.puzzleNumber,
+              { color: isPassed ? (isDark ? '#888' : '#fff') : isDark ? '#888' : '#333' },
+            ]}
+          >
+            {index + 1}
+          </Text>
+        </TouchableOpacity>
+      );
+    },
+    [isDark, styles.text, playGame, activeTab, difficultyTabs, userStatisticPass]
+  );
+
+  return (
+    <View style={[styles.container, { flex: 1 }]}>
+      {renderTabs()}
+      <FlatList
+        data={currentBoardData}
+        renderItem={renderItem}
+        keyExtractor={(item, index) =>
+          `puzzle-${difficultyTabs[activeTab].title}-${item.date}-${index}`
+        }
+        numColumns={numColumns}
+        contentContainerStyle={localStyles.listContainer}
+        columnWrapperStyle={localStyles.columnWrapper}
+        windowSize={3}
+        maxToRenderPerBatch={5}
+      />
+    </View>
+  );
+};
+
+const localStyles = StyleSheet.create({
+  tabsContainer: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+  },
+  tabItem: {
+    paddingHorizontal: 20,
+    marginHorizontal: 5,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  activeTab: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.5,
+    elevation: 2,
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: '600',
+    paddingVertical: 10,
+    lineHeight: 12,
+  },
+  listContainer: {
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    paddingBottom: 30,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    width: '100%', // 确保列表容器占满整个宽度
+  },
+  columnWrapper: {
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  puzzleItem: {
+    width: ITEM_SIZE,
+    height: ITEM_SIZE,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.5,
+    elevation: 1,
+    margin: itemMargin, // 添加外边距
+  },
+  puzzleNumber: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});
+
+export default LocalGames;

@@ -1,0 +1,114 @@
+import mobileAds, {
+  RewardedAd,
+  RewardedAdEventType,
+  TestIds,
+  AdEventType,
+} from 'react-native-google-mobile-ads';
+
+class RewardedVideo {
+  private static instance: RewardedVideo;
+  public isLoaded: boolean = false;
+  public rewardedAd: RewardedAd;
+  public chance: boolean = true;
+  private adUnitId: string = __DEV__ ? TestIds.REWARDED : 'ca-app-pub-2981436674907454/3945346418'; // 实际广告ID
+  public startLoadTime: number = 0;
+  private isVip: boolean = false;
+  private hintDrawerVisible: () => void = () => {};
+  private isLoading: boolean = false;
+  private timer: NodeJS.Timeout | null = null;
+  private constructor() {
+    this.initAds();
+    this.rewardedAd = RewardedAd.createForAdRequest(this.adUnitId);
+    this.initListeners();
+  }
+
+  public static getInstance(): RewardedVideo {
+    if (!RewardedVideo.instance) {
+      RewardedVideo.instance = new RewardedVideo();
+    }
+    return RewardedVideo.instance;
+  }
+
+  public setHintDrawerVisible(fn: () => void): void {
+    this.hintDrawerVisible = fn;
+  }
+
+  public setIsVip(isVip: boolean): void {
+    this.isVip = isVip;
+  }
+
+  public getIsVip(): boolean {
+    return this.isVip;
+  }
+
+  public loopLoad(): void {
+    this.timer = setInterval(() => {
+      this.load();
+    }, 6000);
+  }
+
+  public clearTimer(): void {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+  }
+
+  private initListeners(): void {
+    this.rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
+      this.isLoading = false;
+      this.isLoaded = true;
+      this.startLoadTime = Date.now();
+      console.log('激励广告加载成功');
+    });
+    this.rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
+      this.chance = true;
+    });
+    this.rewardedAd.addAdEventListener(AdEventType.CLOSED, () => {
+      console.log('激励广告关闭');
+      this.isLoaded = false;
+      this.load();
+      this.hintDrawerVisible();
+    });
+    this.rewardedAd.addAdEventListener(AdEventType.ERROR, error => {
+      this.isLoading = false;
+      this.isLoaded = false;
+      console.log('激励广告加载失败', error);
+    });
+  }
+
+  public async load(): Promise<void> {
+    if (this.isVip || this.isLoading) {
+      return;
+    }
+    if (!this.isLoaded) {
+      console.log('激励广告加载中', this.isLoaded);
+      this.isLoading = true;
+      await this.rewardedAd.load();
+    }
+  }
+
+  public async show(): Promise<void> {
+    if (this.isVip) {
+      return;
+    }
+    if (this.isLoaded) {
+      await this.rewardedAd.show();
+    }
+  }
+
+  public isReady(): boolean {
+    if (this.isLoaded && Date.now() - this.startLoadTime > 50 * 60 * 1000) {
+      this.isLoaded = false;
+    }
+    return this.isLoaded;
+  }
+
+  public async initAds(): Promise<void> {
+    await mobileAds().initialize();
+  }
+}
+
+const rewardedVideo = RewardedVideo.getInstance();
+
+export default rewardedVideo;
