@@ -255,5 +255,8 @@ export default {
     medium: '中等',
     hard: '困難',
     extreme: '極難',
+    dataSync: '資料同步說明',
+    dataSyncDescription:
+      '溫馨提示：如果您更換了裝置，iCloud資料可能不會立即同步到新裝置上，建議您重新打開幾次App或等待一段時間，在此期間您可以做本地題庫，等待舊的資料更新後，App會自動幫您將新的資料整合到一起',
   },
 };

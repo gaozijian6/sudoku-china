@@ -263,5 +263,8 @@ export default {
     medium: 'Gemiddeld',
     hard: 'Moeilijk',
     extreme: 'Extreem',
+    dataSync: 'Gegevenssynchronisatieinstructie',
+    dataSyncDescription:
+      'Vriendelijke herinnering: Als u van apparaat verandert, worden iCloud-gegevens mogelijk niet direct gesynchroniseerd met het nieuwe apparaat. We raden u aan de app een paar keer opnieuw te openen of even te wachten. Gedurende deze periode kunt u werken aan lokale puzzels. Nadat de oude gegevens zijn bijgewerkt, helpt de app u automatisch de nieuwe gegevens te integreren.',
   },
 };

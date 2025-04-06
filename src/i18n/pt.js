@@ -264,5 +264,8 @@ export default {
     medium: 'Médio',
     hard: 'Difícil',
     extreme: 'Extremo',
+    dataSync: 'Instruções de sincronização de dados',
+    dataSyncDescription:
+      'Lembrete amigável: Se você trocar de dispositivo, os dados do iCloud podem não sincronizar imediatamente com o novo dispositivo. Sugerimos reabrir o aplicativo várias vezes ou aguardar um pouco. Durante este período, você pode trabalhar em puzzles locais. Após a atualização dos dados antigos, o aplicativo automaticamente ajudará a integrar os novos dados.',
   },
 };

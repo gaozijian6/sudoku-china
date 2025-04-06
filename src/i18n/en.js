@@ -263,5 +263,8 @@ export default {
     medium: 'Medium',
     hard: 'Hard',
     extreme: 'Extreme',
+    dataSync: 'Data Synchronization Instructions',
+    dataSyncDescription:
+      'Friendly reminder: If you change your device, iCloud data may not sync to the new device immediately. We suggest reopening the App several times or waiting for a while. During this period, you can work on local puzzles. After the old data is updated, the App will automatically help you integrate the new data together.',
   },
 };

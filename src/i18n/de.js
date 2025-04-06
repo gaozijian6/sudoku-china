@@ -264,5 +264,8 @@ export default {
     medium: 'Mittel',
     hard: 'Schwer',
     extreme: 'Extrem',
+    dataSync: 'Datensynchronisierungsanleitung',
+    dataSyncDescription:
+      'Freundlicher Hinweis: Wenn Sie Ihr Gerät wechseln, synchronisieren sich iCloud-Daten möglicherweise nicht sofort mit dem neuen Gerät. Wir empfehlen, die App mehrmals zu öffnen oder eine Weile zu warten. In dieser Zeit können Sie an lokalen Rätseln arbeiten. Nachdem die alten Daten aktualisiert wurden, hilft Ihnen die App automatisch, die neuen Daten zusammenzuführen.',
   },
 };

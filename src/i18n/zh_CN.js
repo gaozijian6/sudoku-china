@@ -255,5 +255,8 @@ export default {
     medium: '中等',
     hard: '困难',
     extreme: '极难',
+    dataSync: '数据同步说明',
+    dataSyncDescription:
+      '温馨提示：如果您更换了设备，iCloud数据可能不会立马同步到新设备上，建议您重新打开几次App或等待一段时间，在此期间您可以做本地题库，等待旧的数据更新后，App会自动帮您将新的数据整合到一起',
   },
 };

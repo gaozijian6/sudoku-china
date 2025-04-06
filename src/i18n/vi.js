@@ -263,5 +263,8 @@ export default {
     medium: 'Trung bình',
     hard: 'Khó',
     extreme: 'Siêu khó',
+    dataSync: 'Hướng dẫn đồng bộ dữ liệu',
+    dataSyncDescription:
+      'Dostça hatırlatma: Cihazınızı değiştirirseniz, iCloud verileri yeni cihaza hemen senkronize olmayabilir. Uygulamayı birkaç kez yeniden açmanızı veya bir süre beklemenizi öneririz. Bu süre zarfında, yerel bulmacalar üzerinde çalışabilirsiniz. Eski veriler güncellendikten sonra, uygulama otomatik olarak yeni verileri bir araya getirmenize yardımcı olacaktır.',
   },
 };

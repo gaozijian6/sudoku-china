@@ -192,10 +192,6 @@ export default {
         '{{posStr}} {{target}} değerini aldığında, kırmızı hücre {{target}} değerini alamaz',
       DOUBLE_COLOR_CHAIN_s:
         '{{posStr1}} {{target1}} değerini alırsa, {{posStr2}} {{target2}} değerini alır',
-      DOUBLE_COLOR_CHAIN_delete:
-        '{{posStr}} {{target}} değerini aldığında, kırmızı hücre {{target}} değerini alamaz',
-      DOUBLE_COLOR_CHAIN_s:
-        '{{posStr1}} {{target1}} değerini aldığında, {{posStr2}} {{target2}} değerini alır',
       DOUBLE_COLOR_CHAIN_r:
         '{{posStr1}} {{target}} değerini aldığında, {{posStr2}} {{target}} değerini alamaz',
       DOUBLE_COLOR_CHAIN_q:
@@ -265,5 +261,8 @@ export default {
     medium: 'Orta',
     hard: 'Zor',
     extreme: 'Çok Zor',
+    dataSync: 'Veri Senkronizasyonu Açıklaması',
+    dataSyncDescription:
+      'Dostça hatırlatma: Cihazınızı değiştirirseniz, iCloud verileri yeni cihaza hemen senkronize olmayabilir. Uygulamayı birkaç kez yeniden açmanızı veya bir süre beklemenizi öneririz. Bu süre zarfında, yerel bulmacalar üzerinde çalışabilirsiniz. Eski veriler güncellendikten sonra, uygulama otomatik olarak yeni verileri bir araya getirmenize yardımcı olacaktır.',
   },
 };
