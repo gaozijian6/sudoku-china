@@ -53,8 +53,7 @@ class InterstitialAdManager {
   public loopLoad() {
     this.timer = setInterval(() => {
       this.loadAd();
-    // }, 30000);
-    }, 300);
+    }, 30000);
   }
 
   public clearTimer() {

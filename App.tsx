@@ -437,7 +437,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    AsyncStorage.clear();
+    // AsyncStorage.clear();
     const checkLastLogOutTime = async () => {
       const lastLogOutTime = parseInt((await AsyncStorage.getItem('lastLogOutTime')) || '0');
       const isIllegalArr = JSON.parse((await AsyncStorage.getItem('isIllegal')) || '[false,false]');
@@ -552,8 +552,6 @@ function App() {
     const fetchUserStatisticPassData = async () => {
       const userStatisticPass_iCloud = await iCloudStorage.getItem('userStatisticPass');
       const userStatisticPass_AsyncStorage = await AsyncStorage.getItem('userStatisticPass');
-      // console.log('userStatisticPass_iCloud', userStatisticPass_iCloud);
-      // console.log('userStatisticPass_AsyncStorage', userStatisticPass_AsyncStorage);
 
       if (!!userStatisticPass_iCloud && !!userStatisticPass_AsyncStorage) {
         const decompressed_iCloud = LZString.decompressFromUTF16(userStatisticPass_iCloud);
