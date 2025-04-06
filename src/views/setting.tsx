@@ -24,7 +24,7 @@ import rewardedVideo from '../tools/RewardedVideo';
 import interstitialAdManager from '../tools/InterstitialAdManager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const APP_VERSION = '2.0.8';
+const APP_VERSION = '2.0.9';
 
 // 商品 ID
 const itemSKUs = Platform.select({
