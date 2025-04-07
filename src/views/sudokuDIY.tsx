@@ -156,9 +156,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
   const setErrorCount = useSudokuStore(state => state.setErrorCount);
   const isSound = useSudokuStore(state => state.isSound);
   const isConnected = useSudokuStore(state => state.isConnected);
-  const isVip = useSudokuStore(state => state.isVip);
-  const isIllegal = useSudokuStore(state => state.isIllegal);
-  const setIsIllegal = useSudokuStore(state => state.setIsIllegal);
   const isHighlight = useSudokuStore(state => state.isHighlight);
   const sudokuType = useSudokuStore(state => state.sudokuType);
   const sudokuDataDIY1 = useSudokuStore(state => state.sudokuDataDIY1);
@@ -742,11 +739,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
   );
 
   const handleApplyHint = useCallback(() => {
-    if (isIllegal && (sudokuType === SudokuType.DIY1 || sudokuType === SudokuType.DIY2) && !isVip) {
-      setHintDrawerVisible(false);
-      setIsHint(false);
-      return;
-    }
     if (Object.keys(differenceMap).length > 0) {
       const newBoard = deepCopyBoard(board);
       for (const key of Object.keys(differenceMap)) {
@@ -803,10 +795,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
       setResult(null); // 重置 result
     }
   }, [
-    isConnected,
-    isIllegal,
-    sudokuType,
-    isVip,
     differenceMap,
     result,
     handleHint,
@@ -1111,7 +1099,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
             }
           }}
         >
-          {!isVip && <WatchIcon top={0} right={10} visible={watchIconVisible} />}
           <Image source={require('../assets/icon/prompt.png')} style={styles.buttonIcon} />
           <Text style={styles.buttonText}>{t('hint')}</Text>
         </Pressable>

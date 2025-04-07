@@ -180,9 +180,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   const isContinue = useSudokuStore(state => state.isContinue);
   const isSudoku = useSudokuStore(state => state.isSudoku);
   const isConnected = useSudokuStore(state => state.isConnected);
-  const isVip = useSudokuStore(state => state.isVip);
-  const isIllegal = useSudokuStore(state => state.isIllegal);
-  const setIsIllegal = useSudokuStore(state => state.setIsIllegal);
   const isHighlight = useSudokuStore(state => state.isHighlight);
   const setIsHint = useSudokuStore(state => state.setIsHint);
   const scaleValue1 = useSudokuStore(state => state.scaleValue1);
@@ -951,16 +948,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   );
 
   const handleApplyHint = useCallback(() => {
-    if (!isConnected && !isVip) {
-      setHintDrawerVisible(false);
-      setIsHint(false);
-      return;
-    }
-    if (isIllegal && isContinue && !isVip) {
-      setHintDrawerVisible(false);
-      setIsHint(false);
-      return;
-    }
     if (falseCells.length > 0) {
       setFalseCells([]);
       const newBoard = deepCopyBoard(board);
@@ -1048,10 +1035,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       setResult(null); // 重置 result
     }
   }, [
-    isConnected,
-    isVip,
-    isIllegal,
-    isContinue,
     falseCells.length,
     differenceMap,
     result,
@@ -1329,7 +1312,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
             }
           }}
         >
-          {!isVip && <WatchIcon top={5} right={15} visible={watchIconVisible} />}
           <Image source={require('../assets/icon/prompt.png')} style={styles.buttonIcon} />
           <Text style={styles.buttonText}>{t('hint')}</Text>
         </Pressable>

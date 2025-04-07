@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useMemo, useCallback } from 'react';
-import { Animated, AppState, Dimensions, View, Pressable, Image, Platform } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { Animated, AppState, Dimensions, Pressable, Image } from 'react-native';
 import Sudoku from './src/views/sudoku';
 import SudokuDIY from './src/views/sudokuDIY';
 import Home from './src/views/Home';
@@ -12,7 +12,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import './src/i18n';
 import NetInfo from '@react-native-community/netinfo';
 import MyBoards from './src/views/MyBoards';
-import createStyles from './src/views/sudokuStyles';
 import DeviceInfo from 'react-native-device-info';
 import { State, GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 import { DIFFICULTY, SudokuType } from './src/constans';
@@ -280,7 +279,6 @@ function App() {
   const { t } = useTranslation();
   const setIsHasContinue = useSudokuStore(state => state.setIsHasContinue);
   const setIsConnected = useSudokuStore(state => state.setIsConnected);
-  const setIsIllegal = useSudokuStore(state => state.setIsIllegal);
   const setIsSound = useSudokuStore(state => state.setIsSound);
   const setIsHighlight = useSudokuStore(state => state.setIsHighlight);
   const setIsBackground = useSudokuStore(state => state.setIsBackground);
@@ -391,14 +389,11 @@ function App() {
     checkContinue();
   }, []);
 
-  const isIllegalArray = useRef<boolean[]>([false, false]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (nextAppState === 'inactive') {
         setIsInactive(true);
-        AsyncStorage.setItem('lastLogOutTime', JSON.stringify(new Date().getTime()));
-        AsyncStorage.setItem('isIllegal', JSON.stringify(isIllegalArray.current));
       } else if (nextAppState === 'background') {
         setIsBackground(true);
       } else if (nextAppState === 'active') {
@@ -407,35 +402,6 @@ function App() {
       }
     });
     return () => subscription.remove();
-  }, []);
-
-  useEffect(() => {
-    // AsyncStorage.clear();
-    const checkLastLogOutTime = async () => {
-      const lastLogOutTime = parseInt((await AsyncStorage.getItem('lastLogOutTime')) || '0');
-      const isIllegalArr = JSON.parse((await AsyncStorage.getItem('isIllegal')) || '[false,false]');
-
-      if (lastLogOutTime) {
-        const currentTime = new Date().getTime();
-        const timeDiff = currentTime - lastLogOutTime;
-        if (timeDiff < 1000 * 15) {
-          isIllegalArr.push(true);
-          isIllegalArr.shift();
-          if (isIllegalArr.length === 2 && isIllegalArr[0] && isIllegalArr[1]) {
-            setIsIllegal(true);
-            setTimeout(() => {
-              setIsIllegal(false);
-            }, 1000 * 60);
-          }
-        } else {
-          isIllegalArr.push(false);
-          isIllegalArr.shift();
-          setIsIllegal(false);
-        }
-        isIllegalArray.current = isIllegalArr;
-      }
-    };
-    checkLastLogOutTime();
   }, []);
 
   useEffect(() => {
