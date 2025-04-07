@@ -235,6 +235,7 @@ export const useSudokuBoardDIY = () => {
     myBoards,
     currentIndex,
     setMyBoards,
+    getCleanBoard,
   ]);
 
   const updateBoard = useCallback(
