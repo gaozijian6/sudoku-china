@@ -8,6 +8,7 @@ import {
   createGraph,
   copyOfficialDraft,
   BoardHistoryDIY,
+  deepCopyBoard,
 } from './index';
 import initialBoard from '../views/initialBoard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -158,10 +159,26 @@ export const useSudokuBoardDIY = () => {
     setRemainingCounts(remainingCountsSync.current);
   }, []);
 
+  const getCleanBoard = useCallback((board: CellData[][]): CellData[][] => {
+    const newBoard = deepCopyBoard(board);
+    newBoard.forEach(row =>
+      row.forEach(cell => {
+        cell.highlightError = undefined;
+        cell.highlights = undefined;
+        cell.highlightCandidates = undefined;
+        cell.promptCandidates = undefined;
+        cell.promptCandidates1 = undefined;
+        cell.promptCandidates2 = undefined;
+        cell.promptCandidates3 = undefined;
+      })
+    );
+    return newBoard;
+  }, []);
+
   const saveSudokuData = useCallback(() => {
     if (sudokuType === SudokuType.DIY1) {
       const sudokuData = {
-        board,
+        board: getCleanBoard(board),
         history: history.current,
         currentStep,
         remainingCounts,
@@ -173,7 +190,7 @@ export const useSudokuBoardDIY = () => {
       AsyncStorage.setItem('localsudokuDataDIY2', JSON.stringify(sudokuData));
     } else if (sudokuType === SudokuType.DIY2) {
       const sudokuData = {
-        board,
+        board: getCleanBoard(board),
         history: history.current,
         currentStep,
         remainingCounts,

@@ -128,7 +128,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   const [positions, setPositions] = useState<number[]>([]);
   const [eraseEnabled, setEraseEnabled] = useState<boolean>(false);
   const [watchIconVisible, setWatchIconVisible] = useState<boolean>(false);
-  const [isPlayingFinish, setIsPlayingFinish] = useState<boolean>(false);
 
   // 记录是否在提示过程中
   const isHinting = useRef<boolean>(false);
@@ -269,7 +268,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       selectedCell,
       lastSelectedCell: lastSelectedCell.current,
       selectionMode,
-      errorCells,
+      // errorCells,
       hintContent,
       hintMethod,
       result,
@@ -294,7 +293,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     differenceMap,
     draftMode,
     eraseEnabled,
-    errorCells,
     errorCount,
     hintContent,
     hintMethod,
@@ -395,7 +393,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       setSelectedCell(data.selectedCell);
       lastSelectedCell.current = data.lastSelectedCell;
       setSelectionMode(data.selectionMode);
-      setErrorCells(data.errorCells);
+      // setErrorCells(data.errorCells);
       setHintContent(data.hintContent);
       setHintMethod(handleHintMethod(data.hintMethod, t));
       setResult(data.result);

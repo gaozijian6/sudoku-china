@@ -172,9 +172,25 @@ export const useSudokuBoard = () => {
     return count;
   }, []);
 
+  const getCleanBoard = useCallback((board: CellData[][]): CellData[][] => {
+    const newBoard = deepCopyBoard(board);
+    newBoard.forEach(row =>
+      row.forEach(cell => {
+        cell.highlightError = undefined;
+        cell.highlights = undefined;
+        cell.highlightCandidates = undefined;
+        cell.promptCandidates = undefined;
+        cell.promptCandidates1 = undefined;
+        cell.promptCandidates2 = undefined;
+        cell.promptCandidates3 = undefined;
+      })
+    );
+    return newBoard;
+  }, []);
+
   const saveSudokuData = useCallback(async () => {
     const sudokuData = {
-      board,
+      board: getCleanBoard(board),
       answerBoard: answerBoard.current,
       history: history.current,
       currentStep,
@@ -183,7 +199,7 @@ export const useSudokuBoard = () => {
       standradBoard,
     };
     await AsyncStorage.setItem('sudokuData2', JSON.stringify(sudokuData));
-  }, [board, counts, currentStep, remainingCounts, standradBoard]);
+  }, [board, counts, currentStep, remainingCounts, standradBoard, getCleanBoard]);
 
   const updateBoard = useCallback(
     (newBoard: CellData[][], action: string, isFill: boolean) => {

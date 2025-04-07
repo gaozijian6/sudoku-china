@@ -14,10 +14,9 @@ const isIpad = model.includes('iPad');
 interface TarBarsSudokuProps {
   onBack: () => void;
   saveData: () => void;
-  currentIndex: number;
 }
 
-function TarBarsSudoku({ onBack, saveData, currentIndex }: TarBarsSudokuProps) {
+function TarBarsSudoku({ onBack, saveData }: TarBarsSudokuProps) {
   const navigation = useNavigation();
   const setIsHome = useSudokuStore(state => state.setIsHome);
   const setIsSudoku = useSudokuStore(state => state.setIsSudoku);
