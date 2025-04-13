@@ -1,12 +1,17 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, InteractionManager } from 'react-native';
+import { View, Text, Pressable, StyleSheet, NativeModules } from 'react-native';
 import Level from './Level';
 import { playSound } from '../tools/Sound';
 import { useSudokuStore } from '../store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
-import { Page, SudokuType } from '../constans';
+import { Page, SudokuType, DIFFICULTY, LeaderboardType } from '../constans';
 import { useNavigation } from '@react-navigation/native';
+import { calculateProgress, getUpdateUserStatisticPass, saveUserStatisticPass } from '../tools';
+import iCloudStorage from 'react-native-icloudstore';
+import LZString from 'lz-string';
+
+const { LeaderboardManager } = NativeModules;
 
 const Home: React.FC = memo(() => {
   const setIsContinue = useSudokuStore(state => state.setIsContinue);
@@ -22,11 +27,131 @@ const Home: React.FC = memo(() => {
   const currentPage = useSudokuStore(state => state.currentPage);
   const setSudokuType = useSudokuStore(state => state.setSudokuType);
   const isDark = useSudokuStore(state => state.isDark);
+  const userStatisticPass = useSudokuStore(state => state.userStatisticPass);
+  const setIsLoginGameCenter = useSudokuStore(state => state.setIsLoginGameCenter);
+  const setUserStatisticPass = useSudokuStore(state => state.setUserStatisticPass);
+  const updateUserStatisticPassOnline = useSudokuStore(state => state.updateUserStatisticPassOnline);
   const styles = createStyles(isDark);
   const { t } = useTranslation();
   const navigation = useNavigation();
 
   const [showLevel, setShowLevel] = useState(false);
+
+  // 计算所有难度的总体完成情况
+  const calculateTotalProgress = useCallback((userStatisticPass: any) => {
+    const difficultyLevels = [
+      DIFFICULTY.ENTRY,
+      DIFFICULTY.EASY,
+      DIFFICULTY.MEDIUM,
+      DIFFICULTY.HARD,
+      DIFFICULTY.EXTREME,
+    ];
+
+    let totalCompleted = 0;
+    let totalCount = 0;
+
+    difficultyLevels.forEach(level => {
+      const progress = calculateProgress(userStatisticPass, level);
+      totalCompleted += progress.completed;
+      totalCount += progress.total;
+    });
+
+    const percentage = totalCount > 0 ? (totalCompleted / totalCount) * 100 : 0;
+
+    return {
+      percentage,
+      completed: totalCompleted,
+      total: totalCount,
+    };
+  }, []);
+
+  useEffect(() => {
+    const initializeGameCenter = async (userStatisticPass: any) => {
+
+      try {
+        const result = await LeaderboardManager.initialize();
+        setIsLoginGameCenter(true);
+
+        // 提交所有类型的分数
+        const submitAllScores = async () => {
+          try {
+            // 获取各难度的完成数量
+            const entryCounts = calculateProgress(userStatisticPass, DIFFICULTY.ENTRY).completed;
+            const easyCounts = calculateProgress(userStatisticPass, DIFFICULTY.EASY).completed;
+            const mediumCounts = calculateProgress(userStatisticPass, DIFFICULTY.MEDIUM).completed;
+            const hardCounts = calculateProgress(userStatisticPass, DIFFICULTY.HARD).completed;
+            const extremeCounts = calculateProgress(
+              userStatisticPass,
+              DIFFICULTY.EXTREME
+            ).completed;
+            const totalCounts = calculateTotalProgress(userStatisticPass).completed;
+
+            // 提交各难度分数
+            await LeaderboardManager.submitScore(entryCounts, LeaderboardType.ENTRY_PASS_COUNTS);
+
+            await LeaderboardManager.submitScore(easyCounts, LeaderboardType.EASY_PASS_COUNTS);
+
+            await LeaderboardManager.submitScore(mediumCounts, LeaderboardType.MEDIUM_PASS_COUNTS);
+
+            await LeaderboardManager.submitScore(hardCounts, LeaderboardType.HARD_PASS_COUNTS);
+
+            await LeaderboardManager.submitScore(
+              extremeCounts,
+              LeaderboardType.EXTREME_PASS_COUNTS
+            );
+
+            await LeaderboardManager.submitScore(totalCounts, LeaderboardType.TOTAL_PASS_COUNTS);
+          } catch (error) {
+            console.error('提交分数失败:', error);
+          }
+        };
+
+        // GameCenter初始化成功后提交分数
+        await submitAllScores();
+      } catch (error) {
+        setIsLoginGameCenter(false);
+        console.error('GameCenter 初始化失败:', error);
+      }
+    };
+    const fetchUserStatisticPassData = async () => {
+      const userStatisticPass_iCloud = await iCloudStorage.getItem('userStatisticPass');
+      const userStatisticPass_AsyncStorage = await AsyncStorage.getItem('userStatisticPass');
+
+      if (!!userStatisticPass_iCloud && !!userStatisticPass_AsyncStorage) {
+        const decompressed_iCloud = LZString.decompressFromUTF16(userStatisticPass_iCloud);
+        const decompressed_AsyncStorage = LZString.decompressFromUTF16(
+          userStatisticPass_AsyncStorage
+        );
+        const newUserStatisticPass = getUpdateUserStatisticPass(
+          JSON.parse(decompressed_iCloud),
+          JSON.parse(decompressed_AsyncStorage)
+        );
+        setUserStatisticPass(newUserStatisticPass);
+      } else if (!!userStatisticPass_iCloud) {
+        const decompressed_iCloud = LZString.decompressFromUTF16(userStatisticPass_iCloud);
+        setUserStatisticPass(JSON.parse(decompressed_iCloud));
+      } else if (!!userStatisticPass_AsyncStorage) {
+        const decompressed_AsyncStorage = LZString.decompressFromUTF16(
+          userStatisticPass_AsyncStorage
+        );
+        setUserStatisticPass(JSON.parse(decompressed_AsyncStorage));
+      } else {
+        const userStatisticPass_Mock = {
+          [DIFFICULTY.ENTRY]: '0'.repeat(10000),
+          [DIFFICULTY.EASY]: '0'.repeat(10000),
+          [DIFFICULTY.MEDIUM]: '0'.repeat(10000),
+          [DIFFICULTY.HARD]: '0'.repeat(10000),
+          [DIFFICULTY.EXTREME]: '0'.repeat(10000),
+        };
+        setUserStatisticPass(userStatisticPass_Mock);
+      }
+      saveUserStatisticPass(useSudokuStore.getState().userStatisticPass);
+      updateUserStatisticPassOnline();
+      initializeGameCenter(useSudokuStore.getState().userStatisticPass);
+    };
+
+    fetchUserStatisticPassData();
+  }, []);
 
   const handleLevelSelect = useCallback(
     async (level: string) => {
@@ -251,6 +376,29 @@ const createStyles = (isDark: boolean) =>
       width: 26,
       height: 26,
       tintColor: isDark ? '#666' : '#fff',
+    },
+    leaderboardButton: {
+      backgroundColor: isDark ? 'rgb( 32, 31, 33)' : '#FFFFFF',
+      borderRadius: 25,
+      padding: 15,
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      borderWidth: 0,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.2,
+      shadowRadius: 1.41,
+      elevation: 2,
+      width: '60%',
+    },
+    leaderboardButtonText: {
+      color: '#666666',
+      fontSize: 18,
+      marginRight: 10,
     },
   });
 

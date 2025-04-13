@@ -38,15 +38,14 @@ function ResultView({ onBack, resetSudoku, visible, puzzleId, initializeBoard2 }
   const styles = createStyles(isDark);
   useEffect(() => {
     if (visible) {
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        friction: 8,
+        tension: 40,
+      }).start();
+    } else {
       scaleAnim.setValue(0);
-      setTimeout(() => {
-        Animated.spring(scaleAnim, {
-          toValue: 1,
-          useNativeDriver: true,
-          friction: 8,
-          tension: 40,
-        }).start();
-      }, 0);
     }
   }, [visible]);
 

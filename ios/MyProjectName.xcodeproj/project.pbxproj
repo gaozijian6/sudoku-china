@@ -11,6 +11,8 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		A94056CB2DAB95A900E109A2 /* LeaderboardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94056C92DAB95A900E109A2 /* LeaderboardManager.swift */; };
+		A94056CC2DAB95A900E109A2 /* LeaderboardManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A94056CA2DAB95A900E109A2 /* LeaderboardManager.m */; };
 		A95F52812DA041D0003B9B16 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A95F52802DA041D0003B9B16 /* StoreKit.framework */; };
 		A95F52B12DA04306003B9B16 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A95F52AF2DA04306003B9B16 /* Localizable.strings */; };
 		A95F52B22DA04306003B9B16 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A95F52982DA04306003B9B16 /* InfoPlist.strings */; };
@@ -35,6 +37,8 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-MyProjectName.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MyProjectName.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = MyProjectName/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = MyProjectName/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		A94056C92DAB95A900E109A2 /* LeaderboardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LeaderboardManager.swift; path = MyProjectName/LeaderboardManager.swift; sourceTree = "<group>"; };
+		A94056CA2DAB95A900E109A2 /* LeaderboardManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = LeaderboardManager.m; path = MyProjectName/LeaderboardManager.m; sourceTree = "<group>"; };
 		A95F52802DA041D0003B9B16 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		A95F52822DA04306003B9B16 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A95F52832DA04306003B9B16 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -138,6 +142,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				A94056CA2DAB95A900E109A2 /* LeaderboardManager.m */,
+				A94056C92DAB95A900E109A2 /* LeaderboardManager.swift */,
 				A95F52B02DA04306003B9B16 /* Base */,
 				A96019382D9ED50A00B4B553 /* CloudKitManager.m */,
 				A96019882D9EDC4800B4B553 /* CloudKitManager.m */,
@@ -374,6 +380,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A94056CB2DAB95A900E109A2 /* LeaderboardManager.swift in Sources */,
+				A94056CC2DAB95A900E109A2 /* LeaderboardManager.m in Sources */,
 				A96019892D9EDC4800B4B553 /* ColorChain.m in Sources */,
 				A960198A2D9EDC4800B4B553 /* CloudKitManager.swift in Sources */,
 				A960198B2D9EDC4800B4B553 /* ColorChain.swift in Sources */,
@@ -453,7 +461,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = MyProjectName/MyProjectName.entitlements;
-				CURRENT_PROJECT_VERSION = 2.1;
+				CURRENT_PROJECT_VERSION = 2.1.1;
 				DEVELOPMENT_TEAM = FH8DM9J9B4;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = MyProjectName/Info.plist;
@@ -462,7 +470,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -488,7 +496,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = MyProjectName/MyProjectName.entitlements;
-				CURRENT_PROJECT_VERSION = 2.1;
+				CURRENT_PROJECT_VERSION = 2.1.1;
 				DEVELOPMENT_TEAM = FH8DM9J9B4;
 				INFOPLIST_FILE = MyProjectName/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -496,7 +504,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

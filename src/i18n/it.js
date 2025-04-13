@@ -266,6 +266,10 @@ export default {
     extreme: 'Estremo',
     dataSync: 'Istruzioni di sincronizzazione dei dati',
     dataSyncDescription:
-      "Promemoria amichevole: Se cambi dispositivo, i dati di iCloud potrebbero non sincronizzarsi immediatamente sul nuovo dispositivo. Ti suggeriamo di riaprire l'App più volte o di attendere un po'. Durante questo periodo, puoi lavorare sui puzzle locali. Dopo l'aggiornamento dei vecchi dati, l'App ti aiuterà automaticamente a integrare insieme i nuovi dati.",
+      "1.Promemoria amichevole: Se cambi dispositivo, i dati di iCloud potrebbero non sincronizzarsi immediatamente sul nuovo dispositivo. Ti suggeriamo di riaprire l'App più volte o di attendere un po'. Durante questo periodo, puoi lavorare sui puzzle locali. Dopo l'aggiornamento dei vecchi dati, l'App ti aiuterà automaticamente a integrare insieme i nuovi dati.",
+    total: 'Totale',
+    pleaseLoginGameCenter: 'Per favore, accedi a GameCenter',
+    tips: 'Suggerimenti',
+    dataSyncDescription2: '2.La tua classifica sarà sincronizzata a livello globale entro 24 ore.',
   },
 };

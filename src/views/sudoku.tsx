@@ -49,6 +49,7 @@ import {
   hiddenTriple,
   findDifferenceCells,
   findDifferenceDraftAll,
+  nakedQuadruple,
 } from '../tools/solution';
 import { useTranslation } from 'react-i18next';
 import type { CandidateMap, CellData, Graph, Position } from '../tools';
@@ -62,8 +63,6 @@ import { useSudokuStore } from '../store';
 import TarBarsSudoku from '../components/tarBarsSudoku';
 import ResultView from '../components/ResultOverlay';
 import handleHintMethod from '../tools/handleHintMethod';
-import WatchIcon from '../components/WatchIcon';
-import { RewardedAdEventType } from 'react-native-google-mobile-ads';
 import createStyles from './sudokuStyles';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -72,9 +71,11 @@ import easyBoard from '../mock/2easy';
 import mediumBoard from '../mock/3medium';
 import hardBoard from '../mock/4hard';
 import extremeBoard from '../mock/5extreme';
-import { DIFFICULTY } from '../constans';
+import { DIFFICULTY, LeaderboardType } from '../constans';
+import { calculateProgress } from '../tools';
+import InAppReview from 'react-native-in-app-review';
 
-const { ColorChain } = NativeModules;
+const { ColorChain, LeaderboardManager } = NativeModules;
 
 interface SudokuProps {
   isMovingRef: React.MutableRefObject<boolean>;
@@ -160,6 +161,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     xyzWing,
     skyscraper,
     skyscraper2,
+    nakedQuadruple,
     combinationChain,
     swordfish,
     jellyfish,
@@ -340,44 +342,84 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
 
   useEffect(() => {
     if (counts == 81) {
+      playVictorySound();
       const arr = new Array(10000).fill(0);
-      setTimeout(() => {
-        for (let i = 0; i < userStatisticPass[difficulty].length; i++) {
-          if (userStatisticPass[difficulty][i] === '1') {
-            arr[i] = 1;
-          }
+      for (let i = 0; i < userStatisticPass[difficulty].length; i++) {
+        if (userStatisticPass[difficulty][i] === '1') {
+          arr[i] = 1;
         }
-        let index;
-        switch (difficulty) {
-          case DIFFICULTY.ENTRY:
-            index = entryBoard.findIndex(item => item.date === puzzleId.current);
-            break;
-          case DIFFICULTY.EASY:
-            index = easyBoard.findIndex(item => item.date === puzzleId.current);
-            break;
-          case DIFFICULTY.MEDIUM:
-            index = mediumBoard.findIndex(item => item.date === puzzleId.current);
-            break;
-          case DIFFICULTY.HARD:
-            index = hardBoard.findIndex(item => item.date === puzzleId.current);
-            break;
-          case DIFFICULTY.EXTREME:
-            index = extremeBoard.findIndex(item => item.date === puzzleId.current);
-            break;
-        }
-        console.log('index', index);
+      }
+      let index;
+      switch (difficulty) {
+        case DIFFICULTY.ENTRY:
+          index = entryBoard.findIndex(item => item.date === puzzleId.current);
+          LeaderboardManager.submitScore(
+            calculateProgress(userStatisticPass, DIFFICULTY.ENTRY).completed,
+            LeaderboardType.ENTRY_PASS_COUNTS
+          );
 
-        arr[index!] = 1;
-        const newUserStatisticPass = {
-          ...userStatisticPass,
-          [difficulty]: arr.join(''),
-        };
-        setUserStatisticPass(newUserStatisticPass);
-        saveUserStatisticPass(newUserStatisticPass);
-        updateUserStatisticPassOnline();
-        playVictorySound();
+          break;
+        case DIFFICULTY.EASY:
+          index = easyBoard.findIndex(item => item.date === puzzleId.current);
+          LeaderboardManager.submitScore(
+            calculateProgress(userStatisticPass, DIFFICULTY.EASY).completed,
+            LeaderboardType.EASY_PASS_COUNTS
+          );
+          break;
+        case DIFFICULTY.MEDIUM:
+          index = mediumBoard.findIndex(item => item.date === puzzleId.current);
+          LeaderboardManager.submitScore(
+            calculateProgress(userStatisticPass, DIFFICULTY.MEDIUM).completed,
+            LeaderboardType.MEDIUM_PASS_COUNTS
+          );
+          break;
+        case DIFFICULTY.HARD:
+          index = hardBoard.findIndex(item => item.date === puzzleId.current);
+          LeaderboardManager.submitScore(
+            calculateProgress(userStatisticPass, DIFFICULTY.HARD).completed,
+            LeaderboardType.HARD_PASS_COUNTS
+          );
+          break;
+        case DIFFICULTY.EXTREME:
+          index = extremeBoard.findIndex(item => item.date === puzzleId.current);
+          LeaderboardManager.submitScore(
+            calculateProgress(userStatisticPass, DIFFICULTY.EXTREME).completed,
+            LeaderboardType.EXTREME_PASS_COUNTS
+          );
+          break;
+      }
+
+      arr[index!] = 1;
+      const newUserStatisticPass = {
+        ...userStatisticPass,
+        [difficulty]: arr.join(''),
+      };
+      setUserStatisticPass(newUserStatisticPass);
+      saveUserStatisticPass(newUserStatisticPass);
+      updateUserStatisticPassOnline();
+      const totalPassCounts =
+        useSudokuStore.getState().entryBoardPass.length +
+        useSudokuStore.getState().easyBoardPass.length +
+        useSudokuStore.getState().mediumBoardPass.length +
+        useSudokuStore.getState().hardBoardPass.length +
+        useSudokuStore.getState().extremeBoardPass.length;
+      if (totalPassCounts === 100) {
+        setTimeout(() => {
+          InAppReview.RequestInAppReview()
+            .then(() => {
+              setTimeout(() => {
+                setSuccessResult(errorCount, hintCount.current);
+              }, 1000);
+            })
+            .catch(error => {
+              setTimeout(() => {
+                setSuccessResult(errorCount, hintCount.current);
+              }, 1000);
+            });
+        }, 500);
+      } else {
         setSuccessResult(errorCount, hintCount.current);
-      }, 100);
+      }
     }
   }, [counts]);
 

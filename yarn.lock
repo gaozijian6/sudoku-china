@@ -5741,6 +5741,11 @@ react-native-icloudstore@^0.9.0:
   resolved "https://registry.yarnpkg.com/react-native-icloudstore/-/react-native-icloudstore-0.9.0.tgz#415cf2ca79e71eb501024079f3b76f9b82d3d587"
   integrity sha512-xJHzMlrWuWN3K6D7aGPgARTc5uwdbgkE217dfGiFbuDBDjgUBGCVCyAzabVDXLVNvfCHmP6A2/RCjjQyZB2Sow==
 
+react-native-in-app-review@^4.3.5:
+  version "4.3.5"
+  resolved "https://registry.yarnpkg.com/react-native-in-app-review/-/react-native-in-app-review-4.3.5.tgz#8de11288f4bf69a7bc14cd6f1cfd59129ae7ec65"
+  integrity sha512-ooqAqV0ghz5WrTtXS2WShON0aP4oOnHG2hCgL8p+TWOFIYyTpaCcLgMYC82XXZoAl9+ip2r1/F8l5i4VcyEWhg==
+
 react-native-is-edge-to-edge@1.1.6:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.1.6.tgz#69ec13f70d76e9245e275eed4140d0873a78f902"

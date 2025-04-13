@@ -265,6 +265,10 @@ export default {
     extreme: 'Extreem',
     dataSync: 'Gegevenssynchronisatieinstructie',
     dataSyncDescription:
-      'Vriendelijke herinnering: Als u van apparaat verandert, worden iCloud-gegevens mogelijk niet direct gesynchroniseerd met het nieuwe apparaat. We raden u aan de app een paar keer opnieuw te openen of even te wachten. Gedurende deze periode kunt u werken aan lokale puzzels. Nadat de oude gegevens zijn bijgewerkt, helpt de app u automatisch de nieuwe gegevens te integreren.',
+      '1.Vriendelijke herinnering: Als u van apparaat verandert, worden iCloud-gegevens mogelijk niet direct gesynchroniseerd met het nieuwe apparaat. We raden u aan de app een paar keer opnieuw te openen of even te wachten. Gedurende deze periode kunt u werken aan lokale puzzels. Nadat de oude gegevens zijn bijgewerkt, helpt de app u automatisch de nieuwe gegevens te integreren.',
+    total: 'Totaal',
+    pleaseLoginGameCenter: 'Log in bij GameCenter',
+    tips: 'Tips',
+    dataSyncDescription2: '2.Uw ranglijst wordt binnen 24 uur wereldwijd gesynchroniseerd.',
   },
 };
