@@ -90,19 +90,19 @@ export enum SudokuType {
 }
 
 export enum LeaderboardType {
-  ENTRY_PASS_COUNTS = 'entryPassCounts',
-  EASY_PASS_COUNTS = 'easyPassCounts',
-  MEDIUM_PASS_COUNTS = 'mediumPassCounts',
-  HARD_PASS_COUNTS = 'hardPassCounts',
-  EXTREME_PASS_COUNTS = 'extremePassCounts',
-  TOTAL_PASS_COUNTS = 'totalPassCounts',
+  ENTRY_PASS_COUNTS = 'entryPassCounts2',
+  EASY_PASS_COUNTS = 'easyPassCounts2',
+  MEDIUM_PASS_COUNTS = 'mediumPassCounts2',
+  HARD_PASS_COUNTS = 'hardPassCounts2',
+  EXTREME_PASS_COUNTS = 'extremePassCounts2',
+  TOTAL_PASS_COUNTS = 'totalPassCounts2',
 }
 
 export const LEADERBOARD_IDS = {
-  [LeaderboardType.ENTRY_PASS_COUNTS]: 'grp.entryPassCounts',
-  [LeaderboardType.EASY_PASS_COUNTS]: 'grp.easyPassCounts',
-  [LeaderboardType.MEDIUM_PASS_COUNTS]: 'grp.mediumPassCounts',
-  [LeaderboardType.HARD_PASS_COUNTS]: 'grp.hardPassCounts',
-  [LeaderboardType.EXTREME_PASS_COUNTS]: 'grp.extremePassCounts',
-  [LeaderboardType.TOTAL_PASS_COUNTS]: 'grp.totalPassCounts',
+  [LeaderboardType.ENTRY_PASS_COUNTS]: 'grp.entryPassCounts2',
+  [LeaderboardType.EASY_PASS_COUNTS]: 'grp.easyPassCounts2',
+  [LeaderboardType.MEDIUM_PASS_COUNTS]: 'grp.mediumPassCounts2',
+  [LeaderboardType.HARD_PASS_COUNTS]: 'grp.hardPassCounts2',
+  [LeaderboardType.EXTREME_PASS_COUNTS]: 'grp.extremePassCounts2',
+  [LeaderboardType.TOTAL_PASS_COUNTS]: 'grp.totalPassCounts2',
 }

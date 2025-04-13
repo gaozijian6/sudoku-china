@@ -3,27 +3,27 @@ import Foundation
 import React
 
 enum LeaderboardType: String, CaseIterable {
-    case entryPassCounts = "entryPassCounts"
-    case easyPassCounts = "easyPassCounts"
-    case mediumPassCounts = "mediumPassCounts"
-    case hardPassCounts = "hardPassCounts"
-    case extremePassCounts = "extremePassCounts"
-    case totalPassCounts = "totalPassCounts"
+    case entryPassCounts = "entryPassCounts2"
+    case easyPassCounts = "easyPassCounts2"
+    case mediumPassCounts = "mediumPassCounts2"
+    case hardPassCounts = "hardPassCounts2"
+    case extremePassCounts = "extremePassCounts2"
+    case totalPassCounts = "totalPassCounts2"
     
     var leaderboardId: String {
         switch self {
         case .entryPassCounts:
-            return "grp.entryPassCounts"
+            return "grp.entryPassCounts2"
         case .easyPassCounts:
-            return "grp.easyPassCounts"
+            return "grp.easyPassCounts2"
         case .mediumPassCounts:
-            return "grp.mediumPassCounts"
+            return "grp.mediumPassCounts2"
         case .hardPassCounts:
-            return "grp.hardPassCounts"
+            return "grp.hardPassCounts2"
         case .extremePassCounts:
-            return "grp.extremePassCounts"
+            return "grp.extremePassCounts2"
         case .totalPassCounts:
-            return "grp.totalPassCounts"
+            return "grp.totalPassCounts2"
         }
     }
 }
