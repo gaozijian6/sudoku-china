@@ -46,6 +46,22 @@ export const getObjectSize = (obj: any): number => {
   return new Blob([str]).size;
 };
 
+export const calculateProgress = (userStatisticPass: any, difficultyLevel: DIFFICULTY) => {
+  const progressData = userStatisticPass[difficultyLevel as keyof typeof userStatisticPass];
+  if (!progressData) return { percentage: 0, completed: 0, total: 0 };
+
+  const completedCount = (progressData.match(/1/g) || []).length;
+  const totalCount = easyBoard.length;
+
+  const percentage = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+
+  return {
+    percentage,
+    completed: completedCount,
+    total: totalCount,
+  };
+};
+
 // 创建图结构
 export const createGraph = (board: CellData[][], candidateMap: CandidateMap): Graph => {
   const graph: Graph = {};

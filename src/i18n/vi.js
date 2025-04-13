@@ -265,6 +265,10 @@ export default {
     extreme: 'Siêu khó',
     dataSync: 'Hướng dẫn đồng bộ dữ liệu',
     dataSyncDescription:
-      'Dostça hatırlatma: Cihazınızı değiştirirseniz, iCloud verileri yeni cihaza hemen senkronize olmayabilir. Uygulamayı birkaç kez yeniden açmanızı veya bir süre beklemenizi öneririz. Bu süre zarfında, yerel bulmacalar üzerinde çalışabilirsiniz. Eski veriler güncellendikten sonra, uygulama otomatik olarak yeni verileri bir araya getirmenize yardımcı olacaktır.',
+      '1.Dostça hatırlatma: Cihazınızı değiştirirseniz, iCloud verileri yeni cihaza hemen senkronize olmayabilir. Uygulamayı birkaç kez yeniden açmanızı veya bir süre beklemenizi öneririz. Bu süre zarfında, yerel bulmacalar üzerinde çalışabilirsiniz. Eski veriler güncellendikten sonra, uygulama otomatik olarak yeni verileri bir araya getirmenize yardımcı olacaktır.',
+    total: 'Tổng',
+    pleaseLoginGameCenter: 'Vui lòng đăng nhập GameCenter',
+    tips: 'Mẹo',
+    dataSyncDescription2: '2.Xếp hạng của bạn sẽ được đồng bộ hóa toàn cầu trong vòng 24 giờ.',
   },
 };

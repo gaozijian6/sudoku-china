@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import LanguageModal from '../components/LanguageModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const APP_VERSION = '2.1';
+const APP_VERSION = '2.1.1';
 
 const PRIVACY_POLICY_URL = 'https://sites.google.com/view/sudokucustom';
 const TERMS_OF_SERVICE_URL = 'https://sites.google.com/view/sudoku-custom-terms';

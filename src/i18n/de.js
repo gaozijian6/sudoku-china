@@ -266,6 +266,10 @@ export default {
     extreme: 'Extrem',
     dataSync: 'Datensynchronisierungsanleitung',
     dataSyncDescription:
-      'Freundlicher Hinweis: Wenn Sie Ihr Gerät wechseln, synchronisieren sich iCloud-Daten möglicherweise nicht sofort mit dem neuen Gerät. Wir empfehlen, die App mehrmals zu öffnen oder eine Weile zu warten. In dieser Zeit können Sie an lokalen Rätseln arbeiten. Nachdem die alten Daten aktualisiert wurden, hilft Ihnen die App automatisch, die neuen Daten zusammenzuführen.',
+      '1.Freundlicher Hinweis: Wenn Sie Ihr Gerät wechseln, synchronisieren sich iCloud-Daten möglicherweise nicht sofort mit dem neuen Gerät. Wir empfehlen, die App mehrmals zu öffnen oder eine Weile zu warten. In dieser Zeit können Sie an lokalen Rätseln arbeiten. Nachdem die alten Daten aktualisiert wurden, hilft Ihnen die App automatisch, die neuen Daten zusammenzuführen.',
+    total: 'Gesamt',
+    pleaseLoginGameCenter: 'Bitte melden Sie sich bei GameCenter an',
+    tips: 'Tipps',
+    dataSyncDescription2: '2.Ihre Rangliste wird innerhalb von 24 Stunden weltweit synchronisiert.',
   },
 };

@@ -43,6 +43,7 @@ import {
   trialAndError,
   findDifferenceDraftDIY,
   hiddenTriple,
+  nakedQuadruple,
 } from '../tools/solution';
 import type { CandidateMap, CellData, Graph, Position } from '../tools';
 import type { DifferenceMap, Result } from '../tools/solution';
@@ -146,6 +147,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     xyzWing,
     skyscraper,
     skyscraper2,
+    nakedQuadruple,
     combinationChain,
     swordfish,
     jellyfish,

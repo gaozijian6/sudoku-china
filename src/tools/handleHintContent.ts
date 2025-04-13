@@ -436,6 +436,8 @@ export const handleHintContent = (
         });
         break;
       case SOLUTION_METHODS.NAKED_QUADRUPLE_ROW:
+        setPrompts(target);
+        setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
@@ -447,9 +449,12 @@ export const handleHintContent = (
           row: position[0].row + 1,
           candStr,
           positions: posStr,
+          target: target.join(','),
         });
         break;
       case SOLUTION_METHODS.NAKED_QUADRUPLE_COLUMN:
+        setPrompts(target);
+        setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
@@ -461,9 +466,12 @@ export const handleHintContent = (
           col: position[0].col + 1,
           candStr,
           positions: posStr,
+          target: target.join(','),
         });
         break;
       case SOLUTION_METHODS.NAKED_QUADRUPLE_BOX:
+        setPrompts(target);
+        setPositions(target);
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         posStr = `R${prompt[0].row + 1}C${prompt[0].col + 1}、R${
           prompt[1].row + 1
@@ -475,6 +483,7 @@ export const handleHintContent = (
           box: Math.floor(prompt[0].row / 3) * 3 + Math.floor(prompt[0].col / 3) + 1,
           candStr,
           positions: posStr,
+          target: target.join(','),
         });
         break;
       case SOLUTION_METHODS.X_WING_ROW:

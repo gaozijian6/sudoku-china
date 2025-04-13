@@ -263,6 +263,10 @@ export default {
     extreme: 'Çok Zor',
     dataSync: 'Veri Senkronizasyonu Açıklaması',
     dataSyncDescription:
-      'Dostça hatırlatma: Cihazınızı değiştirirseniz, iCloud verileri yeni cihaza hemen senkronize olmayabilir. Uygulamayı birkaç kez yeniden açmanızı veya bir süre beklemenizi öneririz. Bu süre zarfında, yerel bulmacalar üzerinde çalışabilirsiniz. Eski veriler güncellendikten sonra, uygulama otomatik olarak yeni verileri bir araya getirmenize yardımcı olacaktır.',
+      '1.Dostça hatırlatma: Cihazınızı değiştirirseniz, iCloud verileri yeni cihaza hemen senkronize olmayabilir. Uygulamayı birkaç kez yeniden açmanızı veya bir süre beklemenizi öneririz. Bu süre zarfında, yerel bulmacalar üzerinde çalışabilirsiniz. Eski veriler güncellendikten sonra, uygulama otomatik olarak yeni verileri bir araya getirmenize yardımcı olacaktır.',
+    total: 'Toplam',
+    pleaseLoginGameCenter: "Lütfen GameCenter'a giriş yapın",
+    tips: 'İpucu',
+    dataSyncDescription2: '2.Sıralamanız 24 saat içinde dünya çapında senkronize edilecektir.',
   },
 };

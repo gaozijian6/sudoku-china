@@ -78,6 +78,10 @@ interface SudokuState {
   setIsLevel: (value: boolean) => void;
   isConnected: boolean;
   setIsConnected: (value: boolean) => void;
+  isVip: boolean;
+  setIsVip: (value: boolean) => void;
+  isIllegal: boolean;
+  setIsIllegal: (value: boolean) => void;
   isHighlight: boolean;
   setIsHighlight: (value: boolean) => void;
   isSetting: boolean;
@@ -156,6 +160,8 @@ interface SudokuState {
   setExtremeBoardUnPass: (value: BoardPuzzle[]) => void;
   currentPuzzleIndex: number;
   setCurrentPuzzleIndex: (value: number) => void;
+  isLoginGameCenter: boolean;
+  setIsLoginGameCenter: (value: boolean) => void;
 }
 
 export const useSudokuStore = create<SudokuState>(set => ({
@@ -183,6 +189,10 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setIsLevel: value => set({ isLevel: value }),
   isConnected: false,
   setIsConnected: value => set({ isConnected: value }),
+  isVip: false,
+  setIsVip: value => set({ isVip: value }),
+  isIllegal: false,
+  setIsIllegal: value => set({ isIllegal: value }),
   isHighlight: true,
   setIsHighlight: value => set({ isHighlight: value }),
   isSetting: false,
@@ -368,4 +378,6 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setExtremeBoardUnPass: value => set({ extremeBoardUnPass: value }),
   currentPuzzleIndex: 0,
   setCurrentPuzzleIndex: value => set({ currentPuzzleIndex: value }),
+  isLoginGameCenter: false,
+  setIsLoginGameCenter: value => set({ isLoginGameCenter: value }),
 }));

@@ -266,6 +266,10 @@ export default {
     extreme: 'Extremo',
     dataSync: 'Instrucciones de sincronización de datos',
     dataSyncDescription:
-      'Aviso amistoso: Si cambia de dispositivo, es posible que los datos de iCloud no se sincronicen inmediatamente con el nuevo dispositivo. Le sugerimos volver a abrir la aplicación varias veces o esperar un tiempo. Durante este período, puede trabajar en puzzles locales. Después de que se actualicen los datos antiguos, la aplicación le ayudará automáticamente a integrar los nuevos datos.',
+      '1.Aviso amistoso: Si cambia de dispositivo, es posible que los datos de iCloud no se sincronicen inmediatamente con el nuevo dispositivo. Le sugerimos volver a abrir la aplicación varias veces o esperar un tiempo. Durante este período, puede trabajar en puzzles locales. Después de que se actualicen los datos antiguos, la aplicación le ayudará automáticamente a integrar los nuevos datos.',
+    total: 'Total',
+    pleaseLoginGameCenter: 'Por favor, inicie sesión en GameCenter',
+    tips: 'Consejos',
+    dataSyncDescription2: '2.Su clasificación se sincronizará globalmente en 24 horas.',
   },
 };

@@ -33,8 +33,6 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>此标识符将用于向您投放个性化广告。</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
