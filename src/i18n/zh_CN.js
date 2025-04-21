@@ -70,8 +70,9 @@ export default {
     XY_WING: 'xy-wing',
     XYZ_WING: 'xyz-wing',
     SKYSCRAPER: '摩天楼',
-    SKYSCRAPER2: '摩天楼2',
-    REMOTE_PAIR: '远程数对',
+    SKYSCRAPER2: '双强链',
+    THREESTRONGLINKS: '三强链',
+    XCHAIN: 'X链',
     COMBINATION_CHAIN: '组合链',
     SWORDFISH_ROW: '三阶鱼',
     SWORDFISH_COLUMN: '三阶鱼',
@@ -158,8 +159,6 @@ export default {
         '{{positions}}这几个蓝色方格构成共轭链，无论R{{row1}}C{{col1}}还是R{{row2}}C{{col2}}取值为{{target}}，{{deleteStr}}内都不能出现候选数{{target}}',
       SKYSCRAPER2:
         '单元格R{{row1}}C{{col1}}和R{{row2}}C{{col2}}形成一个强链，单元格R{{row3}}C{{col3}}和R{{row4}}C{{col4}}形成另一个强链，这两个强链通过R{{row3}}C{{col3}}和R{{row2}}C{{col2}}之间的弱链相连。如果R{{row1}}C{{col1}}为真，则{{deleteStr}}必须为假。如果R{{row1}}C{{col1}}为假，则R{{row4}}C{{col4}}必须为真，这仍然会使{{deleteStr}}为假。无论如何，候选数{{target}}都不能出现在{{deleteStr}}内。',
-      REMOTE_PAIR:
-        '{{posStr1}}构成远程数对，这两个远程数对通过{{posStr2}}形成强链，无论{{posStr1}}谁为真，{{posStr}}内都不能出现候选数{{target}}',
       WXYZ_WING:
         '{{candStr}}构成WXYZ-Wing，其中R{{row1}}C{{col1}}为枢纽，无论这四个候选方格内如何取值，候选数{{target}}都不能出现在{{deleteStr}}内',
       COMBINATION_CHAIN_3_2_1_STRONG:
@@ -194,6 +193,11 @@ export default {
       DOUBLE_COLOR_CHAIN_q:
         '因为{{posStr1}}与{{posStr2}}是关于{{target}}的强链，所以{{posStr2}}为{{target}}',
       DOUBLE_COLOR_CHAIN_q_start: '{{posStr}}取{{target1}}时会使得当前方格无法取{{target2}}',
+      COMBINATION_CHAIN_AB_STRONG: '{{A}}与{{B}}构成强链',
+      COMBINATION_CHAIN_AB_WEAK: '{{A}}与{{B}}构成弱链',
+      COMBINATION_CHAIN_END: '{{A}}为真时红色方格内为假，{{A}}为假时通过推理{{B}}为真，红色方格内还是为假',
+      SKYSCRAPER2_1:'{{As}}两个方格之间构成一条强链，{{Bs}}四个方格之间构成一条强链，两条强链通过{{Cs}}这两个方格之间的弱链相连，{{A}}为真时，红色方格内为假，{{A}}为假时，{{B}}为真，红色方格内还是为假',
+      SKYSCRAPER2_2:'{{As}}两个方格之间构成一条强链，{{Bs}}两个方格之间构成一条强链，{{Cs}}两个方格之间构成一条强链，每条强链都通过弱链相互连接，{{A}}为真时，红色方格内为假，{{A}}为假时，{{B}}为真，红色方格内还是为假',
     },
     back: '返回',
     next: '下一关',
@@ -259,7 +263,7 @@ export default {
     dataSyncDescription:
       '1.温馨提示：如果您更换了设备，iCloud数据可能不会立马同步到新设备上，建议您重新打开几次App或等待一段时间，在此期间您可以做本地题库，等待旧的数据更新后，App会自动帮您将新的数据整合到一起',
     total: '总计',
-    pleaseLoginGameCenter: '请先登录GameCenter',
+    pleaseLoginGameCenter: '请先登录GameCenter，如已登陆请重新打开App',
     tips: '提示',
     dataSyncDescription2: '2.您的排名会在24小时内同步全球。',
   },

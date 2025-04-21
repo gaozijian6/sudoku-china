@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Animated, AppState, Dimensions, Pressable, Image } from 'react-native';
+import React, { useRef, useEffect, useMemo, useCallback, useState } from 'react';
+import { Animated, AppState, Dimensions, View, Pressable, Image, Platform } from 'react-native';
 import Sudoku from './src/views/sudoku';
 import SudokuDIY from './src/views/sudokuDIY';
 import Home from './src/views/Home';
@@ -11,7 +11,11 @@ import { useSudokuStore } from './src/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import './src/i18n';
 import NetInfo from '@react-native-community/netinfo';
+import rewardedVideo from './src/tools/RewardedVideo';
+import interstitialAdManager from './src/tools/InterstitialAdManager';
 import MyBoards from './src/views/MyBoards';
+import { TestIds, BannerAdSize, BannerAd } from 'react-native-google-mobile-ads';
+import createStyles from './src/views/sudokuStyles';
 import DeviceInfo from 'react-native-device-info';
 import { State, GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 import { DIFFICULTY, SudokuType } from './src/constans';
@@ -20,9 +24,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CustomTabButton from './src/components/CustomTabButton';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import iCloudStorage from 'react-native-icloudstore';
-import LZString from 'lz-string';
-import { getUpdateUserStatisticPass, saveUserStatisticPass } from './src/tools';
+import { requestTrackingPermission, getTrackingStatus } from 'react-native-tracking-transparency';
 import SplashScreen from './src/views/SplashScreen';
 
 const model = DeviceInfo.getModel();
@@ -275,6 +277,7 @@ function App() {
   const { t } = useTranslation();
   const setIsHasContinue = useSudokuStore(state => state.setIsHasContinue);
   const setIsConnected = useSudokuStore(state => state.setIsConnected);
+  const setIsVip = useSudokuStore(state => state.setIsVip);
   const setIsSound = useSudokuStore(state => state.setIsSound);
   const setIsHighlight = useSudokuStore(state => state.setIsHighlight);
   const setIsBackground = useSudokuStore(state => state.setIsBackground);
@@ -283,7 +286,11 @@ function App() {
   const setLocalsudokuDataDIY2 = useSudokuStore(state => state.setLocalsudokuDataDIY2);
   const initSudokuDataDIY1 = useSudokuStore(state => state.initSudokuDataDIY1);
   const initSudokuDataDIY2 = useSudokuStore(state => state.initSudokuDataDIY2);
+  const isVip = useSudokuStore(state => state.isVip);
+  const isSetting = useSudokuStore(state => state.isSetting);
+  const isBackground = useSudokuStore(state => state.isBackground);
   const isSudoku = useSudokuStore(state => state.isSudoku);
+  const isDIY = useSudokuStore(state => state.isDIY);
   const isContinue = useSudokuStore(state => state.isContinue);
   const scaleValue1 = useSudokuStore(state => state.scaleValue1);
   const scaleValue2 = useSudokuStore(state => state.scaleValue2);
@@ -291,12 +298,12 @@ function App() {
   const isDark = useSudokuStore(state => state.isDark);
   const setIsDark = useSudokuStore(state => state.setIsDark);
   const setIsReason = useSudokuStore(state => state.setIsReason);
-  const setUserStatisticPass = useSudokuStore(state => state.setUserStatisticPass);
-  const updateUserStatisticPassOnline = useSudokuStore(
-    state => state.updateUserStatisticPassOnline
-  );
 
+  const styles = createStyles(isDark);
   const isMovingRef = useRef(false);
+  const isIphoneSE = useMemo(() => {
+    return model.includes('SE');
+  }, [model]);
   const scale = useRef(new Animated.Value(1)).current;
   const baseScale = useRef(new Animated.Value(1)).current;
   const pinchScale = useRef(new Animated.Value(1)).current;
@@ -375,6 +382,21 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const checkVip = async () => {
+      const isVip = await AsyncStorage.getItem('isVip');
+      if (isVip) {
+        setIsVip(true);
+        rewardedVideo.setIsVip(true);
+        interstitialAdManager.setIsVip(true);
+      } else {
+        rewardedVideo.loopLoad();
+        interstitialAdManager.loopLoad();
+      }
+    };
+    checkVip();
+  }, []);
+
+  useEffect(() => {
     initSounds();
     const checkContinue = async () => {
       try {
@@ -391,6 +413,7 @@ function App() {
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (nextAppState === 'inactive') {
         setIsInactive(true);
+        AsyncStorage.setItem('lastLogOutTime', JSON.stringify(new Date().getTime()));
       } else if (nextAppState === 'background') {
         setIsBackground(true);
       } else if (nextAppState === 'active') {
@@ -470,45 +493,60 @@ function App() {
     });
   }, []);
 
-  useEffect(() => {
-    // AsyncStorage.clear();
-    // iCloudStorage.clear();
-    const fetchUserStatisticPassData = async () => {
-      const userStatisticPass_iCloud = await iCloudStorage.getItem('userStatisticPass');
-      const userStatisticPass_AsyncStorage = await AsyncStorage.getItem('userStatisticPass');
+  // 添加跟踪授权状态
+  const [trackingStatus, setTrackingStatus] = React.useState('');
 
-      if (!!userStatisticPass_iCloud && !!userStatisticPass_AsyncStorage) {
-        const decompressed_iCloud = LZString.decompressFromUTF16(userStatisticPass_iCloud);
-        const decompressed_AsyncStorage = LZString.decompressFromUTF16(
-          userStatisticPass_AsyncStorage
-        );
-        const newUserStatisticPass = getUpdateUserStatisticPass(
-          JSON.parse(decompressed_iCloud),
-          JSON.parse(decompressed_AsyncStorage)
-        );
-        setUserStatisticPass(newUserStatisticPass);
-      } else if (!!userStatisticPass_iCloud) {
-        const decompressed_iCloud = LZString.decompressFromUTF16(userStatisticPass_iCloud);
-        setUserStatisticPass(JSON.parse(decompressed_iCloud));
-      } else if (!!userStatisticPass_AsyncStorage) {
-        const decompressed_AsyncStorage = LZString.decompressFromUTF16(
-          userStatisticPass_AsyncStorage
-        );
-        setUserStatisticPass(JSON.parse(decompressed_AsyncStorage));
-      } else {
-        const userStatisticPass_Mock = {
-          [DIFFICULTY.ENTRY]: '0'.repeat(10000),
-          [DIFFICULTY.EASY]: '0'.repeat(10000),
-          [DIFFICULTY.MEDIUM]: '0'.repeat(10000),
-          [DIFFICULTY.HARD]: '0'.repeat(10000),
-          [DIFFICULTY.EXTREME]: '0'.repeat(10000),
-        };
-        setUserStatisticPass(userStatisticPass_Mock);
+  // 修改请求跟踪权限的useEffect
+  useEffect(() => {
+    const checkTrackingPermission = async () => {
+      try {
+        if (Platform.OS === 'ios') {
+          // 首先获取当前的跟踪权限状态
+          const currentStatus = await getTrackingStatus();
+          console.log('currentStatus', currentStatus);
+
+          setTrackingStatus(currentStatus);
+
+          // 检查是否已经请求过权限
+          const hasRequestedPermission = await AsyncStorage.getItem(
+            'hasRequestedTrackingPermission'
+          );
+
+          // 根据当前状态配置广告
+          if (currentStatus === 'authorized' || currentStatus === 'unavailable') {
+            // 用户已同意或设备不支持跟踪
+            rewardedVideo.setPersonalizedAds(true);
+            interstitialAdManager.setPersonalizedAds(true);
+          } else {
+            // 用户已拒绝或限制
+            rewardedVideo.setPersonalizedAds(false);
+            interstitialAdManager.setPersonalizedAds(false);
+          }
+
+          // 如果从未请求过权限，则请求权限
+          if (hasRequestedPermission !== 'true' && currentStatus === 'not-determined') {
+            const requestedStatus = await requestTrackingPermission();
+            setTrackingStatus(requestedStatus);
+
+            // 记录已请求过权限
+            await AsyncStorage.setItem('hasRequestedTrackingPermission', 'true');
+
+            // 根据请求结果更新广告配置
+            if (requestedStatus === 'authorized' || requestedStatus === 'unavailable') {
+              rewardedVideo.setPersonalizedAds(true);
+              interstitialAdManager.setPersonalizedAds(true);
+            } else {
+              rewardedVideo.setPersonalizedAds(false);
+              interstitialAdManager.setPersonalizedAds(false);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('获取跟踪授权出错:', error);
       }
-      saveUserStatisticPass(useSudokuStore.getState().userStatisticPass);
-      updateUserStatisticPassOnline();
     };
-    fetchUserStatisticPassData();
+
+    checkTrackingPermission();
   }, []);
 
   // 添加一个状态来控制是否显示闪屏页面
@@ -671,6 +709,21 @@ function App() {
                 }}
               />
             </RootStack.Navigator>
+            {!isIphoneSE &&
+              !isVip &&
+              !isSetting &&
+              !isBackground &&
+              (isSudoku || isDIY || isContinue) && (
+                <View style={[styles.bannerContainer]}>
+                  <BannerAd
+                    unitId={__DEV__ ? TestIds.BANNER : 'ca-app-pub-2981436674907454/7094926382'}
+                    size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+                    requestOptions={{
+                      requestNonPersonalizedAdsOnly: !trackingStatus,
+                    }}
+                  />
+                </View>
+              )}
           </NavigationContainer>
         </Animated.View>
       </PanGestureHandler>

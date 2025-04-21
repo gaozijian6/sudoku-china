@@ -70,8 +70,9 @@ export default {
     XY_WING: 'XY-Wing',
     XYZ_WING: 'XYZ-Wing',
     SKYSCRAPER: 'Grattacielo',
-    SKYSCRAPER2: 'Grattacielo 2',
-    REMOTE_PAIR: 'Coppia Remota',
+    SKYSCRAPER2: 'Due collegamenti forti',
+    THREESTRONGLINKS: 'Tre collegamenti forti',
+    XCHAIN: 'Catena X',
     COMBINATION_CHAIN: 'Catena Combinata',
     SWORDFISH_ROW: 'Pesce Spada',
     SWORDFISH_COLUMN: 'Pesce Spada',
@@ -158,8 +159,6 @@ export default {
         'Le celle blu {{positions}} formano una catena coniugata. Sia che R{{row1}}C{{col1}} o R{{row2}}C{{col2}} sia {{target}}, {{deleteStr}} non può contenere {{target}}',
       SKYSCRAPER2:
         "Le celle R{{row1}}C{{col1}} e R{{row2}}C{{col2}} formano una catena forte, R{{row3}}C{{col3}} e R{{row4}}C{{col4}} formano un'altra catena forte, collegate da una catena debole tra R{{row3}}C{{col3}} e R{{row2}}C{{col2}}. In ogni caso, {{deleteStr}} non può contenere {{target}}",
-      REMOTE_PAIR:
-        '{{posStr1}} forma una coppia remota, collegata a {{posStr2}} tramite una catena forte. Qualunque sia il valore di {{posStr1}}, {{posStr}} non può contenere {{target}}',
       WXYZ_WING:
         '{{candStr}} forma un WXYZ-Wing con perno in R{{row1}}C{{col1}}. Qualunque sia la combinazione, {{target}} non può apparire in {{deleteStr}}',
       COMBINATION_CHAIN_3_2_1_STRONG:
@@ -198,6 +197,14 @@ export default {
         'poiché {{posStr1}} e {{posStr2}} formano un collegamento forte per {{target}}, {{posStr2}} deve essere {{target}}',
       DOUBLE_COLOR_CHAIN_q_start:
         'quando {{posStr}} assume {{target1}}, la cella corrente non può assumere {{target2}}',
+      COMBINATION_CHAIN_AB_STRONG: '{{A}} e {{B}} formano un collegamento forte',
+      COMBINATION_CHAIN_AB_WEAK: '{{A}} e {{B}} formano un collegamento debole',
+      COMBINATION_CHAIN_END:
+        'Quando {{A}} è vero, la cella rossa è falsa. Quando {{A}} è falso, tramite deduzione {{B}} diventa vero, e la cella rossa rimane falsa',
+      SKYSCRAPER2_1:
+        'Esiste un collegamento forte tra le due celle {{As}}, esiste un collegamento forte tra quattro celle {{Bs}}, e questi due collegamenti forti sono connessi da un collegamento debole tra le due celle {{Cs}}. Quando {{A}} è vero, la cella rossa è falsa. Quando {{A}} è falso, {{B}} è vero, e la cella rossa rimane falsa',
+      SKYSCRAPER2_2:
+        'Esiste un collegamento forte tra le due celle {{As}}, esiste un collegamento forte tra le due celle {{Bs}}, ed esiste un collegamento forte tra le due celle {{Cs}}. Ogni collegamento forte è connesso agli altri da collegamenti deboli. Quando {{A}} è vero, la cella rossa è falsa. Quando {{A}} è falso, {{B}} è vero, e la cella rossa rimane falsa',
     },
     back: 'Indietro',
     next: 'Prossimo Livello',
@@ -268,7 +275,8 @@ export default {
     dataSyncDescription:
       "1.Promemoria amichevole: Se cambi dispositivo, i dati di iCloud potrebbero non sincronizzarsi immediatamente sul nuovo dispositivo. Ti suggeriamo di riaprire l'App più volte o di attendere un po'. Durante questo periodo, puoi lavorare sui puzzle locali. Dopo l'aggiornamento dei vecchi dati, l'App ti aiuterà automaticamente a integrare insieme i nuovi dati.",
     total: 'Totale',
-    pleaseLoginGameCenter: 'Per favore, accedi a GameCenter',
+    pleaseLoginGameCenter:
+      "Accedi prima a GameCenter. Se hai già effettuato l'accesso, riapri l'applicazione.",
     tips: 'Suggerimenti',
     dataSyncDescription2: '2.La tua classifica sarà sincronizzata a livello globale entro 24 ore.',
   },

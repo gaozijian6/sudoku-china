@@ -22,6 +22,7 @@ import {
   isSameBoard,
   generateBoard,
   saveUserStatisticPass,
+  calculateTotalProgress,
 } from '../tools';
 import { useSudokuBoard } from '../tools/useSudokuBoard';
 import {
@@ -75,7 +76,7 @@ import { DIFFICULTY, LeaderboardType } from '../constans';
 import { calculateProgress } from '../tools';
 import InAppReview from 'react-native-in-app-review';
 
-const { ColorChain, LeaderboardManager } = NativeModules;
+const { ColorChain, LeaderboardManager, CombinationChain } = NativeModules;
 
 interface SudokuProps {
   isMovingRef: React.MutableRefObject<boolean>;
@@ -323,9 +324,13 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   }, [board]);
 
   const colorChainResult = useRef<Result | null>(null);
+  const combinationChainResult = useRef<Result | null>(null);
   useEffect(() => {
     ColorChain.solve(cleanBoard).then(result => {
       colorChainResult.current = result;
+    });
+    CombinationChain.solve(cleanBoard).then(result => {
+      combinationChainResult.current = result;
     });
   }, [cleanBoard]);
 
@@ -354,7 +359,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
         case DIFFICULTY.ENTRY:
           index = entryBoard.findIndex(item => item.date === puzzleId.current);
           LeaderboardManager.submitScore(
-            calculateProgress(userStatisticPass, DIFFICULTY.ENTRY).completed,
+            calculateProgress(userStatisticPass, DIFFICULTY.ENTRY).completed + 1,
             LeaderboardType.ENTRY_PASS_COUNTS
           );
 
@@ -362,28 +367,28 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
         case DIFFICULTY.EASY:
           index = easyBoard.findIndex(item => item.date === puzzleId.current);
           LeaderboardManager.submitScore(
-            calculateProgress(userStatisticPass, DIFFICULTY.EASY).completed,
+            calculateProgress(userStatisticPass, DIFFICULTY.EASY).completed + 1,
             LeaderboardType.EASY_PASS_COUNTS
           );
           break;
         case DIFFICULTY.MEDIUM:
           index = mediumBoard.findIndex(item => item.date === puzzleId.current);
           LeaderboardManager.submitScore(
-            calculateProgress(userStatisticPass, DIFFICULTY.MEDIUM).completed,
+            calculateProgress(userStatisticPass, DIFFICULTY.MEDIUM).completed + 1,
             LeaderboardType.MEDIUM_PASS_COUNTS
           );
           break;
         case DIFFICULTY.HARD:
           index = hardBoard.findIndex(item => item.date === puzzleId.current);
           LeaderboardManager.submitScore(
-            calculateProgress(userStatisticPass, DIFFICULTY.HARD).completed,
+            calculateProgress(userStatisticPass, DIFFICULTY.HARD).completed + 1,
             LeaderboardType.HARD_PASS_COUNTS
           );
           break;
         case DIFFICULTY.EXTREME:
           index = extremeBoard.findIndex(item => item.date === puzzleId.current);
           LeaderboardManager.submitScore(
-            calculateProgress(userStatisticPass, DIFFICULTY.EXTREME).completed,
+            calculateProgress(userStatisticPass, DIFFICULTY.EXTREME).completed + 1,
             LeaderboardType.EXTREME_PASS_COUNTS
           );
           break;
@@ -394,6 +399,11 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
         ...userStatisticPass,
         [difficulty]: arr.join(''),
       };
+      LeaderboardManager.submitScore(
+        calculateTotalProgress(newUserStatisticPass).completed,
+        LeaderboardType.TOTAL_PASS_COUNTS
+      );
+
       setUserStatisticPass(newUserStatisticPass);
       saveUserStatisticPass(newUserStatisticPass);
       updateUserStatisticPassOnline();
@@ -864,6 +874,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
           answerBoard.current
         );
         if (falseCells.length > 0) {
+          setErrorCount(errorCount + 1);
           isFalseCellsBefore.current = true;
           setFalseCells(falseCells);
           setHintMethod(handleHintMethod('', t));
@@ -895,7 +906,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       for (const solveFunction of solveFunctions.current) {
         result = solveFunction(board, candidateMap.current, graph.current);
         if (result) {
-          // console.log(result);
+          console.log(result);
           hintCount.current++;
           setResult(result);
           setSelectedNumber(null);
@@ -921,7 +932,30 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
           return;
         }
       }
-      if (colorChainResult.current) {
+      if (combinationChainResult.current) {
+        hintCount.current++;
+        setResult(combinationChainResult.current);
+        setSelectedNumber(null);
+        setHintMethod(handleHintMethod(combinationChainResult.current.method, t));
+        setHintContent(
+          handleHintContent(
+            combinationChainResult.current,
+            board,
+            prompts,
+            setPrompts,
+            setSelectedNumber,
+            setPositions,
+            applyHintHighlight,
+            updateBoard,
+            t
+          )
+        );
+        setHintDrawerVisible(true);
+        setIsHint(true);
+        lastSelectedCell.current = selectedCell;
+        setSelectedCell(null);
+        return;
+      } else if (colorChainResult.current) {
         hintCount.current++;
         setResult(colorChainResult.current);
         setSelectedNumber(null);
@@ -976,14 +1010,16 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       answerBoard,
       standradBoardRef,
       handleShowCandidates,
+      setErrorCount,
+      errorCount,
       t,
+      setIsHint,
       candidateMap,
       graph,
       prompts,
       applyHintHighlight,
       updateBoard,
       selectedCell,
-      setIsHint,
     ]
   );
 

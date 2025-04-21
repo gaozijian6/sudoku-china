@@ -70,8 +70,9 @@ export default {
     XY_WING: 'XY-Wing',
     XYZ_WING: 'XYZ-Wing',
     SKYSCRAPER: 'Arranha-céu',
-    SKYSCRAPER2: 'Arranha-céu 2',
-    REMOTE_PAIR: 'Par Remoto',
+    SKYSCRAPER2: 'Dois elos fortes',
+    THREESTRONGLINKS: 'Três elos fortes',
+    XCHAIN: 'Cadeia X',
     COMBINATION_CHAIN: 'Cadeia de Combinação',
     SWORDFISH_ROW: 'Peixe-espada',
     SWORDFISH_COLUMN: 'Peixe-espada',
@@ -158,8 +159,6 @@ export default {
         'As células azuis {{positions}} formam uma cadeia conjugada. Seja R{{row1}}C{{col1}} ou R{{row2}}C{{col2}} igual a {{target}}, {{deleteStr}} não pode conter o candidato {{target}}',
       SKYSCRAPER2:
         'As células R{{row1}}C{{col1}} e R{{row2}}C{{col2}} formam uma cadeia forte, e R{{row3}}C{{col3}} e R{{row4}}C{{col4}} formam outra cadeia forte. Estas duas cadeias estão conectadas por uma cadeia fraca entre R{{row3}}C{{col3}} e R{{row2}}C{{col2}}. Se R{{row1}}C{{col1}} for verdadeiro, {{deleteStr}} deve ser falso. Se R{{row1}}C{{col1}} for falso, R{{row4}}C{{col4}} deve ser verdadeiro, o que ainda faria {{deleteStr}} falso. Em qualquer caso, o candidato {{target}} não pode aparecer em {{deleteStr}}',
-      REMOTE_PAIR:
-        '{{posStr1}} forma um par remoto, e estes dois pares remotos formam uma cadeia forte através de {{posStr2}}. Independentemente de qual {{posStr1}} seja verdadeiro, {{posStr}} não pode conter o candidato {{target}}',
       WXYZ_WING:
         '{{candStr}} forma um WXYZ-Wing com R{{row1}}C{{col1}} como pivô. Independentemente de como estas quatro células são preenchidas, o candidato {{target}} não pode aparecer em {{deleteStr}}',
       COMBINATION_CHAIN_3_2_1_STRONG:
@@ -198,6 +197,14 @@ export default {
         'como {{posStr1}} e {{posStr2}} formam uma ligação forte para {{target}}, {{posStr2}} deve ser {{target}}',
       DOUBLE_COLOR_CHAIN_q_start:
         'quando {{posStr}} assume {{target1}}, a célula atual não pode assumir {{target2}}',
+      COMBINATION_CHAIN_AB_STRONG: '{{A}} e {{B}} formam um elo forte',
+      COMBINATION_CHAIN_AB_WEAK: '{{A}} e {{B}} formam um elo fraco',
+      COMBINATION_CHAIN_END:
+        'Quando {{A}} é verdadeiro, a célula vermelha é falsa. Quando {{A}} é falso, através de dedução {{B}} torna-se verdadeiro, e a célula vermelha continua falsa',
+      SKYSCRAPER2_1:
+        'Existe um elo forte entre as duas células {{As}}, existe um elo forte entre quatro células {{Bs}}, e estes dois elos fortes estão conectados por um elo fraco entre as duas células {{Cs}}. Quando {{A}} é verdadeiro, a célula vermelha é falsa. Quando {{A}} é falso, {{B}} é verdadeiro, e a célula vermelha continua falsa',
+      SKYSCRAPER2_2:
+        'Existe um elo forte entre as duas células {{As}}, existe um elo forte entre as duas células {{Bs}}, e existe um elo forte entre as duas células {{Cs}}. Cada elo forte está conectado aos outros por elos fracos. Quando {{A}} é verdadeiro, a célula vermelha é falsa. Quando {{A}} é falso, {{B}} é verdadeiro, e a célula vermelha continua falsa',
     },
     back: 'Voltar',
     next: 'Próximo',
@@ -268,7 +275,8 @@ export default {
     dataSyncDescription:
       '1.Lembrete amigável: Se você trocar de dispositivo, os dados do iCloud podem não sincronizar imediatamente com o novo dispositivo. Sugerimos reabrir o aplicativo várias vezes ou aguardar um pouco. Durante este período, você pode trabalhar em puzzles locais. Após a atualização dos dados antigos, o aplicativo automaticamente ajudará a integrar os novos dados.',
     total: 'Total',
-    pleaseLoginGameCenter: 'Por favor, entre no GameCenter',
+    pleaseLoginGameCenter:
+      'Por favor, faça login no GameCenter primeiro. Se já estiver logado, reabra o aplicativo.',
     tips: 'Dicas',
     dataSyncDescription2: '2.Sua classificação será sincronizada globalmente em 24 horas.',
   },

@@ -62,6 +62,40 @@ export const calculateProgress = (userStatisticPass: any, difficultyLevel: DIFFI
   };
 };
 
+export type ProgressDifficulty =
+  | DIFFICULTY.ENTRY
+  | DIFFICULTY.EASY
+  | DIFFICULTY.MEDIUM
+  | DIFFICULTY.HARD
+  | DIFFICULTY.EXTREME;
+
+export const calculateTotalProgress = (userStatisticPass: any) => {
+  const difficultyLevels = [
+    { key: DIFFICULTY.ENTRY},
+    { key: DIFFICULTY.EASY},
+    { key: DIFFICULTY.MEDIUM},
+    { key: DIFFICULTY.HARD},
+    { key: DIFFICULTY.EXTREME},
+  ] as const;
+
+  let totalCompleted = 0;
+  let totalCount = 0;
+
+  difficultyLevels.forEach(level => {
+    const progress = calculateProgress(userStatisticPass, level.key as ProgressDifficulty);
+    totalCompleted += progress.completed;
+    totalCount += progress.total;
+  });
+
+  const percentage = totalCount > 0 ? (totalCompleted / totalCount) * 100 : 0;
+
+  return {
+    percentage,
+    completed: totalCompleted,
+    total: totalCount,
+  };
+};
+
 // 创建图结构
 export const createGraph = (board: CellData[][], candidateMap: CandidateMap): Graph => {
   const graph: Graph = {};

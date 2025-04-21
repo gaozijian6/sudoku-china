@@ -34,7 +34,6 @@ export const SOLUTION_METHODS = {
   XYZ_WING: 'XYZ-Wing',
   SKYSCRAPER: 'Skyscraper',
   SKYSCRAPER2: 'Skyscraper2',
-  REMOTE_PAIR: 'Remote Pair',
   COMBINATION_CHAIN: 'Chain of Combinations',
   SWORDFISH_ROW: 'Swordfish(ROW)',
   SWORDFISH_COLUMN: 'Swordfish(COLUMN)',
@@ -49,6 +48,9 @@ export const SOLUTION_METHODS = {
   JELLYFISH_ROW: 'Jellyfish(ROW)',
   JELLYFISH_COLUMN: 'Jellyfish(COLUMN)',
   TRIPLE_COLOR_CHAIN: 'Triple Color Chain',
+  TWO_STRONG_LINKS: 'Two Strong Links',
+  THREE_STRONG_LINKS: 'Three Strong Links',
+  X_CHAIN: 'X-Chain',
 };
 
 export const STRONG_LINK_TYPE = {

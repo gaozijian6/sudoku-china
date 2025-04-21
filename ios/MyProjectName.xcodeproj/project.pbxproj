@@ -24,6 +24,8 @@
 		A960198A2D9EDC4800B4B553 /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A96019862D9EDC4800B4B553 /* CloudKitManager.swift */; };
 		A960198B2D9EDC4800B4B553 /* ColorChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A96019872D9EDC4800B4B553 /* ColorChain.swift */; };
 		A960198C2D9EDC4800B4B553 /* CloudKitManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A96019882D9EDC4800B4B553 /* CloudKitManager.m */; };
+		A9637D4C2DB6839D00506BBF /* CombinationChain.m in Sources */ = {isa = PBXBuildFile; fileRef = A9637D4A2DB6839D00506BBF /* CombinationChain.m */; };
+		A9637D4D2DB6839D00506BBF /* CombinationChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D4B2DB6839D00506BBF /* CombinationChain.swift */; };
 		D6A68E88CE2066987031570E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
@@ -93,6 +95,8 @@
 		A96019872D9EDC4800B4B553 /* ColorChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ColorChain.swift; path = MyProjectName/ColorChain.swift; sourceTree = "<group>"; };
 		A96019882D9EDC4800B4B553 /* CloudKitManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = CloudKitManager.m; path = MyProjectName/CloudKitManager.m; sourceTree = "<group>"; };
 		A9601C8D2D9F895A00B4B553 /* MyProjectName.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MyProjectName.entitlements; path = MyProjectName/MyProjectName.entitlements; sourceTree = "<group>"; };
+		A9637D4A2DB6839D00506BBF /* CombinationChain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = CombinationChain.m; path = MyProjectName/CombinationChain.m; sourceTree = "<group>"; };
+		A9637D4B2DB6839D00506BBF /* CombinationChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CombinationChain.swift; path = MyProjectName/CombinationChain.swift; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -142,6 +146,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				A9637D4A2DB6839D00506BBF /* CombinationChain.m */,
+				A9637D4B2DB6839D00506BBF /* CombinationChain.swift */,
 				A94056CA2DAB95A900E109A2 /* LeaderboardManager.m */,
 				A94056C92DAB95A900E109A2 /* LeaderboardManager.swift */,
 				A95F52B02DA04306003B9B16 /* Base */,
@@ -380,6 +386,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9637D4C2DB6839D00506BBF /* CombinationChain.m in Sources */,
+				A9637D4D2DB6839D00506BBF /* CombinationChain.swift in Sources */,
 				A94056CB2DAB95A900E109A2 /* LeaderboardManager.swift in Sources */,
 				A94056CC2DAB95A900E109A2 /* LeaderboardManager.m in Sources */,
 				A96019892D9EDC4800B4B553 /* ColorChain.m in Sources */,
@@ -461,7 +469,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = MyProjectName/MyProjectName.entitlements;
-				CURRENT_PROJECT_VERSION = 2.1.1;
+				CURRENT_PROJECT_VERSION = 2.1.3;
 				DEVELOPMENT_TEAM = FH8DM9J9B4;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = MyProjectName/Info.plist;
@@ -470,7 +478,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.1;
+				MARKETING_VERSION = 2.1.3;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -496,7 +504,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = MyProjectName/MyProjectName.entitlements;
-				CURRENT_PROJECT_VERSION = 2.1.1;
+				CURRENT_PROJECT_VERSION = 2.1.3;
 				DEVELOPMENT_TEAM = FH8DM9J9B4;
 				INFOPLIST_FILE = MyProjectName/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -504,7 +512,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.1;
+				MARKETING_VERSION = 2.1.3;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -591,10 +599,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -663,10 +668,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

@@ -70,8 +70,9 @@ export default {
     XY_WING: 'XY-Wing',
     XYZ_WING: 'XYZ-Wing',
     SKYSCRAPER: 'Nhà chọc trời',
-    SKYSCRAPER2: 'Nhà chọc trời 2',
-    REMOTE_PAIR: 'Cặp số từ xa',
+    SKYSCRAPER2: 'Hai liên kết mạnh',
+    THREESTRONGLINKS: 'Ba liên kết mạnh',
+    XCHAIN: 'Chuỗi X',
     COMBINATION_CHAIN: 'Chuỗi kết hợp',
     SWORDFISH_ROW: 'Cá kiếm',
     SWORDFISH_COLUMN: 'Cá kiếm',
@@ -158,8 +159,6 @@ export default {
         'Các ô màu xanh {{positions}} tạo thành chuỗi liên kết, bất kể R{{row1}}C{{col1}} hay R{{row2}}C{{col2}} có giá trị {{target}}, {{deleteStr}} không thể có số {{target}}',
       SKYSCRAPER2:
         'Ô R{{row1}}C{{col1}} và R{{row2}}C{{col2}} tạo thành một chuỗi mạnh, ô R{{row3}}C{{col3}} và R{{row4}}C{{col4}} tạo thành một chuỗi mạnh khác, hai chuỗi này được kết nối bởi chuỗi yếu giữa R{{row3}}C{{col3}} và R{{row2}}C{{col2}}. Nếu R{{row1}}C{{col1}} đúng, {{deleteStr}} phải sai. Nếu R{{row1}}C{{col1}} sai, R{{row4}}C{{col4}} phải đúng, điều này cũng làm cho {{deleteStr}} sai. Trong mọi trường hợp, số {{target}} không thể xuất hiện trong {{deleteStr}}.',
-      REMOTE_PAIR:
-        '{{posStr1}} tạo thành cặp số từ xa, hai cặp số từ xa này thông qua {{posStr2}} tạo thành chuỗi mạnh, bất kể {{posStr1}} nào đúng, {{posStr}} không thể có số {{target}}',
       WXYZ_WING:
         '{{candStr}} tạo thành WXYZ-Wing, trong đó R{{row1}}C{{col1}} là trục, bất kể bốn ô này có giá trị nào, số {{target}} không thể xuất hiện trong {{deleteStr}}',
       COMBINATION_CHAIN_3_2_1_STRONG:
@@ -198,6 +197,14 @@ export default {
         'vì {{posStr1}} và {{posStr2}} tạo thành liên kết mạnh đối với {{target}}, nên {{posStr2}} phải là {{target}}',
       DOUBLE_COLOR_CHAIN_q_start:
         'khi {{posStr}} có giá trị {{target1}}, ô hiện tại không thể có giá trị {{target2}}',
+      COMBINATION_CHAIN_AB_STRONG: '{{A}} và {{B}} tạo thành một liên kết mạnh',
+      COMBINATION_CHAIN_AB_WEAK: '{{A}} và {{B}} tạo thành một liên kết yếu',
+      COMBINATION_CHAIN_END:
+        'Khi {{A}} đúng, ô đỏ sai. Khi {{A}} sai, thông qua suy luận {{B}} trở thành đúng, và ô đỏ vẫn sai',
+      SKYSCRAPER2_1:
+        'Có một liên kết mạnh giữa hai ô {{As}}, có một liên kết mạnh giữa bốn ô {{Bs}}, và hai liên kết mạnh này được kết nối bởi một liên kết yếu giữa hai ô {{Cs}}. Khi {{A}} đúng, ô đỏ sai. Khi {{A}} sai, {{B}} đúng, và ô đỏ vẫn sai',
+      SKYSCRAPER2_2:
+        'Có một liên kết mạnh giữa hai ô {{As}}, có một liên kết mạnh giữa hai ô {{Bs}}, và có một liên kết mạnh giữa hai ô {{Cs}}. Mỗi liên kết mạnh được kết nối với các liên kết khác bởi các liên kết yếu. Khi {{A}} đúng, ô đỏ sai. Khi {{A}} sai, {{B}} đúng, và ô đỏ vẫn sai',
     },
     back: 'Quay lại',
     next: 'Tiếp theo',
@@ -267,7 +274,8 @@ export default {
     dataSyncDescription:
       '1.Dostça hatırlatma: Cihazınızı değiştirirseniz, iCloud verileri yeni cihaza hemen senkronize olmayabilir. Uygulamayı birkaç kez yeniden açmanızı veya bir süre beklemenizi öneririz. Bu süre zarfında, yerel bulmacalar üzerinde çalışabilirsiniz. Eski veriler güncellendikten sonra, uygulama otomatik olarak yeni verileri bir araya getirmenize yardımcı olacaktır.',
     total: 'Tổng',
-    pleaseLoginGameCenter: 'Vui lòng đăng nhập GameCenter',
+    pleaseLoginGameCenter:
+      'Vui lòng đăng nhập vào GameCenter trước. Nếu đã đăng nhập, vui lòng mở lại ứng dụng.',
     tips: 'Mẹo',
     dataSyncDescription2: '2.Xếp hạng của bạn sẽ được đồng bộ hóa toàn cầu trong vòng 24 giờ.',
   },

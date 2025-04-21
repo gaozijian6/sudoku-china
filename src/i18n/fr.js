@@ -70,8 +70,9 @@ export default {
     XY_WING: 'XY-Wing',
     XYZ_WING: 'XYZ-Wing',
     SKYSCRAPER: 'Gratte-ciel',
-    SKYSCRAPER2: 'Gratte-ciel 2',
-    REMOTE_PAIR: 'Paire à distance',
+    SKYSCRAPER2: 'Deux liens forts',
+    THREESTRONGLINKS: 'Trois liens forts',
+    XCHAIN: 'Chaîne X',
     COMBINATION_CHAIN: 'Chaîne combinée',
     SWORDFISH_ROW: 'Swordfish',
     SWORDFISH_COLUMN: 'Swordfish',
@@ -158,8 +159,6 @@ export default {
         'Les cellules bleues {{positions}} forment une chaîne conjuguée. Que ce soit R{{row1}}C{{col1}} ou R{{row2}}C{{col2}} qui contienne {{target}}, {{deleteStr}} ne peut pas contenir {{target}}',
       SKYSCRAPER2:
         'Les cellules R{{row1}}C{{col1}} et R{{row2}}C{{col2}} forment une chaîne forte, les cellules R{{row3}}C{{col3}} et R{{row4}}C{{col4}} forment une autre chaîne forte, reliées par une chaîne faible entre R{{row3}}C{{col3}} et R{{row2}}C{{col2}}. Si R{{row1}}C{{col1}} est vrai, {{deleteStr}} doit être faux. Si R{{row1}}C{{col1}} est faux, R{{row4}}C{{col4}} doit être vrai, ce qui rend également {{deleteStr}} faux. Dans tous les cas, {{target}} ne peut pas apparaître dans {{deleteStr}}',
-      REMOTE_PAIR:
-        '{{posStr1}} forme une paire à distance, ces deux paires à distance forment une chaîne forte via {{posStr2}}. Quel que soit {{posStr1}}, {{posStr}} ne peut pas contenir {{target}}',
       WXYZ_WING:
         '{{candStr}} forme un WXYZ-Wing avec R{{row1}}C{{col1}} comme pivot. Quelle que soit la solution, {{target}} ne peut pas apparaître dans {{deleteStr}}',
       COMBINATION_CHAIN_3_2_1_STRONG:
@@ -198,6 +197,14 @@ export default {
         'parce que {{posStr1}} et {{posStr2}} forment un lien fort pour {{target}}, {{posStr2}} doit être {{target}}',
       DOUBLE_COLOR_CHAIN_q_start:
         'quand {{posStr}} prend {{target1}}, la cellule actuelle ne peut pas prendre {{target2}}',
+      COMBINATION_CHAIN_AB_STRONG: '{{A}} et {{B}} forment un lien fort',
+      COMBINATION_CHAIN_AB_WEAK: '{{A}} et {{B}} forment un lien faible',
+      COMBINATION_CHAIN_END:
+        'Quand {{A}} est vrai, la cellule rouge est fausse. Quand {{A}} est faux, par déduction {{B}} devient vrai, et la cellule rouge reste fausse',
+      SKYSCRAPER2_1:
+        'Un lien fort existe entre les deux cellules {{As}}, un lien fort existe entre quatre cellules {{Bs}}, et ces deux liens forts sont connectés par un lien faible entre les deux cellules {{Cs}}. Quand {{A}} est vrai, la cellule rouge est fausse. Quand {{A}} est faux, {{B}} est vrai, et la cellule rouge reste fausse',
+      SKYSCRAPER2_2:
+        'Un lien fort existe entre les deux cellules {{As}}, un lien fort existe entre les deux cellules {{Bs}}, et un lien fort existe entre les deux cellules {{Cs}}. Chaque lien fort est connecté aux autres par des liens faibles. Quand {{A}} est vrai, la cellule rouge est fausse. Quand {{A}} est faux, {{B}} est vrai, et la cellule rouge reste fausse',
     },
     back: 'Retour',
     next: 'Suivant',
@@ -268,7 +275,8 @@ export default {
     dataSyncDescription:
       "1.Note importante : Si vous changez d'appareil, les données iCloud peuvent ne pas se synchroniser immédiatement sur le nouvel appareil. Nous vous suggérons de rouvrir l'application plusieurs fois ou d'attendre un moment. Pendant cette période, vous pouvez travailler sur des puzzles locaux. Une fois les anciennes données mises à jour, l'application vous aidera automatiquement à intégrer les nouvelles données.",
     total: 'Total',
-    pleaseLoginGameCenter: 'Veuillez vous connecter à GameCenter',
+    pleaseLoginGameCenter:
+      "Veuillez d'abord vous connecter à GameCenter. Si vous êtes déjà connecté, veuillez rouvrir l'application.",
     tips: 'Conseils',
     dataSyncDescription2: '2.Votre classement sera synchronisé mondialement dans les 24 heures.',
   },

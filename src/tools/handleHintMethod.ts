@@ -73,8 +73,6 @@ const handleHintMethod = (method: string, t: TFunction) => {
       return t('SKYSCRAPER');
     case SOLUTION_METHODS.SKYSCRAPER2:
       return t('SKYSCRAPER2');
-    case SOLUTION_METHODS.REMOTE_PAIR:
-      return t('REMOTE_PAIR');
     case SOLUTION_METHODS.COMBINATION_CHAIN:
       return t('COMBINATION_CHAIN');
     case SOLUTION_METHODS.SWORDFISH_ROW:
@@ -99,6 +97,12 @@ const handleHintMethod = (method: string, t: TFunction) => {
       return t('JELLYFISH_COLUMN');
     case SOLUTION_METHODS.TRIPLE_COLOR_CHAIN:
       return t('TRIPLE_COLOR_CHAIN');
+    case SOLUTION_METHODS.TWO_STRONG_LINKS:
+      return t('SKYSCRAPER2');
+    case SOLUTION_METHODS.THREE_STRONG_LINKS:
+      return t('THREESTRONGLINKS');
+    case SOLUTION_METHODS.X_CHAIN:
+      return t('XCHAIN');
   }
   return '';
 };

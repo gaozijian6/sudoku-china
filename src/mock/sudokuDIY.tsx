@@ -34,7 +34,7 @@ import {
   nakedTriple1,
   nakedTriple2,
   swordfish,
-  combinationChain,
+  // combinationChain,
   Loop,
   uniqueRectangle,
   BinaryUniversalGrave,
@@ -57,6 +57,7 @@ import TarBarsSudokuDIY from '../components/tarBarsSudokuDIY';
 import { SOLUTION_METHODS, SUDOKU_STATUS, SudokuType } from '../constans';
 import { useTranslation } from 'react-i18next';
 import handleHintMethod from '../tools/handleHintMethod';
+import rewardedVideo from '../tools/RewardedVideo';
 import WatchIcon from '../components/WatchIcon';
 import { RewardedAdEventType } from 'react-native-google-mobile-ads';
 import createStyles from './sudokuStyles';
@@ -148,7 +149,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     skyscraper,
     skyscraper2,
     nakedQuadruple,
-    combinationChain,
+    // combinationChain,
     swordfish,
     jellyfish,
     Loop,
@@ -158,6 +159,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
   const setErrorCount = useSudokuStore(state => state.setErrorCount);
   const isSound = useSudokuStore(state => state.isSound);
   const isConnected = useSudokuStore(state => state.isConnected);
+  const isVip = useSudokuStore(state => state.isVip);
   const isHighlight = useSudokuStore(state => state.isHighlight);
   const sudokuType = useSudokuStore(state => state.sudokuType);
   const sudokuDataDIY1 = useSudokuStore(state => state.sudokuDataDIY1);
@@ -276,6 +278,18 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     setSudokuDataDIY1,
   ]);
 
+  useEffect(() => {
+    if (!isVip) {
+      rewardedVideo.load();
+    }
+  }, []);
+
+  useEffect(() => {
+    rewardedVideo.rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
+      setWatchIconVisible(false);
+    });
+  }, []);
+
   const cleanBoard = useMemo(() => {
     return deepCopyBoard(board).map(row =>
       row.map(cell => ({
@@ -325,6 +339,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
       setWatchIconVisible(data.watchIconVisible);
       isFirstHint.current = data.isFirstHint;
       setSelectedNumber(data.selectedNumber);
+    }
+    if (!rewardedVideo.isReady()) {
+      setWatchIconVisible(false);
     }
   }, [localsudokuDataDIY1, setErrorCount, sudokuDataDIY1, sudokuType, t]);
 
@@ -620,6 +637,14 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     return updatedBoard;
   }, []);
 
+  useEffect(() => {
+    if (sudokuType === SudokuType.DIY1 && !rewardedVideo.isReady()) {
+      setWatchIconVisible(false);
+      rewardedVideo.chance = true;
+      rewardedVideo.load();
+    }
+  }, [sudokuType]);
+
   const handleHint = useCallback(
     async (board: CellData[][]) => {
       if (
@@ -766,7 +791,71 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     ]
   );
 
+  useEffect(() => {
+    if (sudokuType === SudokuType.DIY1 || sudokuType === SudokuType.DIY2) {
+      rewardedVideo.setHintDrawerVisible(() => {
+        setIsPlayingFinish(true);
+      });
+    }
+  }, [sudokuType]);
+
+  useEffect(() => {
+    if (isConnected && isPlayingFinish) {
+      handleHint(board);
+    }
+  }, [isPlayingFinish]);
+
+  // 提示和观看广告
+  const handleHintAndRewardedVideo = useCallback(
+    (board: CellData[][]) => {
+      if (
+        counts < 17 ||
+        counts === 81 ||
+        sudokuStatus === SUDOKU_STATUS.ILLEGAL ||
+        sudokuStatus === SUDOKU_STATUS.INCOMPLETE
+      ) {
+        playSound('switch', isSound);
+        return;
+      }
+      if (isVip) {
+        handleHint(board);
+        return;
+      }
+
+      if (!isConnected && !rewardedVideo.getIsVip()) {
+        setHintDrawerVisible(true);
+        setIsHint(true);
+        setHintMethod('');
+        setHintContent(t('pleaseConnectNetwork'));
+        return;
+      }
+      if (rewardedVideo.chance) {
+        handleHint(board);
+        rewardedVideo.chance = false;
+        rewardedVideo.load();
+        if (isFirstHint.current) {
+          isFirstHint.current = false;
+        }
+      } else if (rewardedVideo.isReady() && watchIconVisible) {
+        setIsPlayingFinish(false);
+        rewardedVideo.show();
+      } else {
+        rewardedVideo.load();
+        handleHint(board);
+      }
+      if (rewardedVideo.isReady()) {
+        setWatchIconVisible(true);
+      }
+    },
+    [counts, isVip, watchIconVisible, isConnected, isSound, handleHint, t, setIsHint, sudokuStatus]
+  );
+
   const handleApplyHint = useCallback(() => {
+    if (!isConnected && !rewardedVideo.getIsVip()) {
+      setHintDrawerVisible(false);
+      setIsHint(false);
+      return;
+    }
     if (Object.keys(differenceMap).length > 0) {
       const newBoard = deepCopyBoard(board);
       for (const key of Object.keys(differenceMap)) {
@@ -823,6 +912,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
       setResult(null); // 重置 result
     }
   }, [
+    isConnected,
     differenceMap,
     result,
     handleHint,
@@ -939,13 +1029,20 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         playSound('switch', isSound);
         return;
       }
+      if (!isConnected && !rewardedVideo.getIsVip()) {
+        setHintDrawerVisible(true);
+        setIsHint(true);
+        setHintMethod('');
+        setHintContent(t('pleaseConnectNetwork'));
+        return;
+      }
       playSound('switch', isSound);
       if (answer) {
         updateBoard(answer, '答案', false);
       } else {
       }
     },
-    [isSound, updateBoard, counts, sudokuStatus, answer]
+    [isConnected, isSound, t, updateBoard, counts, sudokuStatus, setIsHint, answer]
   );
 
   useEffect(() => {
@@ -1118,15 +1215,16 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
           style={[styles.buttonContainerDIY]}
           onPressIn={() => {
             if (scaleValue2 === 1.0) {
-              handleHint(board);
+              handleHintAndRewardedVideo(board);
             }
           }}
           onPress={() => {
             if (scaleValue2 !== 1.0 && !isMovingRef.current) {
-              handleHint(board);
+              handleHintAndRewardedVideo(board);
             }
           }}
         >
+          {!isVip && <WatchIcon top={0} right={10} visible={watchIconVisible} />}
           <Image source={require('../assets/icon/prompt.png')} style={styles.buttonIcon} />
           <Text style={styles.buttonText}>{t('hint')}</Text>
         </Pressable>

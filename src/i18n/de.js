@@ -70,8 +70,9 @@ export default {
     XY_WING: 'XY-Wing',
     XYZ_WING: 'XYZ-Wing',
     SKYSCRAPER: 'Wolkenkratzer',
-    SKYSCRAPER2: 'Wolkenkratzer 2',
-    REMOTE_PAIR: 'Entferntes Paar',
+    SKYSCRAPER2: 'Zwei starke Verbindungen',
+    THREESTRONGLINKS: 'Drei starke Verbindungen',
+    XCHAIN: 'X-Kette',
     COMBINATION_CHAIN: 'Kombinationskette',
     SWORDFISH_ROW: 'Schwertfisch',
     SWORDFISH_COLUMN: 'Schwertfisch',
@@ -158,8 +159,6 @@ export default {
         'Die blauen Zellen {{positions}} bilden eine Verkettung. Ob R{{row1}}C{{col1}} oder R{{row2}}C{{col2}} den Wert {{target}} enthält, {{deleteStr}} kann nicht {{target}} sein',
       SKYSCRAPER2:
         'Die Zellen R{{row1}}C{{col1}} und R{{row2}}C{{col2}} bilden eine starke Verkettung, R{{row3}}C{{col3}} und R{{row4}}C{{col4}} eine weitere. Diese sind durch eine schwache Verkettung zwischen R{{row3}}C{{col3}} und R{{row2}}C{{col2}} verbunden. Wenn R{{row1}}C{{col1}} wahr ist, muss {{deleteStr}} falsch sein. Wenn R{{row1}}C{{col1}} falsch ist, muss R{{row4}}C{{col4}} wahr sein, was ebenfalls {{deleteStr}} falsch macht. In beiden Fällen kann {{target}} nicht in {{deleteStr}} erscheinen',
-      REMOTE_PAIR:
-        '{{posStr1}} bilden ein entferntes Paar, diese zwei entfernten Paare bilden durch {{posStr2}} eine starke Verkettung. Unabhängig davon, welches von {{posStr1}} wahr ist, kann {{posStr}} nicht {{target}} enthalten',
       WXYZ_WING:
         '{{candStr}} bildet einen WXYZ-Wing mit R{{row1}}C{{col1}} als Drehpunkt. Unabhängig von der Lösung der vier Zellen kann {{target}} nicht in {{deleteStr}} erscheinen',
       COMBINATION_CHAIN_3_2_1_STRONG:
@@ -198,6 +197,14 @@ export default {
         'da {{posStr1}} und {{posStr2}} eine starke Verbindung bezüglich {{target}} bilden, muss {{posStr2}} den Wert {{target}} haben',
       DOUBLE_COLOR_CHAIN_q_start:
         'wenn {{posStr}} den Wert {{target1}} hat, kann das aktuelle Feld nicht den Wert {{target2}} haben',
+      COMBINATION_CHAIN_AB_STRONG: '{{A}} und {{B}} bilden eine starke Verknüpfung',
+      COMBINATION_CHAIN_AB_WEAK: '{{A}} und {{B}} bilden eine schwache Verknüpfung',
+      COMBINATION_CHAIN_END:
+        'Wenn {{A}} wahr ist, ist das rote Feld falsch. Wenn {{A}} falsch ist, wird durch Deduktion {{B}} wahr, und das rote Feld bleibt falsch',
+      SKYSCRAPER2_1:
+        'Zwischen den zwei Feldern {{As}} besteht eine starke Verknüpfung, zwischen vier Feldern {{Bs}} besteht eine starke Verknüpfung, und diese beiden starken Verknüpfungen werden durch eine schwache Verknüpfung zwischen den zwei Feldern {{Cs}} verbunden. Wenn {{A}} wahr ist, ist das rote Feld falsch. Wenn {{A}} falsch ist, ist {{B}} wahr, und das rote Feld bleibt falsch',
+      SKYSCRAPER2_2:
+        'Zwischen den zwei Feldern {{As}} besteht eine starke Verknüpfung, zwischen den zwei Feldern {{Bs}} besteht eine starke Verknüpfung, und zwischen den zwei Feldern {{Cs}} besteht eine starke Verknüpfung. Jede starke Verknüpfung ist mit den anderen durch schwache Verknüpfungen verbunden. Wenn {{A}} wahr ist, ist das rote Feld falsch. Wenn {{A}} falsch ist, ist {{B}} wahr, und das rote Feld bleibt falsch',
     },
     back: 'Zurück',
     next: 'Nächstes Level',
@@ -268,7 +275,8 @@ export default {
     dataSyncDescription:
       '1.Freundlicher Hinweis: Wenn Sie Ihr Gerät wechseln, synchronisieren sich iCloud-Daten möglicherweise nicht sofort mit dem neuen Gerät. Wir empfehlen, die App mehrmals zu öffnen oder eine Weile zu warten. In dieser Zeit können Sie an lokalen Rätseln arbeiten. Nachdem die alten Daten aktualisiert wurden, hilft Ihnen die App automatisch, die neuen Daten zusammenzuführen.',
     total: 'Gesamt',
-    pleaseLoginGameCenter: 'Bitte melden Sie sich bei GameCenter an',
+    pleaseLoginGameCenter:
+      'Bitte melden Sie sich zuerst bei GameCenter an. Falls Sie bereits angemeldet sind, öffnen Sie die App bitte erneut.',
     tips: 'Tipps',
     dataSyncDescription2: '2.Ihre Rangliste wird innerhalb von 24 Stunden weltweit synchronisiert.',
   },

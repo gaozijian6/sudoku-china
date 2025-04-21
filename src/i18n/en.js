@@ -69,8 +69,9 @@ export default {
     XY_WING: 'XY Wing',
     XYZ_WING: 'XYZ Wing',
     SKYSCRAPER: 'Skyscraper',
-    SKYSCRAPER2: 'Skyscraper2',
-    REMOTE_PAIR: 'Remote Pair',
+    SKYSCRAPER2: 'Two Strong Links',
+    THREESTRONGLINKS: 'Three Strong Links',
+    XCHAIN: 'X Chain',
     COMBINATION_CHAIN: 'Combination Chain',
     SWORDFISH_ROW: 'Swordfish',
     SWORDFISH_COLUMN: 'Swordfish',
@@ -158,8 +159,6 @@ export default {
         'The blue cells at {{positions}} form a conjugate pair. Whether cell R{{row1}}C{{col1}} or cell R{{row2}}C{{col2}} contains {{target}}, candidate {{target}} cannot appear in {{deleteStr}}.',
       SKYSCRAPER2:
         'Cells R{{row1}}C{{col1}} and R{{row2}}C{{col2}} form one strong link, while R{{row3}}C{{col3}} and R{{row4}}C{{col4}} form another strong link. These are connected by a weak link between R{{row3}}C{{col3}} and R{{row2}}C{{col2}}. If R{{row1}}C{{col1}} is true, then {{deleteStr}} must be false. If R{{row1}}C{{col1}} is false, then R{{row4}}C{{col4}} must be true, which still makes {{deleteStr}} false. Either way, candidate {{target}} cannot appear in {{deleteStr}}.',
-      REMOTE_PAIR:
-        '{{posStr1}} form a remote pair. These two remote pairs form a strong link through {{posStr2}}. Regardless of which cell in {{posStr1}} is true, candidate {{target}} cannot appear in {{posStr}}.',
       WXYZ_WING:
         '{{candStr}} form a WXYZ-Wing, with R{{row1}}C{{col1}} as the pivot. Regardless of what values are placed in these four candidate cells, candidate {{target}} cannot appear in {{deleteStr}}.',
       COMBINATION_CHAIN_3_2_1_STRONG:
@@ -198,6 +197,14 @@ export default {
         'because {{posStr1}} and {{posStr2}} form a strong link for {{target}}, {{posStr2}} must be {{target}}',
       DOUBLE_COLOR_CHAIN_q_start:
         'when {{posStr}} takes {{target1}}, the current cell cannot take {{target2}}',
+      COMBINATION_CHAIN_AB_STRONG: '{{A}} and {{B}} form a strong link',
+      COMBINATION_CHAIN_AB_WEAK: '{{A}} and {{B}} form a weak link',
+      COMBINATION_CHAIN_END:
+        'When {{A}} is true, the red cell is false. When {{A}} is false, through deduction {{B}} becomes true, and the red cell is still false',
+      SKYSCRAPER2_1:
+        'A strong link exists between the two cells {{As}}, a strong link exists between four cells {{Bs}}, and these two strong links are connected by a weak link between the two cells {{Cs}}. When {{A}} is true, the red cell is false. When {{A}} is false, {{B}} is true, and the red cell is still false',
+      SKYSCRAPER2_2:
+        'A strong link exists between the two cells {{As}}, a strong link exists between the two cells {{Bs}}, and a strong link exists between the two cells {{Cs}}. Each strong link is connected to the others by weak links. When {{A}} is true, the red cell is false. When {{A}} is false, {{B}} is true, and the red cell is still false',
     },
     back: 'Back',
     next: 'Next',
@@ -267,7 +274,7 @@ export default {
     dataSyncDescription:
       '1.Friendly reminder: If you change your device, iCloud data may not sync to the new device immediately. We suggest reopening the App several times or waiting for a while. During this period, you can work on local puzzles. After the old data is updated, the App will automatically help you integrate the new data together.',
     total: 'Total',
-    pleaseLoginGameCenter: 'Please login GameCenter',
+    pleaseLoginGameCenter: 'Please log in to GameCenter first. If you are already logged in, please reopen the App',
     tips: 'Tips',
     dataSyncDescription2: '2.Your ranking will be synchronized globally within 24 hours.',
   },

@@ -70,8 +70,9 @@ export default {
     XY_WING: 'XY-윙',
     XYZ_WING: 'XYZ-윙',
     SKYSCRAPER: '스카이스크래퍼',
-    SKYSCRAPER2: '스카이스크래퍼2',
-    REMOTE_PAIR: '원격 쌍',
+    SKYSCRAPER2: '이중 강한 연결',
+    THREESTRONGLINKS: '삼중 강한 연결',
+    XCHAIN: 'X 체인',
     COMBINATION_CHAIN: '조합 체인',
     SWORDFISH_ROW: '스워드피시',
     SWORDFISH_COLUMN: '스워드피시',
@@ -158,8 +159,6 @@ export default {
         '{{positions}} 파란색 셀이 강한 연결을 형성하며, R{{row1}}C{{col1}} 또는 R{{row2}}C{{col2}}가 {{target}}이든, {{deleteStr}}에는 {{target}}이 올 수 없습니다',
       SKYSCRAPER2:
         'R{{row1}}C{{col1}}과 R{{row2}}C{{col2}} 셀이 하나의 강한 연결을 형성하고, R{{row3}}C{{col3}}과 R{{row4}}C{{col4}} 셀이 다른 하나의 강한 연결을 형성합니다. 이 두 강한 연결은 R{{row3}}C{{col3}}과 R{{row2}}C{{col2}} 사이의 약한 연결로 이어집니다. R{{row1}}C{{col1}}이 참이면 {{deleteStr}}는 거짓이어야 하고, R{{row1}}C{{col1}}이 거짓이면 R{{row4}}C{{col4}}가 참이어야 하며, 이 경우에도 {{deleteStr}}는 거짓이어야 합니다. 어떤 경우든 {{target}}은 {{deleteStr}}에 올 수 없습니다',
-      REMOTE_PAIR:
-        '{{posStr1}}이 원격 쌍을 형성하고, 이 두 원격 쌍은 {{posStr2}}를 통해 강한 연결을 형성합니다. {{posStr1}} 중 어느 것이 참이든 {{posStr}}에는 {{target}}이 올 수 없습니다',
       WXYZ_WING:
         '{{candStr}}이 WXYZ-윙을 형성하며, R{{row1}}C{{col1}}이 중심점입니다. 이 네 셀의 값이 어떻게 결정되든 {{target}}은 {{deleteStr}}에 올 수 없습니다',
       COMBINATION_CHAIN_3_2_1_STRONG:
@@ -198,6 +197,14 @@ export default {
         '{{posStr1}}과(와) {{posStr2}}는 {{target}}에 대한 강한 연결을 형성하므로, {{posStr2}}는 {{target}}입니다',
       DOUBLE_COLOR_CHAIN_q_start:
         '{{posStr}}이(가) {{target1}}일 때, 현재 셀은 {{target2}}이(가) 될 수 없습니다',
+      COMBINATION_CHAIN_AB_STRONG: '{{A}}와 {{B}}는 강한 연결을 형성합니다',
+      COMBINATION_CHAIN_AB_WEAK: '{{A}}와 {{B}}는 약한 연결을 형성합니다',
+      COMBINATION_CHAIN_END:
+        '{{A}}가 참일 때 빨간 셀은 거짓이며, {{A}}가 거짓일 때 추론을 통해 {{B}}가 참이 되어 빨간 셀은 여전히 거짓입니다',
+      SKYSCRAPER2_1:
+        '{{As}} 두 셀 사이에 강한 연결이 있고, {{Bs}} 네 셀 사이에 강한 연결이 있으며, 이 두 강한 연결은 {{Cs}} 두 셀 사이의 약한 연결로 연결됩니다. {{A}}가 참일 때 빨간 셀은 거짓이며, {{A}}가 거짓일 때 {{B}}는 참이 되어 빨간 셀은 여전히 거짓입니다',
+      SKYSCRAPER2_2:
+        '{{As}} 두 셀 사이에 강한 연결이 있고, {{Bs}} 두 셀 사이에 강한 연결이 있으며, {{Cs}} 두 셀 사이에 강한 연결이 있습니다. 각 강한 연결은 약한 연결로 서로 연결됩니다. {{A}}가 참일 때 빨간 셀은 거짓이며, {{A}}가 거짓일 때 {{B}}는 참이 되어 빨간 셀은 여전히 거짓입니다',
     },
     back: '뒤로',
     next: '다음 레벨',
@@ -264,7 +271,8 @@ export default {
     dataSyncDescription:
       '1.안내사항: 기기를 변경하면 iCloud 데이터가 새 기기에 즉시 동기화되지 않을 수 있습니다. 앱을 몇 번 다시 열거나 잠시 기다리는 것이 좋습니다. 이 기간 동안 로컬 퍼즐을 사용할 수 있습니다. 이전 데이터가 업데이트된 후, 앱이 자동으로 새 데이터를 통합해 드립니다.',
     total: '총계',
-    pleaseLoginGameCenter: 'GameCenter에 로그인해주세요',
+    pleaseLoginGameCenter:
+      '먼저 GameCenter에 로그인하세요. 이미 로그인한 경우 앱을 다시 열어주세요.',
     tips: '힌트',
     dataSyncDescription2: '2.귀하의 순위는 24시간 이내에 전 세계적으로 동기화됩니다.',
   },

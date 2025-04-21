@@ -14,16 +14,9 @@ import createStyles from './sudokuStyles';
 import { DIFFICULTY, LeaderboardType } from '../constans';
 import { useTranslation } from 'react-i18next';
 import Tooltip from 'react-native-walkthrough-tooltip';
-import { calculateProgress } from '../tools';
+import { calculateProgress, calculateTotalProgress, type ProgressDifficulty } from '../tools';
 
 const { LeaderboardManager } = NativeModules;
-
-type ProgressDifficulty =
-  | DIFFICULTY.ENTRY
-  | DIFFICULTY.EASY
-  | DIFFICULTY.MEDIUM
-  | DIFFICULTY.HARD
-  | DIFFICULTY.EXTREME;
 
 // 难度级别与排行榜类型的映射
 const difficultyToLeaderboardType: Record<ProgressDifficulty, LeaderboardType> = {
@@ -115,26 +108,6 @@ const Statistics = () => {
     };
   }, []);
 
-  // 计算所有难度的总体完成情况
-  const calculateTotalProgress = () => {
-    let totalCompleted = 0;
-    let totalCount = 0;
-
-    difficultyLevels.forEach(level => {
-      const progress = calculateProgress(userStatisticPass, level.key as ProgressDifficulty);
-      totalCompleted += progress.completed;
-      totalCount += progress.total;
-    });
-
-    const percentage = totalCount > 0 ? (totalCompleted / totalCount) * 100 : 0;
-
-    return {
-      percentage,
-      completed: totalCompleted,
-      total: totalCount,
-    };
-  };
-
   // 显示排行榜 - 修复版本
   const showLeaderboard = async (difficultyLevel: ProgressDifficulty) => {
     if (!isLoginGameCenter) {
@@ -182,7 +155,7 @@ const Statistics = () => {
   ] as const;
 
   // 计算总统计数据
-  const totalProgress = calculateTotalProgress();
+  const totalProgress = calculateTotalProgress(userStatisticPass);
 
   return (
     <View style={[{ flex: 1 }, { backgroundColor: isDark ? 'rgb(22, 23, 25)' : 'white' }]}>

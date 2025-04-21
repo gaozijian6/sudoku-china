@@ -70,8 +70,9 @@ export default {
     XY_WING: 'XY-Kanadı',
     XYZ_WING: 'XYZ-Kanadı',
     SKYSCRAPER: 'Gökdelen',
-    SKYSCRAPER2: 'Gökdelen 2',
-    REMOTE_PAIR: 'Uzak İkili',
+    SKYSCRAPER2: 'İki güçlü bağlantı',
+    THREESTRONGLINKS: 'Üç güçlü bağlantı',
+    XCHAIN: 'X-Zincir',
     COMBINATION_CHAIN: 'Kombinasyon Zinciri',
     SWORDFISH_ROW: 'Kılıçbalığı',
     SWORDFISH_COLUMN: 'Kılıçbalığı',
@@ -158,8 +159,6 @@ export default {
         '{{positions}} konumlarındaki mavi hücre bir zincir oluşturuyor. R{{row1}}C{{col1}} veya R{{row2}}C{{col2}} değeri {{target}} olsun, {{deleteStr}} konumunda {{target}} adayı olamaz',
       SKYSCRAPER2:
         'R{{row1}}C{{col1}} ve R{{row2}}C{{col2}} hücreleri bir güçlü bağ, R{{row3}}C{{col3}} ve R{{row4}}C{{col4}} hücreleri başka bir güçlü bağ oluşturuyor. Bu iki güçlü bağ, R{{row3}}C{{col3}} ve R{{row2}}C{{col2}} arasındaki zayıf bağla bağlanıyor. R{{row1}}C{{col1}} doğruysa, {{deleteStr}} yanlış olmalı. R{{row1}}C{{col1}} yanlışsa, R{{row4}}C{{col4}} doğru olmalı, bu da yine {{deleteStr}} konumunun yanlış olmasını gerektirir. Her durumda, {{target}} adayı {{deleteStr}} konumunda bulunamaz',
-      REMOTE_PAIR:
-        '{{posStr1}} uzak çift oluşturuyor, bu iki uzak çift {{posStr2}} üzerinden güçlü bağ oluşturuyor. {{posStr1}} hangisi doğru olursa olsun, {{posStr}} konumunda {{target}} adayı olamaz',
       WXYZ_WING:
         '{{candStr}} WXYZ-Kanadı oluşturuyor, R{{row1}}C{{col1}} merkez noktası olarak. Bu dört hücre nasıl değer alırsa alsın, {{target}} adayı {{deleteStr}} konumunda bulunamaz',
       COMBINATION_CHAIN_3_2_1_STRONG:
@@ -198,6 +197,14 @@ export default {
         '{{posStr1}} ve {{posStr2}} {{target}} için güçlü bir bağ oluşturduğundan, {{posStr2}} {{target}} olmalıdır',
       DOUBLE_COLOR_CHAIN_q_start:
         '{{posStr}} {{target1}} değerini aldığında, mevcut hücre {{target2}} değerini alamaz',
+      COMBINATION_CHAIN_AB_STRONG: '{{A}} ve {{B}} güçlü bir bağlantı oluşturur',
+      COMBINATION_CHAIN_AB_WEAK: '{{A}} ve {{B}} zayıf bir bağlantı oluşturur',
+      COMBINATION_CHAIN_END:
+        '{{A}} doğru olduğunda, kırmızı hücre yanlıştır. {{A}} yanlış olduğunda, çıkarım yoluyla {{B}} doğru olur ve kırmızı hücre yine yanlıştır',
+      SKYSCRAPER2_1:
+        '{{As}} iki hücre arasında güçlü bir bağlantı vardır, {{Bs}} dört hücre arasında güçlü bir bağlantı vardır ve bu iki güçlü bağlantı, {{Cs}} iki hücre arasındaki zayıf bir bağlantı ile bağlanır. {{A}} doğru olduğunda, kırmızı hücre yanlıştır. {{A}} yanlış olduğunda, {{B}} doğrudur ve kırmızı hücre yine yanlıştır',
+      SKYSCRAPER2_2:
+        '{{As}} iki hücre arasında güçlü bir bağlantı vardır, {{Bs}} iki hücre arasında güçlü bir bağlantı vardır ve {{Cs}} iki hücre arasında güçlü bir bağlantı vardır. Her güçlü bağlantı, zayıf bağlantılarla diğerlerine bağlanır. {{A}} doğru olduğunda, kırmızı hücre yanlıştır. {{A}} yanlış olduğunda, {{B}} doğrudur ve kırmızı hücre yine yanlıştır',
     },
     back: 'Geri',
     next: 'Sonraki',
@@ -265,7 +272,8 @@ export default {
     dataSyncDescription:
       '1.Dostça hatırlatma: Cihazınızı değiştirirseniz, iCloud verileri yeni cihaza hemen senkronize olmayabilir. Uygulamayı birkaç kez yeniden açmanızı veya bir süre beklemenizi öneririz. Bu süre zarfında, yerel bulmacalar üzerinde çalışabilirsiniz. Eski veriler güncellendikten sonra, uygulama otomatik olarak yeni verileri bir araya getirmenize yardımcı olacaktır.',
     total: 'Toplam',
-    pleaseLoginGameCenter: "Lütfen GameCenter'a giriş yapın",
+    pleaseLoginGameCenter:
+      "Lütfen önce GameCenter'a giriş yapın. Zaten giriş yaptıysanız, uygulamayı yeniden açın.",
     tips: 'İpucu',
     dataSyncDescription2: '2.Sıralamanız 24 saat içinde dünya çapında senkronize edilecektir.',
   },

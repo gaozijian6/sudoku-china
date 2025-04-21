@@ -70,8 +70,9 @@ export default {
     XY_WING: 'XY-Wing',
     XYZ_WING: 'XYZ-Wing',
     SKYSCRAPER: 'Wolkenkrabber',
-    SKYSCRAPER2: 'Wolkenkrabber 2',
-    REMOTE_PAIR: 'Afstandspaar',
+    SKYSCRAPER2: 'Twee sterke verbindingen',
+    THREESTRONGLINKS: 'Drie sterke verbindingen',
+    XCHAIN: 'X-Ketting',
     COMBINATION_CHAIN: 'Combinatieketting',
     SWORDFISH_ROW: 'Zwaardvis',
     SWORDFISH_COLUMN: 'Zwaardvis',
@@ -158,8 +159,6 @@ export default {
         'De blauwe cellen {{positions}} vormen een geconjugeerde ketting. Of R{{row1}}C{{col1}} of R{{row2}}C{{col2}} moet {{target}} zijn, dus {{deleteStr}} kan geen {{target}} bevatten',
       SKYSCRAPER2:
         'Cellen R{{row1}}C{{col1}} en R{{row2}}C{{col2}} vormen een sterke ketting, cellen R{{row3}}C{{col3}} en R{{row4}}C{{col4}} vormen een andere sterke ketting. Deze kettingen zijn verbonden door een zwakke ketting tussen R{{row3}}C{{col3}} en R{{row2}}C{{col2}}. Als R{{row1}}C{{col1}} waar is, moet {{deleteStr}} onwaar zijn. Als R{{row1}}C{{col1}} onwaar is, moet R{{row4}}C{{col4}} waar zijn, wat nog steeds betekent dat {{deleteStr}} onwaar moet zijn. In beide gevallen kan {{target}} niet voorkomen in {{deleteStr}}',
-      REMOTE_PAIR:
-        '{{posStr1}} vormt een afstandspaar, deze twee afstandsparen vormen een sterke ketting via {{posStr2}}. Ongeacht welke van {{posStr1}} waar is, kan {{target}} niet voorkomen in {{posStr}}',
       WXYZ_WING:
         '{{candStr}} vormt een WXYZ-Wing met R{{row1}}C{{col1}} als spil. Ongeacht hoe deze vier cellen worden ingevuld, kan {{target}} niet voorkomen in {{deleteStr}}',
       COMBINATION_CHAIN_3_2_1_STRONG:
@@ -198,6 +197,14 @@ export default {
         'omdat {{posStr1}} en {{posStr2}} een sterke verbinding vormen voor {{target}}, moet {{posStr2}} de waarde {{target}} hebben',
       DOUBLE_COLOR_CHAIN_q_start:
         'wanneer {{posStr}} de waarde {{target1}} heeft, kan de huidige cel niet de waarde {{target2}} hebben',
+      COMBINATION_CHAIN_AB_STRONG: '{{A}} en {{B}} vormen een sterke verbinding',
+      COMBINATION_CHAIN_AB_WEAK: '{{A}} en {{B}} vormen een zwakke verbinding',
+      COMBINATION_CHAIN_END:
+        'Wanneer {{A}} waar is, is de rode cel onwaar. Wanneer {{A}} onwaar is, wordt door deductie {{B}} waar, en de rode cel blijft onwaar',
+      SKYSCRAPER2_1:
+        'Er bestaat een sterke verbinding tussen de twee cellen {{As}}, er bestaat een sterke verbinding tussen vier cellen {{Bs}}, en deze twee sterke verbindingen zijn verbonden door een zwakke verbinding tussen de twee cellen {{Cs}}. Wanneer {{A}} waar is, is de rode cel onwaar. Wanneer {{A}} onwaar is, is {{B}} waar, en de rode cel blijft onwaar',
+      SKYSCRAPER2_2:
+        'Er bestaat een sterke verbinding tussen de twee cellen {{As}}, er bestaat een sterke verbinding tussen de twee cellen {{Bs}}, en er bestaat een sterke verbinding tussen de twee cellen {{Cs}}. Elke sterke verbinding is met de anderen verbonden door zwakke verbindingen. Wanneer {{A}} waar is, is de rode cel onwaar. Wanneer {{A}} onwaar is, is {{B}} waar, en de rode cel blijft onwaar',
     },
     back: 'Terug',
     next: 'Volgende',
@@ -267,7 +274,8 @@ export default {
     dataSyncDescription:
       '1.Vriendelijke herinnering: Als u van apparaat verandert, worden iCloud-gegevens mogelijk niet direct gesynchroniseerd met het nieuwe apparaat. We raden u aan de app een paar keer opnieuw te openen of even te wachten. Gedurende deze periode kunt u werken aan lokale puzzels. Nadat de oude gegevens zijn bijgewerkt, helpt de app u automatisch de nieuwe gegevens te integreren.',
     total: 'Totaal',
-    pleaseLoginGameCenter: 'Log in bij GameCenter',
+    pleaseLoginGameCenter:
+      'Log eerst in op GameCenter. Als u al bent ingelogd, open de app dan opnieuw.',
     tips: 'Tips',
     dataSyncDescription2: '2.Uw ranglijst wordt binnen 24 uur wereldwijd gesynchroniseerd.',
   },

@@ -70,8 +70,9 @@ export default {
     XY_WING: 'XY-Wing',
     XYZ_WING: 'XYZ-Wing',
     SKYSCRAPER: 'スカイスクレーパー',
-    SKYSCRAPER2: 'スカイスクレーパー2',
-    REMOTE_PAIR: 'リモートペア',
+    SKYSCRAPER2: '二重強連鎖',
+    THREESTRONGLINKS: '三重強連鎖',
+    XCHAIN: 'Xチェーン',
     COMBINATION_CHAIN: '組み合わせチェーン',
     SWORDFISH_ROW: 'ソードフィッシュ',
     SWORDFISH_COLUMN: 'ソードフィッシュ',
@@ -158,8 +159,6 @@ export default {
         '{{positions}}の青マスは共役鎖を形成します。R{{row1}}C{{col1}}またはR{{row2}}C{{col2}}が{{target}}になると、{{deleteStr}}には候補数{{target}}は入りません',
       SKYSCRAPER2:
         'マスR{{row1}}C{{col1}}とR{{row2}}C{{col2}}は強いリンクを形成し、マスR{{row3}}C{{col3}}とR{{row4}}C{{col4}}は別の強いリンクを形成します。これら2つの強いリンクはR{{row3}}C{{col3}}とR{{row2}}C{{col2}}間の弱いリンクで接続されています。R{{row1}}C{{col1}}が真の場合、{{deleteStr}}は偽となります。R{{row1}}C{{col1}}が偽の場合、R{{row4}}C{{col4}}は真となり、やはり{{deleteStr}}は偽となります。いずれの場合も、候補数{{target}}は{{deleteStr}}には入りません。',
-      REMOTE_PAIR:
-        '{{posStr1}}はリモートペアを形成し、これら2つのリモートペアは{{posStr2}}を通じて強いリンクを形成します。{{posStr1}}のどちらが真になっても、{{posStr}}には候補数{{target}}は入りません',
       WXYZ_WING:
         '{{candStr}}はWXYZ-Wingを形成し、R{{row1}}C{{col1}}がピボットとなります。これら4マスがどのような値になっても、候補数{{target}}は{{deleteStr}}には入りません',
       COMBINATION_CHAIN_3_2_1_STRONG:
@@ -196,6 +195,14 @@ export default {
         '{{posStr1}}と{{posStr2}}は{{target}}に関する強いリンクを形成するため、{{posStr2}}は{{target}}です',
       DOUBLE_COLOR_CHAIN_q_start:
         '{{posStr}}が{{target1}}の場合、現在のマスは{{target2}}になれません',
+      COMBINATION_CHAIN_AB_STRONG: '{{A}}と{{B}}は強連鎖を形成します',
+      COMBINATION_CHAIN_AB_WEAK: '{{A}}と{{B}}は弱連鎖を形成します',
+      COMBINATION_CHAIN_END:
+        '{{A}}が真の場合、赤いセルは偽になります。{{A}}が偽の場合、推論により{{B}}が真になり、赤いセルはやはり偽になります',
+      SKYSCRAPER2_1:
+        '{{As}}の2つのセル間に強連鎖があり、{{Bs}}の4つのセル間に強連鎖があります。これら2つの強連鎖は{{Cs}}の2つのセル間の弱連鎖によって接続されています。{{A}}が真の場合、赤いセルは偽です。{{A}}が偽の場合、{{B}}が真になり、赤いセルはやはり偽です',
+      SKYSCRAPER2_2:
+        '{{As}}の2つのセル間に強連鎖があり、{{Bs}}の2つのセル間に強連鎖があり、{{Cs}}の2つのセル間に強連鎖があります。各強連鎖は弱連鎖によって相互に接続されています。{{A}}が真の場合、赤いセルは偽です。{{A}}が偽の場合、{{B}}が真になり、赤いセルはやはり偽です',
     },
     back: '戻る',
     next: '次のレベル',
@@ -262,7 +269,8 @@ export default {
     dataSyncDescription:
       '1.お知らせ：デバイスを変更した場合、iCloudのデータはすぐに新しいデバイスに同期されない場合があります。アプリを数回再起動するか、しばらく待つことをお勧めします。この間、ローカルパズルで遊ぶことができます。古いデータが更新された後、アプリは自動的に新しいデータを統合します',
     total: '総計',
-    pleaseLoginGameCenter: 'GameCenterにログインしてください',
+    pleaseLoginGameCenter:
+      'まずGameCenterにログインしてください。すでにログインしている場合は、アプリを再起動してください。',
     tips: 'ヒント',
     dataSyncDescription2: '2.あなたのランキングは24時間以内に全世界で同期されます',
   },
