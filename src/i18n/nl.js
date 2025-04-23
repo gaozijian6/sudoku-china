@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'Binair Universaal Graf',
     DOUBLE_COLOR_CHAIN: 'Tweekleurige Ketting',
     TRIPLE_COLOR_CHAIN: 'Driekleurige Ketting',
+    TWO_STRING_KITE: 'Tweesnoer vlieger',
     TRIAL_AND_ERROR: 'Trial en Error',
     duration: 'Tijd',
     mistakes: 'Fouten',

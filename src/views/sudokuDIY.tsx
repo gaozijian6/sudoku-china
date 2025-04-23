@@ -104,7 +104,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
   const [selectionMode, setSelectionMode] = useState<1 | 2>(1);
   const [errorCells, setErrorCells] = useState<{ row: number; col: number }[]>([]);
   const [hintDrawerVisible, setHintDrawerVisible] = useState<boolean>(false);
-  const [isPlayingFinish, setIsPlayingFinish] = useState<boolean>(false);
 
   const [hintContent, setHintContent] = useState<string>('');
   const [hintMethod, setHintMethod] = useState<string>('');

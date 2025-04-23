@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'İkili Evrensel Kuyruk',
     DOUBLE_COLOR_CHAIN: 'İki Renkli Zincir',
     TRIPLE_COLOR_CHAIN: 'Üç Renkli Zincir',
+    TWO_STRING_KITE: 'İki İpli Uçurtma',
     TRIAL_AND_ERROR: 'Deneme Yanılma',
     duration: 'Süre',
     mistakes: 'Hata Sayısı',

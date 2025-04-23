@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'Binäre Universale Grube',
     DOUBLE_COLOR_CHAIN: 'Zweifarbige Kette',
     TRIPLE_COLOR_CHAIN: 'Dreifarbige Kette',
+    TWO_STRING_KITE: 'Zweifarbige Kette',
     TRIAL_AND_ERROR: 'Versuch und Irrtum',
     duration: 'Zeit',
     mistakes: 'Fehler',

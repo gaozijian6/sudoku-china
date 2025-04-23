@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: '全双値墳墓',
     DOUBLE_COLOR_CHAIN: '二色連鎖',
     TRIPLE_COLOR_CHAIN: '三色チェーン',
+    TWO_STRING_KITE: 'ツーストリング凧',
     TRIAL_AND_ERROR: '試行錯誤法',
     duration: '経過時間',
     mistakes: 'ミス回数',

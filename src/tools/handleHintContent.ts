@@ -602,6 +602,7 @@ export const handleHintContent = (
         });
         break;
       case SOLUTION_METHODS.SKYSCRAPER:
+      case SOLUTION_METHODS.TWO_STRING_KITE:
         boardWithHighlight = applyHintHighlight(board, result, 'both');
         setPrompts(target);
         posStr = prompt.map(p => `R${p.row + 1}C${p.col + 1}`).join('、');

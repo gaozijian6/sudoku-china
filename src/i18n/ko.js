@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: '이진 전체 무덤',
     DOUBLE_COLOR_CHAIN: '이중색 체인',
     TRIPLE_COLOR_CHAIN: '삼색 체인',
+    TWO_STRING_KITE: '두 줄 연',
     TRIAL_AND_ERROR: '시행착오법',
     duration: '소요 시간',
     mistakes: '실수 횟수',

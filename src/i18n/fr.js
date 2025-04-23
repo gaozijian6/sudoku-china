@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'Grave universelle binaire',
     DOUBLE_COLOR_CHAIN: 'Chaîne Bicolor',
     TRIPLE_COLOR_CHAIN: 'Chaîne Tricolor',
+    TWO_STRING_KITE: 'Cerf-volant à deux cordes',
     TRIAL_AND_ERROR: 'Essai et erreur',
     duration: 'Durée',
     mistakes: 'Erreurs',

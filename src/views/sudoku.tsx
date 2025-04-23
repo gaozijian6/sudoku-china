@@ -1171,8 +1171,9 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   }, [board, selectedCell, selectionMode]);
 
   const handleBack = useCallback(() => {
+    resetSudoku();
     navigation.goBack();
-  }, [navigation]);
+  }, [navigation, resetSudoku]);
 
   // 添加导航监听器处理手势返回
   useEffect(() => {

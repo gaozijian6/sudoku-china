@@ -83,6 +83,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'Binary Universal Grave',
     DOUBLE_COLOR_CHAIN: 'Bicolor Chain',
     TRIPLE_COLOR_CHAIN: 'Tricolor Chain',
+    TWO_STRING_KITE: 'Two String Kite',
     TRIAL_AND_ERROR: 'Trial and Error',
     duration: 'Duration',
     mistakes: 'Mistakes',

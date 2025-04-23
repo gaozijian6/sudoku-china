@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'Tumba binaria universale',
     DOUBLE_COLOR_CHAIN: 'Catena Bicolor',
     TRIPLE_COLOR_CHAIN: 'Catena Tricolor',
+    TWO_STRING_KITE: 'Aquilone a due corde',
     TRIAL_AND_ERROR: 'Tentativi ed Errori',
     duration: 'Tempo',
     mistakes: 'Errori',

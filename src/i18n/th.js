@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'สี่เหลี่ยมผืนผ้าที่เป็นเอกลักษณ์',
     DOUBLE_COLOR_CHAIN: 'ห่วงโซ่สองสี',
     TRIPLE_COLOR_CHAIN: 'ห่วงโซ่สามสี',
+    TWO_STRING_KITE: 'ว่าวสองเส้น',
     TRIAL_AND_ERROR: 'ลองผิดลองถูก',
     duration: 'เวลา',
     mistakes: 'ข้อผิดพลาด',

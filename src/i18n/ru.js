@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'Бинарная универсальная могила',
     DOUBLE_COLOR_CHAIN: 'Двухцветная цепь',
     TRIPLE_COLOR_CHAIN: 'Трехцветная цепь',
+    TWO_STRING_KITE: 'Воздушный змей с двумя нитями',
     TRIAL_AND_ERROR: 'Метод проб и ошибок',
     duration: 'Время',
     mistakes: 'Ошибки',

@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'Hố thần tối',
     DOUBLE_COLOR_CHAIN: 'Chuỗi Hai Màu',
     TRIPLE_COLOR_CHAIN: 'Chuỗi Ba Màu',
+    TWO_STRING_KITE: 'Diều hai dây',
     TRIAL_AND_ERROR: 'Thử và sai',
     duration: 'Thời gian',
     mistakes: 'Số lỗi',
