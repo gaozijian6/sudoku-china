@@ -266,33 +266,6 @@ function TarBarsSudoku({ onBack, saveDataDIY, resetSudoku, handleLock, handleUnl
           </Pressable>
         </View>
       </View>
-
-      {/* <Modal animationType="fade" transparent={true} visible={showConfirmModal}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{t('tips')}</Text>
-            <Text style={styles.modalText}>{t('fixedDescription')}</Text>
-
-            <View style={styles.checkboxContainer}>
-              <Pressable style={styles.checkbox} onPress={() => setDoNotShowAgain(!doNotShowAgain)}>
-                <View style={[styles.checkboxBase, doNotShowAgain && styles.checkboxChecked]}>
-                  {doNotShowAgain && <Text style={styles.checkboxIcon}>✓</Text>}
-                </View>
-              </Pressable>
-              <Text style={styles.checkboxLabel}>{t('doNotShowAgain')}</Text>
-            </View>
-
-            <View style={styles.modalButtons}>
-              <Pressable style={styles.buttonCancel} onPress={handleCancel}>
-                <Text style={styles.buttonText}>{t('cancel')}</Text>
-              </Pressable>
-              <Pressable style={styles.buttonConfirm} onPress={handleConfirm}>
-                <Text style={styles.buttonText}>{t('confirm')}</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal> */}
     </>
   );
 }
@@ -433,87 +406,6 @@ const createStyles = (isDark: boolean) =>
       color: isDark ? '#666' : '#fff',
       fontSize: 14,
       fontWeight: 'bold',
-    },
-    modalOverlay: {
-      flex: 1,
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    modalContent: {
-      backgroundColor: isDark ? 'rgb(105, 106, 108)' : 'white',
-      borderRadius: 10,
-      padding: 20,
-      width: '80%',
-      maxWidth: 300,
-    },
-    modalTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginBottom: 15,
-      textAlign: 'center',
-      color: isDark ? '#fff' : '#333',
-    },
-    modalText: {
-      fontSize: 16,
-      marginBottom: 20,
-      textAlign: 'center',
-      color: isDark ? '#eee' : '#333',
-    },
-    modalButtons: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      gap: 20,
-    },
-    buttonCancel: {
-      backgroundColor: isDark ? '#555' : '#e0e0e0',
-      paddingVertical: 8,
-      paddingHorizontal: 20,
-      borderRadius: 5,
-    },
-    buttonConfirm: {
-      backgroundColor: 'rgb(91,139,241)',
-      paddingVertical: 8,
-      paddingHorizontal: 20,
-      borderRadius: 5,
-    },
-    buttonText: {
-      color: isDark ? '#eee' : '#fff',
-      fontWeight: 'bold',
-      fontSize: 14,
-    },
-    checkboxContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 20,
-      justifyContent: 'flex-end',
-    },
-    checkbox: {
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    checkboxBase: {
-      width: 20,
-      height: 20,
-      borderWidth: 1,
-      borderColor: isDark ? '#aaa' : '#777',
-      borderRadius: 4,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    checkboxChecked: {
-      backgroundColor: 'rgb(91,139,241)',
-      borderColor: 'rgb(91,139,241)',
-    },
-    checkboxIcon: {
-      color: '#fff',
-      fontSize: 12,
-      fontWeight: 'bold',
-    },
-    checkboxLabel: {
-      marginLeft: 8,
-      fontSize: 14,
-      color: isDark ? '#eee' : '#333',
     },
   });
 
