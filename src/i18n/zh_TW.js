@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: '全雙值墳墓',
     DOUBLE_COLOR_CHAIN: '雙色鏈',
     TRIPLE_COLOR_CHAIN: '三色鏈',
+    TWO_STRING_KITE: '雙線風箏',
     TRIAL_AND_ERROR: '試錯法',
     duration: '用時',
     mistakes: '錯誤次數',
@@ -269,5 +270,10 @@ export default {
     pleaseLoginGameCenter: '請先登錄GameCenter，如已登錄請重新打開App',
     tips: '提示',
     dataSyncDescription2: '2.您的排名會在24小時內同步全球。',
+    fastestTime: '最快',
+    averageTime: '平均',
+    fixedDescription:
+      '此操作會將當前棋盤里的數字固定，您將無法對被固定的數字進行修改，確定要執行嗎？',
+    doNotShowAgain: '不再顯示',
   },
 };

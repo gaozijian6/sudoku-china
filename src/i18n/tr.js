@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'İkili Evrensel Kuyruk',
     DOUBLE_COLOR_CHAIN: 'İki Renkli Zincir',
     TRIPLE_COLOR_CHAIN: 'Üç Renkli Zincir',
+    TWO_STRING_KITE: 'İki İpli Uçurtma',
     TRIAL_AND_ERROR: 'Deneme Yanılma',
     duration: 'Süre',
     mistakes: 'Hata Sayısı',
@@ -276,5 +277,10 @@ export default {
       "Lütfen önce GameCenter'a giriş yapın. Zaten giriş yaptıysanız, uygulamayı yeniden açın.",
     tips: 'İpucu',
     dataSyncDescription2: '2.Sıralamanız 24 saat içinde dünya çapında senkronize edilecektir.',
+    fastestTime: 'En hızlı',
+    averageTime: 'Ortalama',
+    fixedDescription:
+      'Bu işlem, tahtadaki mevcut sayıları sabitleyecektir. Sabitlenmiş sayıları değiştiremeyeceksiniz. Devam etmek istediğinizden emin misiniz?',
+    doNotShowAgain: 'Bir daha gösterme',
   },
 };

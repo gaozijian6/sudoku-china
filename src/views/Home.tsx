@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import { Page, SudokuType, DIFFICULTY, LeaderboardType } from '../constans';
 import { useNavigation } from '@react-navigation/native';
-import { calculateProgress, getUpdateUserStatisticPass, saveUserStatisticPass } from '../tools';
+import { calculateProgress, getUpdateUserStatisticPass, saveUserStatisticPass, getUpdateUserStatisticTime, saveUserStatisticTime } from '../tools';
 import iCloudStorage from 'react-native-icloudstore';
 import LZString from 'lz-string';
 
@@ -31,6 +31,7 @@ const Home: React.FC = memo(() => {
   const setIsLoginGameCenter = useSudokuStore(state => state.setIsLoginGameCenter);
   const setUserStatisticPass = useSudokuStore(state => state.setUserStatisticPass);
   const updateUserStatisticPassOnline = useSudokuStore(state => state.updateUserStatisticPassOnline);
+  const setUserStatisticTime = useSudokuStore(state => state.setUserStatisticTime);
   const styles = createStyles(isDark);
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -116,7 +117,11 @@ const Home: React.FC = memo(() => {
     const fetchUserStatisticPassData = async () => {
       const userStatisticPass_iCloud = await iCloudStorage.getItem('userStatisticPass');
       const userStatisticPass_AsyncStorage = await AsyncStorage.getItem('userStatisticPass');
+      // 获取求解时间数据
+      const userStatisticTime_iCloud = await iCloudStorage.getItem('userStatisticTime');
+      const userStatisticTime_AsyncStorage = await AsyncStorage.getItem('userStatisticTime');
 
+      // 处理用户通关数据
       if (!!userStatisticPass_iCloud && !!userStatisticPass_AsyncStorage) {
         const decompressed_iCloud = LZString.decompressFromUTF16(userStatisticPass_iCloud);
         const decompressed_AsyncStorage = LZString.decompressFromUTF16(
@@ -145,7 +150,40 @@ const Home: React.FC = memo(() => {
         };
         setUserStatisticPass(userStatisticPass_Mock);
       }
+      
+      // 处理求解时间数据
+      let userStatisticTime;
+      if (!!userStatisticTime_iCloud && !!userStatisticTime_AsyncStorage) {
+        const decompressed_iCloud = LZString.decompressFromUTF16(userStatisticTime_iCloud);
+        const decompressed_AsyncStorage = LZString.decompressFromUTF16(
+          userStatisticTime_AsyncStorage
+        );
+        // 采用更优的时间记录（较小值）
+        const iCloudData = JSON.parse(decompressed_iCloud);
+        const asyncData = JSON.parse(decompressed_AsyncStorage);
+        userStatisticTime = getUpdateUserStatisticTime(iCloudData, asyncData);
+      } else if (!!userStatisticTime_iCloud) {
+        const decompressed_iCloud = LZString.decompressFromUTF16(userStatisticTime_iCloud);
+        userStatisticTime = JSON.parse(decompressed_iCloud);
+      } else if (!!userStatisticTime_AsyncStorage) {
+        const decompressed_AsyncStorage = LZString.decompressFromUTF16(
+          userStatisticTime_AsyncStorage
+        );
+        userStatisticTime = JSON.parse(decompressed_AsyncStorage);
+      } else {
+        // 初始化为五个空数组，每个容量为10000的数组，默认时间为0
+        userStatisticTime = {
+          [DIFFICULTY.ENTRY]: Array(10000).fill(0),
+          [DIFFICULTY.EASY]: Array(10000).fill(0),
+          [DIFFICULTY.MEDIUM]: Array(10000).fill(0),
+          [DIFFICULTY.HARD]: Array(10000).fill(0),
+          [DIFFICULTY.EXTREME]: Array(10000).fill(0),
+        };
+      }
+      setUserStatisticTime(userStatisticTime);
+      
       saveUserStatisticPass(useSudokuStore.getState().userStatisticPass);
+      saveUserStatisticTime(useSudokuStore.getState().userStatisticTime);
       updateUserStatisticPassOnline();
       initializeGameCenter(useSudokuStore.getState().userStatisticPass);
     };

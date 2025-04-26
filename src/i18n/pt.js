@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'Tumba Binária Universal',
     DOUBLE_COLOR_CHAIN: 'Cadeia Bicolor',
     TRIPLE_COLOR_CHAIN: 'Cadeia Tricolor',
+    TWO_STRING_KITE: 'Pipa de duas cordas',
     TRIAL_AND_ERROR: 'Tentativa e Erro',
     duration: 'Tempo',
     mistakes: 'Erros',
@@ -279,5 +280,10 @@ export default {
       'Por favor, faça login no GameCenter primeiro. Se já estiver logado, reabra o aplicativo.',
     tips: 'Dicas',
     dataSyncDescription2: '2.Sua classificação será sincronizada globalmente em 24 horas.',
+    fastestTime: 'Mais rápido',
+    averageTime: 'Médio',
+    fixedDescription:
+      'Esta operação fixará os números atuais no tabuleiro. Você não poderá modificar os números fixados. Tem certeza de que deseja continuar?',
+    doNotShowAgain: 'Não mostrar novamente',
   },
 };

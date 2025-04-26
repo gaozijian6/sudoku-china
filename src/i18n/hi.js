@@ -83,7 +83,8 @@ export default {
     UNIQUE_RECTANGLE: 'अद्वितीय आयत',
     BINARY_UNIVERSAL_GRAVE: 'बाइनरी अनिवार्य ग्रव',
     DOUBLE_COLOR_CHAIN: 'द्विरंगी श्रृंखला',
-    TRIPLE_COLOR_CHAIN: 'त्रिरंगी श्रृंखला',
+    TRIPLE_COLOR_CHAIN: 'दो डोरी वाली पतंग',
+    TWO_STRING_KITE: 'दो स्ट्रिंग कीट',
     TRIAL_AND_ERROR: 'परीक्षण और त्रुटि',
     duration: 'समय',
     mistakes: 'गलतियां',
@@ -278,5 +279,10 @@ export default {
       'कृपया पहले GameCenter में लॉगिन करें। यदि आप पहले से लॉगिन हैं, तो ऐप को फिर से खोलें।',
     tips: 'सुझाव',
     dataSyncDescription2: '2.आपकी रैंकिंग 24 घंटों के भीतर विश्व स्तर पर सिंक्रनाइज़ की जाएगी।',
+    fastestTime: 'सबसे तेज',
+    averageTime: 'औसत',
+    fixedDescription:
+      'यह क्रिया वर्तमान बोर्ड के अंकों को स्थिर कर देगी। आप स्थिर किए गए अंकों को संशोधित नहीं कर पाएंगे। क्या आप निश्चित रूप से आगे बढ़ना चाहते हैं?',
+    doNotShowAgain: 'फिर से नहीं दिखाएं',
   },
 };

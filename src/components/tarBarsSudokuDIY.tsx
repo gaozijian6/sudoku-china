@@ -1,5 +1,14 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Image, Pressable, Alert, NativeModules, Text } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Image,
+  Pressable,
+  Alert,
+  NativeModules,
+  Text,
+  Modal,
+} from 'react-native';
 import { useSudokuStore } from '../store';
 import TarBars from './tarBars';
 import { SudokuType } from '../constans';
@@ -20,9 +29,12 @@ interface TarBarsSudokuProps {
   onBack: () => void;
   saveDataDIY: () => void;
   resetSudoku: () => void;
+  handleLock: () => void;
+  handleUnlock: () => void;
+  isLocked: boolean;
 }
 
-function TarBarsSudoku({ onBack, saveDataDIY, resetSudoku }: TarBarsSudokuProps) {
+function TarBarsSudoku({ onBack, saveDataDIY, resetSudoku, handleLock, handleUnlock, isLocked }: TarBarsSudokuProps) {
   const navigation = useNavigation();
   const setIsHome = useSudokuStore(state => state.setIsHome);
   const setIsDIY = useSudokuStore(state => state.setIsDIY);
@@ -224,6 +236,17 @@ function TarBarsSudoku({ onBack, saveDataDIY, resetSudoku }: TarBarsSudokuProps)
               />
             </View>
           )}
+          {sudokuType === SudokuType.DIY2 && (
+            !isLocked ? (
+              <Pressable style={styles.saveIconContainer} onPressIn={handleLock}>
+                <Image source={require('../assets/icon/unlock.png')} style={styles.saveIcon} />
+              </Pressable>
+            ) : (
+              <Pressable style={styles.saveIconContainer} onPressIn={handleUnlock}>
+                <Image source={require('../assets/icon/lock.png')} style={styles.saveIcon} />
+              </Pressable>
+            )
+          )}
           <Pressable style={styles.resetIconContainer} onPressIn={resetSudoku}>
             <Image source={require('../assets/icon/refresh.png')} style={styles.resetIcon} />
           </Pressable>
@@ -250,7 +273,6 @@ function TarBarsSudoku({ onBack, saveDataDIY, resetSudoku }: TarBarsSudokuProps)
 const createStyles = (isDark: boolean) =>
   StyleSheet.create({
     container: {
-      // backgroundColor: 'rgb(91,139,241)',
       backgroundColor: isDark ? 'rgb(39, 60, 95)' : 'rgb(91,139,241)',
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -321,7 +343,6 @@ const createStyles = (isDark: boolean) =>
     resetIcon: {
       width: 30,
       height: 30,
-      // tintColor: 'white',
       tintColor: isDark ? '#666' : '#fff',
     },
     saveIcon: {
@@ -348,7 +369,6 @@ const createStyles = (isDark: boolean) =>
       elevation: 3,
     },
     dropdown: {
-      // backgroundColor: 'rgba(255, 255, 255, 0.2)',
       backgroundColor: isDark ? 'rgba(124, 124, 124, 0.2)' : 'rgba(255, 255, 255, 0.2)',
       borderWidth: 0,
       minHeight: 30,
@@ -360,12 +380,10 @@ const createStyles = (isDark: boolean) =>
       fontWeight: 'bold',
     },
     dropdownMenu: {
-      // backgroundColor: 'white',
       backgroundColor: isDark ? 'rgb(39, 60, 95)' : 'white',
       borderWidth: 1,
       borderColor: '#e0e0e0',
       borderRadius: 8,
-      // shadowColor: '#000',
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.3,
       shadowRadius: 6,
@@ -376,18 +394,15 @@ const createStyles = (isDark: boolean) =>
       paddingVertical: 5,
     },
     dropdownLabel: {
-      // color: 'white',
       color: isDark ? '#666' : '#fff',
       fontSize: 14,
       fontWeight: 'bold',
     },
     dropdownItemLabel: {
-      // color: '#333',
       color: isDark ? '#666' : '#333',
       fontSize: 14,
     },
     placeholderStyle: {
-      // color: 'white',
       color: isDark ? '#666' : '#fff',
       fontSize: 14,
       fontWeight: 'bold',

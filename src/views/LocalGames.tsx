@@ -51,6 +51,7 @@ const LocalGames = () => {
   const setIsHasContinue = useSudokuStore(state => state.setIsHasContinue);
   const setIsSudoku = useSudokuStore(state => state.setIsSudoku);
   const userStatisticPass = useSudokuStore(state => state.userStatisticPass);
+  const userStatisticTime = useSudokuStore(state => state.userStatisticTime);
   const styles = createStyles(isDark, false);
   const navigation = useNavigation();
 
@@ -74,6 +75,14 @@ const LocalGames = () => {
   // 点击标签切换难度
   const handleTabPress = useCallback((tabIndex: number) => {
     setActiveTab(tabIndex);
+  }, []);
+
+  // 格式化时间函数
+  const formatTime = useCallback((seconds: number) => {
+    if (!seconds) return '';
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   }, []);
 
   // 渲染顶部导航标签
@@ -141,6 +150,10 @@ const LocalGames = () => {
       // 检查当前难度对应字符串中的索引位置是否为1
       const isPassed =
         userStatisticPass[currentDifficulty as keyof typeof userStatisticPass]?.[index] === '1';
+      
+      // 获取此题的解题时间
+      const solveTime = userStatisticTime[currentDifficulty as keyof typeof userStatisticTime]?.[index] || 0;
+      const formattedTime = solveTime > 0 ? formatTime(solveTime) : '';
 
       return (
         <TouchableOpacity
@@ -158,19 +171,33 @@ const LocalGames = () => {
           ]}
           onPress={() => playGame(index)}
         >
-          <Text
-            style={[
-              styles.text,
-              localStyles.puzzleNumber,
-              { color: isPassed ? (isDark ? '#888' : '#fff') : isDark ? '#888' : '#333' },
-            ]}
-          >
-            {index + 1}
-          </Text>
+          <View style={localStyles.puzzleContent}>
+            <Text
+              style={[
+                styles.text,
+                localStyles.puzzleNumber,
+                { color: isPassed ? (isDark ? '#888' : '#fff') : isDark ? '#888' : '#333' },
+              ]}
+            >
+              {index + 1}
+            </Text>
+            
+            {isPassed && solveTime > 0 && (
+              <Text
+                style={[
+                  styles.text,
+                  localStyles.timeText,
+                  { color: isPassed ? (isDark ? '#666' : 'rgba(255,255,255,0.8)') : isDark ? '#666' : '#777' },
+                ]}
+              >
+                {formattedTime}
+              </Text>
+            )}
+          </View>
         </TouchableOpacity>
       );
     },
-    [isDark, styles.text, playGame, activeTab, difficultyTabs, userStatisticPass]
+    [isDark, styles.text, playGame, activeTab, difficultyTabs, userStatisticPass, userStatisticTime, formatTime]
   );
 
   return (
@@ -243,10 +270,19 @@ const localStyles = StyleSheet.create({
     elevation: 1,
     margin: itemMargin, // 添加外边距
   },
+  puzzleContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   puzzleNumber: {
     fontSize: 18,
     fontWeight: 'bold',
   },
+  timeText: {
+    fontSize: 10,
+    marginTop: 2,
+  }
 });
 
 export default LocalGames;

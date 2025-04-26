@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   NativeModules,
   Animated,
   Alert,
+  ScrollView,
 } from 'react-native';
 import { useSudokuStore } from '../store';
 import createStyles from './sudokuStyles';
@@ -44,9 +45,47 @@ const Statistics = () => {
   const isDark = useSudokuStore(state => state.isDark);
   const styles = createStyles(isDark, false);
   const userStatisticPass = useSudokuStore(state => state.userStatisticPass);
+  const userStatisticTime = useSudokuStore(state => state.userStatisticTime);
   const isLoginGameCenter = useSudokuStore(state => state.isLoginGameCenter);
   const { t } = useTranslation();
   const [showTip, setShowTip] = useState(false);
+
+  // 计算每个难度的最快时间和平均时间
+  const timeStatistics = useMemo(() => {
+    const stats: Record<string, { fastest: number; average: number }> = {};
+
+    // 计算每个难度的统计（排除DIFFICULTY.EXTREME）
+    Object.keys(userStatisticTime).forEach(difficulty => {
+      // 排除极限难度
+      const times = userStatisticTime[difficulty as keyof typeof userStatisticTime] || [];
+
+      // 只考虑大于0的时间（已完成的题目）
+      const completedTimes = times.filter(time => time > 0);
+
+      if (completedTimes.length > 0) {
+        // 计算最快时间
+        const fastest = Math.min(...completedTimes);
+        // 计算平均时间
+        const average = Math.round(
+          completedTimes.reduce((sum, time) => sum + time, 0) / completedTimes.length
+        );
+
+        stats[difficulty] = { fastest, average };
+      } else {
+        stats[difficulty] = { fastest: 0, average: 0 };
+      }
+    });
+
+    return stats;
+  }, [userStatisticTime]);
+
+  // 格式化时间：将秒数转换为 mm:ss 格式
+  const formatTime = (seconds: number) => {
+    if (!seconds) return '--:--';
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
   // 设置动画循环
   useEffect(() => {
@@ -159,147 +198,168 @@ const Statistics = () => {
 
   return (
     <View style={[{ flex: 1 }, { backgroundColor: isDark ? 'rgb(22, 23, 25)' : 'white' }]}>
-      <View style={localStyles.contentContainer}>
-        {difficultyLevels.map(level => {
-          const progress = calculateProgress(userStatisticPass, level.key as ProgressDifficulty);
-          const difficultyKey = level.key as ProgressDifficulty;
+      <ScrollView contentContainerStyle={localStyles.scrollContent}>
+        <View style={localStyles.contentContainer}>
+          {difficultyLevels.map(level => {
+            const progress = calculateProgress(userStatisticPass, level.key as ProgressDifficulty);
+            const difficultyKey = level.key as ProgressDifficulty;
+            const timeStats = timeStatistics[difficultyKey];
 
-          return (
-            <View
-              key={level.key}
-              style={[
-                localStyles.levelContainer,
-                { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)' },
-              ]}
-            >
-              <View style={localStyles.levelHeader}>
-                <Text style={localStyles.emoji}>{level.emoji}</Text>
-                <Text style={[styles.text, localStyles.difficultyLabel]}>{level.label}</Text>
-                <TouchableOpacity
-                  style={localStyles.rankButton}
-                  onPress={() => showLeaderboard(difficultyKey)}
-                >
-                  <Animated.Image
-                    source={require('../assets/icon/rank.png')}
-                    style={[
-                      localStyles.rankIcon,
-                      {
-                        transform: [{ scale: globalRankIconsScale[difficultyKey] }],
-                      },
-                    ]}
-                    resizeMode="contain"
-                  />
-                </TouchableOpacity>
-              </View>
-
-              <View style={localStyles.progressInfo}>
-                <Text style={[styles.text, localStyles.percentText]}>
-                  {`${progress.percentage.toFixed(2)}%`}
-                </Text>
-                <Text style={[styles.text, localStyles.countText]}>
-                  {`${progress.completed}/${progress.total}`}
-                </Text>
-              </View>
-
+            return (
               <View
+                key={level.key}
                 style={[
-                  localStyles.progressBarBg,
-                  { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
+                  localStyles.levelContainer,
+                  { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)' },
                 ]}
               >
+                <View style={localStyles.levelHeader}>
+                  <Text style={localStyles.emoji}>{level.emoji}</Text>
+                  <Text style={[styles.text, localStyles.difficultyLabel]}>{level.label}</Text>
+                  <TouchableOpacity
+                    style={localStyles.rankButton}
+                    onPress={() => showLeaderboard(difficultyKey)}
+                  >
+                    <Animated.Image
+                      source={require('../assets/icon/rank.png')}
+                      style={[
+                        localStyles.rankIcon,
+                        {
+                          transform: [{ scale: globalRankIconsScale[difficultyKey] }],
+                        },
+                      ]}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={localStyles.progressInfo}>
+                  <Text style={[styles.text, localStyles.percentText]}>
+                    {`${progress.percentage.toFixed(2)}%`}
+                  </Text>
+                  <Text style={[styles.text, localStyles.countText]}>
+                    {`${progress.completed}/${progress.total}`}
+                  </Text>
+                </View>
+
+                {/* 添加时间统计信息，但排除极限难度 */}
+                {progress.completed > 0 && (
+                  <View style={localStyles.timeStatsContainer}>
+                    <View style={localStyles.timeStatItem}>
+                      <Text style={[styles.text, localStyles.timeLabel]}>{t('fastestTime')}:</Text>
+                      <Text style={[styles.text, localStyles.timeValue]}>
+                        {formatTime(timeStats?.fastest || 0)}
+                      </Text>
+                    </View>
+                    <View style={localStyles.timeStatItem}>
+                      <Text style={[styles.text, localStyles.timeLabel]}>{t('averageTime')}:</Text>
+                      <Text style={[styles.text, localStyles.timeValue]}>
+                        {formatTime(timeStats?.average || 0)}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
                 <View
                   style={[
-                    localStyles.progressBarFill,
-                    {
-                      width: `${progress.percentage}%`,
-                      backgroundColor: getProgressColor(difficultyKey, isDark),
-                    },
+                    localStyles.progressBarBg,
+                    { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
                   ]}
-                />
+                >
+                  <View
+                    style={[
+                      localStyles.progressBarFill,
+                      {
+                        width: `${progress.percentage}%`,
+                        backgroundColor: getProgressColor(difficultyKey, isDark),
+                      },
+                    ]}
+                  />
+                </View>
               </View>
-            </View>
-          );
-        })}
+            );
+          })}
 
-        {/* 总体完成情况 */}
-        <View
-          style={[
-            localStyles.levelContainer,
-            localStyles.totalContainer,
-            { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.07)' : 'rgba(0, 0, 0, 0.05)' },
-          ]}
-        >
-          <View style={localStyles.levelHeader}>
-            <Text style={localStyles.emoji}>🏆</Text>
-            <Text style={[styles.text, localStyles.difficultyLabel]}>{t('total')}</Text>
-            <TouchableOpacity style={localStyles.rankButton} onPress={showTotalLeaderboard}>
-              <Animated.Image
-                source={require('../assets/icon/rank.png')}
-                style={[
-                  localStyles.rankIcon,
-                  {
-                    transform: [{ scale: globalRankIconsScale.total }],
-                  },
-                ]}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View style={localStyles.progressInfo}>
-            <Text style={[styles.text, localStyles.percentText]}>
-              {`${totalProgress.percentage.toFixed(2)}%`}
-            </Text>
-            <Text style={[styles.text, localStyles.countText]}>
-              {`${totalProgress.completed}/${totalProgress.total}`}
-            </Text>
-          </View>
-
+          {/* 总体完成情况 - 移除时间统计部分 */}
           <View
             style={[
-              localStyles.progressBarBg,
-              { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
+              localStyles.levelContainer,
+              localStyles.totalContainer,
+              { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.07)' : 'rgba(0, 0, 0, 0.05)' },
             ]}
           >
+            <View style={localStyles.levelHeader}>
+              <Text style={localStyles.emoji}>🏆</Text>
+              <Text style={[styles.text, localStyles.difficultyLabel]}>{t('total')}</Text>
+              <TouchableOpacity style={localStyles.rankButton} onPress={showTotalLeaderboard}>
+                <Animated.Image
+                  source={require('../assets/icon/rank.png')}
+                  style={[
+                    localStyles.rankIcon,
+                    {
+                      transform: [{ scale: globalRankIconsScale.total }],
+                    },
+                  ]}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            </View>
+
+            <View style={localStyles.progressInfo}>
+              <Text style={[styles.text, localStyles.percentText]}>
+                {`${totalProgress.percentage.toFixed(2)}%`}
+              </Text>
+              <Text style={[styles.text, localStyles.countText]}>
+                {`${totalProgress.completed}/${totalProgress.total}`}
+              </Text>
+            </View>
+
             <View
               style={[
-                localStyles.progressBarFill,
-                {
-                  width: `${totalProgress.percentage}%`,
-                  backgroundColor: isDark ? '#b388ff' : '#7c4dff',
-                },
+                localStyles.progressBarBg,
+                { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
               ]}
-            />
+            >
+              <View
+                style={[
+                  localStyles.progressBarFill,
+                  {
+                    width: `${totalProgress.percentage}%`,
+                    backgroundColor: isDark ? '#b388ff' : '#7c4dff',
+                  },
+                ]}
+              />
+            </View>
+          </View>
+
+          <View style={localStyles.footerContainer}>
+            <Tooltip
+              isVisible={showTip}
+              content={
+                <Text style={[styles.text, localStyles.tipText]}>
+                  {t('dataSyncDescription') + t('dataSyncDescription2')}
+                </Text>
+              }
+              placement="top"
+              onClose={() => setShowTip(false)}
+              contentStyle={{ backgroundColor: isDark ? 'rgb(42, 43, 45)' : 'white' }}
+            >
+              <TouchableOpacity
+                style={localStyles.infoButton}
+                onPressIn={() => setShowTip(true)}
+                onPressOut={() => setShowTip(false)}
+              >
+                <Image
+                  source={require('../assets/icon/help.png')}
+                  style={localStyles.infoIcon}
+                  resizeMode="contain"
+                />
+                <Text style={[styles.text, localStyles.infoText]}>{t('dataSync')}</Text>
+              </TouchableOpacity>
+            </Tooltip>
           </View>
         </View>
-
-        <View style={localStyles.footerContainer}>
-          <Tooltip
-            isVisible={showTip}
-            content={
-              <Text style={[styles.text, localStyles.tipText]}>
-                {t('dataSyncDescription') + t('dataSyncDescription2')}
-              </Text>
-            }
-            placement="top"
-            onClose={() => setShowTip(false)}
-            contentStyle={{ backgroundColor: isDark ? 'rgb(42, 43, 45)' : 'white' }}
-          >
-            <TouchableOpacity
-              style={localStyles.infoButton}
-              onPressIn={() => setShowTip(true)}
-              onPressOut={() => setShowTip(false)}
-            >
-              <Image
-                source={require('../assets/icon/help.png')}
-                style={localStyles.infoIcon}
-                resizeMode="contain"
-              />
-              <Text style={[styles.text, localStyles.infoText]}>{t('dataSync')}</Text>
-            </TouchableOpacity>
-          </Tooltip>
-        </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -323,6 +383,9 @@ const getProgressColor = (difficulty: DIFFICULTY, isDark: boolean) => {
 };
 
 const localStyles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+  },
   contentContainer: {
     flex: 1,
     paddingHorizontal: 16,
@@ -332,7 +395,6 @@ const localStyles = StyleSheet.create({
   levelContainer: {
     width: '100%',
     alignItems: 'center',
-    // marginBottom: 8,
     borderRadius: 12,
     padding: 10,
     shadowColor: '#000',
@@ -364,6 +426,27 @@ const localStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  // 添加时间统计相关样式
+  timeStatsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 8,
+    paddingHorizontal: 8,
+  },
+  timeStatItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  timeLabel: {
+    fontSize: 12,
+    opacity: 0.7,
+    marginRight: 4,
+  },
+  timeValue: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   emoji: {
     fontSize: 16,

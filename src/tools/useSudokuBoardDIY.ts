@@ -254,15 +254,16 @@ export const useSudokuBoardDIY = () => {
       }
 
       if (!action.startsWith('取消') && !action.startsWith('提示')) {
-        const newHistory: BoardHistoryDIY[] = history.current.slice(0);
+        let newHistory: BoardHistoryDIY[] = history.current.slice(0);
         newHistory.push({
           board: newBoard,
           action,
           counts: countsSync.current,
           remainingCounts: [...remainingCountsSync.current], // 确保存入当前的 remainingCounts
         });
-        if (newHistory.length > 100) {
-          newHistory.shift();
+        // 如果历史记录超过30个，只保留最后30个
+        if (newHistory.length > 30) {
+          newHistory = newHistory.slice(-30);
         }
 
         history.current = newHistory;
@@ -286,17 +287,37 @@ export const useSudokuBoardDIY = () => {
     [updateAuxiliaryData, sudokuType, setLocalsudokuDataDIY2]
   );
 
-  const resetSudokuBoard = useCallback(() => {
-    setBoard(initialBoard);
-    remainingCountsSync.current = Array(9).fill(9);
-    setRemainingCounts(remainingCountsSync.current);
-    setCurrentStep(0);
-    countsSync.current = 0;
-    setCounts(0);
-    candidateMap.current = deepCopyCandidateMap(initialCandidateMap);
-    graph.current = createGraph(initialBoard, candidateMap.current);
-    updateBoard(initialBoard, '生成新棋盘', false);
-  }, [updateBoard]);
+  const resetSudokuBoard = useCallback(
+    (isLocked: boolean) => {
+      let newBoard: CellData[][] = initialBoard;
+      if (!isLocked) {
+        countsSync.current = 0;
+        setCounts(0);
+        remainingCountsSync.current = Array(9).fill(9);
+        setRemainingCounts(remainingCountsSync.current);
+        newBoard = deepCopyBoard(initialBoard);
+        setBoard(newBoard);
+        setCurrentStep(0);
+        candidateMap.current = deepCopyCandidateMap(initialCandidateMap);
+        graph.current = createGraph(initialBoard, candidateMap.current);
+      } else {
+        newBoard = deepCopyBoard(board);
+        newBoard.forEach(row =>
+          row.forEach(cell => {
+            if (!cell.isGiven) {
+              cell.value = null;
+              cell.draft = [];
+            }
+          })
+        );
+        updateRemainingCounts(newBoard);
+        setBoard(newBoard);
+      }
+
+      updateBoard(newBoard, '生成新棋盘', false);
+    },
+    [updateBoard, board, updateRemainingCounts]
+  );
 
   const undo = useCallback(() => {
     if (currentStep > 0) {

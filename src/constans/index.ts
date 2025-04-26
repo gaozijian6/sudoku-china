@@ -51,6 +51,7 @@ export const SOLUTION_METHODS = {
   TWO_STRONG_LINKS: 'Two Strong Links',
   THREE_STRONG_LINKS: 'Three Strong Links',
   X_CHAIN: 'X-Chain',
+  TWO_STRING_KITE: 'Two String Kite',
 };
 
 export const STRONG_LINK_TYPE = {

@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'Tumba binaria universal',
     DOUBLE_COLOR_CHAIN: 'Cadena Bicolor',
     TRIPLE_COLOR_CHAIN: 'Cadena Tricolor',
+    TWO_STRING_KITE: 'Cadena de dos cadenas',
     TRIAL_AND_ERROR: 'Prueba y error',
     duration: 'Tiempo',
     mistakes: 'Errores',
@@ -279,5 +280,10 @@ export default {
       'Por favor, inicie sesión en GameCenter primero. Si ya ha iniciado sesión, vuelva a abrir la aplicación.',
     tips: 'Consejos',
     dataSyncDescription2: '2.Su clasificación se sincronizará globalmente en 24 horas.',
+    fastestTime: 'Más rápido',
+    averageTime: 'Promedio',
+    fixedDescription:
+      'Esta operación fijará los números actuales en el tablero. No podrá modificar los números fijados. ¿Está seguro de que desea continuar?',
+    doNotShowAgain: 'No mostrar de nuevo',
   },
 };

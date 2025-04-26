@@ -590,8 +590,8 @@ const checkNakedTriple1 = (board: CellData[][], unitType: 'row' | 'col' | 'box')
         unitType === 'row'
           ? [unit, i]
           : unitType === 'col'
-            ? [i, unit]
-            : [Math.floor(unit / 3) * 3 + Math.floor(i / 3), (unit % 3) * 3 + (i % 3)];
+          ? [i, unit]
+          : [Math.floor(unit / 3) * 3 + Math.floor(i / 3), (unit % 3) * 3 + (i % 3)];
       const cell = board[row]?.[col];
       if (cell?.value === null && cell.draft?.length >= 2 && cell.draft?.length <= 3) {
         cellsWithCandidates.push({ pos: { row, col }, candidates: cell.draft });
@@ -667,8 +667,8 @@ const checkNakedTriple1 = (board: CellData[][], unitType: 'row' | 'col' | 'box')
                   unitType === 'row'
                     ? [unit, m]
                     : unitType === 'col'
-                      ? [m, unit]
-                      : [Math.floor(unit / 3) * 3 + Math.floor(m / 3), (unit % 3) * 3 + (m % 3)];
+                    ? [m, unit]
+                    : [Math.floor(unit / 3) * 3 + Math.floor(m / 3), (unit % 3) * 3 + (m % 3)];
                 const cell = board[row]?.[col];
                 if (
                   cell?.value === null &&
@@ -746,8 +746,8 @@ const checkNakedTriple2 = (board: CellData[][], unitType: 'row' | 'col' | 'box')
         unitType === 'row'
           ? [unit, i]
           : unitType === 'col'
-            ? [i, unit]
-            : [Math.floor(unit / 3) * 3 + Math.floor(i / 3), (unit % 3) * 3 + (i % 3)];
+          ? [i, unit]
+          : [Math.floor(unit / 3) * 3 + Math.floor(i / 3), (unit % 3) * 3 + (i % 3)];
       const cell = board[row]?.[col];
       if (cell?.value === null && cell.draft?.length === 2) {
         cellsWithCandidates.push({ pos: { row, col }, candidates: cell.draft });
@@ -775,8 +775,8 @@ const checkNakedTriple2 = (board: CellData[][], unitType: 'row' | 'col' | 'box')
                 unitType === 'row'
                   ? [unit, m]
                   : unitType === 'col'
-                    ? [m, unit]
-                    : [Math.floor(unit / 3) * 3 + Math.floor(m / 3), (unit % 3) * 3 + (m % 3)];
+                  ? [m, unit]
+                  : [Math.floor(unit / 3) * 3 + Math.floor(m / 3), (unit % 3) * 3 + (m % 3)];
               const cell = board[row]?.[col];
               if (
                 cell?.value === null &&
@@ -831,7 +831,7 @@ export function nakedQuadruple(
   graph: Graph
 ): Result | null {
   // 遍历行、列、宫
-  for (const unitType of ["row", "col", "box"] as const) {
+  for (const unitType of ['row', 'col', 'box'] as const) {
     for (let unit = 0; unit < 9; unit++) {
       // 使用candidateMap快速收集单元中所有候选格子
       const cellsWithCandidates: { pos: Position; candidates: number[] }[] = [];
@@ -848,7 +848,7 @@ export function nakedQuadruple(
             if (pos.candidates.length >= 2 && pos.candidates.length <= 4) {
               // 检查是否已添加过这个格子
               const existingCell = cellsWithCandidates.find(
-                (cell) => cell.pos.row === pos.row && cell.pos.col === pos.col
+                cell => cell.pos.row === pos.row && cell.pos.col === pos.col
               );
 
               if (!existingCell) {
@@ -889,12 +889,7 @@ export function nakedQuadruple(
               if (uniqueCandidates.length === 4) {
                 // 查找受影响的位置 - 使用candidateMap更高效地找到
                 const affectedPositions: Position[] = [];
-                const prompt: Position[] = [
-                  cellA.pos,
-                  cellB.pos,
-                  cellC.pos,
-                  cellD.pos,
-                ];
+                const prompt: Position[] = [cellA.pos, cellB.pos, cellC.pos, cellD.pos];
 
                 // 使用candidateMap快速找到可能受影响的格子
                 for (const num of uniqueCandidates) {
@@ -902,17 +897,9 @@ export function nakedQuadruple(
                   if (stats) {
                     for (const pos of stats.positions) {
                       // 检查是否是四数对之外的格子
-                      if (
-                        !prompt.some(
-                          (p) => p.row === pos.row && p.col === pos.col
-                        )
-                      ) {
+                      if (!prompt.some(p => p.row === pos.row && p.col === pos.col)) {
                         // 检查是否已经添加过
-                        if (
-                          !affectedPositions.some(
-                            (p) => p.row === pos.row && p.col === pos.col
-                          )
-                        ) {
+                        if (!affectedPositions.some(p => p.row === pos.row && p.col === pos.col)) {
                           affectedPositions.push({
                             row: pos.row,
                             col: pos.col,
@@ -926,26 +913,21 @@ export function nakedQuadruple(
                 if (affectedPositions.length > 0) {
                   // 获取方法名称
                   const methodKey =
-                    unitType === "row"
-                      ? "NAKED_QUADRUPLE_ROW"
-                      : unitType === "col"
-                      ? "NAKED_QUADRUPLE_COLUMN"
-                      : "NAKED_QUADRUPLE_BOX";
+                    unitType === 'row'
+                      ? 'NAKED_QUADRUPLE_ROW'
+                      : unitType === 'col'
+                      ? 'NAKED_QUADRUPLE_COLUMN'
+                      : 'NAKED_QUADRUPLE_BOX';
 
                   return {
                     position: affectedPositions,
                     prompt: prompt,
-                    method:
-                      SOLUTION_METHODS[
-                        methodKey as keyof typeof SOLUTION_METHODS
-                      ],
+                    method: SOLUTION_METHODS[methodKey as keyof typeof SOLUTION_METHODS],
                     target: uniqueCandidates,
                     isFill: false,
                     row: cellA.pos.row,
                     col: cellA.pos.col,
-                    box:
-                      Math.floor(cellA.pos.row / 3) * 3 +
-                      Math.floor(cellA.pos.col / 3),
+                    box: Math.floor(cellA.pos.row / 3) * 3 + Math.floor(cellA.pos.col / 3),
                   };
                 }
               }
@@ -1921,10 +1903,16 @@ export const skyscraper = (
                 path.some(pathPos => pathPos.row === pos.row && pathPos.col === pos.col)
               )
             ) {
+              const isSameBox =
+                Math.floor(path[1].row / 3) === Math.floor(path[2].row / 3) &&
+                Math.floor(path[1].col / 3) === Math.floor(path[2].col / 3);
+
+              console.log('isSameBox', isSameBox);
+              
               return {
                 position: affectedPositions,
                 prompt: path,
-                method: SOLUTION_METHODS.SKYSCRAPER,
+                method: isSameBox ? SOLUTION_METHODS.TWO_STRING_KITE : SOLUTION_METHODS.SKYSCRAPER,
                 target: [num],
                 isFill: false,
               };
@@ -1965,7 +1953,7 @@ export const skyscraper = (
               return {
                 position: affectedPositions,
                 prompt: path,
-                method: SOLUTION_METHODS.SKYSCRAPER,
+                method: SOLUTION_METHODS.X_CHAIN,
                 target: [num],
                 isFill: false,
                 label: '6',
@@ -3021,8 +3009,7 @@ export const uniqueRectangle = (
         if (
           cell1 &&
           cell2 &&
-          JSON.stringify(cell1.candidates) ===
-            JSON.stringify(cell2.candidates) &&
+          JSON.stringify(cell1.candidates) === JSON.stringify(cell2.candidates) &&
           cell1.candidates.length === 2
         ) {
           let col1 = cell1.col;
@@ -3035,9 +3022,7 @@ export const uniqueRectangle = (
             let cell3: Candidate | undefined;
             let cell4: Candidate | undefined;
             if (candidateMap[num].col.get(col1)?.count === 2) {
-              if (
-                candidateMap[num].col.get(col1)?.positions[0].row === cell1.row
-              ) {
+              if (candidateMap[num].col.get(col1)?.positions[0].row === cell1.row) {
                 cell3 = candidateMap[num].col.get(col1)?.positions[1];
                 cell4 = {
                   row: cell3?.row,
@@ -3053,9 +3038,7 @@ export const uniqueRectangle = (
                 };
               }
             } else if (candidateMap[num].col.get(col2)?.count === 2) {
-              if (
-                candidateMap[num].col.get(col2)?.positions[0].row === cell2.row
-              ) {
+              if (candidateMap[num].col.get(col2)?.positions[0].row === cell2.row) {
                 cell3 = candidateMap[num].col.get(col2)?.positions[1];
                 cell4 = {
                   row: cell3?.row,
@@ -3073,19 +3056,14 @@ export const uniqueRectangle = (
             }
             if (cell3?.row !== cell4?.row) continue;
             if (cell3 && cell4) {
-              let box1 =
-                Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
-              let box2 =
-                Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
-              let box3 =
-                Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
-              let box4 =
-                Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
+              let box1 = Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
+              let box2 = Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
+              let box3 = Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
+              let box4 = Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
               let arr = [box1, box2, box3, box4];
               let set = new Set(arr);
               if (
-                JSON.stringify(cell3.candidates) ===
-                  JSON.stringify(cell1.candidates) &&
+                JSON.stringify(cell3.candidates) === JSON.stringify(cell1.candidates) &&
                 cell4.candidates.includes(a) &&
                 cell4.candidates.includes(b) &&
                 cell4.candidates.length > 2 &&
@@ -3101,7 +3079,7 @@ export const uniqueRectangle = (
                   ],
                   method: SOLUTION_METHODS.UNIQUE_RECTANGLE,
                   target: [a, b],
-                  label: "ab-ab-ab-abc",
+                  label: 'ab-ab-ab-abc',
                 };
               }
             }
@@ -3117,8 +3095,7 @@ export const uniqueRectangle = (
         if (
           cell1 &&
           cell2 &&
-          JSON.stringify(cell1.candidates) ===
-            JSON.stringify(cell2.candidates) &&
+          JSON.stringify(cell1.candidates) === JSON.stringify(cell2.candidates) &&
           cell1.candidates.length === 2
         ) {
           let col1 = cell1.col;
@@ -3130,8 +3107,7 @@ export const uniqueRectangle = (
             if (row2 === row) continue;
             if (
               board[row2][col1].draft.length === 3 &&
-              JSON.stringify(board[row2][col1].draft) ===
-                JSON.stringify(board[row2][col2].draft) &&
+              JSON.stringify(board[row2][col1].draft) === JSON.stringify(board[row2][col2].draft) &&
               board[row2][col1].draft.includes(a) &&
               board[row2][col2].draft.includes(b)
             ) {
@@ -3145,9 +3121,7 @@ export const uniqueRectangle = (
                 col: col2,
                 candidates: board[row2][col2].draft,
               };
-              const c = board[row2][col1].draft.find(
-                (item) => item !== a && item !== b
-              );
+              const c = board[row2][col1].draft.find(item => item !== a && item !== b);
               if (!c) continue;
               const affectedCells = findCommonAffectedPositions(
                 { row: cell3.row, col: cell3.col },
@@ -3161,14 +3135,10 @@ export const uniqueRectangle = (
                   deleteCells.push(cell);
                 }
               }
-              let box1 =
-                Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
-              let box2 =
-                Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
-              let box3 =
-                Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
-              let box4 =
-                Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
+              let box1 = Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
+              let box2 = Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
+              let box3 = Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
+              let box4 = Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
               let arr = [box1, box2, box3, box4];
               let set = new Set(arr);
               if (deleteCells.length && set.size === 2) {
@@ -3183,7 +3153,7 @@ export const uniqueRectangle = (
                   ],
                   method: SOLUTION_METHODS.UNIQUE_RECTANGLE,
                   target: [c],
-                  label: "ab-ab-abc-abc",
+                  label: 'ab-ab-abc-abc',
                 };
               }
             }
@@ -3199,8 +3169,7 @@ export const uniqueRectangle = (
         if (
           cell1 &&
           cell2 &&
-          JSON.stringify(cell1.candidates) ===
-            JSON.stringify(cell2.candidates) &&
+          JSON.stringify(cell1.candidates) === JSON.stringify(cell2.candidates) &&
           cell1.candidates.length === 2
         ) {
           let row1 = cell1.row;
@@ -3212,8 +3181,7 @@ export const uniqueRectangle = (
             if (col2 === col) continue;
             if (
               board[row1][col2].draft.length === 3 &&
-              JSON.stringify(board[row1][col2].draft) ===
-                JSON.stringify(board[row2][col2].draft) &&
+              JSON.stringify(board[row1][col2].draft) === JSON.stringify(board[row2][col2].draft) &&
               board[row1][col2].draft.includes(a) &&
               board[row2][col2].draft.includes(b)
             ) {
@@ -3227,9 +3195,7 @@ export const uniqueRectangle = (
                 col: col2,
                 candidates: board[row2][col2].draft,
               };
-              const c = board[row1][col2].draft.find(
-                (item) => item !== a && item !== b
-              );
+              const c = board[row1][col2].draft.find(item => item !== a && item !== b);
               if (!c) continue;
               const affectedCells = findCommonAffectedPositions(
                 { row: cell3.row, col: cell3.col },
@@ -3243,14 +3209,10 @@ export const uniqueRectangle = (
                   deleteCells.push(cell);
                 }
               }
-              let box1 =
-                Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
-              let box2 =
-                Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
-              let box3 =
-                Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
-              let box4 =
-                Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
+              let box1 = Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
+              let box2 = Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
+              let box3 = Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
+              let box4 = Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
               let arr = [box1, box2, box3, box4];
               let set = new Set(arr);
               if (deleteCells.length && set.size === 2) {
@@ -3265,7 +3227,7 @@ export const uniqueRectangle = (
                   ],
                   method: SOLUTION_METHODS.UNIQUE_RECTANGLE,
                   target: [c],
-                  label: "ab-ab-abc-abc",
+                  label: 'ab-ab-abc-abc',
                 };
               }
             }
@@ -3283,8 +3245,7 @@ export const uniqueRectangle = (
         if (
           cell1 &&
           cell2 &&
-          JSON.stringify(cell1.candidates) ===
-            JSON.stringify(cell2.candidates) &&
+          JSON.stringify(cell1.candidates) === JSON.stringify(cell2.candidates) &&
           cell1.candidates.length === 2
         ) {
           let col1 = cell1.col;
@@ -3326,9 +3287,7 @@ export const uniqueRectangle = (
                 candidates: board[row2][col1].draft,
               };
             }
-            const other = cell3?.candidates.filter(
-              (item) => item !== a && item !== b
-            );
+            const other = cell3?.candidates.filter(item => item !== a && item !== b);
             if (
               cell3 &&
               cell4 &&
@@ -3338,10 +3297,10 @@ export const uniqueRectangle = (
               cell4.candidates.includes(other[0])
             ) {
               const remainingCandidates1 = cell4.candidates.filter(
-                (item) => item !== a && item !== b
+                item => item !== a && item !== b
               );
               const remainingCandidates2 = cell3.candidates.filter(
-                (item) => item !== a && item !== b
+                item => item !== a && item !== b
               );
               if (
                 remainingCandidates1.length === 2 &&
@@ -3379,14 +3338,10 @@ export const uniqueRectangle = (
                   }
                 }
 
-                let box1 =
-                  Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
-                let box2 =
-                  Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
-                let box3 =
-                  Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
-                let box4 =
-                  Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
+                let box1 = Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
+                let box2 = Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
+                let box3 = Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
+                let box4 = Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
                 let arr = [box1, box2, box3, box4];
                 let set = new Set(arr);
 
@@ -3403,7 +3358,7 @@ export const uniqueRectangle = (
                     ],
                     method: SOLUTION_METHODS.UNIQUE_RECTANGLE,
                     target: [c, d],
-                    label: "ab-ab-abc-abcd",
+                    label: 'ab-ab-abc-abcd',
                   };
                 }
                 deleteCells = [];
@@ -3439,14 +3394,10 @@ export const uniqueRectangle = (
                     deleteCells.push(cell);
                   }
                 }
-                box1 =
-                  Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
-                box2 =
-                  Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
-                box3 =
-                  Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
-                box4 =
-                  Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
+                box1 = Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
+                box2 = Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
+                box3 = Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
+                box4 = Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
                 arr = [box1, box2, box3, box4];
                 set = new Set(arr);
                 if (deleteCells.length && cell5 && set.size === 2) {
@@ -3462,7 +3413,7 @@ export const uniqueRectangle = (
                     ],
                     method: SOLUTION_METHODS.UNIQUE_RECTANGLE,
                     target: [c, d],
-                    label: "ab-ab-abc-abcd",
+                    label: 'ab-ab-abc-abcd',
                   };
                 }
               }
@@ -3480,8 +3431,7 @@ export const uniqueRectangle = (
         if (
           cell1 &&
           cell2 &&
-          JSON.stringify(cell1.candidates) ===
-            JSON.stringify(cell2.candidates) &&
+          JSON.stringify(cell1.candidates) === JSON.stringify(cell2.candidates) &&
           cell1.candidates.length === 2
         ) {
           let row1 = cell1.row;
@@ -3523,9 +3473,7 @@ export const uniqueRectangle = (
                 candidates: board[row1][col2].draft,
               };
             }
-            const other = cell3?.candidates.filter(
-              (item) => item !== a && item !== b
-            );
+            const other = cell3?.candidates.filter(item => item !== a && item !== b);
             if (
               cell3 &&
               cell4 &&
@@ -3535,10 +3483,10 @@ export const uniqueRectangle = (
               cell4.candidates.includes(other[0])
             ) {
               const remainingCandidates1 = cell4.candidates.filter(
-                (item) => item !== a && item !== b
+                item => item !== a && item !== b
               );
               const remainingCandidates2 = cell3.candidates.filter(
-                (item) => item !== a && item !== b
+                item => item !== a && item !== b
               );
               if (
                 remainingCandidates1.length === 2 &&
@@ -3574,14 +3522,10 @@ export const uniqueRectangle = (
                     deleteCells.push(cell);
                   }
                 }
-                let box1 =
-                  Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
-                let box2 =
-                  Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
-                let box3 =
-                  Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
-                let box4 =
-                  Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
+                let box1 = Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
+                let box2 = Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
+                let box3 = Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
+                let box4 = Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
                 let arr = [box1, box2, box3, box4];
                 let set = new Set(arr);
                 if (deleteCells.length && cell5 && set.size === 2) {
@@ -3597,7 +3541,7 @@ export const uniqueRectangle = (
                     ],
                     method: SOLUTION_METHODS.UNIQUE_RECTANGLE,
                     target: [c, d],
-                    label: "ab-ab-abc-abcd",
+                    label: 'ab-ab-abc-abcd',
                   };
                 }
                 deleteCells = [];
@@ -3633,14 +3577,10 @@ export const uniqueRectangle = (
                     deleteCells.push(cell);
                   }
                 }
-                box1 =
-                  Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
-                box2 =
-                  Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
-                box3 =
-                  Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
-                box4 =
-                  Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
+                box1 = Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
+                box2 = Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
+                box3 = Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
+                box4 = Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
                 arr = [box1, box2, box3, box4];
                 set = new Set(arr);
                 if (deleteCells.length && cell5 && set.size === 2) {
@@ -3656,7 +3596,7 @@ export const uniqueRectangle = (
                     ],
                     method: SOLUTION_METHODS.UNIQUE_RECTANGLE,
                     target: [c, d],
-                    label: "ab-ab-abc-abcd",
+                    label: 'ab-ab-abc-abcd',
                   };
                 }
               }
@@ -3675,8 +3615,7 @@ export const uniqueRectangle = (
         if (
           cell1 &&
           cell2 &&
-          JSON.stringify(cell1.candidates) ===
-            JSON.stringify(cell2.candidates) &&
+          JSON.stringify(cell1.candidates) === JSON.stringify(cell2.candidates) &&
           cell1.candidates.length === 2
         ) {
           let col1 = cell1.col;
@@ -3718,9 +3657,7 @@ export const uniqueRectangle = (
                 candidates: board[row2][col1].draft,
               };
             }
-            const other = cell3?.candidates.filter(
-              (item) => item !== a && item !== b
-            );
+            const other = cell3?.candidates.filter(item => item !== a && item !== b);
             if (
               cell3 &&
               cell4 &&
@@ -3730,10 +3667,10 @@ export const uniqueRectangle = (
               !cell4.candidates.includes(other[0])
             ) {
               const remainingCandidates1 = cell4.candidates.filter(
-                (item) => item !== a && item !== b
+                item => item !== a && item !== b
               );
               const remainingCandidates2 = cell3.candidates.filter(
-                (item) => item !== a && item !== b
+                item => item !== a && item !== b
               );
               const c = remainingCandidates1[0];
               const d = remainingCandidates2[0];
@@ -3766,14 +3703,10 @@ export const uniqueRectangle = (
                   deleteCells.push(cell);
                 }
               }
-              let box1 =
-                Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
-              let box2 =
-                Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
-              let box3 =
-                Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
-              let box4 =
-                Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
+              let box1 = Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
+              let box2 = Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
+              let box3 = Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
+              let box4 = Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
               let arr = [box1, box2, box3, box4];
               let set = new Set(arr);
               if (deleteCells.length && cell5 && set.size === 2) {
@@ -3789,7 +3722,7 @@ export const uniqueRectangle = (
                   ],
                   method: SOLUTION_METHODS.UNIQUE_RECTANGLE,
                   target: [c, d],
-                  label: "ab-ab-abc-abcd",
+                  label: 'ab-ab-abc-abcd',
                 };
               }
               deleteCells = [];
@@ -3844,7 +3777,7 @@ export const uniqueRectangle = (
                   ],
                   method: SOLUTION_METHODS.UNIQUE_RECTANGLE,
                   target: [c, d],
-                  label: "ab-ab-abc-abcd",
+                  label: 'ab-ab-abc-abcd',
                 };
               }
             }
@@ -3861,8 +3794,7 @@ export const uniqueRectangle = (
         if (
           cell1 &&
           cell2 &&
-          JSON.stringify(cell1.candidates) ===
-            JSON.stringify(cell2.candidates) &&
+          JSON.stringify(cell1.candidates) === JSON.stringify(cell2.candidates) &&
           cell1.candidates.length === 2
         ) {
           let row1 = cell1.row;
@@ -3904,9 +3836,7 @@ export const uniqueRectangle = (
                 candidates: board[row1][col2].draft,
               };
             }
-            const other = cell3?.candidates.filter(
-              (item) => item !== a && item !== b
-            );
+            const other = cell3?.candidates.filter(item => item !== a && item !== b);
             if (
               cell3 &&
               cell4 &&
@@ -3916,10 +3846,10 @@ export const uniqueRectangle = (
               !cell4.candidates.includes(other[0])
             ) {
               const remainingCandidates1 = cell4.candidates.filter(
-                (item) => item !== a && item !== b
+                item => item !== a && item !== b
               );
               const remainingCandidates2 = cell3.candidates.filter(
-                (item) => item !== a && item !== b
+                item => item !== a && item !== b
               );
               const c = remainingCandidates1[0];
               const d = remainingCandidates2[0];
@@ -3952,14 +3882,10 @@ export const uniqueRectangle = (
                   deleteCells.push(cell);
                 }
               }
-              let box1 =
-                Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
-              let box2 =
-                Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
-              let box3 =
-                Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
-              let box4 =
-                Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
+              let box1 = Math.floor(cell1.row / 3) * 3 + Math.floor(cell1.col / 3);
+              let box2 = Math.floor(cell2.row / 3) * 3 + Math.floor(cell2.col / 3);
+              let box3 = Math.floor(cell3.row / 3) * 3 + Math.floor(cell3.col / 3);
+              let box4 = Math.floor(cell4.row / 3) * 3 + Math.floor(cell4.col / 3);
               let arr = [box1, box2, box3, box4];
               let set = new Set(arr);
               if (deleteCells.length && cell5 && set.size === 2) {
@@ -3975,7 +3901,7 @@ export const uniqueRectangle = (
                   ],
                   method: SOLUTION_METHODS.UNIQUE_RECTANGLE,
                   target: [c, d],
-                  label: "ab-ab-abc-abcd",
+                  label: 'ab-ab-abc-abcd',
                 };
               }
               deleteCells = [];
@@ -4030,7 +3956,7 @@ export const uniqueRectangle = (
                   ],
                   method: SOLUTION_METHODS.UNIQUE_RECTANGLE,
                   target: [c, d],
-                  label: "ab-ab-abc-abcd",
+                  label: 'ab-ab-abc-abcd',
                 };
               }
             }
@@ -4050,11 +3976,7 @@ export const uniqueRectangle = (
               if (col2 === col) continue;
 
               const cell2 = board[row2][col2];
-              if (
-                cell2.draft.length === 2 &&
-                cell2.draft.includes(a) &&
-                cell2.draft.includes(b)
-              ) {
+              if (cell2.draft.length === 2 && cell2.draft.includes(a) && cell2.draft.includes(b)) {
                 const cell3 = board[row][col2];
                 const cell4 = board[row2][col];
 
@@ -4064,9 +3986,7 @@ export const uniqueRectangle = (
                   cell3.draft.includes(b) &&
                   JSON.stringify(cell3.draft) === JSON.stringify(cell4.draft)
                 ) {
-                  const c = cell3.draft.filter(
-                    (item) => item !== a && item !== b
-                  )[0];
+                  const c = cell3.draft.filter(item => item !== a && item !== b)[0];
 
                   const box1 = Math.floor(row / 3) * 3 + Math.floor(col / 3);
                   const box2 = Math.floor(row2 / 3) * 3 + Math.floor(col2 / 3);
@@ -4100,7 +4020,7 @@ export const uniqueRectangle = (
                         ],
                         method: SOLUTION_METHODS.UNIQUE_RECTANGLE,
                         target: [c],
-                        label: "ab-abc-ab-abc",
+                        label: 'ab-abc-ab-abc',
                       };
                     }
                   }

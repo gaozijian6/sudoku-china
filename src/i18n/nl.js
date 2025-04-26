@@ -84,6 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'Binair Universaal Graf',
     DOUBLE_COLOR_CHAIN: 'Tweekleurige Ketting',
     TRIPLE_COLOR_CHAIN: 'Driekleurige Ketting',
+    TWO_STRING_KITE: 'Tweesnoer vlieger',
     TRIAL_AND_ERROR: 'Trial en Error',
     duration: 'Tijd',
     mistakes: 'Fouten',
@@ -278,5 +279,10 @@ export default {
       'Log eerst in op GameCenter. Als u al bent ingelogd, open de app dan opnieuw.',
     tips: 'Tips',
     dataSyncDescription2: '2.Uw ranglijst wordt binnen 24 uur wereldwijd gesynchroniseerd.',
+    fastestTime: 'Snelste',
+    averageTime: 'Gemiddeld',
+    fixedDescription:
+      'Deze bewerking zal de huidige getallen op het bord vastzetten. U kunt de vastgezette getallen niet meer wijzigen. Weet u zeker dat u wilt doorgaan?',
+    doNotShowAgain: 'Niet meer weergeven',
   },
 };

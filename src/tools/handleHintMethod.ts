@@ -103,6 +103,8 @@ const handleHintMethod = (method: string, t: TFunction) => {
       return t('THREESTRONGLINKS');
     case SOLUTION_METHODS.X_CHAIN:
       return t('XCHAIN');
+    case SOLUTION_METHODS.TWO_STRING_KITE:
+      return t('TWO_STRING_KITE');
   }
   return '';
 };
