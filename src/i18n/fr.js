@@ -280,5 +280,10 @@ export default {
       "Veuillez d'abord vous connecter à GameCenter. Si vous êtes déjà connecté, veuillez rouvrir l'application.",
     tips: 'Conseils',
     dataSyncDescription2: '2.Votre classement sera synchronisé mondialement dans les 24 heures.',
+    fastestTime: 'Plus rapide',
+    averageTime: 'Moyen',
+    fixedDescription:
+      'Cette opération fixera les chiffres actuels sur le plateau. Vous ne pourrez pas modifier les chiffres fixés. Êtes-vous sûr de vouloir continuer ?',
+    doNotShowAgain: 'Ne pas afficher à nouveau',
   },
 };

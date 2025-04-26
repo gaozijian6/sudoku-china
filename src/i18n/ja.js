@@ -274,5 +274,10 @@ export default {
       'まずGameCenterにログインしてください。すでにログインしている場合は、アプリを再起動してください。',
     tips: 'ヒント',
     dataSyncDescription2: '2.あなたのランキングは24時間以内に全世界で同期されます',
+    fastestTime: '最速',
+    averageTime: '平均',
+    fixedDescription:
+      'この操作により現在の盤面の数字が固定されます。固定された数字は変更できなくなります。実行してもよろしいですか？',
+    doNotShowAgain: '今後表示しない',
   },
 };

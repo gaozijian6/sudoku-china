@@ -280,5 +280,10 @@ export default {
       'Por favor, faça login no GameCenter primeiro. Se já estiver logado, reabra o aplicativo.',
     tips: 'Dicas',
     dataSyncDescription2: '2.Sua classificação será sincronizada globalmente em 24 horas.',
+    fastestTime: 'Mais rápido',
+    averageTime: 'Médio',
+    fixedDescription:
+      'Esta operação fixará os números atuais no tabuleiro. Você não poderá modificar os números fixados. Tem certeza de que deseja continuar?',
+    doNotShowAgain: 'Não mostrar novamente',
   },
 };

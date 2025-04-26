@@ -13,9 +13,11 @@ interface ResultProps {
   visible: boolean;
   puzzleId: React.MutableRefObject<string>;
   initializeBoard2: (puzzle: string, answer: string) => void;
+  elapsedTime: number;
+  setShouldRestartTimer: (value: boolean) => void;
 }
 
-function ResultView({ onBack, resetSudoku, visible, puzzleId, initializeBoard2 }: ResultProps) {
+function ResultView({ onBack, resetSudoku, visible, puzzleId, initializeBoard2, elapsedTime, setShouldRestartTimer }: ResultProps) {
   const { t } = useTranslation();
   const scaleAnim = React.useRef(new Animated.Value(0)).current;
   const errorCount = useSudokuStore(state => state.errorCount);
@@ -70,6 +72,8 @@ function ResultView({ onBack, resetSudoku, visible, puzzleId, initializeBoard2 }
   const handleNext = useCallback(() => {
     setResultVisible(false);
     resetSudoku();
+    setShouldRestartTimer(true);
+    
     const { puzzleId: puzzleIdValue, currentIndex } = generateBoard(
       difficulty,
       initializeBoard2,
@@ -98,8 +102,15 @@ function ResultView({ onBack, resetSudoku, visible, puzzleId, initializeBoard2 }
     setIsHasContinue,
     setIsSudoku,
     setIsContinue,
+    setShouldRestartTimer,
     puzzleId,
   ]);
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
   return (
     visible && (
@@ -125,6 +136,10 @@ function ResultView({ onBack, resetSudoku, visible, puzzleId, initializeBoard2 }
             <View style={styles.row}>
               <Text style={styles.leftText}>{t('hintCount')}:</Text>
               <Text style={styles.rightText}>{hintCount}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.leftText}>{t('duration')}:</Text>
+              <Text style={styles.rightText}>{formatTime(elapsedTime)}</Text>
             </View>
           </View>
           <View style={styles.buttonContainer}>

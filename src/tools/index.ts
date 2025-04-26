@@ -278,6 +278,11 @@ export const solve3 = (board: CellData[][]) => {
     }
     solvedBoard.push(row);
   }
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      solvedBoard[i][j].isGiven = board[i][j].isGiven;
+    }
+  }
 
   return solvedBoard;
 };
@@ -668,4 +673,40 @@ export const saveUserStatisticPass = async (userStatisticPass: UserStatisticPass
     'userStatisticPass',
     LZString.compressToUTF16(JSON.stringify(userStatisticPass))
   );
+};
+
+export const saveUserStatisticTime = async (userStatisticTime: any) => {
+  await iCloudStorage.setItem(
+    'userStatisticTime',
+    LZString.compressToUTF16(JSON.stringify(userStatisticTime))
+  );
+  await AsyncStorage.setItem(
+    'userStatisticTime',
+    LZString.compressToUTF16(JSON.stringify(userStatisticTime))
+  );
+};
+
+export const getUpdateUserStatisticTime = (timeData1: any, timeData2: any) => {
+  const result = {
+    [DIFFICULTY.ENTRY]: [...timeData1[DIFFICULTY.ENTRY]],
+    [DIFFICULTY.EASY]: [...timeData1[DIFFICULTY.EASY]],
+    [DIFFICULTY.MEDIUM]: [...timeData1[DIFFICULTY.MEDIUM]],
+    [DIFFICULTY.HARD]: [...timeData1[DIFFICULTY.HARD]],
+    [DIFFICULTY.EXTREME]: [...timeData1[DIFFICULTY.EXTREME]],
+  };
+
+  for (const difficulty of Object.keys(result)) {
+    for (let i = 0; i < timeData1[difficulty].length; i++) {
+      if (timeData1[difficulty][i] > 0 && timeData2[difficulty][i] > 0) {
+        // 取两边中较小的时间（更快的解题时间）
+        result[difficulty][i] = Math.min(timeData1[difficulty][i], timeData2[difficulty][i]);
+      } else if (timeData2[difficulty][i] > 0) {
+        // 如果只有timeData2有时间记录，则使用timeData2的记录
+        result[difficulty][i] = timeData2[difficulty][i];
+      }
+      // 如果只有timeData1有时间记录，或两者都没有，则保持result[difficulty][i]不变
+    }
+  }
+
+  return result;
 };

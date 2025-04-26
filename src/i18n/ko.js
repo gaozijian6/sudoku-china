@@ -276,5 +276,10 @@ export default {
       '먼저 GameCenter에 로그인하세요. 이미 로그인한 경우 앱을 다시 열어주세요.',
     tips: '힌트',
     dataSyncDescription2: '2.귀하의 순위는 24시간 이내에 전 세계적으로 동기화됩니다.',
+    fastestTime: '가장 빠른',
+    averageTime: '평균',
+    fixedDescription:
+      '이 작업은 현재 게임판의 숫자를 고정시킵니다. 고정된 숫자는 수정할 수 없게 됩니다. 실행하시겠습니까?',
+    doNotShowAgain: '다시 보지 않기',
   },
 };

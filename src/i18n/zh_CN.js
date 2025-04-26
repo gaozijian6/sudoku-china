@@ -196,9 +196,12 @@ export default {
       DOUBLE_COLOR_CHAIN_q_start: '{{posStr}}取{{target1}}时会使得当前方格无法取{{target2}}',
       COMBINATION_CHAIN_AB_STRONG: '{{A}}与{{B}}构成强链',
       COMBINATION_CHAIN_AB_WEAK: '{{A}}与{{B}}构成弱链',
-      COMBINATION_CHAIN_END: '{{A}}为真时红色方格内为假，{{A}}为假时通过推理{{B}}为真，红色方格内还是为假',
-      SKYSCRAPER2_1:'{{As}}两个方格之间构成一条强链，{{Bs}}四个方格之间构成一条强链，两条强链通过{{Cs}}这两个方格之间的弱链相连，{{A}}为真时，红色方格内为假，{{A}}为假时，{{B}}为真，红色方格内还是为假',
-      SKYSCRAPER2_2:'{{As}}两个方格之间构成一条强链，{{Bs}}两个方格之间构成一条强链，{{Cs}}两个方格之间构成一条强链，每条强链都通过弱链相互连接，{{A}}为真时，红色方格内为假，{{A}}为假时，{{B}}为真，红色方格内还是为假',
+      COMBINATION_CHAIN_END:
+        '{{A}}为真时红色方格内为假，{{A}}为假时通过推理{{B}}为真，红色方格内还是为假',
+      SKYSCRAPER2_1:
+        '{{As}}两个方格之间构成一条强链，{{Bs}}四个方格之间构成一条强链，两条强链通过{{Cs}}这两个方格之间的弱链相连，{{A}}为真时，红色方格内为假，{{A}}为假时，{{B}}为真，红色方格内还是为假',
+      SKYSCRAPER2_2:
+        '{{As}}两个方格之间构成一条强链，{{Bs}}两个方格之间构成一条强链，{{Cs}}两个方格之间构成一条强链，每条强链都通过弱链相互连接，{{A}}为真时，红色方格内为假，{{A}}为假时，{{B}}为真，红色方格内还是为假',
     },
     back: '返回',
     next: '下一关',
@@ -267,5 +270,10 @@ export default {
     pleaseLoginGameCenter: '请先登录GameCenter，如已登陆请重新打开App',
     tips: '提示',
     dataSyncDescription2: '2.您的排名会在24小时内同步全球。',
+    fastestTime: '最快',
+    averageTime: '平均',
+    fixedDescription:
+      '此操作会将当前棋盘里的数字固定，您将无法对被固定的数字进行修改，确定要执行吗？',
+    doNotShowAgain: '不再显示',
   },
 };

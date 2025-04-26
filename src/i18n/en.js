@@ -83,7 +83,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'Binary Universal Grave',
     DOUBLE_COLOR_CHAIN: 'Bicolor Chain',
     TRIPLE_COLOR_CHAIN: 'Tricolor Chain',
-    TWO_STRING_KITE: 'Two String Kite',
+    TWO_STRING_KITE: 'Two-String Kite',
     TRIAL_AND_ERROR: 'Trial and Error',
     duration: 'Duration',
     mistakes: 'Mistakes',
@@ -275,8 +275,14 @@ export default {
     dataSyncDescription:
       '1.Friendly reminder: If you change your device, iCloud data may not sync to the new device immediately. We suggest reopening the App several times or waiting for a while. During this period, you can work on local puzzles. After the old data is updated, the App will automatically help you integrate the new data together.',
     total: 'Total',
-    pleaseLoginGameCenter: 'Please log in to GameCenter first. If you are already logged in, please reopen the App',
+    pleaseLoginGameCenter:
+      'Please log in to GameCenter first. If you are already logged in, please reopen the App',
     tips: 'Tips',
     dataSyncDescription2: '2.Your ranking will be synchronized globally within 24 hours.',
+    fastestTime: 'Fastest',
+    averageTime: 'Average',
+    fixedDescription:
+      'This operation will fix the numbers on the current board, and you will not be able to modify the fixed numbers. Are you sure you want to proceed?',
+    doNotShowAgain: "Don't show again",
   },
 };

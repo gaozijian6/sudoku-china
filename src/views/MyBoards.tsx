@@ -134,6 +134,8 @@ const MyBoards = memo(() => {
       setCurrentName(myBoards[index].data?.name || t('untitled'));
       setSudokuDataDIY1(myBoards[index].data?.sudokuDataDIY1);
       setSudokuDataDIY2(myBoards[index].data?.sudokuDataDIY2);
+      console.log('myBoards[index].data?.sudokuDataDIY2', myBoards[index].data?.sudokuDataDIY2);
+      
     },
     [
       isEditing,

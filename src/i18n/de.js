@@ -84,7 +84,7 @@ export default {
     BINARY_UNIVERSAL_GRAVE: 'Binäre Universale Grube',
     DOUBLE_COLOR_CHAIN: 'Zweifarbige Kette',
     TRIPLE_COLOR_CHAIN: 'Dreifarbige Kette',
-    TWO_STRING_KITE: 'Zweifarbige Kette',
+    TWO_STRING_KITE: 'Zweifarbige-Kette',
     TRIAL_AND_ERROR: 'Versuch und Irrtum',
     duration: 'Zeit',
     mistakes: 'Fehler',
@@ -280,5 +280,10 @@ export default {
       'Bitte melden Sie sich zuerst bei GameCenter an. Falls Sie bereits angemeldet sind, öffnen Sie die App bitte erneut.',
     tips: 'Tipps',
     dataSyncDescription2: '2.Ihre Rangliste wird innerhalb von 24 Stunden weltweit synchronisiert.',
+    fastestTime: 'Schnellste',
+    averageTime: 'Durchschnittliche',
+    fixedDescription:
+      'Diese Aktion wird die aktuellen Zahlen auf dem Brett fixieren. Sie können die fixierten Zahlen nicht mehr ändern. Sind Sie sicher, dass Sie fortfahren möchten?',
+    doNotShowAgain: 'Nicht mehr anzeigen',
   },
 };

@@ -23,6 +23,7 @@ import {
   generateBoard,
   saveUserStatisticPass,
   calculateTotalProgress,
+  saveUserStatisticTime,
 } from '../tools';
 import { useSudokuBoard } from '../tools/useSudokuBoard';
 import {
@@ -75,6 +76,7 @@ import extremeBoard from '../mock/5extreme';
 import { DIFFICULTY, LeaderboardType } from '../constans';
 import { calculateProgress } from '../tools';
 import InAppReview from 'react-native-in-app-review';
+import BackgroundTimer from 'react-native-background-timer';
 
 const { ColorChain, LeaderboardManager, CombinationChain } = NativeModules;
 
@@ -198,9 +200,11 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   const extremeBoardUnPass = useSudokuStore(state => state.extremeBoardUnPass);
   const userStatisticPass = useSudokuStore(state => state.userStatisticPass);
   const setUserStatisticPass = useSudokuStore(state => state.setUserStatisticPass);
+  const setUserStatisticTime = useSudokuStore(state => state.setUserStatisticTime);
   const updateUserStatisticPassOnline = useSudokuStore(
     state => state.updateUserStatisticPassOnline
   );
+  const setIsInactive = useSudokuStore(state => state.setIsInactive);
   const puzzleId = useRef<string>('');
   const setCurrentPuzzleIndex = useSudokuStore(state => state.setCurrentPuzzleIndex);
   const currentPuzzleIndex = useSudokuStore(state => state.currentPuzzleIndex);
@@ -213,6 +217,36 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   const navigation = useNavigation();
   const route = useRoute();
   const { difficulty_route, index_route } = (route.params as any) || {};
+
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const timerRef = useRef<number | null>(null);
+
+  // 添加一个新的状态来追踪是否需要重启计时器
+  const [shouldRestartTimer, setShouldRestartTimer] = useState(false);
+
+  // 计时器管理函数
+  const startTimer = useCallback(() => {
+    if (timerRef.current) {
+      BackgroundTimer.clearInterval(timerRef.current);
+    }
+
+    timerRef.current = BackgroundTimer.setInterval(() => {
+      setElapsedTime(prev => prev + 1);
+    }, 1000);
+  }, []);
+
+  const stopTimer = useCallback(() => {
+    if (timerRef.current) {
+      BackgroundTimer.clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const resetTimer = useCallback(() => {
+    stopTimer();
+    setElapsedTime(0);
+    startTimer();
+  }, [stopTimer, startTimer]);
 
   useEffect(() => {
     if (difficulty_route) {
@@ -231,6 +265,30 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       setCurrentPuzzleIndex(currentIndex);
     }
   }, [difficulty_route]);
+
+  useEffect(() => {
+    if (shouldRestartTimer) {
+      // 停止当前计时器
+      if (timerRef.current) {
+        BackgroundTimer.clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+
+      // 启动新计时器
+      timerRef.current = BackgroundTimer.setInterval(() => {
+        setElapsedTime(prev => prev + 1);
+      }, 1000);
+
+      // 重置标志
+      setShouldRestartTimer(false);
+    }
+  }, [shouldRestartTimer]);
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
   const resetSudoku = useCallback(() => {
     setSelectedNumber(1);
@@ -254,6 +312,11 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     setDifferenceMap({});
     hintCount.current = 0;
     startTime.current = 0;
+    setElapsedTime(0); // 重置计时器
+
+    // 标记需要重启计时器
+    setShouldRestartTimer(true);
+
     resetSudokuBoard();
     setWatchIconVisible(false);
     isFirstHint.current = true;
@@ -289,6 +352,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       resultVisible: false,
       puzzleId: puzzleId.current,
       currentPuzzleIndex,
+      elapsedTime, // 保存经过的时间
     };
 
     await AsyncStorage.setItem('sudokuData1', JSON.stringify(sudokuData));
@@ -310,6 +374,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     isFirstHint,
     isHinting,
     currentPuzzleIndex,
+    elapsedTime,
   ]);
 
   const cleanBoard = useMemo(() => {
@@ -347,6 +412,8 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
 
   useEffect(() => {
     if (counts == 81) {
+      stopTimer();
+
       playVictorySound();
       const arr = new Array(10000).fill(0);
       for (let i = 0; i < userStatisticPass[difficulty].length; i++) {
@@ -354,6 +421,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
           arr[i] = 1;
         }
       }
+
       let index;
       switch (difficulty) {
         case DIFFICULTY.ENTRY:
@@ -362,7 +430,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
             calculateProgress(userStatisticPass, DIFFICULTY.ENTRY).completed + 1,
             LeaderboardType.ENTRY_PASS_COUNTS
           );
-
           break;
         case DIFFICULTY.EASY:
           index = easyBoard.findIndex(item => item.date === puzzleId.current);
@@ -399,6 +466,25 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
         ...userStatisticPass,
         [difficulty]: arr.join(''),
       };
+
+      // 更新求解时间
+      const userStatisticTime = useSudokuStore.getState().userStatisticTime;
+      const timeArr = [...userStatisticTime[difficulty]];
+      // 如果之前已经通关过并记录了时间，则取较小值（更快的解题时间）
+      if (timeArr[index!] > 0) {
+        timeArr[index!] = Math.min(timeArr[index!], elapsedTime);
+      } else {
+        timeArr[index!] = elapsedTime;
+      }
+
+      const newUserStatisticTime = {
+        ...userStatisticTime,
+        [difficulty]: timeArr,
+      };
+
+      setUserStatisticTime(newUserStatisticTime);
+      saveUserStatisticTime(newUserStatisticTime);
+
       LeaderboardManager.submitScore(
         calculateTotalProgress(newUserStatisticPass).completed,
         LeaderboardType.TOTAL_PASS_COUNTS
@@ -462,6 +548,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       isHinting.current = data.isHinting;
       puzzleId.current = data.puzzleId;
       setCurrentPuzzleIndex(data.currentPuzzleIndex);
+      setElapsedTime(data.elapsedTime || 0); // 加载保存的时间
     }
   }, [loadSavedData2, setErrorCount, t, setDifficulty, setWatchIconVisible, setCurrentPuzzleIndex]);
 
@@ -705,6 +792,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
         } else {
           if (!isReason) {
             if (answerBoard.current[row][col].value == number) {
+              setSelectedNumber(number);
               playSuccessSound(newBoard, row, col);
               newCell.value = number;
               newCell.draft = [];
@@ -725,6 +813,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
               return;
             }
           } else {
+            setSelectedNumber(number);
             const conflictCells = checkNumberInRowColumnAndBox(newBoard, row, col, number);
             if (conflictCells.length > 0) {
               handleErrorDraftAnimation(conflictCells);
@@ -1051,7 +1140,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
         playSound('switch', isSound);
         isFalseCellsBefore.current = false;
         isDifferenceMapAll.current = false;
-        return;
       } else if (isDifferenceMap.current) {
         const newBoard = deepCopyBoard(board);
         for (const key of Object.keys(differenceMap)) {
@@ -1171,9 +1259,9 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   }, [board, selectedCell, selectionMode]);
 
   const handleBack = useCallback(() => {
-    resetSudoku();
+    setErrorCount(0);
     navigation.goBack();
-  }, [navigation, resetSudoku]);
+  }, [navigation, setErrorCount]);
 
   // 添加导航监听器处理手势返回
   useEffect(() => {
@@ -1207,12 +1295,21 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
-      if (nextAppState === 'inactive' && (isSudoku || isContinue)) {
-        saveData();
+      if (nextAppState === 'active') {
+        // 应用回到前台，启动计时器
+        startTimer();
+      } else if (nextAppState === 'inactive' || nextAppState === 'background') {
+        // 应用进入后台，停止计时器并保存状态
+        stopTimer();
+        if (isSudoku || isContinue) {
+          saveData();
+          setIsInactive(true);
+        }
       }
     });
+
     return () => subscription.remove();
-  }, [isSudoku, isContinue, saveData]);
+  }, [isSudoku, isContinue, saveData, startTimer, stopTimer, setIsInactive]);
 
   useEffect(() => {
     if (isContinue) {
@@ -1232,12 +1329,30 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     }
   }, [hintDrawerVisible]);
 
+  // 当新开一局游戏时重置计时器
   useEffect(() => {
-    console.log('open');
+    if (difficulty_route && !isContinue) {
+      // 新开一局游戏时重置计时器
+      setElapsedTime(0);
+    }
+  }, [difficulty_route, isContinue]);
+
+  useEffect(() => {
+    // 组件挂载时启动计时器
+    startTimer();
+
     return () => {
-      console.log('close');
+      // 组件卸载时清理计时器
+      stopTimer();
     };
-  }, []);
+  }, [startTimer, stopTimer]);
+
+  useEffect(() => {
+    if (shouldRestartTimer) {
+      resetTimer();
+      setShouldRestartTimer(false);
+    }
+  }, [shouldRestartTimer, resetTimer]);
 
   return (
     <View style={[styles.container]}>
@@ -1248,6 +1363,9 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
             <Image source={require('../assets/icon/error.png')} style={styles.errorIcon} />
             <Text style={styles.gameInfoTextError}>{errorCount}</Text>
           </View>
+        </View>
+        <View style={styles.gameInfoItem}>
+          <Text style={styles.gameInfoText}>{formatTime(elapsedTime)}</Text>
         </View>
         <View style={styles.gameInfoItem}>
           <Text style={styles.gameInfoText}>{t(`difficulty.${difficulty}`)}</Text>
@@ -1488,6 +1606,8 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
         visible={resultVisible}
         puzzleId={puzzleId}
         initializeBoard2={initializeBoard2}
+        elapsedTime={elapsedTime}
+        setShouldRestartTimer={setShouldRestartTimer}
       />
     </View>
   );

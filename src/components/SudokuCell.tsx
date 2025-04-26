@@ -158,7 +158,11 @@ const Cell = memo(
     );
   },
   (prevProps, nextProps) => {
-    if (prevProps.cell.value !== null && prevProps.isDark === nextProps.isDark) {
+    if (
+      prevProps.cell.value !== null &&
+      prevProps.isDark === nextProps.isDark &&
+      prevProps.cell.isGiven === nextProps.cell.isGiven
+    ) {
       return (
         prevProps.cell.value === nextProps.cell.value &&
         prevProps.selectedNumber === nextProps.selectedNumber &&
@@ -189,7 +193,8 @@ const Cell = memo(
         JSON.stringify(nextProps.resultBoard[nextProps.rowIndex][nextProps.colIndex]) &&
       prevProps.isMovingRef === nextProps.isMovingRef &&
       prevProps.scaleValue === nextProps.scaleValue &&
-      prevProps.isDark === nextProps.isDark
+      prevProps.isDark === nextProps.isDark &&
+      prevProps.cell.isGiven === nextProps.cell.isGiven
     );
   }
 );

@@ -277,5 +277,10 @@ export default {
       "Lütfen önce GameCenter'a giriş yapın. Zaten giriş yaptıysanız, uygulamayı yeniden açın.",
     tips: 'İpucu',
     dataSyncDescription2: '2.Sıralamanız 24 saat içinde dünya çapında senkronize edilecektir.',
+    fastestTime: 'En hızlı',
+    averageTime: 'Ortalama',
+    fixedDescription:
+      'Bu işlem, tahtadaki mevcut sayıları sabitleyecektir. Sabitlenmiş sayıları değiştiremeyeceksiniz. Devam etmek istediğinizden emin misiniz?',
+    doNotShowAgain: 'Bir daha gösterme',
   },
 };

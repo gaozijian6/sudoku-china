@@ -280,5 +280,10 @@ export default {
       "Accedi prima a GameCenter. Se hai già effettuato l'accesso, riapri l'applicazione.",
     tips: 'Suggerimenti',
     dataSyncDescription2: '2.La tua classifica sarà sincronizzata a livello globale entro 24 ore.',
+    fastestTime: 'Più veloce',
+    averageTime: 'Medio',
+    fixedDescription:
+      'Questa operazione fisserà i numeri attuali sulla griglia. Non sarà possibile modificare i numeri fissati. Sei sicuro di voler procedere?',
+    doNotShowAgain: 'Non mostrare di nuovo',
   },
 };

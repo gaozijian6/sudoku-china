@@ -279,5 +279,10 @@ export default {
       'Vui lòng đăng nhập vào GameCenter trước. Nếu đã đăng nhập, vui lòng mở lại ứng dụng.',
     tips: 'Mẹo',
     dataSyncDescription2: '2.Xếp hạng của bạn sẽ được đồng bộ hóa toàn cầu trong vòng 24 giờ.',
+    fastestTime: 'Nhanh nhất',
+    averageTime: 'Trung bình',
+    fixedDescription:
+      'Thao tác này sẽ cố định các số hiện tại trên bảng. Bạn sẽ không thể sửa đổi các số đã cố định. Bạn có chắc chắn muốn tiếp tục không?',
+    doNotShowAgain: 'Không hiển thị lại',
   },
 };

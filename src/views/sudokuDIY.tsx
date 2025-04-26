@@ -54,11 +54,9 @@ import { playSound } from '../tools/Sound';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSudokuStore } from '../store';
 import TarBarsSudokuDIY from '../components/tarBarsSudokuDIY';
-import { SOLUTION_METHODS, SUDOKU_STATUS, SudokuType } from '../constans';
+import { SUDOKU_STATUS, SudokuType } from '../constans';
 import { useTranslation } from 'react-i18next';
 import handleHintMethod from '../tools/handleHintMethod';
-import WatchIcon from '../components/WatchIcon';
-import { RewardedAdEventType } from 'react-native-google-mobile-ads';
 import createStyles from './sudokuStyles';
 import { useNavigation } from '@react-navigation/native';
 
@@ -175,10 +173,13 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
 
   const [watchIconVisible, setWatchIconVisible] = useState<boolean>(false);
   const isFirstHint = useRef<boolean>(true);
+  const isLocked = useMemo(() => {
+    return board.some(row => row.some(cell => cell.isGiven));
+  }, [board]);
   const resetSudoku = useCallback(() => {
     playSound('switch', isSound);
     setSelectedNumber(1);
-    resetSudokuBoard();
+    resetSudokuBoard(isLocked);
     lastSelectedNumber.current = null;
     setErrorCount(0);
     setDraftMode(false);
@@ -197,7 +198,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     isClickAutoNote.current = false;
     setDifferenceMap({});
     hintCount.current = 0;
-  }, [isSound, resetSudokuBoard, setErrorCount, t, setIsHint]);
+  }, [isSound, resetSudokuBoard, setErrorCount, t, setIsHint, isLocked]);
 
   const saveDataDIY = useCallback(() => {
     if (sudokuType === SudokuType.DIY1) {
@@ -511,6 +512,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
 
           updateBoard(newBoard, `设置 (${row}, ${col}) 草稿为 ${newCell.draft}`, false);
         } else {
+          setSelectedNumber(number);
           playSound('switch', isSound);
           newCell.value = number;
           newCell.draft = [];
@@ -868,15 +870,11 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
   useEffect(() => {
     if (!selectedCell) return;
     const { row, col } = selectedCell;
-    if (selectionMode === 1) {
+    if (selectionMode === 1) return;
+    if (board[row][col].isGiven || (board[row][col].draft.length === 0 && !board[row][col].value)) {
       setEraseEnabled(false);
-      return;
     } else {
-      if (board[row][col].value || board[row][col].draft.length) {
-        setEraseEnabled(true);
-      } else {
-        setEraseEnabled(false);
-      }
+      setEraseEnabled(true);
     }
   }, [board, selectedCell, selectionMode]);
 
@@ -970,9 +968,47 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     };
   }, []);
 
+  const handleLock = useCallback(() => {
+    console.log(counts);
+    
+    playSound('switch', isSound);
+    if (sudokuStatus === SUDOKU_STATUS.ILLEGAL || sudokuStatus === SUDOKU_STATUS.INCOMPLETE) {
+      return;
+    }
+    const newBoard = deepCopyBoard(board);
+    newBoard.forEach(row => {
+      row.forEach(cell => {
+        if (cell.value) {
+          cell.isGiven = true;
+        }
+      });
+    });
+    console.log('newBoard', newBoard);
+    updateBoard(newBoard, '锁定', false);
+  }, [sudokuStatus, isSound, board, updateBoard]);
+
+  const handleUnlock = useCallback(() => {
+    playSound('switch', isSound);
+    const newBoard = deepCopyBoard(board);
+    newBoard.forEach(row => {
+      row.forEach(cell => {
+        cell.isGiven = false;
+      });
+    });
+    console.log('newBoard', newBoard);
+    updateBoard(newBoard, '解锁', false);
+  }, [isSound, board, updateBoard]);
+
   return (
     <View style={styles.container}>
-      <TarBarsSudokuDIY onBack={handleBack} saveDataDIY={saveDataDIY} resetSudoku={resetSudoku} />
+      <TarBarsSudokuDIY
+        onBack={handleBack}
+        saveDataDIY={saveDataDIY}
+        resetSudoku={resetSudoku}
+        handleLock={handleLock}
+        handleUnlock={handleUnlock}
+        isLocked={isLocked}
+      />
       <View style={styles.gameInfoDIY}>
         {sudokuStatus === SUDOKU_STATUS.SOLVED ? (
           <View style={styles.gameInfoTextDIY}>

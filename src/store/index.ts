@@ -162,6 +162,20 @@ interface SudokuState {
   setCurrentPuzzleIndex: (value: number) => void;
   isLoginGameCenter: boolean;
   setIsLoginGameCenter: (value: boolean) => void;
+  userStatisticTime: {
+    [DIFFICULTY.ENTRY]: number[];
+    [DIFFICULTY.EASY]: number[];
+    [DIFFICULTY.MEDIUM]: number[];
+    [DIFFICULTY.HARD]: number[];
+    [DIFFICULTY.EXTREME]: number[];
+  };
+  setUserStatisticTime: (value: {
+    [DIFFICULTY.ENTRY]: number[];
+    [DIFFICULTY.EASY]: number[];
+    [DIFFICULTY.MEDIUM]: number[];
+    [DIFFICULTY.HARD]: number[];
+    [DIFFICULTY.EXTREME]: number[];
+  }) => void;
 }
 
 export const useSudokuStore = create<SudokuState>(set => ({
@@ -380,4 +394,12 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setCurrentPuzzleIndex: value => set({ currentPuzzleIndex: value }),
   isLoginGameCenter: false,
   setIsLoginGameCenter: value => set({ isLoginGameCenter: value }),
+  userStatisticTime: {
+    [DIFFICULTY.ENTRY]: [],
+    [DIFFICULTY.EASY]: [],
+    [DIFFICULTY.MEDIUM]: [],
+    [DIFFICULTY.HARD]: [],
+    [DIFFICULTY.EXTREME]: [],
+  },
+  setUserStatisticTime: value => set({ userStatisticTime: value }),
 }));
