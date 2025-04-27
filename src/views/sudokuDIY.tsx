@@ -961,16 +961,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     }
   }, [sudokuType]);
 
-  useEffect(() => {
-    console.log('open');
-    return () => {
-      console.log('close');
-    };
-  }, []);
-
   const handleLock = useCallback(() => {
-    console.log(counts);
-    
     playSound('switch', isSound);
     if (sudokuStatus === SUDOKU_STATUS.ILLEGAL || sudokuStatus === SUDOKU_STATUS.INCOMPLETE) {
       return;
@@ -983,7 +974,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         }
       });
     });
-    console.log('newBoard', newBoard);
     updateBoard(newBoard, '锁定', false);
   }, [sudokuStatus, isSound, board, updateBoard]);
 
