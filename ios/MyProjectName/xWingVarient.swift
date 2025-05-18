@@ -2,7 +2,10 @@
 func xWingVarient(
     board: [[CellData]],
     candidateMap: CandidateMap,
-    graph: Graph
+    graph: Graph,
+    hyperGraph: HyperGraph,
+    globalNodeMap: GlobalNodeMap,
+    answerBoard: [[CellData]]?
 ) -> [String: Any]? {
     // 检查行
     if let rowResult = checkXWingVarient(board: board, candidateMap: candidateMap, isRow: true) {

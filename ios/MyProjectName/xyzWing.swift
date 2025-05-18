@@ -2,7 +2,10 @@
 func xyzWing(
     board: [[CellData]],
     candidateMap: CandidateMap,
-    graph: Graph
+    graph: Graph,
+    hyperGraph: HyperGraph,
+    globalNodeMap: GlobalNodeMap,
+    answerBoard: [[CellData]]?
 ) -> [String: Any]? {
     // 遍历每个数字的候选位置
     for num in 1...9 {

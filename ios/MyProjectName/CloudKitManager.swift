@@ -9,7 +9,6 @@ class CloudKitManager: NSObject {
 
   override init() {
     super.init()
-    print("CloudKitManager initialized")
   }
 
   @objc
@@ -47,7 +46,6 @@ class CloudKitManager: NSObject {
 
     database.perform(query, inZoneWith: nil) { (records, error) in
       if let error = error {
-        NSLog("fetchData error: \(error.localizedDescription)")
         rejecter("ERROR", error.localizedDescription, error)
         return
       }

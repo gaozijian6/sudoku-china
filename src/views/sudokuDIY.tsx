@@ -59,8 +59,9 @@ import { useTranslation } from 'react-i18next';
 import handleHintMethod from '../tools/handleHintMethod';
 import createStyles from './sudokuStyles';
 import { useNavigation } from '@react-navigation/native';
+import * as Service from '../services';
 
-const { ColorChain, CombinationChain } = NativeModules;
+const { ColorChain, CombinationChain, Solver } = NativeModules;
 
 interface SudokuDIYProps {
   isMovingRef: React.MutableRefObject<boolean>;
@@ -87,6 +88,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     countsSync,
     setCounts,
     counts,
+    countsDiffRef,
   } = useSudokuBoardDIY();
   const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
   const lastSelectedNumber = useRef<number | null>(null);
@@ -123,6 +125,50 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
       return SUDOKU_STATUS.ILLEGAL;
     }
   }, [answer, counts]);
+
+  const [level, setLevel] = useState<'a' | 'b' | 'c' | 'd' | 'e' | ''>('');
+
+  useEffect(() => {
+    if (sudokuStatus === SUDOKU_STATUS.SOLVED) {
+      Solver.rate(board).then(res => {
+        console.log(res);
+        setLevel(res);
+      });
+    } else {
+      setLevel('');
+    }
+  }, [sudokuStatus, counts]);
+
+  const difficulty = useMemo(() => {
+    switch (level) {
+      case 'a':
+        return 'entry';
+      case 'b':
+        return 'easy';
+      case 'c':
+        return 'medium';
+      case 'd':
+        return 'hard';
+      case 'e':
+        return 'extreme';
+      default:
+        return '';
+    }
+  }, [level]);
+
+  useEffect(() => {
+    if (difficulty && difficulty !== 'entry') {
+      Service.uploadSudoku({
+        difficulty,
+        puzzle: board.map(row => row.map(cell => cell.value).join('0')).join('0'),
+      }).then(res => {
+        const status = res.data.status;
+        if (status === 'success') {
+          Alert.alert(t('uploadSuccess'), '', [], { cancelable: true });
+        }
+      });
+    }
+  }, [difficulty]);
 
   const isClickAutoNote = useRef<boolean>(false);
   const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
@@ -276,27 +322,27 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     setSudokuDataDIY1,
   ]);
 
-  const cleanBoard = useMemo(() => {
-    return deepCopyBoard(board).map(row =>
-      row.map(cell => ({
-        ...cell,
-        highlights: undefined,
-        highlightCandidates: undefined,
-        promptCandidates: undefined,
-      }))
-    );
-  }, [board]);
+  // const cleanBoard = useMemo(() => {
+  //   return deepCopyBoard(board).map(row =>
+  //     row.map(cell => ({
+  //       ...cell,
+  //       highlights: undefined,
+  //       highlightCandidates: undefined,
+  //       promptCandidates: undefined,
+  //     }))
+  //   );
+  // }, [board]);
 
   const colorChainResult = useRef<Result | null>(null);
   const combinationChainResult = useRef<Result | null>(null);
-  useEffect(() => {
-    ColorChain.solve(cleanBoard).then(result => {
-      colorChainResult.current = result;
-    });
-    CombinationChain.solve(cleanBoard).then(result => {
-      combinationChainResult.current = result;
-    });
-  }, [cleanBoard]);
+  // useEffect(() => {
+  //   ColorChain.solve(cleanBoard).then(result => {
+  //     colorChainResult.current = result;
+  //   });
+  //   CombinationChain.solve(cleanBoard).then(result => {
+  //     combinationChainResult.current = result;
+  //   });
+  // }, [cleanBoard]);
 
   const loadSavedData = useCallback(async () => {
     let data;
@@ -646,6 +692,38 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         return;
       }
       let result: Result | null = null;
+      const startTime = performance.now();
+      const r = await Solver.solve(board, answer);
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+      console.log(`js time taken: ${duration} milliseconds`);
+      if (r) {
+        console.log(r);
+        hintCount.current++;
+        setResult(r);
+        setSelectedNumber(null);
+        setHintMethod(handleHintMethod(r.method, t));
+        setHintContent(
+          handleHintContent(
+            r,
+            board,
+            prompts,
+            setPrompts,
+            setSelectedNumber,
+            setPositions,
+            applyHintHighlight,
+            updateBoard,
+            t
+          )
+        );
+
+        setHintDrawerVisible(true);
+        setIsHint(true);
+        lastSelectedCell.current = selectedCell;
+        // setSelectedCell(null);
+        return;
+      }
+      return;
       for (const solveFunction of solveFunctions.current) {
         result = solveFunction(board, candidateMap.current, graph.current, answer);
         if (result) {
@@ -961,16 +1039,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     }
   }, [sudokuType]);
 
-  useEffect(() => {
-    console.log('open');
-    return () => {
-      console.log('close');
-    };
-  }, []);
-
   const handleLock = useCallback(() => {
-    console.log(counts);
-    
     playSound('switch', isSound);
     if (sudokuStatus === SUDOKU_STATUS.ILLEGAL || sudokuStatus === SUDOKU_STATUS.INCOMPLETE) {
       return;
@@ -983,7 +1052,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         }
       });
     });
-    console.log('newBoard', newBoard);
     updateBoard(newBoard, '锁定', false);
   }, [sudokuStatus, isSound, board, updateBoard]);
 
@@ -995,7 +1063,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         cell.isGiven = false;
       });
     });
-    console.log('newBoard', newBoard);
     updateBoard(newBoard, '解锁', false);
   }, [isSound, board, updateBoard]);
 
@@ -1026,6 +1093,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
             <Text style={styles.gameInfoText}>{t('incomplete')}</Text>
           </View>
         )}
+        <Text style={styles.gameInfoText}>{difficulty ? t(`difficulty.${difficulty}`) : ''}</Text>
       </View>
       <View style={styles.sudokuGrid}>
         {board?.map((row, rowIndex) =>

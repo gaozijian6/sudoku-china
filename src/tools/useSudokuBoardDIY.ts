@@ -41,6 +41,7 @@ export const useSudokuBoardDIY = () => {
   // const [board, setBoard] = useState<CellData[][]>(mockBoard);
   const [counts, setCounts] = useState<number>(0);
   const countsSync = useRef<number>(0);
+  const countsDiffRef = useRef<number>(0);
   const history = useRef<BoardHistoryDIY[]>([
     {
       board: initialBoard,
@@ -143,6 +144,7 @@ export const useSudokuBoardDIY = () => {
       updateAuxiliaryData(data.board);
       countsSync.current = data.countsSync;
       setCounts(countsSync.current);
+      countsDiffRef.current = data.countsDiffRef;
     }
   }, [sudokuType, localsudokuDataDIY2, sudokuDataDIY2, updateAuxiliaryData]);
 
@@ -185,6 +187,7 @@ export const useSudokuBoardDIY = () => {
         standradBoard,
         countsSync: countsSync.current,
         counts,
+        countsDiffRef: countsDiffRef.current,
       };
       setLocalsudokuDataDIY2(sudokuData);
       AsyncStorage.setItem('localsudokuDataDIY2', JSON.stringify(sudokuData));
@@ -197,6 +200,7 @@ export const useSudokuBoardDIY = () => {
         standradBoard,
         countsSync: countsSync.current,
         counts,
+        countsDiffRef: countsDiffRef.current,
       };
       setSudokuDataDIY2(sudokuData);
       let puzzle = '';
@@ -242,10 +246,13 @@ export const useSudokuBoardDIY = () => {
     (newBoard: CellData[][], action: string, isFill: boolean) => {
       if (isFill) {
         countsSync.current++;
+        countsDiffRef.current=1;
         setCounts(countsSync.current);
       }
       if (action === '答案') {
+        const lastCounts = countsSync.current;
         countsSync.current = 81;
+        countsDiffRef.current = countsSync.current - lastCounts;
         setCounts(countsSync.current);
         // 计算新的 remainingCounts
         const newRemainingCounts = Array(9).fill(0);
@@ -291,6 +298,7 @@ export const useSudokuBoardDIY = () => {
     (isLocked: boolean) => {
       let newBoard: CellData[][] = initialBoard;
       if (!isLocked) {
+        countsDiffRef.current = countsSync.current;
         countsSync.current = 0;
         setCounts(0);
         remainingCountsSync.current = Array(9).fill(9);
@@ -361,5 +369,6 @@ export const useSudokuBoardDIY = () => {
     countsSync,
     setCounts,
     counts,
+    countsDiffRef,
   };
 };

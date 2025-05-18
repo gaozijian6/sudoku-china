@@ -2,7 +2,10 @@
 func xyWing(
     board: [[CellData]],
     candidateMap: CandidateMap,
-    graph: Graph
+    graph: Graph,
+    hyperGraph: HyperGraph,
+    globalNodeMap: GlobalNodeMap,
+    answerBoard: [[CellData]]?
 ) -> [String: Any]? {
     // 找出所有只有两个候选数的格子
     var cellsWithTwoCandidates: [Position] = []

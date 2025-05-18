@@ -26,6 +26,33 @@
 		A960198C2D9EDC4800B4B553 /* CloudKitManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A96019882D9EDC4800B4B553 /* CloudKitManager.m */; };
 		A9637D4C2DB6839D00506BBF /* CombinationChain.m in Sources */ = {isa = PBXBuildFile; fileRef = A9637D4A2DB6839D00506BBF /* CombinationChain.m */; };
 		A9637D4D2DB6839D00506BBF /* CombinationChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D4B2DB6839D00506BBF /* CombinationChain.swift */; };
+		A971850B2DD644860067A8D1 /* combinationChain_fun.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97185092DD644860067A8D1 /* combinationChain_fun.swift */; };
+		A971850C2DD644860067A8D1 /* colorChain_fun.swift in Sources */ = {isa = PBXBuildFile; fileRef = A971850A2DD644860067A8D1 /* colorChain_fun.swift */; };
+		A9841E0A2DD0FD71004A8ED2 /* Loop.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D712DD0FD3F00506BBF /* Loop.swift */; };
+		A9841E0B2DD0FD71004A8ED2 /* nakedPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D692DD0FD3F00506BBF /* nakedPair.swift */; };
+		A9841E0C2DD0FD71004A8ED2 /* nakedQuadruple.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D5B2DD0FD3F00506BBF /* nakedQuadruple.swift */; };
+		A9841E0D2DD0FD71004A8ED2 /* nakedTriple1.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D672DD0FD3F00506BBF /* nakedTriple1.swift */; };
+		A9841E0E2DD0FD71004A8ED2 /* nakedTriple2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D662DD0FD3F00506BBF /* nakedTriple2.swift */; };
+		A9841E0F2DD0FD71004A8ED2 /* singleCandidate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D5F2DD0FD3F00506BBF /* singleCandidate.swift */; };
+		A9841E102DD0FD71004A8ED2 /* skyscraper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D632DD0FD3F00506BBF /* skyscraper.swift */; };
+		A9841E112DD0FD71004A8ED2 /* skyscraper2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D652DD0FD3F00506BBF /* skyscraper2.swift */; };
+		A9841E122DD0FD71004A8ED2 /* Solver.m in Sources */ = {isa = PBXBuildFile; fileRef = A9637D6F2DD0FD3F00506BBF /* Solver.m */; };
+		A9841E132DD0FD71004A8ED2 /* Solver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D682DD0FD3F00506BBF /* Solver.swift */; };
+		A9841E142DD0FD71004A8ED2 /* swordfish.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D602DD0FD3F00506BBF /* swordfish.swift */; };
+		A9841E152DD0FD71004A8ED2 /* tool.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D562DD0FD3F00506BBF /* tool.swift */; };
+		A9841E162DD0FD71004A8ED2 /* trialAndError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D6A2DD0FD3F00506BBF /* trialAndError.swift */; };
+		A9841E172DD0FD71004A8ED2 /* uniqueRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D622DD0FD3F00506BBF /* uniqueRectangle.swift */; };
+		A9841E182DD0FD71004A8ED2 /* xWing.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D5E2DD0FD3F00506BBF /* xWing.swift */; };
+		A9841E192DD0FD71004A8ED2 /* xWingVarient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D5A2DD0FD3F00506BBF /* xWingVarient.swift */; };
+		A9841E1A2DD0FD71004A8ED2 /* xyWing.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D522DD0FD3E00506BBF /* xyWing.swift */; };
+		A9841E1B2DD0FD71004A8ED2 /* xyzWing.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D542DD0FD3F00506BBF /* xyzWing.swift */; };
+		A9841E1C2DD0FD87004A8ED2 /* BinaryUniversalGrave.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D552DD0FD3F00506BBF /* BinaryUniversalGrave.swift */; };
+		A9841E1D2DD0FD87004A8ED2 /* blockElimination.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D572DD0FD3F00506BBF /* blockElimination.swift */; };
+		A9841E1E2DD0FD87004A8ED2 /* constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D5C2DD0FD3F00506BBF /* constants.swift */; };
+		A9841E1F2DD0FD87004A8ED2 /* hiddenPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D6C2DD0FD3F00506BBF /* hiddenPair.swift */; };
+		A9841E202DD0FD87004A8ED2 /* hiddenSingle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D6B2DD0FD3F00506BBF /* hiddenSingle.swift */; };
+		A9841E212DD0FD87004A8ED2 /* hiddenTriple.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D532DD0FD3F00506BBF /* hiddenTriple.swift */; };
+		A9841E222DD0FD87004A8ED2 /* jellyfish.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9637D6D2DD0FD3F00506BBF /* jellyfish.swift */; };
 		D6A68E88CE2066987031570E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
@@ -97,6 +124,40 @@
 		A9601C8D2D9F895A00B4B553 /* MyProjectName.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MyProjectName.entitlements; path = MyProjectName/MyProjectName.entitlements; sourceTree = "<group>"; };
 		A9637D4A2DB6839D00506BBF /* CombinationChain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = CombinationChain.m; path = MyProjectName/CombinationChain.m; sourceTree = "<group>"; };
 		A9637D4B2DB6839D00506BBF /* CombinationChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CombinationChain.swift; path = MyProjectName/CombinationChain.swift; sourceTree = "<group>"; };
+		A9637D522DD0FD3E00506BBF /* xyWing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = xyWing.swift; path = MyProjectName/xyWing.swift; sourceTree = "<group>"; };
+		A9637D532DD0FD3F00506BBF /* hiddenTriple.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = hiddenTriple.swift; path = MyProjectName/hiddenTriple.swift; sourceTree = "<group>"; };
+		A9637D542DD0FD3F00506BBF /* xyzWing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = xyzWing.swift; path = MyProjectName/xyzWing.swift; sourceTree = "<group>"; };
+		A9637D552DD0FD3F00506BBF /* BinaryUniversalGrave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BinaryUniversalGrave.swift; path = MyProjectName/BinaryUniversalGrave.swift; sourceTree = "<group>"; };
+		A9637D562DD0FD3F00506BBF /* tool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = tool.swift; path = MyProjectName/tool.swift; sourceTree = "<group>"; };
+		A9637D572DD0FD3F00506BBF /* blockElimination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = blockElimination.swift; path = MyProjectName/blockElimination.swift; sourceTree = "<group>"; };
+		A9637D582DD0FD3F00506BBF /* CloudKitManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = CloudKitManager.m; path = MyProjectName/CloudKitManager.m; sourceTree = "<group>"; };
+		A9637D592DD0FD3F00506BBF /* CombinationChain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = CombinationChain.m; path = MyProjectName/CombinationChain.m; sourceTree = "<group>"; };
+		A9637D5A2DD0FD3F00506BBF /* xWingVarient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = xWingVarient.swift; path = MyProjectName/xWingVarient.swift; sourceTree = "<group>"; };
+		A9637D5B2DD0FD3F00506BBF /* nakedQuadruple.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = nakedQuadruple.swift; path = MyProjectName/nakedQuadruple.swift; sourceTree = "<group>"; };
+		A9637D5C2DD0FD3F00506BBF /* constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = constants.swift; path = MyProjectName/constants.swift; sourceTree = "<group>"; };
+		A9637D5D2DD0FD3F00506BBF /* ColorChain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ColorChain.m; path = MyProjectName/ColorChain.m; sourceTree = "<group>"; };
+		A9637D5E2DD0FD3F00506BBF /* xWing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = xWing.swift; path = MyProjectName/xWing.swift; sourceTree = "<group>"; };
+		A9637D5F2DD0FD3F00506BBF /* singleCandidate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = singleCandidate.swift; path = MyProjectName/singleCandidate.swift; sourceTree = "<group>"; };
+		A9637D602DD0FD3F00506BBF /* swordfish.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = swordfish.swift; path = MyProjectName/swordfish.swift; sourceTree = "<group>"; };
+		A9637D612DD0FD3F00506BBF /* LeaderboardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LeaderboardManager.swift; path = MyProjectName/LeaderboardManager.swift; sourceTree = "<group>"; };
+		A9637D622DD0FD3F00506BBF /* uniqueRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = uniqueRectangle.swift; path = MyProjectName/uniqueRectangle.swift; sourceTree = "<group>"; };
+		A9637D632DD0FD3F00506BBF /* skyscraper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = skyscraper.swift; path = MyProjectName/skyscraper.swift; sourceTree = "<group>"; };
+		A9637D642DD0FD3F00506BBF /* CombinationChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CombinationChain.swift; path = MyProjectName/CombinationChain.swift; sourceTree = "<group>"; };
+		A9637D652DD0FD3F00506BBF /* skyscraper2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = skyscraper2.swift; path = MyProjectName/skyscraper2.swift; sourceTree = "<group>"; };
+		A9637D662DD0FD3F00506BBF /* nakedTriple2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = nakedTriple2.swift; path = MyProjectName/nakedTriple2.swift; sourceTree = "<group>"; };
+		A9637D672DD0FD3F00506BBF /* nakedTriple1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = nakedTriple1.swift; path = MyProjectName/nakedTriple1.swift; sourceTree = "<group>"; };
+		A9637D682DD0FD3F00506BBF /* Solver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Solver.swift; path = MyProjectName/Solver.swift; sourceTree = "<group>"; };
+		A9637D692DD0FD3F00506BBF /* nakedPair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = nakedPair.swift; path = MyProjectName/nakedPair.swift; sourceTree = "<group>"; };
+		A9637D6A2DD0FD3F00506BBF /* trialAndError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = trialAndError.swift; path = MyProjectName/trialAndError.swift; sourceTree = "<group>"; };
+		A9637D6B2DD0FD3F00506BBF /* hiddenSingle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = hiddenSingle.swift; path = MyProjectName/hiddenSingle.swift; sourceTree = "<group>"; };
+		A9637D6C2DD0FD3F00506BBF /* hiddenPair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = hiddenPair.swift; path = MyProjectName/hiddenPair.swift; sourceTree = "<group>"; };
+		A9637D6D2DD0FD3F00506BBF /* jellyfish.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = jellyfish.swift; path = MyProjectName/jellyfish.swift; sourceTree = "<group>"; };
+		A9637D6E2DD0FD3F00506BBF /* ColorChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ColorChain.swift; path = MyProjectName/ColorChain.swift; sourceTree = "<group>"; };
+		A9637D6F2DD0FD3F00506BBF /* Solver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = Solver.m; path = MyProjectName/Solver.m; sourceTree = "<group>"; };
+		A9637D702DD0FD3F00506BBF /* CloudKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CloudKitManager.swift; path = MyProjectName/CloudKitManager.swift; sourceTree = "<group>"; };
+		A9637D712DD0FD3F00506BBF /* Loop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Loop.swift; path = MyProjectName/Loop.swift; sourceTree = "<group>"; };
+		A97185092DD644860067A8D1 /* combinationChain_fun.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = combinationChain_fun.swift; path = MyProjectName/combinationChain_fun.swift; sourceTree = "<group>"; };
+		A971850A2DD644860067A8D1 /* colorChain_fun.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = colorChain_fun.swift; path = MyProjectName/colorChain_fun.swift; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -146,8 +207,42 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				A971850A2DD644860067A8D1 /* colorChain_fun.swift */,
+				A97185092DD644860067A8D1 /* combinationChain_fun.swift */,
+				A9637D702DD0FD3F00506BBF /* CloudKitManager.swift */,
+				A9637D5D2DD0FD3F00506BBF /* ColorChain.m */,
+				A9637D6E2DD0FD3F00506BBF /* ColorChain.swift */,
 				A9637D4A2DB6839D00506BBF /* CombinationChain.m */,
 				A9637D4B2DB6839D00506BBF /* CombinationChain.swift */,
+				A9637D552DD0FD3F00506BBF /* BinaryUniversalGrave.swift */,
+				A9637D572DD0FD3F00506BBF /* blockElimination.swift */,
+				A9637D582DD0FD3F00506BBF /* CloudKitManager.m */,
+				A9637D592DD0FD3F00506BBF /* CombinationChain.m */,
+				A9637D642DD0FD3F00506BBF /* CombinationChain.swift */,
+				A9637D5C2DD0FD3F00506BBF /* constants.swift */,
+				A9637D6C2DD0FD3F00506BBF /* hiddenPair.swift */,
+				A9637D6B2DD0FD3F00506BBF /* hiddenSingle.swift */,
+				A9637D532DD0FD3F00506BBF /* hiddenTriple.swift */,
+				A9637D6D2DD0FD3F00506BBF /* jellyfish.swift */,
+				A9637D612DD0FD3F00506BBF /* LeaderboardManager.swift */,
+				A9637D712DD0FD3F00506BBF /* Loop.swift */,
+				A9637D692DD0FD3F00506BBF /* nakedPair.swift */,
+				A9637D5B2DD0FD3F00506BBF /* nakedQuadruple.swift */,
+				A9637D672DD0FD3F00506BBF /* nakedTriple1.swift */,
+				A9637D662DD0FD3F00506BBF /* nakedTriple2.swift */,
+				A9637D5F2DD0FD3F00506BBF /* singleCandidate.swift */,
+				A9637D632DD0FD3F00506BBF /* skyscraper.swift */,
+				A9637D652DD0FD3F00506BBF /* skyscraper2.swift */,
+				A9637D6F2DD0FD3F00506BBF /* Solver.m */,
+				A9637D682DD0FD3F00506BBF /* Solver.swift */,
+				A9637D602DD0FD3F00506BBF /* swordfish.swift */,
+				A9637D562DD0FD3F00506BBF /* tool.swift */,
+				A9637D6A2DD0FD3F00506BBF /* trialAndError.swift */,
+				A9637D622DD0FD3F00506BBF /* uniqueRectangle.swift */,
+				A9637D5E2DD0FD3F00506BBF /* xWing.swift */,
+				A9637D5A2DD0FD3F00506BBF /* xWingVarient.swift */,
+				A9637D522DD0FD3E00506BBF /* xyWing.swift */,
+				A9637D542DD0FD3F00506BBF /* xyzWing.swift */,
 				A94056CA2DAB95A900E109A2 /* LeaderboardManager.m */,
 				A94056C92DAB95A900E109A2 /* LeaderboardManager.swift */,
 				A95F52B02DA04306003B9B16 /* Base */,
@@ -386,6 +481,33 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A971850B2DD644860067A8D1 /* combinationChain_fun.swift in Sources */,
+				A971850C2DD644860067A8D1 /* colorChain_fun.swift in Sources */,
+				A9841E1C2DD0FD87004A8ED2 /* BinaryUniversalGrave.swift in Sources */,
+				A9841E1D2DD0FD87004A8ED2 /* blockElimination.swift in Sources */,
+				A9841E1E2DD0FD87004A8ED2 /* constants.swift in Sources */,
+				A9841E1F2DD0FD87004A8ED2 /* hiddenPair.swift in Sources */,
+				A9841E202DD0FD87004A8ED2 /* hiddenSingle.swift in Sources */,
+				A9841E212DD0FD87004A8ED2 /* hiddenTriple.swift in Sources */,
+				A9841E222DD0FD87004A8ED2 /* jellyfish.swift in Sources */,
+				A9841E0A2DD0FD71004A8ED2 /* Loop.swift in Sources */,
+				A9841E0B2DD0FD71004A8ED2 /* nakedPair.swift in Sources */,
+				A9841E0C2DD0FD71004A8ED2 /* nakedQuadruple.swift in Sources */,
+				A9841E0D2DD0FD71004A8ED2 /* nakedTriple1.swift in Sources */,
+				A9841E0E2DD0FD71004A8ED2 /* nakedTriple2.swift in Sources */,
+				A9841E0F2DD0FD71004A8ED2 /* singleCandidate.swift in Sources */,
+				A9841E102DD0FD71004A8ED2 /* skyscraper.swift in Sources */,
+				A9841E112DD0FD71004A8ED2 /* skyscraper2.swift in Sources */,
+				A9841E122DD0FD71004A8ED2 /* Solver.m in Sources */,
+				A9841E132DD0FD71004A8ED2 /* Solver.swift in Sources */,
+				A9841E142DD0FD71004A8ED2 /* swordfish.swift in Sources */,
+				A9841E152DD0FD71004A8ED2 /* tool.swift in Sources */,
+				A9841E162DD0FD71004A8ED2 /* trialAndError.swift in Sources */,
+				A9841E172DD0FD71004A8ED2 /* uniqueRectangle.swift in Sources */,
+				A9841E182DD0FD71004A8ED2 /* xWing.swift in Sources */,
+				A9841E192DD0FD71004A8ED2 /* xWingVarient.swift in Sources */,
+				A9841E1A2DD0FD71004A8ED2 /* xyWing.swift in Sources */,
+				A9841E1B2DD0FD71004A8ED2 /* xyzWing.swift in Sources */,
 				A9637D4C2DB6839D00506BBF /* CombinationChain.m in Sources */,
 				A9637D4D2DB6839D00506BBF /* CombinationChain.swift in Sources */,
 				A94056CB2DAB95A900E109A2 /* LeaderboardManager.swift in Sources */,
@@ -599,10 +721,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -671,10 +790,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
