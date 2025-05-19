@@ -3710,8 +3710,6 @@ export const uniqueRectangle = (
               let arr = [box1, box2, box3, box4];
               let set = new Set(arr);
               if (deleteCells.length && cell5 && set.size === 2) {
-                console.log(1);
-                
                 return {
                   isFill: false,
                   position: deleteCells,
@@ -3767,8 +3765,6 @@ export const uniqueRectangle = (
               arr = [box1, box2, box3, box4];
               set = new Set(arr);
               if (deleteCells.length && cell5 && set.size === 2) {
-                console.log(2);
-                
                 return {
                   isFill: false,
                   position: deleteCells,
@@ -3893,8 +3889,6 @@ export const uniqueRectangle = (
               let arr = [box1, box2, box3, box4];
               let set = new Set(arr);
               if (deleteCells.length && cell5 && set.size === 2) {
-                console.log(3);
-                
                 return {
                   isFill: false,
                   position: deleteCells,
@@ -3950,8 +3944,6 @@ export const uniqueRectangle = (
               arr = [box1, box2, box3, box4];
               set = new Set(arr);
               if (deleteCells.length && cell5 && set.size === 2) {
-                console.log(4);
-                
                 return {
                   isFill: false,
                   position: deleteCells,
