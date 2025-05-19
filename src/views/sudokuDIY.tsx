@@ -18,6 +18,7 @@ import {
   deepCopyBoard,
   solve3,
   checkDraftIsValid,
+  isRootValid,
 } from '../tools';
 import { useSudokuBoardDIY } from '../tools/useSudokuBoardDIY';
 import {
@@ -88,7 +89,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     countsSync,
     setCounts,
     counts,
-    countsDiffRef,
   } = useSudokuBoardDIY();
   const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
   const lastSelectedNumber = useRef<number | null>(null);
@@ -156,19 +156,19 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     }
   }, [level]);
 
-  useEffect(() => {
-    if (difficulty && difficulty !== 'entry') {
-      Service.uploadSudoku({
-        difficulty,
-        puzzle: board.map(row => row.map(cell => cell.value).join('0')).join('0'),
-      }).then(res => {
-        const status = res.data.status;
-        if (status === 'success') {
-          Alert.alert(t('uploadSuccess'), '', [], { cancelable: true });
-        }
-      });
-    }
-  }, [difficulty]);
+  // useEffect(() => {
+  //   if (difficulty && difficulty !== 'entry' && isRootValid(board)) {
+  //     Service.uploadSudoku({
+  //       difficulty,
+  //       puzzle: board.map(row => row.map(cell => cell.value).join('0')).join('0'),
+  //     }).then(res => {
+  //       const status = res.data.status;
+  //       if (status === 'success') {
+  //         Alert.alert(t('uploadSuccess'), '', [], { cancelable: true });
+  //       }
+  //     });
+  //   }
+  // }, [difficulty]);
 
   const isClickAutoNote = useRef<boolean>(false);
   const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});

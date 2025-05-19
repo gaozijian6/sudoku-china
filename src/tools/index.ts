@@ -71,11 +71,11 @@ export type ProgressDifficulty =
 
 export const calculateTotalProgress = (userStatisticPass: any) => {
   const difficultyLevels = [
-    { key: DIFFICULTY.ENTRY},
-    { key: DIFFICULTY.EASY},
-    { key: DIFFICULTY.MEDIUM},
-    { key: DIFFICULTY.HARD},
-    { key: DIFFICULTY.EXTREME},
+    { key: DIFFICULTY.ENTRY },
+    { key: DIFFICULTY.EASY },
+    { key: DIFFICULTY.MEDIUM },
+    { key: DIFFICULTY.HARD },
+    { key: DIFFICULTY.EXTREME },
   ] as const;
 
   let totalCompleted = 0;
@@ -285,6 +285,40 @@ export const solve3 = (board: CellData[][]) => {
   }
 
   return solvedBoard;
+};
+
+export const isRootValid = (board: CellData[][]) => {
+  const getCounts = (board: CellData[][]) => {
+    let counts = 0;
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (board[row][col].value !== null) {
+          counts++;
+        }
+      }
+    }
+    return counts;
+  };
+
+  let counts = getCounts(board);
+  if (counts < 17) return false;
+
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      if (board[i][j].value) {
+        const temp = board[i][j].value;
+        board[i][j].value = null;
+        const boardString = board.map(row => row.map(cell => cell.value || '0').join('')).join('');
+        const solver = new SudokuSolver();
+        const result = solver.solve(boardString);
+        if (result) {
+          return false;
+        }
+        board[i][j].value = temp;
+      }
+    }
+  }
+  return true;
 };
 
 export const isRowFull = (board: CellData[][], row: number) => {
@@ -566,7 +600,7 @@ export const generateBoard = (
         } else {
           random = Math.floor(Math.random() * entryBoardUnPass.length);
           console.log('random', random);
-          
+
           puzzleId = entryBoardUnPass[random].date;
           currentIndex = entryBoard.findIndex(item => item.date === puzzleId);
           initializeBoard2(entryBoardUnPass[random].puzzle, entryBoardUnPass[random].solution);
