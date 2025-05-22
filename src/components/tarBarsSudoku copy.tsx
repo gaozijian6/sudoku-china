@@ -144,13 +144,14 @@ function TarBarsSudoku({ onBack, saveData }: TarBarsSudokuProps) {
 const createStyles = (isDark: boolean) =>
   StyleSheet.create({
     container: {
+      // backgroundColor: 'rgb(91,139,241)',
       backgroundColor: isDark ? 'rgb(39, 60, 95)' : 'rgb(91,139,241)',
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       height: 40,
       position: 'relative',
-      width: '100%',
+      width: '101%',
       zIndex: 1000,
     },
     sudoku: {

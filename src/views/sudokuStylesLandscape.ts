@@ -26,16 +26,16 @@ const getMarginBottom = () => {
   }
 };
 
-const getGridWidth = (isPortrait: boolean) => {
+const getGridWidth = () => {
   switch (true) {
     case model.includes('iPad'):
-      return Dimensions.get('window').width * (isPortrait ? 0.8 : 0.45);
+      return Dimensions.get('window').width * 0.45;
     default:
       return Dimensions.get('window').width * 0.95;
   }
 };
 
-const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: boolean) =>
+const sudokuStyles = (isDark: boolean, draftMode: boolean = false) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -47,6 +47,7 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       height: '100%',
       width: '100%',
     },
+
     text: {
       color: isDark ? '#999' : '#333',
       fontSize: 16,
@@ -55,7 +56,7 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      width: getGridWidth(isPortrait),
+      width: getGridWidth(),
       marginBottom: 10,
       alignSelf: 'center',
       height: 30,
@@ -95,24 +96,24 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       fontSize: 16,
       color: isDark ? '#999' : 'rgb(59, 61, 99)',
     },
-    leftText: {
-      width: 100,
-      alignItems: 'center', // 添加垂直居中
-      textAlign: 'center', // 添加文字居中
-    },
-    middleText: {
-      width: 100,
-      alignItems: 'center', // 添加垂直居中
-      textAlign: 'center', // 添加文字居中
-    },
-    rightText: {
-      width: 100,
-      alignItems: 'center', // 添加垂直居中
-      textAlign: 'center', // 添加文字居中
-    },
+    // leftText: {
+    //   width: 100,
+    //   alignItems: 'center', // 添加垂直居中
+    //   textAlign: 'center', // 添加文字居中
+    // },
+    // middleText: {
+    //   width: 100,
+    //   alignItems: 'center', // 添加垂直居中
+    //   textAlign: 'center', // 添加文字居中
+    // },
+    // rightText: {
+    //   width: 100,
+    //   alignItems: 'center', // 添加垂直居中
+    //   textAlign: 'center', // 添加文字居中
+    // },
     sudokuGrid: {
-      width: getGridWidth(isPortrait),
-      height: getGridWidth(isPortrait),
+      width: getGridWidth(),
+      height: getGridWidth(),
       flexDirection: 'row',
       flexWrap: 'wrap',
       alignSelf: 'center',
@@ -156,12 +157,11 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       borderLeftWidth: 0,
     },
     cellValue: {
-      fontSize: Dimensions.get('window').width * 0.95 * 0.11 * (isPortrait ? 0.7 : 0.4),
+      fontSize: Dimensions.get('window').width * 0.95 * 0.11 * 0.4,
       fontWeight: 'bold',
     },
     givenNumber: {
       // color: isDark ? '#777' : '#000',
-      color: isPortrait ? 'red' : 'blue',
     },
     userNumber: {
       color: 'rgb(80,101,182)',
@@ -187,19 +187,20 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       overflow: 'hidden',
     },
     draftCellText: {
-      fontSize:
-        Dimensions.get('window').width * 0.95 * 0.11 * 0.6 * 0.33 * (isPortrait ? 1.1 : 0.6),
+      fontSize: Dimensions.get('window').width * 0.95 * 0.11 * 0.6 * 0.33 * 0.6,
       width: '33.33%',
       height: '33.33%',
       textAlign: 'center',
       lineHeight: model.includes('iPad')
-        ? Dimensions.get('window').width * 0.95 * 0.11 * 0.6 * (isPortrait ? 0.45 : 0.25)
+        ? Dimensions.get('window').width * 0.95 * 0.11 * 0.6 * 0.25
         : Dimensions.get('window').width * 0.95 * 0.11 * 0.6 * 0.5,
       position: 'absolute',
+      // color: '#fff',
       color: isDark ? '#888' : '#000',
     },
     selectedCell: {
       borderWidth: 2,
+      // backgroundColor: 'rgb(204,223,253)',
       backgroundColor: isDark ? 'rgb(68, 79, 94)' : 'rgb(204,223,253)',
     },
     selectedNumberButton: {
@@ -208,24 +209,34 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       color: 'rgb(78,106,176)',
     },
     selectedNumber: {
+      // backgroundColor: '#1890ff',
       backgroundColor: isDark ? 'rgb(40, 61, 129)' : '#1890ff',
+      // borderColor: '#1890ff',
       borderRightColor: isDark ? 'rgb(40, 61, 129)' : '#1890ff',
+      // borderRightColor: '#1890ff',
       borderBottomColor: isDark ? 'rgb(40, 61, 129)' : '#1890ff',
+      // borderBottomColor: '#1890ff',
       borderLeftColor: isDark ? 'rgb(40, 61, 129)' : '#1890ff',
+      // borderLeftColor: '#1890ff',
       borderTopColor: isDark ? 'rgb(40, 61, 129)' : '#1890ff',
+      // borderTopColor: '#1890ff',
       borderWidth: 2,
     },
     selectedNumberText: {
+      // color: '#fff',
       color: isDark ? '#999' : '#fff',
     },
     // 候选数高亮
     candidateNumber: {
+      // backgroundColor: '#9bf9ab',
       backgroundColor: isDark ? 'rgb(50, 83, 55)' : '#9bf9ab',
     },
     positionHighlight: {
+      // backgroundColor: '#fe9e9e',
       backgroundColor: isDark ? 'rgb(125, 67, 67)' : '#fe9e9e',
     },
     promptHighlight: {
+      // backgroundColor: '#9dc3ff',
       backgroundColor: isDark ? 'rgb(72, 89, 116)' : '#9dc3ff',
     },
     selectMode: {
@@ -238,7 +249,7 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       marginTop: 20,
       flexDirection: 'row',
       flexWrap: 'wrap',
-      width: !isPortrait ? '60%' : '100%',
+      width: '60%',
       justifyContent: 'space-evenly',
       position: 'relative',
       top: -30,
@@ -286,7 +297,7 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       marginTop: 10,
       position: 'relative',
       top: -25,
-      width: !isPortrait ? '50%' : '100%',
+      width: '100%',
     },
     numberButton: {
       flexDirection: 'column',
@@ -295,6 +306,7 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       width: '10%',
       height: 60,
       borderWidth: 1,
+      // borderColor: '#d9d9d9',
       borderColor: isDark ? '#999' : '#d9d9d9',
       borderRadius: 5,
       fontSize: 30,
@@ -492,7 +504,7 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       height: 40,
       justifyContent: 'center',
       display: 'flex',
-      width: getGridWidth(isPortrait),
+      width: getGridWidth(),
     },
     gameInfoTextDIY: {
       fontSize: 16,

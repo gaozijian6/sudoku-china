@@ -65,7 +65,8 @@ import { useSudokuStore } from '../store';
 import TarBarsSudoku from '../components/tarBarsSudoku';
 import ResultView from '../components/ResultOverlay';
 import handleHintMethod from '../tools/handleHintMethod';
-import createStyles from './sudokuStyles';
+// import createStyles from './sudokuStyles';
+import createStyles from './sudokuStylesLandscape';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import entryBoard from '../mock/1entry';
@@ -210,9 +211,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   const currentPuzzleIndex = useSudokuStore(state => state.currentPuzzleIndex);
   const isPortrait = useSudokuStore(state => state.isPortrait);
 
-  let styles = createStyles(isDark, draftMode, isPortrait);
-  console.log('isPortrait', isPortrait);
-  
+  const styles = createStyles(isDark, draftMode);
 
   const isFirstHint = useRef<boolean>(true);
   const [tooltipVisible, setTooltipVisible] = useState(false);
@@ -1407,7 +1406,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
               isHighlight={isHighlight}
               scaleValue={scaleValue1}
               isMovingRef={isMovingRef}
-              styles={styles}
+              isDark={isDark}
             />
           ))
         )}
@@ -1534,17 +1533,13 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
         scaleValue={scaleValue1}
         isMovingRef={isMovingRef}
         isDark={isDark}
-        isPortrait={isPortrait}
       />
       <View style={styles.selectionModeContainer}>
         <Text style={styles.selectionModeText}>{t('selectMode')}</Text>
         <Switch
           value={selectionMode === 2}
           onValueChange={handleSelectionModeChange}
-          trackColor={{
-            false: '#f0f0f0',
-            true: isDark ? 'rgb(39, 60, 95)' : 'rgb(91,139,241)',
-          }}
+          trackColor={{ false: '#f0f0f0', true: isDark ? 'rgb(39, 60, 95)' : 'rgb(91,139,241)' }}
           thumbColor={selectionMode === 2 ? (isDark ? '#888' : '#fff') : isDark ? '#888' : '#fff'}
         />
         <Tooltip
