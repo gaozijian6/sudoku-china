@@ -377,28 +377,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     elapsedTime,
   ]);
 
-  // const cleanBoard = useMemo(() => {
-  //   return deepCopyBoard(board).map(row =>
-  //     row.map(cell => ({
-  //       ...cell,
-  //       highlights: undefined,
-  //       highlightCandidates: undefined,
-  //       promptCandidates: undefined,
-  //     }))
-  //   );
-  // }, [board]);
-
-  const colorChainResult = useRef<Result | null>(null);
-  const combinationChainResult = useRef<Result | null>(null);
-  // useEffect(() => {
-  //   ColorChain.solve(cleanBoard).then(result => {
-  //     colorChainResult.current = result;
-  //   });
-  //   CombinationChain.solve(cleanBoard).then(result => {
-  //     combinationChainResult.current = result;
-  //   });
-  // }, [cleanBoard]);
-
   const setSuccessResult = useCallback(
     (errorCount: number, hintCount: number) => {
       setResultVisible(true);

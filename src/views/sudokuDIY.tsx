@@ -321,28 +321,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     setSudokuDataDIY1,
   ]);
 
-  // const cleanBoard = useMemo(() => {
-  //   return deepCopyBoard(board).map(row =>
-  //     row.map(cell => ({
-  //       ...cell,
-  //       highlights: undefined,
-  //       highlightCandidates: undefined,
-  //       promptCandidates: undefined,
-  //     }))
-  //   );
-  // }, [board]);
-
-  const colorChainResult = useRef<Result | null>(null);
-  const combinationChainResult = useRef<Result | null>(null);
-  // useEffect(() => {
-  //   ColorChain.solve(cleanBoard).then(result => {
-  //     colorChainResult.current = result;
-  //   });
-  //   CombinationChain.solve(cleanBoard).then(result => {
-  //     combinationChainResult.current = result;
-  //   });
-  // }, [cleanBoard]);
-
   const loadSavedData = useCallback(async () => {
     let data;
     if (sudokuType === SudokuType.DIY1) {
