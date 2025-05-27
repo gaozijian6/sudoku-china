@@ -44,18 +44,15 @@ class LeaderboardManager: NSObject {
     // MARK: - 初始化
     @objc func initialize(_ resolve: @escaping RCTPromiseResolveBlock,
                           reject: @escaping RCTPromiseRejectBlock) {
-        print("开始初始化 GameCenter")
         
         DispatchQueue.main.async {
             self.authenticatePlayer { success, error in
                 if let error = error {
-                    print("初始化失败: \(error.localizedDescription)")
                     reject("ERROR", "初始化失败: \(error.localizedDescription)", error)
                     return
                 }
                 
                 if success {
-                    print("初始化成功，用户已认证")
                     // 更新静态认证状态
                     LeaderboardManager.isAuthenticated = true
                     let result: [String: Any] = [
@@ -69,7 +66,6 @@ class LeaderboardManager: NSObject {
                     ]
                     resolve(result)
                 } else {
-                    print("初始化失败，用户未认证")
                     // 确保未认证状态也被正确设置
                     LeaderboardManager.isAuthenticated = false
                     reject("ERROR", "GameCenter 认证失败", nil)
@@ -85,27 +81,19 @@ class LeaderboardManager: NSObject {
                           rejecter reject: @escaping RCTPromiseRejectBlock) {
         // 检查静态认证状态
         guard LeaderboardManager.isAuthenticated else {
-            print("提交分数失败：GameCenter 未认证")
-            reject("ERROR", "GameCenter 未认证", nil)
             return
         }
         
         guard let leaderboardType = LeaderboardType(rawValue: type) else {
-            print("提交分数失败：无效的排行榜类型: \(type)")
-            reject("ERROR", "无效的排行榜类型: \(type)", nil)
             return
         }
         
-        print("提交分数到排行榜: \(leaderboardType.leaderboardId), 分数: \(score)")
         let scoreReporter = GKScore(leaderboardIdentifier: leaderboardType.leaderboardId)
         scoreReporter.value = Int64(score)
         
         GKScore.report([scoreReporter]) { error in
             if let error = error {
-                print("提交分数失败: \(error.localizedDescription)")
-                reject("ERROR", error.localizedDescription, error)
             } else {
-                print("提交分数成功")
                 resolve([
                     "success": true,
                     "type": type,
@@ -119,34 +107,28 @@ class LeaderboardManager: NSObject {
     @objc func showLeaderboard(_ type: String,
                               resolver resolve: @escaping RCTPromiseResolveBlock,
                               rejecter reject: @escaping RCTPromiseRejectBlock) {
-        print("开始显示排行榜: \(type), 当前认证状态: \(LeaderboardManager.isAuthenticated)")
         
         // 如果未认证，先进行认证
         if !LeaderboardManager.isAuthenticated {
-            print("用户未认证，尝试进行认证")
             
             DispatchQueue.main.async {
                 self.authenticatePlayer { success, error in
                     if let error = error {
-                        print("认证失败: \(error.localizedDescription)")
                         reject("ERROR", "Game Center 认证失败: \(error.localizedDescription)", error)
                         return
                     }
                     
                     if success {
-                        print("认证成功")
                         LeaderboardManager.isAuthenticated = true
                         // 认证成功后继续显示排行榜
                         self.displayLeaderboard(type, resolve: resolve, reject: reject)
                     } else {
-                        print("认证未成功")
                         LeaderboardManager.isAuthenticated = false
                         reject("ERROR", "Game Center 认证失败", nil)
                     }
                 }
             }
         } else {
-            print("用户已认证，直接显示排行榜")
             // 已认证，直接显示排行榜
             displayLeaderboard(type, resolve: resolve, reject: reject)
         }
@@ -157,12 +139,10 @@ class LeaderboardManager: NSObject {
                                   resolve: @escaping RCTPromiseResolveBlock,
                                   reject: @escaping RCTPromiseRejectBlock) {
         guard let leaderboardType = LeaderboardType(rawValue: type) else {
-            print("无效的排行榜类型: \(type)")
             reject("ERROR", "无效的排行榜类型: \(type)", nil)
             return
         }
         
-        print("准备显示排行榜: \(leaderboardType.leaderboardId)")
         
         // 确保所有UI操作都在主线程执行
         DispatchQueue.main.async {
@@ -172,12 +152,10 @@ class LeaderboardManager: NSObject {
                 
                 let gcViewController = GKGameCenterViewController(leaderboardID: leaderboardType.leaderboardId, playerScope: .global, timeScope: .allTime)
                 gcViewController.gameCenterDelegate = self
-                print("正在显示排行榜界面")
                 rootViewController.present(gcViewController, animated: true) {
                     resolve(["success": true, "type": type])
                 }
             } else {
-                print("无法获取根视图控制器")
                 reject("ERROR", "无法显示排行榜界面", nil)
             }
         }
@@ -190,12 +168,10 @@ class LeaderboardManager: NSObject {
     
     // 修改authenticatePlayer方法
     private func authenticatePlayer(completion: @escaping (Bool, Error?) -> Void) {
-        print("开始认证玩家, 当前认证状态: \(LeaderboardManager.isAuthenticated)")
         
         // 先检查当前玩家是否已认证
         let localPlayer = GKLocalPlayer.local
         if localPlayer.isAuthenticated {
-            print("玩家已经认证: \(localPlayer.displayName)")
             LeaderboardManager.isAuthenticated = true
             completion(true, nil)
             return
@@ -203,7 +179,6 @@ class LeaderboardManager: NSObject {
         
         // 如果已经在认证过程中，加入队列等待结果
         if isAuthenticating {
-            print("已有认证过程在进行中，加入回调队列")
             authenticationCompletionCallbacks.append(completion)
             return
         }
@@ -222,20 +197,17 @@ class LeaderboardManager: NSObject {
                 
                 // 防止多次回调处理
                 if handlerCalled {
-                    print("authenticateHandler 已经被调用过，忽略此次回调")
                     return
                 }
                 handlerCalled = true
                 
                 if let error = error {
-                    print("认证发生错误: \(error.localizedDescription)")
                     LeaderboardManager.isAuthenticated = false
                     self.completeAuthentication(success: false, error: error)
                     return
                 }
                 
                 if let viewController = viewController {
-                    print("需要显示认证界面")
                     // 需要用户交互才能完成认证，重置标志以便下次回调可以处理
                     handlerCalled = false
                     
@@ -243,16 +215,13 @@ class LeaderboardManager: NSObject {
                         if let rootViewController = self.getRootViewController() {
                             rootViewController.present(viewController, animated: true)
                         } else {
-                            print("无法显示认证界面")
                             self.completeAuthentication(success: false, error: nil)
                         }
                     }
                 } else if localPlayer.isAuthenticated {
-                    print("玩家已认证: \(localPlayer.displayName)")
                     LeaderboardManager.isAuthenticated = true
                     self.completeAuthentication(success: true, error: nil)
                 } else {
-                    print("玩家未认证")
                     LeaderboardManager.isAuthenticated = false
                     self.completeAuthentication(success: false, error: nil)
                 }
@@ -290,7 +259,6 @@ class LeaderboardManager: NSObject {
 // MARK: - GKGameCenterControllerDelegate
 extension LeaderboardManager: GKGameCenterControllerDelegate {
     func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
-        print("Game Center 控制器已关闭")
         gameCenterViewController.dismiss(animated: true)
     }
 } 
