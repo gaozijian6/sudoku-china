@@ -696,7 +696,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
       answer,
       isSound,
       standradBoard,
-      handleShowCandidates,
       t,
       setIsHint,
       prompts,

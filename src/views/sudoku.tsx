@@ -994,7 +994,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     [
       answerBoard,
       standradBoardRef,
-      handleShowCandidates,
       setErrorCount,
       errorCount,
       t,
