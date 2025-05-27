@@ -60,9 +60,8 @@ import { useTranslation } from 'react-i18next';
 import handleHintMethod from '../tools/handleHintMethod';
 import createStyles from './sudokuStyles';
 import { useNavigation } from '@react-navigation/native';
-import * as Service from '../services';
 
-const { ColorChain, CombinationChain, Solver } = NativeModules;
+const { Solver } = NativeModules;
 
 interface SudokuDIYProps {
   isMovingRef: React.MutableRefObject<boolean>;
@@ -677,12 +676,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         playSound('switch', isSound);
         return;
       }
-      if (!isClickAutoNote.current) {
-        const currentBoard = deepCopyBoard(standradBoard);
-        handleShowCandidates();
-        handleHint(currentBoard);
-        return;
-      } else if (!checkDraftIsValid(board, answer)) {
+      if (!checkDraftIsValid(board, answer)) {
         const differenceMap = findDifferenceDraftDIY(board, standradBoard, answer);
         setDifferenceMap(differenceMap);
         setHintMethod(handleHintMethod('', t));
@@ -691,12 +685,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         setHintContent(t('errorDraft'));
         return;
       }
-      let result: Result | null = null;
-      const startTime = performance.now();
       const r = await Solver.solve(board, answer);
-      const endTime = performance.now();
-      const duration = endTime - startTime;
-      console.log(`js time taken: ${duration} milliseconds`);
       if (r) {
         console.log(r);
         hintCount.current++;
@@ -720,112 +709,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         setHintDrawerVisible(true);
         setIsHint(true);
         lastSelectedCell.current = selectedCell;
-        // setSelectedCell(null);
-        return;
       }
       return;
-      for (const solveFunction of solveFunctions.current) {
-        result = solveFunction(board, candidateMap.current, graph.current, answer);
-        if (result) {
-          hintCount.current++;
-          setResult(result);
-          setSelectedNumber(null);
-          setHintMethod(handleHintMethod(result.method, t));
-          setHintContent(
-            handleHintContent(
-              result,
-              board,
-              prompts,
-              setPrompts,
-              setSelectedNumber,
-              setPositions,
-              applyHintHighlight,
-              updateBoard,
-              t
-            )
-          );
-          setHintDrawerVisible(true);
-          setIsHint(true);
-          lastSelectedCell.current = selectedCell;
-          // setSelectedCell(null);
-          return;
-        }
-      }
-      if (combinationChainResult.current) {
-        hintCount.current++;
-        setResult(combinationChainResult.current);
-        setSelectedNumber(null);
-        setHintMethod(handleHintMethod(combinationChainResult.current.method, t));
-        setHintContent(
-          handleHintContent(
-            combinationChainResult.current,
-            board,
-            prompts,
-            setPrompts,
-            setSelectedNumber,
-            setPositions,
-            applyHintHighlight,
-            updateBoard,
-            t
-          )
-        );
-        setHintDrawerVisible(true);
-        setIsHint(true);
-        lastSelectedCell.current = selectedCell;
-        setSelectedCell(null);
-        return;
-      } else if (colorChainResult.current) {
-        hintCount.current++;
-        setResult(colorChainResult.current);
-        setSelectedNumber(null);
-        setHintMethod(handleHintMethod(colorChainResult.current.method, t));
-        setHintContent(
-          handleHintContent(
-            colorChainResult.current,
-            board,
-            prompts,
-            setPrompts,
-            setSelectedNumber,
-            setPositions,
-            applyHintHighlight,
-            updateBoard,
-            t
-          )
-        );
-        setHintDrawerVisible(true);
-        setIsHint(true);
-        lastSelectedCell.current = selectedCell;
-        setSelectedCell(null);
-        return;
-      } else {
-        result = trialAndError(board, candidateMap.current, graph.current, answer);
-        if (result) {
-          hintCount.current++;
-          setResult(result);
-          setSelectedNumber(null);
-          setHintMethod(handleHintMethod(result.method, t));
-
-          setHintContent(
-            handleHintContent(
-              result,
-              board,
-              prompts,
-              setPrompts,
-              setSelectedNumber,
-              setPositions,
-              applyHintHighlight,
-              updateBoard,
-              t
-            )
-          );
-
-          setHintDrawerVisible(true);
-          setIsHint(true);
-          lastSelectedCell.current = selectedCell;
-          setSelectedCell(null);
-          return;
-        }
-      }
     },
     [
       countsSync,
@@ -836,8 +721,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
       handleShowCandidates,
       t,
       setIsHint,
-      candidateMap,
-      graph,
       prompts,
       applyHintHighlight,
       updateBoard,
