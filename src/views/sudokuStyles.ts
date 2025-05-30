@@ -2,7 +2,6 @@ import { Dimensions, StyleSheet } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
 const model = DeviceInfo.getModel();
-console.log(model);
 
 const getDrawerHeight = () => {
   switch (true) {

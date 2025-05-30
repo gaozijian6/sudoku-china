@@ -130,7 +130,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
   useEffect(() => {
     if (sudokuStatus === SUDOKU_STATUS.SOLVED) {
       Solver.rate(board).then(res => {
-        console.log(res);
         setLevel(res);
       });
     } else {
@@ -664,7 +663,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         setHintContent(t('errorDraft'));
         return;
       }
-      const r = await Solver.solve(board, answer);
+      const r = Solver.solve(board, answer);
       if (r) {
         console.log(r);
         hintCount.current++;
