@@ -30,9 +30,9 @@ public typealias CandidateMap = [Int: (
 
 // 已经是 public 类型
 public struct CellData {
-    let value: Int?
-    let isGiven: Bool
-    let draft: [Int]
+    var value: Int?
+    var isGiven: Bool
+    var draft: [Int]
 }
 
 // 结果结构体
@@ -160,14 +160,12 @@ class ColorChain: NSObject {
 
         let candidateMap = updateCandidateMap(board: board)
         let graph = createGraph(board: board, candidateMap: candidateMap)
-        print("123")
 
         var result = doubleColorChain(
             board: board,
             candidateMap: candidateMap,
             graph: graph
         )
-        print("result1", result)
         if result != nil {
             resolver(result ?? NSNull())
             return
@@ -177,7 +175,6 @@ class ColorChain: NSObject {
             candidateMap: candidateMap,
             graph: graph
         )
-        print("result2", result)
         resolver(result ?? NSNull())
     }
 

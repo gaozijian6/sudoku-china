@@ -1070,7 +1070,8 @@ export const hiddenTriple = (board: CellData[][], candidateMap: CandidateMap, gr
             count3: 0,
             positions3: [],
           };
-          if (count1 <= 3 && count2 <= 3 && count3 <= 3) {
+
+          if (count1 && count2 && count3 && count1 <= 3 && count2 <= 3 && count3 <= 3) {
             const positionsArray = [
               ...(positions1 || []),
               ...(positions2 || []),
@@ -1079,6 +1080,7 @@ export const hiddenTriple = (board: CellData[][], candidateMap: CandidateMap, gr
             const uniquePositions = Array.from(
               new Set(positionsArray.map(pos => JSON.stringify(pos)))
             ).map(str => JSON.parse(str));
+
             if (uniquePositions.length === 3) {
               const allCandidates = uniquePositions.map(pos => board[pos.row][pos.col].draft);
               const allCandidatesSet = new Set(allCandidates.flat());
@@ -1115,7 +1117,7 @@ export const hiddenTriple = (board: CellData[][], candidateMap: CandidateMap, gr
             count3: 0,
             positions3: [],
           };
-          if (count1 <= 3 && count2 <= 3 && count3 <= 3) {
+          if (count1 && count2 && count3 && count1 <= 3 && count2 <= 3 && count3 <= 3) {
             const positionsArray = [
               ...(positions1 || []),
               ...(positions2 || []),
@@ -1160,7 +1162,7 @@ export const hiddenTriple = (board: CellData[][], candidateMap: CandidateMap, gr
             count3: 0,
             positions3: [],
           };
-          if (count1 <= 3 && count2 <= 3 && count3 <= 3) {
+          if (count1 && count2 && count3 && count1 <= 3 && count2 <= 3 && count3 <= 3) {
             const positionsArray = [
               ...(positions1 || []),
               ...(positions2 || []),
@@ -1907,8 +1909,6 @@ export const skyscraper = (
                 Math.floor(path[1].row / 3) === Math.floor(path[2].row / 3) &&
                 Math.floor(path[1].col / 3) === Math.floor(path[2].col / 3);
 
-              console.log('isSameBox', isSameBox);
-              
               return {
                 position: affectedPositions,
                 prompt: path,
@@ -3785,7 +3785,7 @@ export const uniqueRectangle = (
         }
       }
     }
-    // ab-ab-abc-abcd列
+    // ab-ab-abc-abd列
     for (let col = 0; col < 9; col++) {
       if (candidateMap[num].col.get(col)?.count === 2) {
         const cell1 = candidateMap[num].col.get(col)?.positions[0];
