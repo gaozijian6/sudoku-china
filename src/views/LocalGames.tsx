@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -23,10 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const model = DeviceInfo.getModel();
 const isIpad = model.includes('iPad');
-const numColumns = isIpad ? 10 : 6;
-const { width } = Dimensions.get('window');
-const itemMargin = 5; // 定义每个项目的边距
-const ITEM_SIZE = (width - 20 - itemMargin * 2 * numColumns) / numColumns; // 修改项目大小计算方式，考虑边距
+const itemMargin = 5;
 
 // 定义游戏项目类型
 interface GameItem {
@@ -52,10 +49,107 @@ const LocalGames = () => {
   const setIsSudoku = useSudokuStore(state => state.setIsSudoku);
   const userStatisticPass = useSudokuStore(state => state.userStatisticPass);
   const userStatisticTime = useSudokuStore(state => state.userStatisticTime);
-  const styles = createStyles(isDark, false);
+  const isPortrait = useSudokuStore(state => state.isPortrait);
+  const styles = createStyles(isDark, false, isPortrait);
   const navigation = useNavigation();
 
   const [activeTab, setActiveTab] = useState(0);
+
+  // 添加屏幕尺寸状态
+  const [screenData, setScreenData] = useState(Dimensions.get('window'));
+
+  // 监听屏幕尺寸变化
+  useEffect(() => {
+    const onChange = (result: any) => {
+      setScreenData(result.window);
+    };
+
+    const subscription = Dimensions.addEventListener('change', onChange);
+    return () => subscription?.remove();
+  }, []);
+
+  // 动态计算列数：iPad根据方向调整，手机保持6列
+  const numColumns = useMemo(() => {
+    if (isIpad) {
+      // iPad：横屏15列，竖屏10列
+      const isLandscape = screenData.width > screenData.height;
+      return isLandscape ? 15 : 10;
+    }
+    // 手机保持6列
+    return 6;
+  }, [screenData.width, screenData.height]);
+
+  // 动态计算方格大小
+  const ITEM_SIZE = useMemo(() => {
+    return (screenData.width - 20 - itemMargin * 2 * numColumns) / numColumns;
+  }, [screenData.width, numColumns]);
+
+  // 将 localStyles 移到组件内部，使用 useMemo 优化性能
+  const localStyles = useMemo(() => StyleSheet.create({
+    tabsContainer: {
+      flexDirection: 'row',
+      paddingVertical: 10,
+      paddingHorizontal: 5,
+    },
+    tabItem: {
+      paddingHorizontal: 20,
+      marginHorizontal: 5,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    activeTab: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.2,
+      shadowRadius: 1.5,
+      elevation: 2,
+    },
+    tabText: {
+      fontSize: 14,
+      fontWeight: '600',
+      paddingVertical: 10,
+      lineHeight: 12,
+    },
+    listContainer: {
+      paddingHorizontal: 10,
+      paddingTop: 10,
+      paddingBottom: 30,
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
+      width: '100%',
+    },
+    columnWrapper: {
+      justifyContent: 'space-between',
+      marginBottom: 4,
+    },
+    puzzleItem: {
+      width: ITEM_SIZE,
+      height: ITEM_SIZE,
+      borderRadius: 10,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.2,
+      shadowRadius: 1.5,
+      elevation: 1,
+      margin: itemMargin,
+    },
+    puzzleContent: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    puzzleNumber: {
+      fontSize: isIpad ? 24 : 16,
+      fontWeight: 'bold',
+    },
+    timeText: {
+      fontSize: isIpad ? 16 : 10,
+      marginTop: 2,
+    }
+  }), [ITEM_SIZE]);
 
   // 难度标签数据
   const difficultyTabs = useMemo<TabItem[]>(
@@ -204,6 +298,7 @@ const LocalGames = () => {
     <View style={[styles.container, { flex: 1 }]}>
       {renderTabs()}
       <FlatList
+        key={`flatlist-${numColumns}`}
         data={currentBoardData}
         renderItem={renderItem}
         keyExtractor={(item, index) =>
@@ -218,71 +313,5 @@ const LocalGames = () => {
     </View>
   );
 };
-
-const localStyles = StyleSheet.create({
-  tabsContainer: {
-    flexDirection: 'row',
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-  },
-  tabItem: {
-    paddingHorizontal: 20,
-    marginHorizontal: 5,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  activeTab: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.5,
-    elevation: 2,
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '600',
-    paddingVertical: 10,
-    lineHeight: 12,
-  },
-  listContainer: {
-    paddingHorizontal: 10,
-    paddingTop: 10,
-    paddingBottom: 30,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    width: '100%', // 确保列表容器占满整个宽度
-  },
-  columnWrapper: {
-    justifyContent: 'space-between',
-    marginBottom: 4,
-  },
-  puzzleItem: {
-    width: ITEM_SIZE,
-    height: ITEM_SIZE,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.5,
-    elevation: 1,
-    margin: itemMargin, // 添加外边距
-  },
-  puzzleContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  puzzleNumber: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  timeText: {
-    fontSize: 10,
-    marginTop: 2,
-  }
-});
 
 export default LocalGames;

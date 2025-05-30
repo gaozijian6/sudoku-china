@@ -1,7 +1,8 @@
-import { Dimensions, StatusBar, StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
 const model = DeviceInfo.getModel();
+console.log(model);
 
 const getDrawerHeight = () => {
   switch (true) {
@@ -27,16 +28,126 @@ const getMarginBottom = () => {
 };
 
 const getGridWidth = (isPortrait: boolean) => {
-  switch (true) {
-    case model.includes('iPad'):
-      return Dimensions.get('window').width * (isPortrait ? 0.8 : 0.45);
-    default:
-      return Dimensions.get('window').width * 0.95;
+  if (model.includes('iPad')) {
+    if (isPortrait) {
+      // iPad竖屏时系数保持不变
+      return Dimensions.get('window').width * 0.7;
+    } else {
+      // iPad横屏时根据型号分类讨论
+      switch (true) {
+        case model.includes('iPad Pro 12.9'):
+          return Dimensions.get('window').width * 0.45;
+        case model.includes('iPad Pro 11'):
+        case model.includes('iPad Air'):
+          return Dimensions.get('window').width * 0.4;
+        case model.includes('iPad'):
+          return Dimensions.get('window').width * 0.4;
+          default:
+          // 普通iPad或其他型号
+          return Dimensions.get('window').width * 0.4;
+      }
+    }
   }
+
+  // 非iPad设备保持原有逻辑
+  return Dimensions.get('window').width * 0.95;
 };
 
-const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: boolean) =>
-  StyleSheet.create({
+const getControlButtonsWidth = (isPortrait: boolean) => {
+  if (model.includes('iPad')) {
+    if (isPortrait) {
+      // iPad竖屏时使用全宽
+      return '100%';
+    } else {
+      // iPad横屏时根据型号详细区分
+      switch (true) {
+        case model.includes('iPad Pro 12.9'):
+          return '60%'; // 12.9英寸iPad Pro横屏时使用更窄的宽度
+        case model.includes('iPad Pro 11'):
+          return '55%'; // 11英寸iPad Pro横屏时使用中等宽度
+        case model.includes('iPad Air'):
+          return '60%'; // iPad Air横屏时使用稍宽的宽度
+        case model.includes('iPad'):
+          return '50%'; // 普通iPad横屏时使用较宽的宽度
+        default:
+          // 其他iPad型号默认宽度
+          return '60%';
+      }
+    }
+  }
+
+  // 非iPad设备保持原有逻辑
+  return !isPortrait ? '60%' : '100%';
+};
+
+const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: boolean) => {
+  // 获取实际的网格宽度比例
+  const gridWidthRatio = (() => {
+    if (model.includes('iPad')) {
+      if (isPortrait) {
+        return 0.8;
+      } else {
+        // iPad横屏时根据型号返回不同比例
+        switch (true) {
+          case model.includes('iPad Pro 12.9'):
+            return 0.45;
+          case model.includes('iPad Pro 11'):
+          case model.includes('iPad Air'):
+          case model.includes('iPad'):
+            return 0.4;
+          default:
+            return 0.4;
+        }
+      }
+    }
+    return 0.95;
+  })();
+
+  const cellSize = Dimensions.get('window').width * gridWidthRatio * 0.11;
+
+  // 调整iPhone主格子数字大小
+  const fontSizeMultiplier = (() => {
+    if (model.includes('iPad')) {
+      return !isPortrait ? 0.95 : 0.7;
+    } else {
+      // iPhone设备 - 调大数字
+      return isPortrait ? 0.8 : 0.5;
+    }
+  })();
+
+  const draftFontSizeMultiplier =
+    model.includes('iPad') && !isPortrait ? 1.4 : isPortrait ? 1.1 : 0.6;
+
+  // 计算草稿数字的lineHeight，使其等于height以实现垂直居中
+  const draftCellHeight = cellSize / 3; // 每个草稿格子的高度是单元格的1/3
+  const draftFontSize = cellSize * 0.6 * 0.33 * draftFontSizeMultiplier;
+
+  // 针对不同设备和方向调整lineHeight
+  const mainCellLineHeightMultiplier = (() => {
+    if (model.includes('iPad')) {
+      return isPortrait ? 1.2 : 1.1;
+    } else {
+      // iPhone设备
+      return isPortrait ? 1.15 : 1.05;
+    }
+  })();
+
+  // 针对不同设备调整草稿数字的lineHeight
+  const draftLineHeight = (() => {
+    if (model.includes('iPad')) {
+      // iPad竖屏时需要减小lineHeight来实现垂直居中
+      if (isPortrait) {
+        return draftCellHeight * 0.85;
+      } else {
+        return draftCellHeight;
+      }
+    } else {
+      // iPhone设备需要稍微调整
+      return draftCellHeight * 0.95;
+    }
+  })();
+
+  return StyleSheet.create({
     container: {
       flex: 1,
       alignItems: 'center',
@@ -50,6 +161,10 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
     text: {
       color: isDark ? '#999' : '#333',
       fontSize: 16,
+    },
+    ipadPlaceholder: {
+      height: model.includes('iPad') && isPortrait ? 50 : 0,
+      width: '100%',
     },
     gameInfo: {
       flexDirection: 'row',
@@ -156,12 +271,15 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       borderLeftWidth: 0,
     },
     cellValue: {
-      fontSize: Dimensions.get('window').width * 0.95 * 0.11 * (isPortrait ? 0.7 : 0.4),
+      fontSize: cellSize * fontSizeMultiplier,
       fontWeight: 'bold',
+      textAlign: 'center',
+      textAlignVertical: 'center',
+      lineHeight: cellSize * fontSizeMultiplier * mainCellLineHeightMultiplier,
+      includeFontPadding: false,
     },
     givenNumber: {
-      // color: isDark ? '#777' : '#000',
-      color: isPortrait ? 'red' : 'blue',
+      color: isDark ? '#777' : '#000',
     },
     userNumber: {
       color: 'rgb(80,101,182)',
@@ -187,14 +305,11 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       overflow: 'hidden',
     },
     draftCellText: {
-      fontSize:
-        Dimensions.get('window').width * 0.95 * 0.11 * 0.6 * 0.33 * (isPortrait ? 1.1 : 0.6),
+      fontSize: draftFontSize,
       width: '33.33%',
       height: '33.33%',
       textAlign: 'center',
-      lineHeight: model.includes('iPad')
-        ? Dimensions.get('window').width * 0.95 * 0.11 * 0.6 * (isPortrait ? 0.45 : 0.25)
-        : Dimensions.get('window').width * 0.95 * 0.11 * 0.6 * 0.5,
+      lineHeight: draftLineHeight,
       position: 'absolute',
       color: isDark ? '#888' : '#000',
     },
@@ -238,7 +353,7 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       marginTop: 20,
       flexDirection: 'row',
       flexWrap: 'wrap',
-      width: !isPortrait ? '60%' : '100%',
+      width: getControlButtonsWidth(isPortrait),
       justifyContent: 'space-evenly',
       position: 'relative',
       top: -30,
@@ -562,5 +677,6 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       tintColor: isDark ? '#666' : '#fff',
     },
   });
+};
 
 export default sudokuStyles;

@@ -25,6 +25,7 @@ const Cell = memo(
     scaleValue,
     isMovingRef,
     styles,
+    isDark,
   }: {
     cell: CellData;
     rowIndex: number;
@@ -44,6 +45,7 @@ const Cell = memo(
     scaleValue: number;
     isMovingRef: React.MutableRefObject<boolean>;
     styles: ReturnType<typeof createStyles>;
+    isDark: boolean;
   }) => {
     return (
       <Pressable
@@ -154,6 +156,46 @@ const Cell = memo(
           ))
         )}
       </Pressable>
+    );
+  },
+  (prevProps, nextProps) => {
+    if (
+      prevProps.cell.value !== null &&
+      prevProps.isDark === nextProps.isDark &&
+      prevProps.cell.isGiven === nextProps.cell.isGiven
+    ) {
+      return (
+        prevProps.cell.value === nextProps.cell.value &&
+        prevProps.selectedNumber === nextProps.selectedNumber &&
+        prevProps.errorCells?.length === nextProps.errorCells?.length &&
+        prevProps.selectedCell?.row === nextProps.selectedCell?.row &&
+        prevProps.selectedCell?.col === nextProps.selectedCell?.col &&
+        prevProps.falseCells?.length === nextProps.falseCells?.length
+      );
+    }
+
+    return (
+      JSON.stringify(prevProps.cell) === JSON.stringify(nextProps.cell) &&
+      prevProps.cell.highlights?.length === nextProps.cell.highlights?.length &&
+      prevProps.cell.highlightCandidates?.length === nextProps.cell.highlightCandidates?.length &&
+      prevProps.selectedNumber === nextProps.selectedNumber &&
+      prevProps.selectionMode === nextProps.selectionMode &&
+      prevProps.rowIndex === nextProps.rowIndex &&
+      prevProps.colIndex === nextProps.colIndex &&
+      prevProps.selectedCell?.row === nextProps.selectedCell?.row &&
+      prevProps.selectedCell?.col === nextProps.selectedCell?.col &&
+      prevProps.errorCells?.length === nextProps.errorCells?.length &&
+      prevProps.prompts?.length === nextProps.prompts?.length &&
+      prevProps.positions?.length === nextProps.positions?.length &&
+      prevProps.handleCellChange === nextProps.handleCellChange &&
+      prevProps.isHighlight === nextProps.isHighlight &&
+      JSON.stringify(prevProps.differenceMap) === JSON.stringify(nextProps.differenceMap) &&
+      JSON.stringify(prevProps.resultBoard[prevProps.rowIndex][prevProps.colIndex]) ===
+        JSON.stringify(nextProps.resultBoard[nextProps.rowIndex][nextProps.colIndex]) &&
+      prevProps.isMovingRef === nextProps.isMovingRef &&
+      prevProps.scaleValue === nextProps.scaleValue &&
+      prevProps.isDark === nextProps.isDark &&
+      prevProps.cell.isGiven === nextProps.cell.isGiven
     );
   }
 );

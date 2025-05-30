@@ -168,8 +168,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
   const setIsHome = useSudokuStore(state => state.setIsHome);
   const setIsDIY = useSudokuStore(state => state.setIsDIY);
   const setSudokuType = useSudokuStore(state => state.setSudokuType);
+  const isPortrait = useSudokuStore(state => state.isPortrait);
 
-  const styles = createStyles(isDark);
+  let styles = createStyles(isDark, draftMode, isPortrait);
 
   const [watchIconVisible, setWatchIconVisible] = useState<boolean>(false);
   const isFirstHint = useRef<boolean>(true);
@@ -961,12 +962,16 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     }
   }, [sudokuType]);
 
+  // 强制渲染恢复布局
   useEffect(() => {
-    console.log('open');
-    return () => {
-      console.log('close');
-    };
-  }, []);
+    setTimeout(() => {
+      const num = selectedNumber;
+      setSelectedNumber(((selectedNumber + 1) % 9) + 1);
+      setTimeout(() => {
+        setSelectedNumber(num);
+      }, 0);
+    }, 0);
+  }, [isPortrait]);
 
   const handleLock = useCallback(() => {
     console.log(counts);
@@ -1049,6 +1054,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
               scaleValue={scaleValue2}
               isMovingRef={isMovingRef}
               isDark={isDark}
+              styles={styles}
             />
           ))
         )}
@@ -1192,6 +1198,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         scaleValue={scaleValue2}
         isMovingRef={isMovingRef}
         isDark={isDark}
+        isPortrait={isPortrait}
       />
       <View style={styles.selectionModeContainer}>
         <Text style={styles.selectionModeText}>{t('selectMode')}</Text>
@@ -1202,7 +1209,12 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
           thumbColor={selectionMode === 2 ? (isDark ? '#888' : '#fff') : isDark ? '#888' : '#fff'}
         />
       </View>
-      <Modal animationType="slide" transparent={true} visible={hintDrawerVisible}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={hintDrawerVisible}
+        supportedOrientations={['portrait', 'landscape']}
+      >
         <View style={styles.modalContainer}>
           <View
             style={[styles.drawerContent]}
