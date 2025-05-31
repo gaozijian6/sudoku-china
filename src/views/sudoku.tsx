@@ -928,7 +928,10 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
           }
         }
       }
+      const startTime = performance.now();
       const r = await Solver.solve(board, answerBoard.current);
+      const endTime = performance.now();
+      console.log(`Solver.solve 耗时: ${endTime - startTime} 毫秒`);
       if (r) {
         console.log(r);
         hintCount.current++;
