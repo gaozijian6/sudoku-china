@@ -276,7 +276,6 @@ export const useSudokuBoard = () => {
         remainingCounts: [...remainingCountsSync.current], // 确保存入当前的 remainingCounts
       });
       history.current = newHistory;
-      console.log(history.current.length);
     },
     [convertStringToBoard, getCounts, updateCandidateMap, updateRemainingCounts]
   );

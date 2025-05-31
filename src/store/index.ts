@@ -176,6 +176,8 @@ interface SudokuState {
     [DIFFICULTY.HARD]: number[];
     [DIFFICULTY.EXTREME]: number[];
   }) => void;
+  isPortrait: boolean;
+  setIsPortrait: (value: boolean) => void;
 }
 
 export const useSudokuStore = create<SudokuState>(set => ({
@@ -402,4 +404,6 @@ export const useSudokuStore = create<SudokuState>(set => ({
     [DIFFICULTY.EXTREME]: [],
   },
   setUserStatisticTime: value => set({ userStatisticTime: value }),
+  isPortrait: true,
+  setIsPortrait: value => set({ isPortrait: value }),
 }));

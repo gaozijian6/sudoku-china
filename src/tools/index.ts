@@ -599,8 +599,6 @@ export const generateBoard = (
           initializeBoard2(entryBoard[random].puzzle, entryBoard[random].solution);
         } else {
           random = Math.floor(Math.random() * entryBoardUnPass.length);
-          console.log('random', random);
-
           puzzleId = entryBoardUnPass[random].date;
           currentIndex = entryBoard.findIndex(item => item.date === puzzleId);
           initializeBoard2(entryBoardUnPass[random].puzzle, entryBoardUnPass[random].solution);

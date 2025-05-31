@@ -24,6 +24,7 @@ const Cell = memo(
     isHighlight,
     scaleValue,
     isMovingRef,
+    styles,
     isDark,
   }: {
     cell: CellData;
@@ -43,9 +44,9 @@ const Cell = memo(
     isHighlight: boolean;
     scaleValue: number;
     isMovingRef: React.MutableRefObject<boolean>;
+    styles: ReturnType<typeof createStyles>;
     isDark: boolean;
   }) => {
-    const styles = createStyles(isDark);
     return (
       <Pressable
         key={`${rowIndex}-${colIndex}`}

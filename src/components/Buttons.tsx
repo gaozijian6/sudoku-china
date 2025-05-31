@@ -12,6 +12,7 @@ const Buttons = memo(
     scaleValue,
     isMovingRef,
     isDark,
+    isPortrait,
   }: {
     handleNumberSelect: (number: number) => void;
     remainingCounts: number[];
@@ -21,8 +22,9 @@ const Buttons = memo(
     scaleValue: number;
     isMovingRef: React.MutableRefObject<boolean>;
     isDark: boolean;
+    isPortrait: boolean;
   }) => {
-    const styles = createStyles(isDark);
+    const styles = createStyles(isDark, draftMode, isPortrait);
     return (
       <View style={styles.numberButtons}>
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(number => (

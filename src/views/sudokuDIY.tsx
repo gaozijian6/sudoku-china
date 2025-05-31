@@ -130,7 +130,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
   useEffect(() => {
     if (sudokuStatus === SUDOKU_STATUS.SOLVED) {
       Solver.rate(board).then(res => {
-        console.log(res);
         setLevel(res);
       });
     } else {
@@ -213,8 +212,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
   const setIsHome = useSudokuStore(state => state.setIsHome);
   const setIsDIY = useSudokuStore(state => state.setIsDIY);
   const setSudokuType = useSudokuStore(state => state.setSudokuType);
+  const isPortrait = useSudokuStore(state => state.isPortrait);
 
-  const styles = createStyles(isDark);
+  let styles = createStyles(isDark, draftMode, isPortrait);
 
   const [watchIconVisible, setWatchIconVisible] = useState<boolean>(false);
   const isFirstHint = useRef<boolean>(true);
@@ -663,7 +663,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         setHintContent(t('errorDraft'));
         return;
       }
-      const r = await Solver.solve(board, answer);
+      const r = Solver.solve(board, answer);
       if (r) {
         console.log(r);
         hintCount.current++;
@@ -899,6 +899,17 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     }
   }, [sudokuType]);
 
+  // 强制渲染恢复布局
+  useEffect(() => {
+    setTimeout(() => {
+      const num = selectedNumber;
+      setSelectedNumber(((selectedNumber + 1) % 9) + 1);
+      setTimeout(() => {
+        setSelectedNumber(num);
+      }, 0);
+    }, 0);
+  }, [isPortrait]);
+
   const handleLock = useCallback(() => {
     playSound('switch', isSound);
     if (sudokuStatus === SUDOKU_STATUS.ILLEGAL || sudokuStatus === SUDOKU_STATUS.INCOMPLETE) {
@@ -977,6 +988,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
               scaleValue={scaleValue2}
               isMovingRef={isMovingRef}
               isDark={isDark}
+              styles={styles}
             />
           ))
         )}
@@ -1120,6 +1132,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         scaleValue={scaleValue2}
         isMovingRef={isMovingRef}
         isDark={isDark}
+        isPortrait={isPortrait}
       />
       <View style={styles.selectionModeContainer}>
         <Text style={styles.selectionModeText}>{t('selectMode')}</Text>
@@ -1130,7 +1143,12 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
           thumbColor={selectionMode === 2 ? (isDark ? '#888' : '#fff') : isDark ? '#888' : '#fff'}
         />
       </View>
-      <Modal animationType="slide" transparent={true} visible={hintDrawerVisible}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={hintDrawerVisible}
+        supportedOrientations={['portrait', 'landscape']}
+      >
         <View style={styles.modalContainer}>
           <View
             style={[styles.drawerContent]}

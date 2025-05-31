@@ -8,6 +8,7 @@ import {
   FlatList,
   NativeModules,
   TextInput,
+  Dimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -76,7 +77,7 @@ const MyBoards = memo(() => {
   const initSudokuDataDIY1 = useSudokuStore(state => state.initSudokuDataDIY1);
   const initSudokuDataDIY2 = useSudokuStore(state => state.initSudokuDataDIY2);
   const isDark = useSudokuStore(state => state.isDark);
-  const styles = createStyles(isDark);
+  const isPortrait = useSudokuStore(state => state.isPortrait);
   const [isEditing, setIsEditing] = useState(false);
   const deletedBoardsRef = useRef<Board[]>([]);
   const myBoardsCopy = useRef<Board[]>([]);
@@ -85,6 +86,23 @@ const MyBoards = memo(() => {
   const [editingName, setEditingName] = useState('');
   const isCreating = useRef(false);
   const isDeleting = useRef(false);
+
+  // 计算列数和宽度
+  const getColumnsAndWidth = () => {
+    if (isIpad && !isPortrait) {
+      // iPad横屏
+      return { numColumns: 8, itemWidth: '11%' };
+    } else if (isIpad) {
+      // iPad竖屏
+      return { numColumns: 6, itemWidth: '15%' };
+    } else {
+      // iPhone
+      return { numColumns: 4, itemWidth: '22%' };
+    }
+  };
+
+  const { numColumns, itemWidth } = getColumnsAndWidth();
+  const styles = createStyles(isDark, itemWidth);
 
   const handleCreateNew = useCallback(() => {
     if (isCreating.current || isEditing || isDeleting.current) return;
@@ -135,7 +153,6 @@ const MyBoards = memo(() => {
       setSudokuDataDIY1(myBoards[index].data?.sudokuDataDIY1);
       setSudokuDataDIY2(myBoards[index].data?.sudokuDataDIY2);
       console.log('myBoards[index].data?.sudokuDataDIY2', myBoards[index].data?.sudokuDataDIY2);
-      
     },
     [
       isEditing,
@@ -366,10 +383,10 @@ const MyBoards = memo(() => {
           </View>
         ) : (
           <FlatList
-            key={`grid-${isIpad ? 6 : 4}`}
+            key={`grid-${numColumns}`}
             data={[null, ...myBoards]}
             renderItem={renderItem}
-            numColumns={isIpad ? 6 : 4}
+            numColumns={numColumns}
             contentContainerStyle={styles.boardsContainer}
             columnWrapperStyle={styles.columnWrapper}
             keyExtractor={(_, index) => `board-${index}`}
@@ -382,7 +399,7 @@ const MyBoards = memo(() => {
   );
 });
 
-const createStyles = (isDark: boolean) =>
+const createStyles = (isDark: boolean, itemWidth: string) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -437,7 +454,7 @@ const createStyles = (isDark: boolean) =>
       flexWrap: 'wrap',
     },
     boardWrapper: {
-      width: isIpad ? '15%' : '22%',
+      width: itemWidth,
       aspectRatio: 1,
       position: 'relative',
       alignItems: 'center',
@@ -454,7 +471,7 @@ const createStyles = (isDark: boolean) =>
       borderColor: '#666',
     },
     createButton: {
-      width: isIpad ? '15%' : '22%',
+      width: itemWidth,
       aspectRatio: 1,
       backgroundColor: isDark ? '#666' : '#f0f0f0',
       borderRadius: 10,

@@ -27,7 +27,6 @@ const createStyles = (isDark: boolean) =>
       top: 0,
       left: 0,
       right: 0,
-      // backgroundColor: 'rgb(91,139,241)',
       backgroundColor: isDark ? 'rgb(39, 60, 95)' : 'rgb(91,139,241)',
     },
   });

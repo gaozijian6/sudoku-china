@@ -24,6 +24,7 @@ import iCloudStorage from 'react-native-icloudstore';
 import LZString from 'lz-string';
 import { getUpdateUserStatisticPass, saveUserStatisticPass } from './src/tools';
 import SplashScreen from './src/views/SplashScreen';
+import Orientation from 'react-native-orientation-locker';
 
 const model = DeviceInfo.getModel();
 
@@ -295,6 +296,7 @@ function App() {
   const updateUserStatisticPassOnline = useSudokuStore(
     state => state.updateUserStatisticPassOnline
   );
+  const setIsPortrait = useSudokuStore(state => state.setIsPortrait);
 
   const isMovingRef = useRef(false);
   const scale = useRef(new Animated.Value(1)).current;
@@ -513,6 +515,16 @@ function App() {
 
   // 添加一个状态来控制是否显示闪屏页面
   const [showSplash, setShowSplash] = useState(true);
+
+  // 在组件挂载时立即获取当前方向
+  useEffect(() => {
+    Orientation.getOrientation(orientation => {
+      setIsPortrait(orientation.includes('PORTRAIT'));
+    });
+    Orientation.addOrientationListener(orientation => {
+      setIsPortrait(orientation.includes('PORTRAIT'));
+    });
+  }, []);
 
   // 如果显示闪屏页面，则渲染SplashScreen组件
   if (showSplash) {
