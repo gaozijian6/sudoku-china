@@ -220,9 +220,14 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   const route = useRoute();
   const { difficulty_route, index_route } = (route.params as any) || {};
 
-  // 替换为简单的状态
-  const [gameTime, setGameTime] = useState<number>(0);
+  // 使用 useRef 存储游戏时间，避免频繁重新渲染
+  const gameTimeRef = useRef<number>(0);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(true);
+
+  // 只在需要获取时间时才使用这个函数
+  const getCurrentGameTime = useCallback(() => {
+    return gameTimeRef.current;
+  }, []);
 
   // 修改计时器控制函数
   const stopGameTimer = useCallback(() => {
@@ -234,7 +239,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   }, []);
 
   const resetGameTimer = useCallback(() => {
-    setGameTime(0);
+    gameTimeRef.current = 0;
     setIsTimerRunning(true);
   }, []);
 
@@ -278,7 +283,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     setDifferenceMap({});
     hintCount.current = 0;
     startTime.current = 0;
-    setGameTime(0); // 重置游戏时间
+    gameTimeRef.current = 0; // 重置游戏时间
     resetGameTimer(); // 重启计时器
 
     resetSudokuBoard();
@@ -316,7 +321,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       resultVisible: false,
       puzzleId: puzzleId.current,
       currentPuzzleIndex,
-      elapsedTime: gameTime, // 保存游戏时间
+      elapsedTime: gameTimeRef.current, // 保存游戏时间
     };
 
     await AsyncStorage.setItem('sudokuData1', JSON.stringify(sudokuData));
@@ -338,7 +343,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     isFirstHint,
     isHinting,
     currentPuzzleIndex,
-    gameTime,
   ]);
 
   const setSuccessResult = useCallback(
@@ -414,9 +418,9 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       const timeArr = [...userStatisticTime[difficulty]];
       // 如果之前已经通关过并记录了时间，则取较小值（更快的解题时间）
       if (timeArr[index!] > 0) {
-        timeArr[index!] = Math.min(timeArr[index!], gameTime);
+        timeArr[index!] = Math.min(timeArr[index!], gameTimeRef.current);
       } else {
-        timeArr[index!] = gameTime;
+        timeArr[index!] = gameTimeRef.current;
       }
 
       const newUserStatisticTime = {
@@ -459,7 +463,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
         setSuccessResult(errorCount, hintCount.current);
       }
     }
-  }, [counts, gameTime]);
+  }, [counts, gameTimeRef.current]);
 
   const loadSavedData = useCallback(async () => {
     loadSavedData2();
@@ -490,7 +494,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       isHinting.current = data.isHinting;
       puzzleId.current = data.puzzleId;
       setCurrentPuzzleIndex(data.currentPuzzleIndex);
-      setGameTime(data.elapsedTime || 0); // 加载保存的时间
+      gameTimeRef.current = data.elapsedTime || 0; // 加载保存的时间
     }
   }, [loadSavedData2, setErrorCount, t, setDifficulty, setWatchIconVisible, setCurrentPuzzleIndex]);
 
@@ -928,10 +932,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
           }
         }
       }
-      const startTime = performance.now();
       const r = await Solver.solve(board, answerBoard.current);
-      const endTime = performance.now();
-      console.log(`Solver.solve 耗时: ${endTime - startTime} 毫秒`);
       if (r) {
         console.log(r);
         hintCount.current++;
@@ -1219,8 +1220,10 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
         </View>
         <View style={styles.gameInfoItem}>
           <GameTimer
-            initialTime={gameTime}
-            onTimeChange={setGameTime}
+            initialTime={gameTimeRef.current}
+            onTimeChange={(time) => {
+              gameTimeRef.current = time;
+            }}
             style={styles.gameInfoText}
             isRunning={isTimerRunning}
           />
@@ -1474,7 +1477,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
         visible={resultVisible}
         puzzleId={puzzleId}
         initializeBoard2={initializeBoard2}
-        elapsedTime={gameTime}
+        elapsedTime={gameTimeRef.current}
         setShouldRestartTimer={resetGameTimer}
       />
     </View>

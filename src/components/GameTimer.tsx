@@ -17,6 +17,7 @@ const GameTimer: React.FC<GameTimerProps> = memo(({
 }) => {
   const [elapsedTime, setElapsedTime] = useState<number>(initialTime);
   const timerRef = useRef<number | null>(null);
+  const timeRef = useRef<number>(initialTime);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -30,11 +31,10 @@ const GameTimer: React.FC<GameTimerProps> = memo(({
     }
 
     timerRef.current = BackgroundTimer.setInterval(() => {
-      setElapsedTime(prev => {
-        const newTime = prev + 1;
-        onTimeChange?.(newTime);
-        return newTime;
-      });
+      timeRef.current += 1;
+      setElapsedTime(timeRef.current);
+      // 只更新内部引用，不频繁调用父组件回调
+      onTimeChange?.(timeRef.current);
     }, 1000);
   };
 
@@ -46,6 +46,7 @@ const GameTimer: React.FC<GameTimerProps> = memo(({
   };
 
   useEffect(() => {
+    timeRef.current = initialTime;
     setElapsedTime(initialTime);
   }, [initialTime]);
 
