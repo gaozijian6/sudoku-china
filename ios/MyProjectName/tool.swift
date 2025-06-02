@@ -1071,56 +1071,56 @@ func createHyperGraph(board: [[CellData]], candidateMap: CandidateMap) -> (
         }
 
         // 处理行分组中的单多强链接
-        if rowGroups.count != 2 { continue }
-
-        for (rowIndex, cells) in rowGroups {
-          if cells.count >= 2 {
-            // 确保单多强链接的单元格和多元格总数等于宫内该候选数的总数
-            var remainingCellCount = 0
-            for (otherRowIndex, otherCells) in rowGroups {
-              if rowIndex != otherRowIndex {
-                // 计算其他行的单元格总数
-                remainingCellCount += otherCells.count
-              }
-            }
-
-            // 如果多元格+单元格等于宫内候选数总数，才建立强链接
-            if cells.count + remainingCellCount == boxData.count {
-              let multiKey =
-                cells
-                .map { "\($0.row)-\($0.col)" }
-                .sorted()
-                .joined(separator: ",")
-
-              // 避免重复创建节点
-              if multiNodeMap[multiKey] == nil {
-                let multiNode = HyperGraphNode(cells: cells)
-                multiNodeMap[multiKey] = multiNode
-
-                // 添加到全局映射，使用 num-cells内容 格式作为键
-                let cellsStr =
-                  cells
-                  .map { "\($0.row),\($0.col)" }
-                  .sorted()
-                  .joined(separator: "|")
-                let globalKey = "\(num)-\(cellsStr)"
-                globalNodeMap[globalKey] = multiNode
-              }
-
-              guard let multiNode = multiNodeMap[multiKey] else { continue }
-
-              // 找出同宫内其他行的单个候选位置
+        if rowGroups.count == 2 {
+          for (rowIndex, cells) in rowGroups {
+            if cells.count >= 2 {
+              // 确保单多强链接的单元格和多元格总数等于宫内该候选数的总数
+              var remainingCellCount = 0
               for (otherRowIndex, otherCells) in rowGroups {
-                if rowIndex != otherRowIndex && otherCells.count == 1 {
-                  let singleCell = otherCells[0]
-                  let singleKey = "\(singleCell.row),\(singleCell.col)"
+                if rowIndex != otherRowIndex {
+                  // 计算其他行的单元格总数
+                  remainingCellCount += otherCells.count
+                }
+              }
 
-                  if let singleNode = nodeMap[singleKey] {
-                    if !multiNode.next.contains(where: { $0 === singleNode }) {
-                      multiNode.next.append(singleNode)
-                    }
-                    if !singleNode.next.contains(where: { $0 === multiNode }) {
-                      singleNode.next.append(multiNode)
+              // 如果多元格+单元格等于宫内候选数总数，才建立强链接
+              if cells.count + remainingCellCount == boxData.count {
+                let multiKey =
+                  cells
+                  .map { "\($0.row)-\($0.col)" }
+                  .sorted()
+                  .joined(separator: ",")
+
+                // 避免重复创建节点
+                if multiNodeMap[multiKey] == nil {
+                  let multiNode = HyperGraphNode(cells: cells)
+                  multiNodeMap[multiKey] = multiNode
+
+                  // 添加到全局映射，使用 num-cells内容 格式作为键
+                  let cellsStr =
+                    cells
+                    .map { "\($0.row),\($0.col)" }
+                    .sorted()
+                    .joined(separator: "|")
+                  let globalKey = "\(num)-\(cellsStr)"
+                  globalNodeMap[globalKey] = multiNode
+                }
+
+                guard let multiNode = multiNodeMap[multiKey] else { continue }
+
+                // 找出同宫内其他行的单个候选位置
+                for (otherRowIndex, otherCells) in rowGroups {
+                  if rowIndex != otherRowIndex && otherCells.count == 1 {
+                    let singleCell = otherCells[0]
+                    let singleKey = "\(singleCell.row),\(singleCell.col)"
+
+                    if let singleNode = nodeMap[singleKey] {
+                      if !multiNode.next.contains(where: { $0 === singleNode }) {
+                        multiNode.next.append(singleNode)
+                      }
+                      if !singleNode.next.contains(where: { $0 === multiNode }) {
+                        singleNode.next.append(multiNode)
+                      }
                     }
                   }
                 }
@@ -1130,56 +1130,56 @@ func createHyperGraph(board: [[CellData]], candidateMap: CandidateMap) -> (
         }
 
         // 处理列分组中的单多强链接
-        if colGroups.count != 2 { continue }
-
-        for (colIndex, cells) in colGroups {
-          if cells.count >= 2 {
-            // 确保单多强链接的单元格和多元格总数等于宫内该候选数的总数
-            var remainingCellCount = 0
-            for (otherColIndex, otherCells) in colGroups {
-              if colIndex != otherColIndex {
-                // 计算其他列的单元格总数
-                remainingCellCount += otherCells.count
-              }
-            }
-
-            // 如果多元格+单元格等于宫内候选数总数，才建立强链接
-            if cells.count + remainingCellCount == boxData.count {
-              let multiKey =
-                cells
-                .map { "\($0.row)-\($0.col)" }
-                .sorted()
-                .joined(separator: ",")
-
-              // 避免重复创建节点
-              if multiNodeMap[multiKey] == nil {
-                let multiNode = HyperGraphNode(cells: cells)
-                multiNodeMap[multiKey] = multiNode
-
-                // 添加到全局映射，使用 num-cells内容 格式作为键
-                let cellsStr =
-                  cells
-                  .map { "\($0.row),\($0.col)" }
-                  .sorted()
-                  .joined(separator: "|")
-                let globalKey = "\(num)-\(cellsStr)"
-                globalNodeMap[globalKey] = multiNode
-              }
-
-              guard let multiNode = multiNodeMap[multiKey] else { continue }
-
-              // 找出同宫内其他列的单个候选位置
+        if colGroups.count == 2 {
+          for (colIndex, cells) in colGroups {
+            if cells.count >= 2 {
+              // 确保单多强链接的单元格和多元格总数等于宫内该候选数的总数
+              var remainingCellCount = 0
               for (otherColIndex, otherCells) in colGroups {
-                if colIndex != otherColIndex && otherCells.count == 1 {
-                  let singleCell = otherCells[0]
-                  let singleKey = "\(singleCell.row),\(singleCell.col)"
+                if colIndex != otherColIndex {
+                  // 计算其他列的单元格总数
+                  remainingCellCount += otherCells.count
+                }
+              }
 
-                  if let singleNode = nodeMap[singleKey] {
-                    if !multiNode.next.contains(where: { $0 === singleNode }) {
-                      multiNode.next.append(singleNode)
-                    }
-                    if !singleNode.next.contains(where: { $0 === multiNode }) {
-                      singleNode.next.append(multiNode)
+              // 如果多元格+单元格等于宫内候选数总数，才建立强链接
+              if cells.count + remainingCellCount == boxData.count {
+                let multiKey =
+                  cells
+                  .map { "\($0.row)-\($0.col)" }
+                  .sorted()
+                  .joined(separator: ",")
+
+                // 避免重复创建节点
+                if multiNodeMap[multiKey] == nil {
+                  let multiNode = HyperGraphNode(cells: cells)
+                  multiNodeMap[multiKey] = multiNode
+
+                  // 添加到全局映射，使用 num-cells内容 格式作为键
+                  let cellsStr =
+                    cells
+                    .map { "\($0.row),\($0.col)" }
+                    .sorted()
+                    .joined(separator: "|")
+                  let globalKey = "\(num)-\(cellsStr)"
+                  globalNodeMap[globalKey] = multiNode
+                }
+
+                guard let multiNode = multiNodeMap[multiKey] else { continue }
+
+                // 找出同宫内其他列的单个候选位置
+                for (otherColIndex, otherCells) in colGroups {
+                  if colIndex != otherColIndex && otherCells.count == 1 {
+                    let singleCell = otherCells[0]
+                    let singleKey = "\(singleCell.row),\(singleCell.col)"
+
+                    if let singleNode = nodeMap[singleKey] {
+                      if !multiNode.next.contains(where: { $0 === singleNode }) {
+                        multiNode.next.append(singleNode)
+                      }
+                      if !singleNode.next.contains(where: { $0 === multiNode }) {
+                        singleNode.next.append(multiNode)
+                      }
                     }
                   }
                 }
@@ -1187,6 +1187,7 @@ func createHyperGraph(board: [[CellData]], candidateMap: CandidateMap) -> (
             }
           }
         }
+
       }
     }
 
@@ -1792,10 +1793,10 @@ func updateCandidateMap(_ board: [[CellData]]) -> (
   let duration1 = (endTime1 - startTime1) * 1000
   // print("graph: \(duration1) 毫秒")
 
-//   let startTime2 = CACurrentMediaTime()
-//   let (hyperGraph, globalNodeMap) = createHyperGraph(board: board, candidateMap: candidateMap)
-//   let endTime2 = CACurrentMediaTime()
-//   let duration2 = (endTime2 - startTime2) * 1000
-//   print("hyperGraph: \(duration2) 毫秒")
+  //   let startTime2 = CACurrentMediaTime()
+  //   let (hyperGraph, globalNodeMap) = createHyperGraph(board: board, candidateMap: candidateMap)
+  //   let endTime2 = CACurrentMediaTime()
+  //   let duration2 = (endTime2 - startTime2) * 1000
+  //   print("hyperGraph: \(duration2) 毫秒")
   return (candidateMap, graph, hyperGraph: [:], globalNodeMap: [:])
 }
