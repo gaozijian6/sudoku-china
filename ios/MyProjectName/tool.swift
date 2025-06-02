@@ -1394,11 +1394,19 @@ func createHyperGraph(board: [[CellData]], candidateMap: CandidateMap) -> (
 
         // 按行分组
         var rowGroups: [Int: [Candidate]] = [:]
+        // 按列分组
+        var colGroups: [Int: [Candidate]] = [:]
+
         for pos in boxData.positions {
           if rowGroups[pos.row] == nil {
             rowGroups[pos.row] = []
           }
           rowGroups[pos.row]?.append(pos)
+
+          if colGroups[pos.col] == nil {
+            colGroups[pos.col] = []
+          }
+          colGroups[pos.col]?.append(pos)
         }
 
         // 处理行分组的多多强链
@@ -1480,90 +1488,168 @@ func createHyperGraph(board: [[CellData]], candidateMap: CandidateMap) -> (
             }
           }
         }
-      }
 
-      // 按列分组
-      var colGroups: [Int: [Candidate]] = [:]
-      for pos in boxData.positions {
-        if colGroups[pos.col] == nil {
-          colGroups[pos.col] = []
+        // 处理列分组的多多强链
+        if colGroups.count >= 2 {
+          let colIndices = Array(colGroups.keys).sorted()
+
+          for i in 0..<colIndices.count {
+            for j in (i + 1)..<colIndices.count {
+              let colIndex1 = colIndices[i]
+              let colIndex2 = colIndices[j]
+
+              guard let cells1 = colGroups[colIndex1],
+                let cells2 = colGroups[colIndex2]
+              else { continue }
+
+              // 确保两列各自至少有2个候选数
+              if cells1.count >= 2 && cells2.count >= 2 {
+                // 检查两个多节点总和是否等于宫内候选数总数
+                if cells1.count + cells2.count == boxData.count {
+                  // 创建第一个多节点 - 添加box_col_前缀区分
+                  let multiKey1 =
+                    "box_col_"
+                    + cells1
+                    .map { "\($0.row)-\($0.col)" }
+                    .sorted()
+                    .joined(separator: ",")
+
+                  // 避免重复创建节点
+                  if multiNodeMap[multiKey1] == nil {
+                    let multiNode1 = HyperGraphNode(cells: cells1)
+                    multiNodeMap[multiKey1] = multiNode1
+
+                    // 添加到全局映射，使用 num-cells内容 格式作为键
+                    let cellsStr =
+                      cells1
+                      .map { "\($0.row),\($0.col)" }
+                      .sorted()
+                      .joined(separator: "|")
+                    let globalKey = "\(num)-\(cellsStr)"
+                    globalNodeMap[globalKey] = multiNode1
+                  }
+
+                  // 创建第二个多节点 - 添加box_col_前缀区分
+                  let multiKey2 =
+                    "box_col_"
+                    + cells2
+                    .map { "\($0.row)-\($0.col)" }
+                    .sorted()
+                    .joined(separator: ",")
+
+                  // 避免重复创建节点
+                  if multiNodeMap[multiKey2] == nil {
+                    let multiNode2 = HyperGraphNode(cells: cells2)
+                    multiNodeMap[multiKey2] = multiNode2
+
+                    // 添加到全局映射，使用 num-cells内容 格式作为键
+                    let cellsStr =
+                      cells2
+                      .map { "\($0.row),\($0.col)" }
+                      .sorted()
+                      .joined(separator: "|")
+                    let globalKey = "\(num)-\(cellsStr)"
+                    globalNodeMap[globalKey] = multiNode2
+                  }
+
+                  guard let multiNode1 = multiNodeMap[multiKey1],
+                    let multiNode2 = multiNodeMap[multiKey2]
+                  else { continue }
+
+                  // 建立多多强链接
+                  if !multiNode1.next.contains(where: { $0 === multiNode2 }) {
+                    multiNode1.next.append(multiNode2)
+                  }
+                  if !multiNode2.next.contains(where: { $0 === multiNode1 }) {
+                    multiNode2.next.append(multiNode1)
+                  }
+                }
+              }
+            }
+          }
         }
-        colGroups[pos.col]?.append(pos)
-      }
 
-      // 处理列分组的多多强链
-      if colGroups.count >= 2 {
-        let colIndices = Array(colGroups.keys).sorted()
+        // 处理行列交叉的多多强链接（实验性）
+        if rowGroups.count >= 1 && colGroups.count >= 1 {
+          for (rowIndex, rowCells) in rowGroups {
+            if rowCells.count >= 2 {
+              for (colIndex, colCells) in colGroups {
+                if colCells.count >= 2 {
+                  // 检查两组是否有重叠单元格
+                  let rowCellsSet = Set(rowCells.map { "\($0.row),\($0.col)" })
+                  let colCellsSet = Set(colCells.map { "\($0.row),\($0.col)" })
 
-        for i in 0..<colIndices.count {
-          for j in (i + 1)..<colIndices.count {
-            let colIndex1 = colIndices[i]
-            let colIndex2 = colIndices[j]
+                  // 获取交集
+                  let intersection = rowCellsSet.intersection(colCellsSet)
 
-            guard let cells1 = colGroups[colIndex1],
-              let cells2 = colGroups[colIndex2]
-            else { continue }
+                  // 如果没有交集或交集很小，并且两组单元格总数（减去交集）等于宫内候选数总数
+                  if (intersection.count == 0 || intersection.count == 1) &&
+                    rowCells.count + colCells.count - intersection.count == boxData.count {
+                    
+                    // 创建不重叠的行单元格集合
+                    let uniqueRowCells = rowCells.filter { cell in
+                      !intersection.contains("\(cell.row),\(cell.col)")
+                    }
 
-            // 确保两列各自至少有2个候选数
-            if cells1.count >= 2 && cells2.count >= 2 {
-              // 检查两个多节点总和是否等于宫内候选数总数
-              if cells1.count + cells2.count == boxData.count {
-                // 创建第一个多节点 - 添加box_col_前缀区分
-                let multiKey1 =
-                  "box_col_"
-                  + cells1
-                  .map { "\($0.row)-\($0.col)" }
-                  .sorted()
-                  .joined(separator: ",")
+                    // 创建不重叠的列单元格集合
+                    let uniqueColCells = colCells.filter { cell in
+                      !intersection.contains("\(cell.row),\(cell.col)")
+                    }
 
-                // 避免重复创建节点
-                if multiNodeMap[multiKey1] == nil {
-                  let multiNode1 = HyperGraphNode(cells: cells1)
-                  multiNodeMap[multiKey1] = multiNode1
+                    if uniqueRowCells.count >= 2 && uniqueColCells.count >= 2 {
+                      // 创建行多节点 - 添加前缀box_cross_row_来区分
+                      let multiKeyRow = "box_cross_row_" + uniqueRowCells
+                        .map { "\($0.row)-\($0.col)" }
+                        .sorted()
+                        .joined(separator: ",")
 
-                  // 添加到全局映射，使用 num-cells内容 格式作为键
-                  let cellsStr =
-                    cells1
-                    .map { "\($0.row),\($0.col)" }
-                    .sorted()
-                    .joined(separator: "|")
-                  let globalKey = "\(num)-\(cellsStr)"
-                  globalNodeMap[globalKey] = multiNode1
-                }
+                      // 避免重复创建节点
+                      if multiNodeMap[multiKeyRow] == nil {
+                        let multiNodeRow = HyperGraphNode(cells: uniqueRowCells)
+                        multiNodeMap[multiKeyRow] = multiNodeRow
 
-                // 创建第二个多节点 - 添加box_col_前缀区分
-                let multiKey2 =
-                  "box_col_"
-                  + cells2
-                  .map { "\($0.row)-\($0.col)" }
-                  .sorted()
-                  .joined(separator: ",")
+                        // 添加到全局映射，使用 num-cells内容 格式作为键
+                        let cellsStr = uniqueRowCells
+                          .map { "\($0.row),\($0.col)" }
+                          .sorted()
+                          .joined(separator: "|")
+                        let globalKey = "\(num)-\(cellsStr)"
+                        globalNodeMap[globalKey] = multiNodeRow
+                      }
 
-                // 避免重复创建节点
-                if multiNodeMap[multiKey2] == nil {
-                  let multiNode2 = HyperGraphNode(cells: cells2)
-                  multiNodeMap[multiKey2] = multiNode2
+                      // 创建列多节点 - 添加前缀box_cross_col_来区分
+                      let multiKeyCol = "box_cross_col_" + uniqueColCells
+                        .map { "\($0.row)-\($0.col)" }
+                        .sorted()
+                        .joined(separator: ",")
 
-                  // 添加到全局映射，使用 num-cells内容 格式作为键
-                  let cellsStr =
-                    cells2
-                    .map { "\($0.row),\($0.col)" }
-                    .sorted()
-                    .joined(separator: "|")
-                  let globalKey = "\(num)-\(cellsStr)"
-                  globalNodeMap[globalKey] = multiNode2
-                }
+                      // 避免重复创建节点
+                      if multiNodeMap[multiKeyCol] == nil {
+                        let multiNodeCol = HyperGraphNode(cells: uniqueColCells)
+                        multiNodeMap[multiKeyCol] = multiNodeCol
 
-                guard let multiNode1 = multiNodeMap[multiKey1],
-                  let multiNode2 = multiNodeMap[multiKey2]
-                else { continue }
+                        // 添加到全局映射，使用 num-cells内容 格式作为键
+                        let cellsStr = uniqueColCells
+                          .map { "\($0.row),\($0.col)" }
+                          .sorted()
+                          .joined(separator: "|")
+                        let globalKey = "\(num)-\(cellsStr)"
+                        globalNodeMap[globalKey] = multiNodeCol
+                      }
 
-                // 建立多多强链接
-                if !multiNode1.next.contains(where: { $0 === multiNode2 }) {
-                  multiNode1.next.append(multiNode2)
-                }
-                if !multiNode2.next.contains(where: { $0 === multiNode1 }) {
-                  multiNode2.next.append(multiNode1)
+                      guard let multiNodeRow = multiNodeMap[multiKeyRow],
+                        let multiNodeCol = multiNodeMap[multiKeyCol]
+                      else { continue }
+
+                      // 建立多多强链接
+                      if !multiNodeRow.next.contains(where: { $0 === multiNodeCol }) {
+                        multiNodeRow.next.append(multiNodeCol)
+                      }
+                      if !multiNodeCol.next.contains(where: { $0 === multiNodeRow }) {
+                        multiNodeCol.next.append(multiNodeRow)
+                      }
+                    }
+                  }
                 }
               }
             }
