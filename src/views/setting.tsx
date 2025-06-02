@@ -14,8 +14,7 @@ import { useSudokuStore } from '../store';
 import { useTranslation } from 'react-i18next';
 import LanguageModal from '../components/LanguageModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const APP_VERSION = '2.1.5';
+import DeviceInfo from 'react-native-device-info';
 
 const PRIVACY_POLICY_URL = 'https://sites.google.com/view/sudokucustom';
 const TERMS_OF_SERVICE_URL = 'https://sites.google.com/view/sudoku-custom-terms';
@@ -33,6 +32,10 @@ function Setting() {
   const styles = createStyles(isDark);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const { t, i18n } = useTranslation();
+
+  // 从设备信息获取应用版本号
+  const APP_VERSION = DeviceInfo.getVersion();
+
   useEffect(() => {
     setIsSetting(true);
     return () => {
@@ -71,9 +74,11 @@ Language: ${i18n.language}
 ${t('feedbackMessage')}
     `.trim();
 
-    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
     Linking.openURL(mailtoUrl);
-  }, [i18n.language, t]);
+  }, [APP_VERSION, i18n.language, t]);
 
   const handlePrivacyPolicy = useCallback(() => {
     Linking.openURL(PRIVACY_POLICY_URL);
@@ -97,7 +102,6 @@ ${t('feedbackMessage')}
 
   return (
     <View style={styles.container}>
-
       <View style={styles.content}>
         <View style={styles.item}>
           <Image source={require('../assets/icon/sound.png')} style={styles.leftIcon} />

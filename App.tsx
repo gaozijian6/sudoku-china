@@ -25,6 +25,8 @@ import LZString from 'lz-string';
 import { getUpdateUserStatisticPass, saveUserStatisticPass } from './src/tools';
 import SplashScreen from './src/views/SplashScreen';
 import Orientation from 'react-native-orientation-locker';
+import UpdateModal from './src/components/UpdateModal';
+import { checkAppVersion } from './src/tools/versionCheck';
 
 const model = DeviceInfo.getModel();
 
@@ -526,6 +528,36 @@ function App() {
     });
   }, []);
 
+  // 添加版本检查相关的状态
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [updateInfo, setUpdateInfo] = useState<{
+    newVersion: string;
+    appStoreUrl: string;
+  } | null>(null);
+  
+  // 版本检查 useEffect
+  useEffect(() => {
+    const performVersionCheck = async () => {
+      try {
+        const versionInfo = await checkAppVersion();
+        if (versionInfo && versionInfo.needsUpdate) {
+          setUpdateInfo({
+            newVersion: versionInfo.latestVersion,
+            appStoreUrl: versionInfo.appStoreUrl,
+          });
+          setShowUpdateModal(true);
+        }
+      } catch (error) {
+        console.log('版本检查失败:', error);
+      }
+    };
+
+    // 在SplashScreen结束后检查版本
+    if (!showSplash) {
+      performVersionCheck();
+    }
+  }, [showSplash]);
+
   // 如果显示闪屏页面，则渲染SplashScreen组件
   if (showSplash) {
     return <SplashScreen onFinish={() => setShowSplash(false)} />;
@@ -684,6 +716,16 @@ function App() {
               />
             </RootStack.Navigator>
           </NavigationContainer>
+          
+          {/* 添加版本更新弹窗 */}
+          {updateInfo && (
+            <UpdateModal
+              visible={showUpdateModal}
+              onClose={() => setShowUpdateModal(false)}
+              newVersion={updateInfo.newVersion}
+              appStoreUrl={updateInfo.appStoreUrl}
+            />
+          )}
         </Animated.View>
       </PanGestureHandler>
     </GestureHandlerRootView>
