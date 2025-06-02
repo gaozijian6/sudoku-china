@@ -284,5 +284,11 @@ export default {
     fixedDescription:
       'This operation will fix the numbers on the current board, and you will not be able to modify the fixed numbers. Are you sure you want to proceed?',
     doNotShowAgain: "Don't show again",
+    updateAvailable: 'Update Available',
+    updateMessage: 'New version {{version}} is available. We recommend updating for better experience and latest features.',
+    forceUpdateTitle: 'Update Required',
+    forceUpdateMessage: 'Your current version is outdated. Please update to version {{version}} to continue using the app.',
+    updateNow: 'Update Now',
+    later: 'Later',
   },
 };

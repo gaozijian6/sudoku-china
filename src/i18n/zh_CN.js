@@ -275,5 +275,11 @@ export default {
     fixedDescription:
       '此操作会将当前棋盘里的数字固定，您将无法对被固定的数字进行修改，确定要执行吗？',
     doNotShowAgain: '不再显示',
+    updateAvailable: '发现新版本',
+    updateMessage: '发现新版本 {{version}}，建议您更新以获得更好的体验和最新功能。',
+    forceUpdateTitle: '必须更新',
+    forceUpdateMessage: '当前版本过旧，为确保正常使用，请更新到最新版本 {{version}}。',
+    updateNow: '立即更新',
+    later: '稍后提醒',
   },
 };
