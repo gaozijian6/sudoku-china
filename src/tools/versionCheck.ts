@@ -34,8 +34,6 @@ export const checkAppVersion = async (): Promise<VersionInfo | null> => {
     if (response.data && response.data.results && response.data.results.length > 0) {
       const appInfo = response.data.results[0];
       const latestVersion = appInfo.version;
-      console.log('latestVersion', latestVersion);
-      console.log('currentVersion', currentVersion);
 
       // 比较版本号
       const needsUpdate = compareVersions(currentVersion, latestVersion) < 0;
