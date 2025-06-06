@@ -285,5 +285,11 @@ export default {
     fixedDescription:
       'Diese Aktion wird die aktuellen Zahlen auf dem Brett fixieren. Sie können die fixierten Zahlen nicht mehr ändern. Sind Sie sicher, dass Sie fortfahren möchten?',
     doNotShowAgain: 'Nicht mehr anzeigen',
+    boardLimit: 'Die Anzahl der Sudokus hat die Obergrenze erreicht, und Sie können nur bis zu 300 Sudokus erstellen',
+    updateAvailable: 'Update verfügbar',
+    updateMessage: 'Neue Version {{version}} ist verfügbar. Wir empfehlen das Update für eine bessere Erfahrung und die neuesten Funktionen.',
+    updateNow: 'Jetzt aktualisieren',
+    later: 'Später',
+    contactAuthor: 'Kontaktieren Sie den Autor',
   },
 };

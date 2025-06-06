@@ -153,20 +153,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     }
   }, [level]);
 
-  // useEffect(() => {
-  //   if (difficulty && difficulty !== 'entry' && isRootValid(board)) {
-  //     Service.uploadSudoku({
-  //       difficulty,
-  //       puzzle: board.map(row => row.map(cell => cell.value).join('0')).join('0'),
-  //     }).then(res => {
-  //       const status = res.data.status;
-  //       if (status === 'success') {
-  //         Alert.alert(t('uploadSuccess'), '', [], { cancelable: true });
-  //       }
-  //     });
-  //   }
-  // }, [difficulty]);
-
   const isClickAutoNote = useRef<boolean>(false);
   const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
   const hintCount = useRef<number>(0);
@@ -718,7 +704,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         }
       }
       if (combinationChainResult.current) {
-        console.log(combinationChainResult.current);
         hintCount.current++;
         setResult(combinationChainResult.current);
         setSelectedNumber(null);

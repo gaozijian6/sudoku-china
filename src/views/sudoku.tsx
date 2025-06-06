@@ -27,34 +27,12 @@ import {
 } from '../tools';
 import { useSudokuBoard } from '../tools/useSudokuBoard';
 import {
-  hiddenSingle,
-  singleCandidate,
-  blockElimination,
-  nakedPair,
-  hiddenPair,
-  xWing,
-  xWingVarient,
-  xyWing,
-  skyscraper,
-  skyscraper2,
-  nakedTriple1,
-  nakedTriple2,
-  swordfish,
-  trialAndError,
   findDifferenceDraft,
-  combinationChain,
-  Loop,
-  uniqueRectangle,
-  BinaryUniversalGrave,
-  xyzWing,
-  jellyfish,
-  hiddenTriple,
   findDifferenceCells,
   findDifferenceDraftAll,
-  nakedQuadruple,
 } from '../tools/solution';
 import { useTranslation } from 'react-i18next';
-import type { CandidateMap, CellData, Graph, Position } from '../tools';
+import type { CellData, Position } from '../tools';
 import type { DifferenceMap, Result, FalseCells } from '../tools/solution';
 import { handleHintContent } from '../tools/handleHintContent';
 import Cell from '../components/SudokuCell';
@@ -77,7 +55,6 @@ import { DIFFICULTY, LeaderboardType } from '../constans';
 import { calculateProgress } from '../tools';
 import InAppReview from 'react-native-in-app-review';
 import GameTimer from '../components/GameTimer';
-import DeviceInfo from 'react-native-device-info';
 
 const { LeaderboardManager, Solver } = NativeModules;
 
@@ -92,8 +69,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     updateBoard,
     undo,
     currentStep,
-    candidateMap,
-    graph,
     answerBoard,
     remainingCounts,
     setRemainingCounts,
@@ -148,31 +123,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   }, [differenceMap, falseCells]);
   const hintCount = useRef<number>(0);
   const startTime = useRef<number>(0);
-  const solveFunctions = useRef<
-    ((board: CellData[][], candidateMap: CandidateMap, graph: Graph) => Result | null)[]
-  >([
-    singleCandidate,
-    hiddenSingle,
-    blockElimination,
-    nakedPair,
-    nakedTriple1,
-    nakedTriple2,
-    hiddenPair,
-    hiddenTriple,
-    xWing,
-    xWingVarient,
-    xyWing,
-    xyzWing,
-    skyscraper,
-    skyscraper2,
-    nakedQuadruple,
-    combinationChain,
-    swordfish,
-    jellyfish,
-    Loop,
-    uniqueRectangle,
-    BinaryUniversalGrave,
-  ]);
   const difficulty = useSudokuStore(state => state.difficulty);
   const setResultVisible = useSudokuStore(state => state.setResultVisible);
   const errorCount = useSudokuStore(state => state.errorCount);

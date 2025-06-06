@@ -285,5 +285,11 @@ export default {
     fixedDescription:
       'Questa operazione fisserà i numeri attuali sulla griglia. Non sarà possibile modificare i numeri fissati. Sei sicuro di voler procedere?',
     doNotShowAgain: 'Non mostrare di nuovo',
+    boardLimit: 'Il numero di sudoku ha raggiunto il limite superiore, e puoi solo creare fino a 300 sudoku',
+    updateAvailable: 'Aggiornamento disponibile',
+    updateMessage: 'Nuova versione {{version}} disponibile. Consigliamo di aggiornare per una migliore esperienza e le ultime funzionalità.',
+    updateNow: 'Aggiorna ora',
+    later: 'Più tardi',
+    contactAuthor: 'Contattare l\'autore',
   },
 };

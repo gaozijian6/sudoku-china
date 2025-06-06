@@ -16,7 +16,8 @@ import mockBoard from '../views/mock';
 import mockStandradBoard from '../views/standradBoard';
 import { useSudokuStore } from '../store';
 import { SudokuType } from '../constans';
-import { NativeModules } from 'react-native';
+import { NativeModules, Alert } from 'react-native';
+import LZString from 'lz-string';
 
 const { CloudKitManager } = NativeModules;
 
@@ -209,8 +210,12 @@ export const useSudokuBoardDIY = () => {
       newMyBoards[currentIndex].data = {
         name: myBoards[currentIndex].data?.name,
         puzzle,
-        sudokuDataDIY2: useSudokuStore.getState().sudokuDataDIY2,
-        sudokuDataDIY1: useSudokuStore.getState().sudokuDataDIY1,
+        sudokuDataDIY2: LZString.compressToUTF16(
+          JSON.stringify(useSudokuStore.getState().sudokuDataDIY2)
+        ),
+        sudokuDataDIY1: LZString.compressToUTF16(
+          JSON.stringify(useSudokuStore.getState().sudokuDataDIY1)
+        ),
       };
       setMyBoards(newMyBoards);
       CloudKitManager.updateData(
@@ -218,10 +223,37 @@ export const useSudokuBoardDIY = () => {
         JSON.stringify({
           name: myBoards[currentIndex].data?.name,
           puzzle,
-          sudokuDataDIY2: useSudokuStore.getState().sudokuDataDIY2,
-          sudokuDataDIY1: useSudokuStore.getState().sudokuDataDIY1,
+          sudokuDataDIY2: LZString.compressToUTF16(
+            JSON.stringify(useSudokuStore.getState().sudokuDataDIY2)
+          ),
+          sudokuDataDIY1: LZString.compressToUTF16(
+            JSON.stringify(useSudokuStore.getState().sudokuDataDIY1)
+          ),
         })
-      );
+      )
+        .then(res => {
+          console.log('CloudKit更新成功:', res);
+        })
+        .catch(error => {
+          console.error('CloudKit更新失败:', error);
+
+          // 根据错误类型显示不同的Alert提示
+          if (error.message && error.message.includes('Quota exceeded')) {
+            Alert.alert(
+              '存储空间不足',
+              'iCloud存储空间已满，请清理存储空间后重试，或者升级您的iCloud存储计划。',
+              [{ text: '确定', style: 'default' }]
+            );
+          } else if (error.message && error.message.includes('Network')) {
+            Alert.alert('网络连接失败', '请检查您的网络连接和iCloud设置后重试。', [
+              { text: '确定', style: 'default' },
+            ]);
+          } else {
+            Alert.alert('保存失败', `数据保存到iCloud时出现错误：${error.message || '未知错误'}`, [
+              { text: '确定', style: 'default' },
+            ]);
+          }
+        });
     }
   }, [
     sudokuType,

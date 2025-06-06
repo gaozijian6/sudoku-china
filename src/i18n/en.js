@@ -290,5 +290,7 @@ export default {
     forceUpdateMessage: 'Your current version is outdated. Please update to version {{version}} to continue using the app.',
     updateNow: 'Update Now',
     later: 'Later',
+    contactAuthor: 'Contact Author',
+    boardLimit: 'The number of sudoku puzzles has reached the upper limit, and you can only create up to 300 puzzles',
   },
 };

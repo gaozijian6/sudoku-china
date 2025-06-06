@@ -285,5 +285,11 @@ export default {
     fixedDescription:
       'Esta operação fixará os números atuais no tabuleiro. Você não poderá modificar os números fixados. Tem certeza de que deseja continuar?',
     doNotShowAgain: 'Não mostrar novamente',
+    boardLimit: 'O número de sudokus atingiu o limite superior, e você só pode criar até 300 sudokus',
+    updateAvailable: 'Atualização disponível',
+    updateMessage: 'Nova versão {{version}} disponível. Recomendamos atualizar para melhor experiência e recursos mais recentes.',
+    updateNow: 'Atualizar agora',
+    later: 'Mais tarde',
+    contactAuthor: 'Contate o autor',
   },
 };

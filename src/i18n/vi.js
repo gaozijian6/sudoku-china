@@ -284,5 +284,11 @@ export default {
     fixedDescription:
       'Thao tác này sẽ cố định các số hiện tại trên bảng. Bạn sẽ không thể sửa đổi các số đã cố định. Bạn có chắc chắn muốn tiếp tục không?',
     doNotShowAgain: 'Không hiển thị lại',
+    boardLimit: 'Số lượng sổ số tùy chỉnh đã đạt giới hạn, bạn chỉ có thể tạo tối đa 300 sổ số tùy chỉnh',
+    updateAvailable: 'Có bản cập nhật',
+    updateMessage: 'Phiên bản mới {{version}} đã có sẵn. Chúng tôi khuyên bạn nên cập nhật để có trải nghiệm tốt hơn và các tính năng mới nhất.',
+    updateNow: 'Cập nhật ngay',
+    later: 'Để sau',
+    contactAuthor: 'Liên hệ với tác giả',
   },
 };

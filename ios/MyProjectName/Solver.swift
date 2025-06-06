@@ -374,11 +374,7 @@ class Solver: NSObject {
       return
     }
 
-    if map[SolutionMethods.BLOCK_ELIMINATION_ROW] != nil
-      || map[SolutionMethods.BLOCK_ELIMINATION_COLUMN] != nil
-      || map[SolutionMethods.BLOCK_ELIMINATION_BOX_ROW] != nil
-      || map[SolutionMethods.BLOCK_ELIMINATION_BOX_COLUMN] != nil
-      || map[SolutionMethods.NAKED_PAIR_ROW] != nil || map[SolutionMethods.NAKED_PAIR_COLUMN] != nil
+    if map[SolutionMethods.NAKED_PAIR_ROW] != nil || map[SolutionMethods.NAKED_PAIR_COLUMN] != nil
       || map[SolutionMethods.NAKED_PAIR_BOX] != nil || map[SolutionMethods.NAKED_TRIPLE_ROW1] != nil
       || map[SolutionMethods.NAKED_TRIPLE_COLUMN1] != nil
       || map[SolutionMethods.NAKED_TRIPLE_BOX1] != nil

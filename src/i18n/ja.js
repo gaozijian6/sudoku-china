@@ -279,5 +279,11 @@ export default {
     fixedDescription:
       'この操作により現在の盤面の数字が固定されます。固定された数字は変更できなくなります。実行してもよろしいですか？',
     doNotShowAgain: '今後表示しない',
+    boardLimit: '数独の数が上限に達しました。300個までしか作成できません',
+    updateAvailable: 'アップデート利用可能',
+    updateMessage: '新しいバージョン{{version}}が利用可能です。より良い体験と最新機能のためにアップデートをお勧めします。',
+    updateNow: '今すぐアップデート',
+    later: '後で',
+    contactAuthor: '作者に連絡する',
   },
 };

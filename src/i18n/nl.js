@@ -284,5 +284,11 @@ export default {
     fixedDescription:
       'Deze bewerking zal de huidige getallen op het bord vastzetten. U kunt de vastgezette getallen niet meer wijzigen. Weet u zeker dat u wilt doorgaan?',
     doNotShowAgain: 'Niet meer weergeven',
+    boardLimit: 'Het aantal sudokus heeft de bovengrens bereikt, en u kunt slechts tot 300 sudokus maken',
+    updateAvailable: 'Update beschikbaar',
+    updateMessage: 'Nieuwe versie {{version}} is beschikbaar. We raden aan om bij te werken voor een betere ervaring en de nieuwste functies.',
+    updateNow: 'Nu bijwerken',
+    later: 'Later',
+    contactAuthor: 'Contacteer de auteur',
   },
 };

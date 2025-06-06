@@ -282,5 +282,11 @@ export default {
     fixedDescription:
       'Bu işlem, tahtadaki mevcut sayıları sabitleyecektir. Sabitlenmiş sayıları değiştiremeyeceksiniz. Devam etmek istediğinizden emin misiniz?',
     doNotShowAgain: 'Bir daha gösterme',
+    boardLimit: 'Sudoku sayısı sınırına ulaştı. En fazla 300 sudoku oluşturabilirsiniz',
+    updateAvailable: 'Güncelleme mevcut',
+    updateMessage: 'Yeni sürüm {{version}} mevcut. Daha iyi deneyim ve en yeni özellikler için güncelleme yapmanızı öneririz.',
+    updateNow: 'Şimdi güncelle',
+    later: 'Daha sonra',
+    contactAuthor: 'Yazarla İletişime Geç',
   },
 };

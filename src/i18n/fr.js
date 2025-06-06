@@ -285,5 +285,11 @@ export default {
     fixedDescription:
       'Cette opération fixera les chiffres actuels sur le plateau. Vous ne pourrez pas modifier les chiffres fixés. Êtes-vous sûr de vouloir continuer ?',
     doNotShowAgain: 'Ne pas afficher à nouveau',
+    boardLimit: 'Le nombre de sudokus a atteint la limite supérieure, et vous ne pouvez créer que jusqu\'à 300 sudokus',
+    updateAvailable: 'Mise à jour disponible',
+    updateMessage: 'Nouvelle version {{version}} disponible. Nous recommandons la mise à jour pour une meilleure expérience et les dernières fonctionnalités.',
+    updateNow: 'Mettre à jour maintenant',
+    later: 'Plus tard',
+    contactAuthor: 'Contactez l\'auteur',
   },
 };
