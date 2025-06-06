@@ -110,7 +110,7 @@ const MyBoards = memo(() => {
     if (isCreating.current || isEditing || isDeleting.current) return;
     
     // 检查是否已达到上限
-    if (myBoards.length >= 4) {
+    if (myBoards.length >= 300) {
       Alert.alert(
         t('tips'),
         t('boardLimit'),
