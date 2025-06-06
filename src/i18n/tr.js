@@ -282,5 +282,17 @@ export default {
     fixedDescription:
       'Bu işlem, tahtadaki mevcut sayıları sabitleyecektir. Sabitlenmiş sayıları değiştiremeyeceksiniz. Devam etmek istediğinizden emin misiniz?',
     doNotShowAgain: 'Bir daha gösterme',
+    boardLimit: 'Sudoku bulmaca sayısı üst sınıra ulaştı, yalnızca 300 bulmacaya kadar oluşturabilirsiniz',
+    updateAvailable: 'Güncelleme mevcut',
+    updateMessage: 'Yeni sürüm {{version}} mevcut. Daha iyi deneyim ve en yeni özellikler için güncelleme yapmanızı öneririz.',
+    updateNow: 'Şimdi güncelle',
+    later: 'Daha sonra',
+    contactAuthor: 'Yazarla iletişime geç',
+    storageSpaceInsufficient: 'Yetersiz depolama alanı',
+    storageSpaceInsufficientDescription: 'iCloud depolama alanı dolu. Lütfen depolama alanını temizleyin ve tekrar deneyin, veya iCloud depolama planınızı yükseltin.',
+    networkConnectionFailed: 'Ağ bağlantısı başarısız',
+    networkConnectionFailedDescription: 'Lütfen ağ bağlantınızı ve iCloud ayarlarınızı kontrol edin ve tekrar deneyin.',
+    saveFailed: 'Kaydetme başarısız',
+    saveFailedDescription: 'iCloud\'a veri kaydederken bir hata oluştu: {{error}}',
   },
 };

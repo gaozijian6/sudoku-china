@@ -281,5 +281,17 @@ export default {
     fixedDescription:
       '이 작업은 현재 게임판의 숫자를 고정시킵니다. 고정된 숫자는 수정할 수 없게 됩니다. 실행하시겠습니까?',
     doNotShowAgain: '다시 보지 않기',
+    boardLimit: '스도쿠 퍼즐 수가 상한선에 도달했습니다. 최대 300개의 퍼즐만 만들 수 있습니다',
+    updateAvailable: '업데이트 가능',
+    updateMessage: '새 버전 {{version}}이 있습니다. 더 나은 경험과 최신 기능을 위해 업데이트를 권장합니다.',
+    updateNow: '지금 업데이트',
+    later: '나중에',
+    contactAuthor: '작성자에게 문의',
+    storageSpaceInsufficient: '저장공간 부족',
+    storageSpaceInsufficientDescription: 'iCloud 저장공간이 가득찼습니다. 저장공간을 정리한 후 다시 시도하거나 iCloud 저장공간 요금제를 업그레이드하세요.',
+    networkConnectionFailed: '네트워크 연결 실패',
+    networkConnectionFailedDescription: '네트워크 연결과 iCloud 설정을 확인한 후 다시 시도하세요.',
+    saveFailed: '저장 실패',
+    saveFailedDescription: 'iCloud에 데이터를 저장하는 중 오류가 발생했습니다: {{error}}',
   },
 };

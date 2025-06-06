@@ -8,7 +8,7 @@ import {
   FlatList,
   NativeModules,
   TextInput,
-  Dimensions,
+  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,6 +18,8 @@ import { playSound } from '../tools/Sound';
 import DeviceInfo from 'react-native-device-info';
 import TarBars from '../components/tarBars';
 import { useNavigation } from '@react-navigation/native';
+import { getObjectSize, isSudokuDataDIY1Compressed, isSudokuDataDIY2Compressed } from '../tools';
+import LZString from 'lz-string';
 
 const model = DeviceInfo.getModel();
 const isIpad = model.includes('iPad');
@@ -106,6 +108,17 @@ const MyBoards = memo(() => {
 
   const handleCreateNew = useCallback(() => {
     if (isCreating.current || isEditing || isDeleting.current) return;
+    
+    // 检查是否已达到上限
+    if (myBoards.length >= 300) {
+      Alert.alert(
+        t('tips'),
+        t('boardLimit'),
+        [{ text: t('confirm') }]
+      );
+      return;
+    }
+    
     isCreating.current = true;
     // 先创建一个临时ID
     const tempId = `temp-${Date.now()}`;
@@ -130,7 +143,7 @@ const MyBoards = memo(() => {
       .finally(() => {
         isCreating.current = false;
       });
-  }, [initSudokuDataDIY1, initSudokuDataDIY2, myBoards, setMyBoards, isEditing]);
+  }, [initSudokuDataDIY1, initSudokuDataDIY2, myBoards, setMyBoards, isEditing, t]);
 
   const handleDeleteBoard = useCallback(
     (index: number) => {
@@ -150,9 +163,20 @@ const MyBoards = memo(() => {
       playSound('switch', isSound);
       setCurrentIndex(index);
       setCurrentName(myBoards[index].data?.name || t('untitled'));
-      setSudokuDataDIY1(myBoards[index].data?.sudokuDataDIY1);
-      setSudokuDataDIY2(myBoards[index].data?.sudokuDataDIY2);
-      console.log('myBoards[index].data?.sudokuDataDIY2', myBoards[index].data?.sudokuDataDIY2);
+      if (isSudokuDataDIY1Compressed(myBoards[index].data?.sudokuDataDIY1)) {
+        setSudokuDataDIY1(
+          JSON.parse(LZString.decompressFromUTF16(myBoards[index].data?.sudokuDataDIY1))
+        );
+      } else {
+        setSudokuDataDIY1(myBoards[index].data?.sudokuDataDIY1);
+      }
+      if (isSudokuDataDIY2Compressed(myBoards[index].data?.sudokuDataDIY2)) {
+        setSudokuDataDIY2(
+          JSON.parse(LZString.decompressFromUTF16(myBoards[index].data?.sudokuDataDIY2))
+        );
+      } else {
+        setSudokuDataDIY2(myBoards[index].data?.sudokuDataDIY2);
+      }
     },
     [
       isEditing,
@@ -295,6 +319,9 @@ const MyBoards = memo(() => {
           ...item,
           data: item.data ? JSON.parse(item.data) : null,
         }));
+        console.log('parsedResult[0].data', getObjectSize(parsedResult[0].data));
+        console.log(parsedResult[0].data);
+
         setMyBoards(parsedResult);
         myBoardsCopy.current = parsedResult;
         setStatus('success');

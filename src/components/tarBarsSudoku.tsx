@@ -56,7 +56,6 @@ function TarBarsSudoku({ onBack, saveData }: TarBarsSudokuProps) {
   );
 
   const backToHome = useCallback(async () => {
-    await saveData();
     onBack();
     setTimeout(() => {
       setIsHome(true);
@@ -64,7 +63,7 @@ function TarBarsSudoku({ onBack, saveData }: TarBarsSudokuProps) {
       setIsContinue(false);
       setIsLevel(false);
     }, 0);
-  }, [onBack, setIsLevel, saveData, setIsHome, setIsSudoku, setIsContinue]);
+  }, [onBack, setIsLevel, setIsHome, setIsSudoku, setIsContinue]);
 
   useEffect(() => {
     if (isHint) {

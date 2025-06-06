@@ -123,7 +123,6 @@ function TarBarsSudoku({ onBack, saveDataDIY, resetSudoku, handleLock, handleUnl
       ]);
       return;
     }
-    saveDataDIY();
     setIsHome(true);
     setIsDIY(false);
     onBack();

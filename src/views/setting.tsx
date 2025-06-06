@@ -32,7 +32,7 @@ function Setting() {
   const styles = createStyles(isDark);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const { t, i18n } = useTranslation();
-
+  
   // 从设备信息获取应用版本号
   const APP_VERSION = DeviceInfo.getVersion();
 
@@ -99,6 +99,10 @@ ${t('feedbackMessage')}
       url: 'https://apps.apple.com/cn/app/%E8%B6%A3%E6%95%B0%E7%8B%AC-%E7%BB%8F%E5%85%B8%E7%9A%84%E7%9B%8A%E6%99%BA%E8%A7%A3%E8%B0%9C%E5%B0%8F%E6%B8%B8%E6%88%8F/id6741408233',
     });
   }, [t]);
+
+  const handleContactAuthor = useCallback(() => {
+    Linking.openURL('https://www.xiaohongshu.com/user/profile/67a2381a000000000e01f711');
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -188,13 +192,19 @@ ${t('feedbackMessage')}
 
         <Pressable style={styles.item} onPress={handleRateApp}>
           <Image source={require('../assets/icon/tongguo.png')} style={styles.leftIcon} />
-          <Text style={styles.itemText}>{t('encourage')}</Text>
+          <Text style={[styles.itemText, styles.rateText]}>{t('encourage')}</Text>
           <Image source={require('../assets/icon/arrow.png')} style={styles.arrow} />
         </Pressable>
 
         <Pressable style={styles.item} onPress={handleShare}>
           <Image source={require('../assets/icon/share.png')} style={styles.leftIcon} />
           <Text style={styles.itemText}>{t('share')}</Text>
+          <Image source={require('../assets/icon/arrow.png')} style={styles.arrow} />
+        </Pressable>
+
+        <Pressable style={styles.item} onPress={handleContactAuthor}>
+          <Image source={require('../assets/icon/xiaohongshulogo.png')} style={styles.xiaohongshuIcon} />
+          <Text style={styles.itemText}>{t('contactAuthor')}</Text>
           <Image source={require('../assets/icon/arrow.png')} style={styles.arrow} />
         </Pressable>
       </View>
@@ -369,6 +379,16 @@ const createStyles = (isDark: boolean) =>
       width: 30,
       height: 30,
       opacity: isDark ? 0.5 : 1,
+    },
+    xiaohongshuIcon: {
+      width: 70,
+      height: 30,
+      marginRight: 10,
+      opacity: isDark ? 0.5 : 1,
+    },
+    rateText: {
+      color: isDark ? 'rgb(189, 114, 0)' : 'rgb(255, 149, 0)',
+      fontWeight: '600',
     },
   });
 

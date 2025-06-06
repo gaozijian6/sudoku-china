@@ -16,7 +16,9 @@ import mockBoard from '../views/mock';
 import mockStandradBoard from '../views/standradBoard';
 import { useSudokuStore } from '../store';
 import { SudokuType } from '../constans';
-import { NativeModules } from 'react-native';
+import { NativeModules, Alert } from 'react-native';
+import LZString from 'lz-string';
+import { useTranslation } from 'react-i18next';
 
 const { CloudKitManager } = NativeModules;
 
@@ -37,6 +39,7 @@ const deepCopyCandidateMap = (candidateMap: CandidateMap): CandidateMap => {
 
 // 创建一个新的 hook 来管理棋盘状态和历史
 export const useSudokuBoardDIY = () => {
+  const { t } = useTranslation();
   const [board, setBoard] = useState<CellData[][]>(initialBoard);
   // const [board, setBoard] = useState<CellData[][]>(mockBoard);
   const [counts, setCounts] = useState<number>(0);
@@ -209,8 +212,12 @@ export const useSudokuBoardDIY = () => {
       newMyBoards[currentIndex].data = {
         name: myBoards[currentIndex].data?.name,
         puzzle,
-        sudokuDataDIY2: useSudokuStore.getState().sudokuDataDIY2,
-        sudokuDataDIY1: useSudokuStore.getState().sudokuDataDIY1,
+        sudokuDataDIY2: LZString.compressToUTF16(
+          JSON.stringify(useSudokuStore.getState().sudokuDataDIY2)
+        ),
+        sudokuDataDIY1: LZString.compressToUTF16(
+          JSON.stringify(useSudokuStore.getState().sudokuDataDIY1)
+        ),
       };
       setMyBoards(newMyBoards);
       CloudKitManager.updateData(
@@ -218,10 +225,37 @@ export const useSudokuBoardDIY = () => {
         JSON.stringify({
           name: myBoards[currentIndex].data?.name,
           puzzle,
-          sudokuDataDIY2: useSudokuStore.getState().sudokuDataDIY2,
-          sudokuDataDIY1: useSudokuStore.getState().sudokuDataDIY1,
+          sudokuDataDIY2: LZString.compressToUTF16(
+            JSON.stringify(useSudokuStore.getState().sudokuDataDIY2)
+          ),
+          sudokuDataDIY1: LZString.compressToUTF16(
+            JSON.stringify(useSudokuStore.getState().sudokuDataDIY1)
+          ),
         })
-      );
+      )
+        .then(res => {
+          console.log('CloudKit更新成功:', res);
+        })
+        .catch(error => {
+          console.error('CloudKit更新失败:', error);
+
+          // 根据错误类型显示不同的Alert提示
+          if (error.message && error.message.includes('Quota exceeded')) {
+            Alert.alert(
+              t('storageSpaceInsufficient'),
+              t('storageSpaceInsufficientDescription'),
+              [{ text: t('confirm'), style: 'default' }]
+            );
+          } else if (error.message && error.message.includes('Network')) {
+            Alert.alert(t('networkConnectionFailed'), t('networkConnectionFailedDescription'), [
+              { text: t('confirm'), style: 'default' },
+            ]);
+          } else {
+            Alert.alert(t('saveFailed'), t('saveFailedDescription', { error: error.message || '未知错误' }), [
+              { text: t('confirm'), style: 'default' },
+            ]);
+          }
+        });
     }
   }, [
     sudokuType,
@@ -236,6 +270,7 @@ export const useSudokuBoardDIY = () => {
     currentIndex,
     setMyBoards,
     getCleanBoard,
+    t,
   ]);
 
   const updateBoard = useCallback(

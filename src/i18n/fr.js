@@ -285,5 +285,17 @@ export default {
     fixedDescription:
       'Cette opération fixera les chiffres actuels sur le plateau. Vous ne pourrez pas modifier les chiffres fixés. Êtes-vous sûr de vouloir continuer ?',
     doNotShowAgain: 'Ne pas afficher à nouveau',
+    boardLimit: 'Le nombre de sudokus a atteint la limite supérieure, et vous ne pouvez créer que jusqu\'à 300 sudokus',
+    updateAvailable: 'Mise à jour disponible',
+    updateMessage: 'Nouvelle version {{version}} disponible. Nous recommandons la mise à jour pour une meilleure expérience et les dernières fonctionnalités.',
+    updateNow: 'Mettre à jour maintenant',
+    later: 'Plus tard',
+    contactAuthor: 'Contactez l\'auteur',
+    storageSpaceInsufficient: 'Espace de stockage insuffisant',
+    storageSpaceInsufficientDescription: 'L\'espace de stockage iCloud est plein. Veuillez libérer de l\'espace de stockage et réessayer, ou mettre à niveau votre plan de stockage iCloud.',
+    networkConnectionFailed: 'Échec de la connexion réseau',
+    networkConnectionFailedDescription: 'Veuillez vérifier votre connexion réseau et les paramètres iCloud et réessayer.',
+    saveFailed: 'Échec de la sauvegarde',
+    saveFailedDescription: 'Une erreur s\'est produite lors de la sauvegarde des données sur iCloud : {{error}}',
   },
 };

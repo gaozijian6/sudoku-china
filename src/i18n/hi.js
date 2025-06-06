@@ -284,5 +284,17 @@ export default {
     fixedDescription:
       'यह क्रिया वर्तमान बोर्ड के अंकों को स्थिर कर देगी। आप स्थिर किए गए अंकों को संशोधित नहीं कर पाएंगे। क्या आप निश्चित रूप से आगे बढ़ना चाहते हैं?',
     doNotShowAgain: 'फिर से नहीं दिखाएं',
+    boardLimit: 'सुडोकू की संख्या सीमा पर पहुंच गई है, आप केवल 300 सुडोकू बना सकते हैं',
+    updateAvailable: 'अपडेट उपलब्ध है',
+    updateMessage: 'नया संस्करण {{version}} उपलब्ध है। बेहतर अनुभव और नवीनतम सुविधाओं के लिए अपडेट करने की अनुशंसा करते हैं।',
+    updateNow: 'अभी अपडेट करें',
+    later: 'बाद में',
+    contactAuthor: 'लेखक से संपर्क करें',
+    storageSpaceInsufficient: 'अपर्याप्त स्टोरेज स्पेस',
+    storageSpaceInsufficientDescription: 'iCloud स्टोरेज स्पेस भरा हुआ है। कृपया स्टोरेज स्पेस साफ़ करें और फिर से कोशिश करें, या अपनी iCloud स्टोरेज योजना को अपग्रेड करें।',
+    networkConnectionFailed: 'नेटवर्क कनेक्शन विफल',
+    networkConnectionFailedDescription: 'कृपया अपने नेटवर्क कनेक्शन और iCloud सेटिंग्स की जांच करें और फिर से कोशिश करें।',
+    saveFailed: 'सेव विफल',
+    saveFailedDescription: 'iCloud पर डेटा सेव करते समय एक त्रुटि हुई: {{error}}',
   },
 };

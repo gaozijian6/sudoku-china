@@ -13,37 +13,41 @@ export interface Board {
   data?: {
     name?: string;
     puzzle?: string;
-    sudokuDataDIY2?: {
-      board: CellData[][];
-      history: BoardHistoryDIY[];
-      currentStep: number;
-      remainingCounts: number[];
-      standradBoard: CellData[][];
-      countsSync: number;
-      counts: number;
-    };
-    sudokuDataDIY1?: {
-      lastSelectedNumber: number;
-      errorCount: number;
-      draftMode: boolean;
-      lastErrorTime: number;
-      selectedCell: number;
-      lastSelectedCell: number;
-      selectionMode: number;
-      errorCells: number[];
-      hintContent: string;
-      hintMethod: string;
-      result: string;
-      prompts: number[];
-      positions: number[];
-      eraseEnabled: boolean;
-      isClickAutoNote: boolean;
-      differenceMap: any;
-      hintCount: number;
-      watchIconVisible: boolean;
-      isFirstHint: boolean;
-      selectedNumber: number;
-    };
+    sudokuDataDIY2?:
+      | {
+          board: CellData[][];
+          history: BoardHistoryDIY[];
+          currentStep: number;
+          remainingCounts: number[];
+          standradBoard: CellData[][];
+          countsSync: number;
+          counts: number;
+        }
+      | string;
+    sudokuDataDIY1?:
+      | {
+          lastSelectedNumber: number;
+          errorCount: number;
+          draftMode: boolean;
+          lastErrorTime: number;
+          selectedCell: number;
+          lastSelectedCell: number;
+          selectionMode: number;
+          errorCells: number[];
+          hintContent: string;
+          hintMethod: string;
+          result: string;
+          prompts: number[];
+          positions: number[];
+          eraseEnabled: boolean;
+          isClickAutoNote: boolean;
+          differenceMap: any;
+          hintCount: number;
+          watchIconVisible: boolean;
+          isFirstHint: boolean;
+          selectedNumber: number;
+        }
+      | string;
   };
 }
 
@@ -307,7 +311,7 @@ export const useSudokuStore = create<SudokuState>(set => ({
     const hardBoardUnPass = [];
     const extremeBoardPass = [];
     const extremeBoardUnPass = [];
-    
+
     for (const difficulty of Object.keys(state.userStatisticPass)) {
       const str = state.userStatisticPass[difficulty as keyof typeof state.userStatisticPass];
       for (let i = 0; i < entryBoard.length; i++) {
@@ -350,7 +354,7 @@ export const useSudokuStore = create<SudokuState>(set => ({
         }
       }
     }
-    
+
     set({
       entryBoardPass,
       entryBoardUnPass,
