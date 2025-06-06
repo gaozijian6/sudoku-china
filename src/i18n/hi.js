@@ -290,5 +290,11 @@ export default {
     updateNow: 'अभी अपडेट करें',
     later: 'बाद में',
     contactAuthor: 'लेखक से संपर्क करें',
+    storageSpaceInsufficient: 'अपर्याप्त स्टोरेज स्पेस',
+    storageSpaceInsufficientDescription: 'iCloud स्टोरेज स्पेस भरा हुआ है। कृपया स्टोरेज स्पेस साफ़ करें और फिर से कोशिश करें, या अपनी iCloud स्टोरेज योजना को अपग्रेड करें।',
+    networkConnectionFailed: 'नेटवर्क कनेक्शन विफल',
+    networkConnectionFailedDescription: 'कृपया अपने नेटवर्क कनेक्शन और iCloud सेटिंग्स की जांच करें और फिर से कोशिश करें।',
+    saveFailed: 'सेव विफल',
+    saveFailedDescription: 'iCloud पर डेटा सेव करते समय एक त्रुटि हुई: {{error}}',
   },
 };

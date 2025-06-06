@@ -18,6 +18,7 @@ import { useSudokuStore } from '../store';
 import { SudokuType } from '../constans';
 import { NativeModules, Alert } from 'react-native';
 import LZString from 'lz-string';
+import { useTranslation } from 'react-i18next';
 
 const { CloudKitManager } = NativeModules;
 
@@ -38,6 +39,7 @@ const deepCopyCandidateMap = (candidateMap: CandidateMap): CandidateMap => {
 
 // 创建一个新的 hook 来管理棋盘状态和历史
 export const useSudokuBoardDIY = () => {
+  const { t } = useTranslation();
   const [board, setBoard] = useState<CellData[][]>(initialBoard);
   // const [board, setBoard] = useState<CellData[][]>(mockBoard);
   const [counts, setCounts] = useState<number>(0);
@@ -240,17 +242,17 @@ export const useSudokuBoardDIY = () => {
           // 根据错误类型显示不同的Alert提示
           if (error.message && error.message.includes('Quota exceeded')) {
             Alert.alert(
-              '存储空间不足',
-              'iCloud存储空间已满，请清理存储空间后重试，或者升级您的iCloud存储计划。',
-              [{ text: '确定', style: 'default' }]
+              t('storageSpaceInsufficient'),
+              t('storageSpaceInsufficientDescription'),
+              [{ text: t('confirm'), style: 'default' }]
             );
           } else if (error.message && error.message.includes('Network')) {
-            Alert.alert('网络连接失败', '请检查您的网络连接和iCloud设置后重试。', [
-              { text: '确定', style: 'default' },
+            Alert.alert(t('networkConnectionFailed'), t('networkConnectionFailedDescription'), [
+              { text: t('confirm'), style: 'default' },
             ]);
           } else {
-            Alert.alert('保存失败', `数据保存到iCloud时出现错误：${error.message || '未知错误'}`, [
-              { text: '确定', style: 'default' },
+            Alert.alert(t('saveFailed'), t('saveFailedDescription', { error: error.message || '未知错误' }), [
+              { text: t('confirm'), style: 'default' },
             ]);
           }
         });
@@ -268,6 +270,7 @@ export const useSudokuBoardDIY = () => {
     currentIndex,
     setMyBoards,
     getCleanBoard,
+    t,
   ]);
 
   const updateBoard = useCallback(

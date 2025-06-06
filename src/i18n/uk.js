@@ -291,5 +291,11 @@ export default {
     updateNow: 'Оновити зараз',
     later: 'Пізніше',
     contactAuthor: 'Зв\'язатися з автором',
+    storageSpaceInsufficient: 'Недостатньо місця для зберігання',
+    storageSpaceInsufficientDescription: 'Сховище iCloud заповнене. Будь ласка, звільніть місце для зберігання і спробуйте знову, або оновіть план зберігання iCloud.',
+    networkConnectionFailed: 'Помилка мережевого з\'єднання',
+    networkConnectionFailedDescription: 'Будь ласка, перевірте мережеве з\'єднання та налаштування iCloud і спробуйте знову.',
+    saveFailed: 'Помилка збереження',
+    saveFailedDescription: 'Сталася помилка при збереженні даних в iCloud: {{error}}',
   },
 };

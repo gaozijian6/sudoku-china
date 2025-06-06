@@ -281,5 +281,11 @@ export default {
     later: '稍后提醒',
     contactAuthor: '联系作者',
     boardLimit: '已达到数独题库数量上限，最多只能创建300个题库',
+    storageSpaceInsufficient: '存储空间不足',
+    storageSpaceInsufficientDescription: 'iCloud存储空间已满，请清理存储空间后重试，或者升级您的iCloud存储计划。',
+    networkConnectionFailed: '网络连接失败',
+    networkConnectionFailedDescription: '请检查您的网络连接和iCloud设置后重试。',
+    saveFailed: '保存失败',
+    saveFailedDescription: '数据保存到iCloud时出现错误：{{error}}',
   },
 };

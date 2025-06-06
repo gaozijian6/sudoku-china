@@ -290,6 +290,12 @@ export default {
     updateMessage: 'Nova versão {{version}} disponível. Recomendamos atualizar para melhor experiência e recursos mais recentes.',
     updateNow: 'Atualizar agora',
     later: 'Mais tarde',
-    contactAuthor: 'Contate o autor',
+    contactAuthor: 'Contatar o autor',
+    storageSpaceInsufficient: 'Espaço de armazenamento insuficiente',
+    storageSpaceInsufficientDescription: 'O espaço de armazenamento do iCloud está cheio. Por favor, libere espaço de armazenamento e tente novamente, ou atualize seu plano de armazenamento do iCloud.',
+    networkConnectionFailed: 'Falha na conexão de rede',
+    networkConnectionFailedDescription: 'Por favor, verifique sua conexão de rede e configurações do iCloud e tente novamente.',
+    saveFailed: 'Falha ao salvar',
+    saveFailedDescription: 'Ocorreu um erro ao salvar dados no iCloud: {{error}}',
   },
 };

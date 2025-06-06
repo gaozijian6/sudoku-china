@@ -290,5 +290,11 @@ export default {
     later: 'Later',
     contactAuthor: 'Contact Author',
     boardLimit: 'The number of sudoku puzzles has reached the upper limit, and you can only create up to 300 puzzles',
+    storageSpaceInsufficient: 'Insufficient Storage Space',
+    storageSpaceInsufficientDescription: 'iCloud storage space is full. Please clear storage space and try again, or upgrade your iCloud storage plan.',
+    networkConnectionFailed: 'Network Connection Failed',
+    networkConnectionFailedDescription: 'Please check your network connection and iCloud settings and try again.',
+    saveFailed: 'Save Failed',
+    saveFailedDescription: 'An error occurred while saving data to iCloud: {{error}}',
   },
 };

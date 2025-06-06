@@ -291,5 +291,11 @@ export default {
     updateNow: 'Mettre à jour maintenant',
     later: 'Plus tard',
     contactAuthor: 'Contactez l\'auteur',
+    storageSpaceInsufficient: 'Espace de stockage insuffisant',
+    storageSpaceInsufficientDescription: 'L\'espace de stockage iCloud est plein. Veuillez libérer de l\'espace de stockage et réessayer, ou mettre à niveau votre plan de stockage iCloud.',
+    networkConnectionFailed: 'Échec de la connexion réseau',
+    networkConnectionFailedDescription: 'Veuillez vérifier votre connexion réseau et les paramètres iCloud et réessayer.',
+    saveFailed: 'Échec de la sauvegarde',
+    saveFailedDescription: 'Une erreur s\'est produite lors de la sauvegarde des données sur iCloud : {{error}}',
   },
 };

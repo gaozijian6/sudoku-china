@@ -291,5 +291,11 @@ export default {
     updateNow: 'Jetzt aktualisieren',
     later: 'Später',
     contactAuthor: 'Kontaktieren Sie den Autor',
+    storageSpaceInsufficient: 'Speicherplatz unzureichend',
+    storageSpaceInsufficientDescription: 'iCloud-Speicherplatz ist voll. Bitte räumen Sie Speicherplatz frei und versuchen Sie es erneut, oder upgraden Sie Ihren iCloud-Speicherplan.',
+    networkConnectionFailed: 'Netzwerkverbindung fehlgeschlagen',
+    networkConnectionFailedDescription: 'Bitte überprüfen Sie Ihre Netzwerkverbindung und iCloud-Einstellungen und versuchen Sie es erneut.',
+    saveFailed: 'Speichern fehlgeschlagen',
+    saveFailedDescription: 'Ein Fehler ist beim Speichern der Daten in iCloud aufgetreten: {{error}}',
   },
 };

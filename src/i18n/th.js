@@ -287,6 +287,12 @@ export default {
     updateMessage: 'เวอร์ชันใหม่ {{version}} พร้อมใช้งาน เราแนะนำให้อัปเดตเพื่อประสบการณ์ที่ดีขึ้นและฟีเจอร์ล่าสุด',
     updateNow: 'อัปเดตตอนนี้',
     later: 'ภายหลัง',
-    contactAuthor: 'ติดต่อผู้สร้าง',
+    contactAuthor: 'ติดต่อผู้เขียน',
+    storageSpaceInsufficient: 'พื้นที่จัดเก็บไม่เพียงพอ',
+    storageSpaceInsufficientDescription: 'พื้นที่จัดเก็บ iCloud เต็มแล้ว กรุณาล้างพื้นที่จัดเก็บและลองใหม่อีกครั้ง หรืออัปเกรดแผน iCloud ของคุณ',
+    networkConnectionFailed: 'การเชื่อมต่อเครือข่ายล้มเหลว',
+    networkConnectionFailedDescription: 'กรุณาตรวจสอบการเชื่อมต่อเครือข่ายและการตั้งค่า iCloud แล้วลองใหม่อีกครั้ง',
+    saveFailed: 'การบันทึกล้มเหลว',
+    saveFailedDescription: 'เกิดข้อผิดพลาดในการบันทึกข้อมูลไปยัง iCloud: {{error}}',
   },
 };
