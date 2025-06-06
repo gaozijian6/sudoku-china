@@ -99,8 +99,6 @@ function TarBarsSudoku({ onBack, saveDataDIY, resetSudoku, handleLock, handleUnl
   }, [sudokuType, isSetting]);
 
   const backToHome = useCallback(() => {
-    console.log('backToHome');
-    
     if (sudokuType === SudokuType.DIY2 && !isConnected) {
       Alert.alert('⚠️', t('noNetwork'), [
         {

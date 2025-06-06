@@ -286,8 +286,6 @@ export default {
     doNotShowAgain: "Don't show again",
     updateAvailable: 'Update Available',
     updateMessage: 'New version {{version}} is available. We recommend updating for better experience and latest features.',
-    forceUpdateTitle: 'Update Required',
-    forceUpdateMessage: 'Your current version is outdated. Please update to version {{version}} to continue using the app.',
     updateNow: 'Update Now',
     later: 'Later',
     contactAuthor: 'Contact Author',
