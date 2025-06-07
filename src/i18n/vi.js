@@ -296,5 +296,8 @@ export default {
     networkConnectionFailedDescription: 'Vui lòng kiểm tra kết nối mạng và cài đặt iCloud của bạn và thử lại.',
     saveFailed: 'Lưu thất bại',
     saveFailedDescription: 'Đã xảy ra lỗi khi lưu dữ liệu vào iCloud: {{error}}',
+    updateNotes: 'Nội dung cập nhật',
+    currentVersion: 'Phiên bản hiện tại',
+    newVersion: 'Phiên bản mới',
   },
 };

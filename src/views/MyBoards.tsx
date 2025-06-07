@@ -319,8 +319,6 @@ const MyBoards = memo(() => {
           ...item,
           data: item.data ? JSON.parse(item.data) : null,
         }));
-        console.log('parsedResult[0].data', getObjectSize(parsedResult[0].data));
-        console.log(parsedResult[0].data);
 
         setMyBoards(parsedResult);
         myBoardsCopy.current = parsedResult;

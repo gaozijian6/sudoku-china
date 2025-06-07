@@ -287,5 +287,8 @@ export default {
     networkConnectionFailedDescription: '请检查您的网络连接和iCloud设置后重试。',
     saveFailed: '保存失败',
     saveFailedDescription: '数据保存到iCloud时出现错误：{{error}}',
+    updateNotes: '更新内容',
+    currentVersion: '当前版本',
+    newVersion: '新版本',
   },
 };

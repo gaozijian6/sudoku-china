@@ -296,5 +296,8 @@ export default {
     networkConnectionFailedDescription: 'Controleer uw netwerkverbinding en iCloud instellingen en probeer opnieuw.',
     saveFailed: 'Opslaan mislukt',
     saveFailedDescription: 'Er is een fout opgetreden bij het opslaan van gegevens naar iCloud: {{error}}',
+    updateNotes: 'Update inhoud',
+    currentVersion: 'Huidige versie',
+    newVersion: 'Nieuwe versie',
   },
 };

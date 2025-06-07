@@ -297,5 +297,8 @@ export default {
     networkConnectionFailedDescription: 'Bitte überprüfen Sie Ihre Netzwerkverbindung und iCloud-Einstellungen und versuchen Sie es erneut.',
     saveFailed: 'Speichern fehlgeschlagen',
     saveFailedDescription: 'Ein Fehler ist beim Speichern der Daten in iCloud aufgetreten: {{error}}',
+    updateNotes: 'Aktualisierungsinhalte',
+    currentVersion: 'Aktuelle Version',
+    newVersion: 'Neue Version',
   },
 };

@@ -20,9 +20,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CustomTabButton from './src/components/CustomTabButton';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import iCloudStorage from 'react-native-icloudstore';
-import LZString from 'lz-string';
-import { getUpdateUserStatisticPass, saveUserStatisticPass } from './src/tools';
 import SplashScreen from './src/views/SplashScreen';
 import Orientation from 'react-native-orientation-locker';
 import UpdateModal from './src/components/UpdateModal';
@@ -294,10 +291,6 @@ function App() {
   const isDark = useSudokuStore(state => state.isDark);
   const setIsDark = useSudokuStore(state => state.setIsDark);
   const setIsReason = useSudokuStore(state => state.setIsReason);
-  const setUserStatisticPass = useSudokuStore(state => state.setUserStatisticPass);
-  const updateUserStatisticPassOnline = useSudokuStore(
-    state => state.updateUserStatisticPassOnline
-  );
   const setIsPortrait = useSudokuStore(state => state.setIsPortrait);
 
   const isMovingRef = useRef(false);
@@ -474,47 +467,6 @@ function App() {
     });
   }, []);
 
-  useEffect(() => {
-    // AsyncStorage.clear();
-    // iCloudStorage.clear();
-    const fetchUserStatisticPassData = async () => {
-      const userStatisticPass_iCloud = await iCloudStorage.getItem('userStatisticPass');
-      const userStatisticPass_AsyncStorage = await AsyncStorage.getItem('userStatisticPass');
-
-      if (!!userStatisticPass_iCloud && !!userStatisticPass_AsyncStorage) {
-        const decompressed_iCloud = LZString.decompressFromUTF16(userStatisticPass_iCloud);
-        const decompressed_AsyncStorage = LZString.decompressFromUTF16(
-          userStatisticPass_AsyncStorage
-        );
-        const newUserStatisticPass = getUpdateUserStatisticPass(
-          JSON.parse(decompressed_iCloud),
-          JSON.parse(decompressed_AsyncStorage)
-        );
-        setUserStatisticPass(newUserStatisticPass);
-      } else if (!!userStatisticPass_iCloud) {
-        const decompressed_iCloud = LZString.decompressFromUTF16(userStatisticPass_iCloud);
-        setUserStatisticPass(JSON.parse(decompressed_iCloud));
-      } else if (!!userStatisticPass_AsyncStorage) {
-        const decompressed_AsyncStorage = LZString.decompressFromUTF16(
-          userStatisticPass_AsyncStorage
-        );
-        setUserStatisticPass(JSON.parse(decompressed_AsyncStorage));
-      } else {
-        const userStatisticPass_Mock = {
-          [DIFFICULTY.ENTRY]: '0'.repeat(10000),
-          [DIFFICULTY.EASY]: '0'.repeat(10000),
-          [DIFFICULTY.MEDIUM]: '0'.repeat(10000),
-          [DIFFICULTY.HARD]: '0'.repeat(10000),
-          [DIFFICULTY.EXTREME]: '0'.repeat(10000),
-        };
-        setUserStatisticPass(userStatisticPass_Mock);
-      }
-      saveUserStatisticPass(useSudokuStore.getState().userStatisticPass);
-      updateUserStatisticPassOnline();
-    };
-    fetchUserStatisticPassData();
-  }, []);
-
   // 添加一个状态来控制是否显示闪屏页面
   const [showSplash, setShowSplash] = useState(true);
 
@@ -533,6 +485,9 @@ function App() {
   const [updateInfo, setUpdateInfo] = useState<{
     newVersion: string;
     appStoreUrl: string;
+    releaseNotes?: string;
+    releaseDate?: string;
+    currentVersion?: string;
   } | null>(null);
   
   // 版本检查 useEffect
@@ -544,6 +499,9 @@ function App() {
           setUpdateInfo({
             newVersion: versionInfo.latestVersion,
             appStoreUrl: versionInfo.appStoreUrl,
+            releaseNotes: versionInfo.releaseNotes,
+            releaseDate: versionInfo.releaseDate,
+            currentVersion: versionInfo.currentVersion,
           });
           setShowUpdateModal(true);
         }
@@ -552,7 +510,6 @@ function App() {
       }
     };
 
-    // 在SplashScreen结束后检查版本
     if (!showSplash) {
       performVersionCheck();
     }
@@ -722,8 +679,11 @@ function App() {
             <UpdateModal
               visible={showUpdateModal}
               onClose={() => setShowUpdateModal(false)}
+              currentVersion={updateInfo.currentVersion}
               newVersion={updateInfo.newVersion}
               appStoreUrl={updateInfo.appStoreUrl}
+              releaseNotes={updateInfo.releaseNotes}
+              releaseDate={updateInfo.releaseDate}
             />
           )}
         </Animated.View>

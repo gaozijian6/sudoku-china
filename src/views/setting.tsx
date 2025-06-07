@@ -209,6 +209,11 @@ ${t('feedbackMessage')}
         </Pressable>
       </View>
 
+      {/* 将版本号显示移到隐私政策上方 */}
+      <View style={styles.versionContainer}>
+        <Text style={styles.versionText}>{APP_VERSION}</Text>
+      </View>
+
       <View style={styles.links}>
         <Pressable onPress={handlePrivacyPolicy}>
           <Text style={styles.linkText}>{t('privacyPolicy')}</Text>
@@ -389,6 +394,20 @@ const createStyles = (isDark: boolean) =>
     rateText: {
       color: isDark ? 'rgb(189, 114, 0)' : 'rgb(255, 149, 0)',
       fontWeight: '600',
+    },
+    versionContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 10,
+      position: 'absolute',
+      bottom: 50,
+      left: 0,
+      right: 0,
+    },
+    versionText: {
+      fontSize: 14,
+      color: '#666',
     },
   });
 
