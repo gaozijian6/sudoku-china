@@ -485,6 +485,9 @@ function App() {
   const [updateInfo, setUpdateInfo] = useState<{
     newVersion: string;
     appStoreUrl: string;
+    releaseNotes?: string;
+    releaseDate?: string;
+    currentVersion?: string;
   } | null>(null);
   
   // 版本检查 useEffect
@@ -496,6 +499,9 @@ function App() {
           setUpdateInfo({
             newVersion: versionInfo.latestVersion,
             appStoreUrl: versionInfo.appStoreUrl,
+            releaseNotes: versionInfo.releaseNotes,
+            releaseDate: versionInfo.releaseDate,
+            currentVersion: versionInfo.currentVersion,
           });
           setShowUpdateModal(true);
         }
@@ -504,7 +510,6 @@ function App() {
       }
     };
 
-    // 在SplashScreen结束后检查版本
     if (!showSplash) {
       performVersionCheck();
     }
@@ -674,8 +679,11 @@ function App() {
             <UpdateModal
               visible={showUpdateModal}
               onClose={() => setShowUpdateModal(false)}
+              currentVersion={updateInfo.currentVersion}
               newVersion={updateInfo.newVersion}
               appStoreUrl={updateInfo.appStoreUrl}
+              releaseNotes={updateInfo.releaseNotes}
+              releaseDate={updateInfo.releaseDate}
             />
           )}
         </Animated.View>

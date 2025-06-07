@@ -294,5 +294,8 @@ export default {
     networkConnectionFailedDescription: 'Lütfen ağ bağlantınızı ve iCloud ayarlarınızı kontrol edin ve tekrar deneyin.',
     saveFailed: 'Kaydetme başarısız',
     saveFailedDescription: 'iCloud\'a veri kaydederken bir hata oluştu: {{error}}',
+    updateNotes: 'Güncelleme notları',
+    currentVersion: 'Mevcut sürüm',
+    newVersion: 'Yeni sürüm',
   },
 };

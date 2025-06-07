@@ -296,5 +296,8 @@ export default {
     networkConnectionFailedDescription: 'कृपया अपने नेटवर्क कनेक्शन और iCloud सेटिंग्स की जांच करें और फिर से कोशिश करें।',
     saveFailed: 'सेव विफल',
     saveFailedDescription: 'iCloud पर डेटा सेव करते समय एक त्रुटि हुई: {{error}}',
+    updateNotes: 'अपडेट नोट्स',
+    currentVersion: 'वर्तमान संस्करण',
+    newVersion: 'नया संस्करण',
   },
 };

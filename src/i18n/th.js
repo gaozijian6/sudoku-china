@@ -294,5 +294,8 @@ export default {
     networkConnectionFailedDescription: 'กรุณาตรวจสอบการเชื่อมต่อเครือข่ายและการตั้งค่า iCloud แล้วลองใหม่อีกครั้ง',
     saveFailed: 'การบันทึกล้มเหลว',
     saveFailedDescription: 'เกิดข้อผิดพลาดในการบันทึกข้อมูลไปยัง iCloud: {{error}}',
+    updateNotes: 'บันทึกการอัปเดต',
+    currentVersion: 'รุ่นปัจจุบัน',
+    newVersion: 'รุ่นใหม่',
   },
 };

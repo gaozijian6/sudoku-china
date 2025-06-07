@@ -297,5 +297,8 @@ export default {
     networkConnectionFailedDescription: 'Si prega di controllare la connessione di rete e le impostazioni iCloud e riprovare.',
     saveFailed: 'Salvataggio fallito',
     saveFailedDescription: 'Si è verificato un errore durante il salvataggio dei dati su iCloud: {{error}}',
+    updateNotes: 'Contenuto dell\'aggiornamento',
+    currentVersion: 'Versione corrente',
+    newVersion: 'Nuova versione',
   },
 };

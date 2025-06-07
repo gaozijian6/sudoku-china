@@ -39,7 +39,7 @@
     "react-native-screens": "^4.10.0",
     "react-native-sound": "^0.11.2",
     "react-native-walkthrough-tooltip": "^1.6.0",
-    "zustand": "^5.0.1"z
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

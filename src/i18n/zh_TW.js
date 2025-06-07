@@ -287,5 +287,8 @@ export default {
     updateMessage: '發現新版本 {{version}}，建議您更新以獲得更好的體驗和最新功能。',
     updateNow: '立即更新',
     later: '稍後提醒',
+    updateNotes: '更新內容',
+    currentVersion: '當前版本',
+    newVersion: '新版本',
   },
 };

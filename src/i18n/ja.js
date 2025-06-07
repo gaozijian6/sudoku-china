@@ -291,5 +291,8 @@ export default {
     networkConnectionFailedDescription: 'ネットワーク接続とiCloud設定を確認してから再試行してください。',
     saveFailed: '保存失敗',
     saveFailedDescription: 'iCloudへのデータ保存中にエラーが発生しました：{{error}}',
+    updateNotes: 'アップデート内容',
+    currentVersion: '現在のバージョン',
+    newVersion: '新しいバージョン',
   },
 };

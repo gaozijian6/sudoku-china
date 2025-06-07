@@ -293,5 +293,8 @@ export default {
     networkConnectionFailedDescription: '네트워크 연결과 iCloud 설정을 확인한 후 다시 시도하세요.',
     saveFailed: '저장 실패',
     saveFailedDescription: 'iCloud에 데이터를 저장하는 중 오류가 발생했습니다: {{error}}',
+    updateNotes: '업데이트 내용',
+    currentVersion: '현재 버전',
+    newVersion: '새 버전',
   },
 };
