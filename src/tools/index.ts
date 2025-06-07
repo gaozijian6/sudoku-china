@@ -9,6 +9,7 @@ import { SudokuSolver } from './DLX';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import iCloudStorage from 'react-native-icloudstore';
 import LZString from 'lz-string';
+import sizeof from 'object-sizeof';
 
 export interface Position {
   row: number;
@@ -40,12 +41,6 @@ export interface Graph {
   [key: number]: GraphNode[];
 }
 
-// 添加一个用于测量对象大小的函数
-export const getObjectSize = (obj: any): number => {
-  const str = JSON.stringify(obj);
-  return new Blob([str]).size;
-};
-
 export const calculateProgress = (userStatisticPass: any, difficultyLevel: DIFFICULTY) => {
   const progressData = userStatisticPass[difficultyLevel as keyof typeof userStatisticPass];
   if (!progressData) return { percentage: 0, completed: 0, total: 0 };
@@ -71,11 +66,11 @@ export type ProgressDifficulty =
 
 export const calculateTotalProgress = (userStatisticPass: any) => {
   const difficultyLevels = [
-    { key: DIFFICULTY.ENTRY},
-    { key: DIFFICULTY.EASY},
-    { key: DIFFICULTY.MEDIUM},
-    { key: DIFFICULTY.HARD},
-    { key: DIFFICULTY.EXTREME},
+    { key: DIFFICULTY.ENTRY },
+    { key: DIFFICULTY.EASY },
+    { key: DIFFICULTY.MEDIUM },
+    { key: DIFFICULTY.HARD },
+    { key: DIFFICULTY.EXTREME },
   ] as const;
 
   let totalCompleted = 0;
@@ -565,8 +560,6 @@ export const generateBoard = (
           initializeBoard2(entryBoard[random].puzzle, entryBoard[random].solution);
         } else {
           random = Math.floor(Math.random() * entryBoardUnPass.length);
-          console.log('random', random);
-          
           puzzleId = entryBoardUnPass[random].date;
           currentIndex = entryBoard.findIndex(item => item.date === puzzleId);
           initializeBoard2(entryBoardUnPass[random].puzzle, entryBoardUnPass[random].solution);
@@ -709,4 +702,16 @@ export const getUpdateUserStatisticTime = (timeData1: any, timeData2: any) => {
   }
 
   return result;
+};
+
+export const getObjectSize = (obj: any): string => {
+  return (sizeof(obj) / 1024).toFixed(2) + 'KB'; // 转换为KB
+};
+
+export const isSudokuDataDIY1Compressed = (str: any): boolean => {
+  return typeof str === 'string' && !str.includes('differenceMap');
+};
+
+export const isSudokuDataDIY2Compressed = (str: any): boolean => {
+  return typeof str === 'string' && !str.includes('board');
 };
