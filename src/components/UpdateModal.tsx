@@ -1,7 +1,8 @@
 import React from 'react';
-import { Modal, View, Text, Pressable, StyleSheet, Linking, ScrollView } from 'react-native';
+import { Modal, View, Text, Pressable, StyleSheet, Linking, ScrollView, Dimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSudokuStore } from '../store';
+import DeviceInfo from 'react-native-device-info';
 
 interface UpdateModalProps {
   visible: boolean;
@@ -24,7 +25,8 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const isDark = useSudokuStore(state => state.isDark);
-  const styles = createStyles(isDark);
+  const isPortrait = useSudokuStore(state => state.isPortrait);
+  const styles = createStyles(isDark, isPortrait);
 
   const handleUpdate = () => {
     Linking.openURL(appStoreUrl);
@@ -60,7 +62,13 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
   const noteLines = formatReleaseNotes(releaseNotes);
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal 
+      visible={visible} 
+      transparent 
+      animationType="fade" 
+      onRequestClose={onClose}
+      supportedOrientations={['portrait', 'landscape']}
+    >
       <View style={styles.overlay}>
         <View style={styles.container}>
           <Text style={styles.title}>{t('updateAvailable')}</Text>
@@ -111,8 +119,26 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
   );
 };
 
-const createStyles = (isDark: boolean) =>
-  StyleSheet.create({
+const createStyles = (isDark: boolean, isPortrait: boolean) => {
+  const model = DeviceInfo.getModel();
+  const isIpad = model.includes('iPad');
+  
+  // 动态计算弹窗宽度，iPad横屏时使用较小的宽度
+  const getModalWidth = () => {
+    if (isIpad && !isPortrait) {
+      return '60%'; // iPad横屏时使用60%宽度
+    }
+    return '85%'; // 其他情况保持原来的85%
+  };
+
+  const getMaxWidth = () => {
+    if (isIpad && !isPortrait) {
+      return 500; // iPad横屏时允许更大的最大宽度
+    }
+    return 400; // 其他情况保持原来的400
+  };
+
+  return StyleSheet.create({
     overlay: {
       flex: 1,
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -123,8 +149,8 @@ const createStyles = (isDark: boolean) =>
       backgroundColor: isDark ? 'rgb(32, 31, 33)' : '#fff',
       borderRadius: 12,
       padding: 24,
-      width: '85%',
-      maxWidth: 400,
+      width: getModalWidth(),
+      maxWidth: getMaxWidth(),
       maxHeight: '80%',
       alignItems: 'center',
     },
@@ -233,5 +259,6 @@ const createStyles = (isDark: boolean) =>
       fontWeight: '600',
     },
   });
+};
 
 export default UpdateModal;
