@@ -27,7 +27,6 @@ const Home: React.FC = memo(() => {
   const currentPage = useSudokuStore(state => state.currentPage);
   const setSudokuType = useSudokuStore(state => state.setSudokuType);
   const isDark = useSudokuStore(state => state.isDark);
-  const userStatisticPass = useSudokuStore(state => state.userStatisticPass);
   const setIsLoginGameCenter = useSudokuStore(state => state.setIsLoginGameCenter);
   const setUserStatisticPass = useSudokuStore(state => state.setUserStatisticPass);
   const updateUserStatisticPassOnline = useSudokuStore(state => state.updateUserStatisticPassOnline);
@@ -70,7 +69,7 @@ const Home: React.FC = memo(() => {
     const initializeGameCenter = async (userStatisticPass: any) => {
 
       try {
-        const result = await LeaderboardManager.initialize();
+        await LeaderboardManager.initialize();
         setIsLoginGameCenter(true);
 
         // 提交所有类型的分数

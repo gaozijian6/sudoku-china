@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -85,71 +85,75 @@ const LocalGames = () => {
   }, [screenData.width, numColumns]);
 
   // 将 localStyles 移到组件内部，使用 useMemo 优化性能
-  const localStyles = useMemo(() => StyleSheet.create({
-    tabsContainer: {
-      flexDirection: 'row',
-      paddingVertical: 10,
-      paddingHorizontal: 5,
-    },
-    tabItem: {
-      paddingHorizontal: 20,
-      marginHorizontal: 5,
-      borderRadius: 20,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    activeTab: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.2,
-      shadowRadius: 1.5,
-      elevation: 2,
-    },
-    tabText: {
-      fontSize: 14,
-      fontWeight: '600',
-      paddingVertical: 10,
-      lineHeight: 12,
-    },
-    listContainer: {
-      paddingHorizontal: 10,
-      paddingTop: 10,
-      paddingBottom: 30,
-      justifyContent: 'flex-start',
-      alignItems: 'flex-start',
-      width: '100%',
-    },
-    columnWrapper: {
-      justifyContent: 'space-between',
-      marginBottom: 4,
-    },
-    puzzleItem: {
-      width: ITEM_SIZE,
-      height: ITEM_SIZE,
-      borderRadius: 10,
-      justifyContent: 'center',
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.2,
-      shadowRadius: 1.5,
-      elevation: 1,
-      margin: itemMargin,
-    },
-    puzzleContent: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    puzzleNumber: {
-      fontSize: isIpad ? 24 : 16,
-      fontWeight: 'bold',
-    },
-    timeText: {
-      fontSize: isIpad ? 16 : 10,
-      marginTop: 2,
-    }
-  }), [ITEM_SIZE]);
+  const localStyles = useMemo(
+    () =>
+      StyleSheet.create({
+        tabsContainer: {
+          flexDirection: 'row',
+          paddingVertical: 10,
+          paddingHorizontal: 5,
+        },
+        tabItem: {
+          paddingHorizontal: 20,
+          marginHorizontal: 5,
+          borderRadius: 20,
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        activeTab: {
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.2,
+          shadowRadius: 1.5,
+          elevation: 2,
+        },
+        tabText: {
+          fontSize: 14,
+          fontWeight: '600',
+          paddingVertical: 10,
+          lineHeight: 12,
+        },
+        listContainer: {
+          paddingHorizontal: 10,
+          paddingTop: 10,
+          paddingBottom: 30,
+          justifyContent: 'flex-start',
+          alignItems: 'flex-start',
+          width: '100%',
+        },
+        columnWrapper: {
+          justifyContent: 'space-between',
+          marginBottom: 4,
+        },
+        puzzleItem: {
+          width: ITEM_SIZE,
+          height: ITEM_SIZE,
+          borderRadius: 10,
+          justifyContent: 'center',
+          alignItems: 'center',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.2,
+          shadowRadius: 1.5,
+          elevation: 1,
+          margin: itemMargin,
+        },
+        puzzleContent: {
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        puzzleNumber: {
+          fontSize: isIpad ? 24 : 16,
+          fontWeight: 'bold',
+        },
+        timeText: {
+          fontSize: isIpad ? 16 : 10,
+          marginTop: 2,
+        },
+      }),
+    [ITEM_SIZE]
+  );
 
   // 难度标签数据
   const difficultyTabs = useMemo<TabItem[]>(
@@ -244,9 +248,10 @@ const LocalGames = () => {
       // 检查当前难度对应字符串中的索引位置是否为1
       const isPassed =
         userStatisticPass[currentDifficulty as keyof typeof userStatisticPass]?.[index] === '1';
-      
+
       // 获取此题的解题时间
-      const solveTime = userStatisticTime[currentDifficulty as keyof typeof userStatisticTime]?.[index] || 0;
+      const solveTime =
+        userStatisticTime[currentDifficulty as keyof typeof userStatisticTime]?.[index] || 0;
       const formattedTime = solveTime > 0 ? formatTime(solveTime) : '';
 
       return (
@@ -275,13 +280,21 @@ const LocalGames = () => {
             >
               {index + 1}
             </Text>
-            
+
             {isPassed && solveTime > 0 && (
               <Text
                 style={[
                   styles.text,
                   localStyles.timeText,
-                  { color: isPassed ? (isDark ? '#666' : 'rgba(255,255,255,0.8)') : isDark ? '#666' : '#777' },
+                  {
+                    color: isPassed
+                      ? isDark
+                        ? '#666'
+                        : 'rgba(255,255,255,0.8)'
+                      : isDark
+                      ? '#666'
+                      : '#777',
+                  },
                 ]}
               >
                 {formattedTime}
@@ -291,7 +304,20 @@ const LocalGames = () => {
         </TouchableOpacity>
       );
     },
-    [isDark, styles.text, playGame, activeTab, difficultyTabs, userStatisticPass, userStatisticTime, formatTime]
+    [
+      difficultyTabs,
+      activeTab,
+      userStatisticPass,
+      userStatisticTime,
+      formatTime,
+      localStyles.puzzleItem,
+      localStyles.puzzleContent,
+      localStyles.puzzleNumber,
+      localStyles.timeText,
+      isDark,
+      styles.text,
+      playGame,
+    ]
   );
 
   return (
