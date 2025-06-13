@@ -864,7 +864,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
           return;
         } else {
           if (isFalseCellsBefore.current) {
-            setDifferenceMap(differenceMapAll);
+          setDifferenceMap(differenceMapAll);
             isDifferenceMapAll.current = true;
             setHintMethod(handleHintMethod('', t));
             setHintDrawerVisible(true);

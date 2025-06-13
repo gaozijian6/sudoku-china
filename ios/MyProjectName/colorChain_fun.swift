@@ -19,8 +19,8 @@ func doubleColorChain(
           let b = cellCandidates[1]
 
           // 创建根节点
-          let rootA = Node(row: row, col: col, value: a, depth: 1, noValue: [b])
-          let rootB = Node(row: row, col: col, value: b, depth: 1, noValue: [a])
+          let rootA = Node(row: row, col: col, value: a, depth: 1, noValue: [b], label: "")
+          let rootB = Node(row: row, col: col, value: b, depth: 1, noValue: [a], label: "")
           var visitedMapA = Set<String>()
           var visitedMapB = Set<String>()
 
@@ -127,8 +127,13 @@ func doubleColorChain(
                   let labelB = ancestorsResultB.label
 
                   // 检查是否有重复的祖先
-                  let hasDuplicate = false  // 简化实现
-                  if hasDuplicate { continue }
+                  let allAncestors = ancestorsA + ancestorsB
+                  let isHasDuplicate = allAncestors.contains { ancestor in
+                    commonUnits.contains { pos in
+                      pos.row == ancestor.row && pos.col == ancestor.col
+                    }
+                  }
+                  if isHasDuplicate { continue }
 
                   // 高亮提示
                   var highlightDeletes: [HighlightDelete] = []
@@ -168,7 +173,9 @@ func doubleColorChain(
                     "highlightPromts2": ancestorsB.map {
                       ["row": $0.row, "col": $0.col, "value": $0.value]
                     },
-                    "highlightDeletes": highlightDeletes,
+                    "highlightDeletes": highlightDeletes.map {
+                      ["row": $0.row, "col": $0.col, "value": $0.value]
+                    },
                   ]
 
                   return resultDict
@@ -514,7 +521,12 @@ func tripleColorChain(
                     let labelC = ancestorsResultC.label
 
                     // 检查是否有重复的祖先
-                    let isHasDuplicate = false  // 简化实现
+                    let allAncestors = ancestorsA + ancestorsB + ancestorsC
+                    let isHasDuplicate = allAncestors.contains { ancestor in
+                      commonUnits.contains { pos in
+                        pos.row == ancestor.row && pos.col == ancestor.col
+                      }
+                    }
                     if isHasDuplicate { continue }
 
                     var highlightDeletes: [HighlightDelete] = []
@@ -562,10 +574,7 @@ func tripleColorChain(
                         ]
                       },
                       "highlightDeletes": highlightDeletes.map {
-                        [
-                          "row": $0.row, "col": $0.col,
-                          "value": $0.value,
-                        ]
+                        ["row": $0.row, "col": $0.col, "value": $0.value]
                       },
                     ]
 

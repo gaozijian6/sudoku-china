@@ -21,32 +21,12 @@ import {
 } from '../tools';
 import { useSudokuBoardDIY } from '../tools/useSudokuBoardDIY';
 import {
-  hiddenSingle,
-  singleCandidate,
-  blockElimination,
-  nakedPair,
-  hiddenPair,
-  xWing,
-  xWingVarient,
-  xyWing,
-  skyscraper,
-  skyscraper2,
-  nakedTriple1,
-  nakedTriple2,
-  swordfish,
-  combinationChain,
-  Loop,
-  uniqueRectangle,
-  BinaryUniversalGrave,
-  xyzWing,
-  jellyfish,
-  trialAndError,
-  findDifferenceDraftDIY,
-  hiddenTriple,
-  nakedQuadruple,
+  findDifferenceDraft,
+  findDifferenceDraftAll,
+  findDifferenceCells,
 } from '../tools/solution';
 import type { CandidateMap, CellData, Graph, Position } from '../tools';
-import type { DifferenceMap, Result } from '../tools/solution';
+import type { DifferenceMap, FalseCells, Result } from '../tools/solution';
 import { handleHintContent } from '../tools/handleHintContent';
 import Cell from '../components/SudokuCell';
 import Buttons from '../components/Buttons';
@@ -60,7 +40,7 @@ import handleHintMethod from '../tools/handleHintMethod';
 import createStyles from './sudokuStyles';
 import { useNavigation } from '@react-navigation/native';
 
-const { Solver, ColorChain, CombinationChain } = NativeModules;
+const { Solver } = NativeModules;
 
 interface SudokuDIYProps {
   isMovingRef: React.MutableRefObject<boolean>;
@@ -74,8 +54,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     updateBoard,
     undo,
     currentStep,
-    candidateMap,
-    graph,
     remainingCounts,
     setRemainingCounts,
     standradBoard,
@@ -87,6 +65,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     countsSync,
     setCounts,
     counts,
+    standradBoardRef,
   } = useSudokuBoardDIY();
   const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
   const lastSelectedNumber = useRef<number | null>(null);
@@ -155,32 +134,14 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
 
   const isClickAutoNote = useRef<boolean>(false);
   const [differenceMap, setDifferenceMap] = useState<DifferenceMap>({});
+  const isDifferenceMap = useRef<boolean>(false);
+  const isDifferenceMapAll = useRef<boolean>(false);
+  const [falseCells, setFalseCells] = useState<FalseCells[]>([]);
+  const isFalseCellsBefore = useRef<boolean>(false);
+  const isFalseDraft = useMemo(() => {
+    return Object.keys(differenceMap).length > 0 || falseCells.length > 0;
+  }, [differenceMap, falseCells]);
   const hintCount = useRef<number>(0);
-  const solveFunctions = useRef<
-    ((board: CellData[][], candidateMap: CandidateMap, graph: Graph) => Result | null)[]
-  >([
-    singleCandidate,
-    hiddenSingle,
-    blockElimination,
-    nakedPair,
-    nakedTriple1,
-    nakedTriple2,
-    hiddenPair,
-    hiddenTriple,
-    xWing,
-    xWingVarient,
-    xyWing,
-    xyzWing,
-    skyscraper,
-    skyscraper2,
-    nakedQuadruple,
-    combinationChain,
-    swordfish,
-    jellyfish,
-    Loop,
-    uniqueRectangle,
-    BinaryUniversalGrave,
-  ]);
   const setErrorCount = useSudokuStore(state => state.setErrorCount);
   const isSound = useSudokuStore(state => state.isSound);
   const isConnected = useSudokuStore(state => state.isConnected);
@@ -305,28 +266,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     isConnected,
     setSudokuDataDIY1,
   ]);
-
-  const cleanBoard = useMemo(() => {
-    return deepCopyBoard(board).map(row =>
-      row.map(cell => ({
-        ...cell,
-        highlights: undefined,
-        highlightCandidates: undefined,
-        promptCandidates: undefined,
-      }))
-    );
-  }, [board]);
-
-  const colorChainResult = useRef<Result | null>(null);
-  const combinationChainResult = useRef<Result | null>(null);
-  useEffect(() => {
-    ColorChain.solve(cleanBoard).then(result => {
-      colorChainResult.current = result;
-    });
-    CombinationChain.solve(cleanBoard).then(result => {
-      combinationChainResult.current = result;
-    });
-  }, [cleanBoard]);
 
   const loadSavedData = useCallback(async () => {
     let data;
@@ -661,56 +600,49 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         playSound('switch', isSound);
         return;
       }
-      if (!isClickAutoNote.current) {
-        const currentBoard = deepCopyBoard(standradBoard);
-        handleShowCandidates();
-        handleHint(currentBoard);
-        return;
-      } else if (!checkDraftIsValid(board, answer)) {
-        const differenceMap = findDifferenceDraftDIY(board, standradBoard, answer);
-        setDifferenceMap(differenceMap);
-        setHintMethod(handleHintMethod('', t));
-        setHintDrawerVisible(true);
-        setIsHint(true);
-        setHintContent(t('errorDraft'));
-        return;
-      }
-      let result: Result | null = null;
-      for (const solveFunction of solveFunctions.current) {
-        result = solveFunction(board, candidateMap.current, graph.current, answer);
-        if (result) {
-          hintCount.current++;
-          setResult(result);
-          setSelectedNumber(null);
-          setHintMethod(handleHintMethod(result.method, t));
-          setHintContent(
-            handleHintContent(
-              result,
-              board,
-              prompts,
-              setPrompts,
-              setSelectedNumber,
-              setPositions,
-              applyHintHighlight,
-              updateBoard,
-              t
-            )
-          );
+      if (!checkDraftIsValid(board, answer)) {
+          const falseCells = findDifferenceCells(board, standradBoardRef.current, answer);
+        const differenceMapAll = findDifferenceDraftAll(board, standradBoardRef.current, answer);
+        const differenceMap = findDifferenceDraft(board, standradBoardRef.current, answer);
+        if (falseCells.length > 0) {
+          setErrorCount(errorCount + 1);
+          isFalseCellsBefore.current = true;
+          setFalseCells(falseCells);
+          setHintMethod(handleHintMethod('', t));
           setHintDrawerVisible(true);
           setIsHint(true);
-          lastSelectedCell.current = selectedCell;
-          // setSelectedCell(null);
+          setHintContent(t('errorDraft'));
           return;
+        } else {
+          if (isFalseCellsBefore.current) {
+            setDifferenceMap(differenceMapAll);
+            isDifferenceMapAll.current = true;
+            setHintMethod(handleHintMethod('', t));
+            setHintDrawerVisible(true);
+            setIsHint(true);
+            setHintContent(t('errorDraft'));
+            return;
+          } else {
+            setDifferenceMap(differenceMap);
+            isDifferenceMap.current = true;
+            setHintMethod(handleHintMethod('', t));
+            setHintDrawerVisible(true);
+            setIsHint(true);
+            setHintContent(t('errorDraft'));
+            return;
+          }
         }
       }
-      if (combinationChainResult.current) {
+      const r = await Solver.solve(board, answer);
+      if (r) {
+        console.log(r);
         hintCount.current++;
-        setResult(combinationChainResult.current);
+        setResult(r);
         setSelectedNumber(null);
-        setHintMethod(handleHintMethod(combinationChainResult.current.method, t));
+        setHintMethod(handleHintMethod(r.method, t));
         setHintContent(
           handleHintContent(
-            combinationChainResult.current,
+            r,
             board,
             prompts,
             setPrompts,
@@ -721,75 +653,23 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
             t
           )
         );
+
         setHintDrawerVisible(true);
         setIsHint(true);
         lastSelectedCell.current = selectedCell;
-        setSelectedCell(null);
-        return;
-      } else if (colorChainResult.current) {
-        hintCount.current++;
-        setResult(colorChainResult.current);
-        setSelectedNumber(null);
-        setHintMethod(handleHintMethod(colorChainResult.current.method, t));
-        setHintContent(
-          handleHintContent(
-            colorChainResult.current,
-            board,
-            prompts,
-            setPrompts,
-            setSelectedNumber,
-            setPositions,
-            applyHintHighlight,
-            updateBoard,
-            t
-          )
-        );
-        setHintDrawerVisible(true);
-        setIsHint(true);
-        lastSelectedCell.current = selectedCell;
-        setSelectedCell(null);
-        return;
-      } else {
-        result = trialAndError(board, candidateMap.current, graph.current, answer);
-        if (result) {
-          hintCount.current++;
-          setResult(result);
-          setSelectedNumber(null);
-          setHintMethod(handleHintMethod(result.method, t));
-
-          setHintContent(
-            handleHintContent(
-              result,
-              board,
-              prompts,
-              setPrompts,
-              setSelectedNumber,
-              setPositions,
-              applyHintHighlight,
-              updateBoard,
-              t
-            )
-          );
-
-          setHintDrawerVisible(true);
-          setIsHint(true);
-          lastSelectedCell.current = selectedCell;
-          setSelectedCell(null);
-          return;
-        }
       }
+      return;
     },
     [
       countsSync,
       sudokuStatus,
       answer,
       isSound,
-      standradBoard,
-      handleShowCandidates,
+      standradBoardRef,
+      setErrorCount,
+      errorCount,
       t,
       setIsHint,
-      candidateMap,
-      graph,
       prompts,
       applyHintHighlight,
       updateBoard,
@@ -798,16 +678,43 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
   );
 
   const handleApplyHint = useCallback(() => {
-    if (Object.keys(differenceMap).length > 0) {
+    if (falseCells.length > 0) {
+      setFalseCells([]);
       const newBoard = deepCopyBoard(board);
-      for (const key of Object.keys(differenceMap)) {
-        const [row, col] = key.split(',');
-        newBoard[row][col].draft.push(...differenceMap[key].sort((a, b) => a - b));
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          if (newBoard[row][col].value && newBoard[row][col].value !== answer[row][col].value) {
+            newBoard[row][col].value = null;
+          }
+        }
       }
-      setDifferenceMap({});
+      updateBoard(newBoard, '应用提示完成', false);
       handleHint(newBoard);
       isClickAutoNote.current = true;
       playSound('switch', isSound);
+      return;
+    } else if (Object.keys(differenceMap).length > 0) {
+      if (isDifferenceMapAll.current) {
+        setDifferenceMap({});
+        const newBoard = deepCopyBoard(standradBoardRef.current);
+        handleHint(newBoard);
+        isClickAutoNote.current = true;
+        playSound('switch', isSound);
+        isFalseCellsBefore.current = false;
+        isDifferenceMapAll.current = false;
+      } else if (isDifferenceMap.current) {
+        const newBoard = deepCopyBoard(board);
+        for (const key of Object.keys(differenceMap)) {
+          const [row, col] = key.split(',');
+          newBoard[row][col].draft.push(...differenceMap[key].sort((a, b) => a - b));
+        }
+        setDifferenceMap({});
+        handleHint(newBoard);
+        isClickAutoNote.current = true;
+        playSound('switch', isSound);
+        isFalseCellsBefore.current = false;
+        isDifferenceMap.current = false;
+      }
       return;
     } else if (result) {
       const { position, isFill, method } = result;
@@ -854,15 +761,18 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
       setResult(null); // 重置 result
     }
   }, [
+    falseCells.length,
     differenceMap,
     result,
+    board,
+    answer,
+    updateBoard,
     handleHint,
     isSound,
-    board,
-    removeHintHighlight,
-    updateBoard,
-    selectedCell,
+    standradBoardRef,
     remainingCountsMinusOne,
+    removeHintHighlight,
+    selectedCell,
     setIsHint,
   ]);
 
@@ -875,6 +785,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
 
   const handleCancelHint = useCallback(() => {
     setDifferenceMap({});
+    setFalseCells([]);
     const updatedBoard = removeHintHighlight(board);
     updateBoard(updatedBoard, '取消提示', false);
     setHintDrawerVisible(false);
@@ -1268,12 +1179,14 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
               </Pressable>
             </ScrollView>
             <View style={styles.drawerButtons}>
-              <Pressable
-                onPressIn={handleCancelHint}
-                style={[styles.drawerButton, styles.drawerButtonCancel]}
-              >
-                <Text style={styles.drawerButtonTextCancel}>{t('cancel')}</Text>
-              </Pressable>
+              {!isFalseDraft && (
+                <Pressable
+                  onPressIn={handleCancelHint}
+                  style={[styles.drawerButton, styles.drawerButtonCancel]}
+                >
+                  <Text style={styles.drawerButtonTextCancel}>{t('cancel')}</Text>
+                </Pressable>
+              )}
               <Pressable
                 onPressIn={handleApplyHint}
                 style={[styles.drawerButton, styles.drawerButtonApply]}
