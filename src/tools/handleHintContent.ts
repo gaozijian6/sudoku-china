@@ -20,8 +20,6 @@ export const handleHintContent = (
     method,
     prompt,
     isFill,
-    isWeakLink,
-    chainStructure,
     label,
     label1,
     label2,
