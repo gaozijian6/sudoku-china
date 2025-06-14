@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Animated, AppState, Dimensions, Pressable, Image } from 'react-native';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { Animated, AppState, Dimensions, Pressable, Image, View, Text } from 'react-native';
 import Sudoku from './src/views/sudoku';
 import SudokuDIY from './src/views/sudokuDIY';
 import Home from './src/views/Home';
@@ -14,7 +14,7 @@ import NetInfo from '@react-native-community/netinfo';
 import MyBoards from './src/views/MyBoards';
 import DeviceInfo from 'react-native-device-info';
 import { State, GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
-import { DIFFICULTY, SudokuType } from './src/constans';
+import { SudokuType } from './src/constans';
 import { useTranslation } from 'react-i18next';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CustomTabButton from './src/components/CustomTabButton';
@@ -24,6 +24,7 @@ import SplashScreen from './src/views/SplashScreen';
 import Orientation from 'react-native-orientation-locker';
 import UpdateModal from './src/components/UpdateModal';
 import { checkAppVersion } from './src/tools/versionCheck';
+import { createWebSocketService } from './src/tools/websocketOnlineService';
 
 const model = DeviceInfo.getModel();
 
@@ -164,6 +165,47 @@ const LocalGamesTabIcon = (props: TabButtonProps) => {
 function MainTabs() {
   const { t } = useTranslation();
   const isDark = useSudokuStore(state => state.isDark);
+  const onlineCount = useSudokuStore(state => state.onlineCount);
+  const isWebSocketConnected = useSudokuStore(state => state.isWebSocketConnected);
+
+  // 格式化在线人数显示
+  const formatOnlineCount = (count: number): string => {
+    if (count < 1000) {
+      return count.toString();
+    } else {
+      const thousands = Math.floor(count / 1000) * 1000;
+      return `${thousands}+`;
+    }
+  };
+
+  // 在线人数显示组件（复用）
+  const OnlineCountDisplay = () => (
+    <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 15 }}>
+      {/* 只有连接成功时才显示在线人数 */}
+      {isWebSocketConnected && (
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image
+            source={require('./src/assets/icon/onlinePeople.png')}
+            style={{
+              width: 25,
+              height: 25,
+              tintColor: isDark ? '#666' : '#fff',
+              marginRight: 4,
+            }}
+          />
+          <Text
+            style={{
+              color: isDark ? '#666' : '#fff',
+              fontSize: 14,
+              fontWeight: '500',
+            }}
+          >
+            {formatOnlineCount(onlineCount)}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
 
   return (
     <Tab.Navigator
@@ -186,6 +228,7 @@ function MainTabs() {
         options={({ navigation }) => ({
           title: t('Home'),
           tabBarButton: HomeTabIcon,
+          headerLeft: OnlineCountDisplay,
           headerRight: () => (
             <Pressable
               style={{ marginRight: 15 }}
@@ -212,6 +255,7 @@ function MainTabs() {
         options={({ navigation }) => ({
           lazy: false,
           tabBarButton: LocalGamesTabIcon,
+          headerLeft: OnlineCountDisplay,
           headerRight: () => (
             <Pressable
               style={{ marginRight: 15 }}
@@ -238,6 +282,7 @@ function MainTabs() {
         options={({ navigation }) => ({
           lazy: false,
           tabBarButton: StatisticsTabIcon,
+          headerLeft: OnlineCountDisplay,
           headerRight: () => (
             <Pressable
               style={{ marginRight: 15 }}
@@ -292,6 +337,8 @@ function App() {
   const setIsDark = useSudokuStore(state => state.setIsDark);
   const setIsReason = useSudokuStore(state => state.setIsReason);
   const setIsPortrait = useSudokuStore(state => state.setIsPortrait);
+  const setOnlineCount = useSudokuStore(state => state.setOnlineCount);
+  const setIsWebSocketConnected = useSudokuStore(state => state.setIsWebSocketConnected);
 
   const isMovingRef = useRef(false);
   const scale = useRef(new Animated.Value(1)).current;
@@ -364,12 +411,41 @@ function App() {
     };
   }, [baseScale, pinchScale, scale]);
 
+  const [deviceId, setDeviceId] = useState<string>('');
+  // 新增：WebSocket服务实例引用
+  const [webSocketServiceRef, setWebSocketServiceRef] = useState<any>(null);
+
+  // 修改这个useEffect - 移除showSplash依赖
   useEffect(() => {
+    let previousNetworkState = false; // 新增：记录上一次网络状态
+
     const unsubscribe = NetInfo.addEventListener(state => {
-      setIsConnected(state.isConnected || false);
+      const currentNetworkState = state.isConnected || false;
+      setIsConnected(currentNetworkState);
+
+      // 新增：检测网络从断开变为连接状态
+      if (!previousNetworkState && currentNetworkState) {
+        console.log('网络已恢复，检查 WebSocket 连接状态...');
+        
+        // 延迟一秒后检查并尝试重连WebSocket，确保网络真正稳定
+        setTimeout(() => {
+          if (webSocketServiceRef) { // 移除showSplash检查
+            const status = webSocketServiceRef.getConnectionStatus();
+            if (!status.isConnected && !status.isConnecting) {
+              console.log('WebSocket 未连接，尝试重新连接...');
+              webSocketServiceRef.connect();
+            } else {
+              console.log('WebSocket 已连接或正在连接中');
+            }
+          }
+        }, 1000);
+      }
+
+      previousNetworkState = currentNetworkState; // 新增：更新上一次网络状态
     });
+
     return () => unsubscribe();
-  }, []);
+  }, [webSocketServiceRef]); // 移除showSplash依赖
 
   useEffect(() => {
     initSounds();
@@ -489,7 +565,7 @@ function App() {
     releaseDate?: string;
     currentVersion?: string;
   } | null>(null);
-  
+
   // 版本检查 useEffect
   useEffect(() => {
     const performVersionCheck = async () => {
@@ -514,6 +590,123 @@ function App() {
       performVersionCheck();
     }
   }, [showSplash]);
+
+  // 获取设备唯一标识
+  const getDeviceId = useCallback(async () => {
+    try {
+      // 首先尝试从本地存储获取已保存的设备ID
+      const savedDeviceId = await AsyncStorage.getItem('deviceId');
+      if (savedDeviceId) {
+        setDeviceId(savedDeviceId);
+        return savedDeviceId;
+      }
+
+      // 如果没有保存的ID，则生成新的设备ID
+      let uniqueId = '';
+      
+      try {
+        // 在新版本的react-native-device-info中，推荐使用getUniqueIdSync
+        uniqueId = DeviceInfo.getUniqueIdSync();
+      } catch (error) {
+        // 如果getUniqueIdSync不可用，尝试使用getUniqueId (异步版本)
+        try {
+          uniqueId = await DeviceInfo.getUniqueId();
+        } catch (asyncError) {
+          console.log('获取设备唯一ID失败，使用备用方案');
+          // 备用方案：生成基于设备信息的唯一ID
+          const model = DeviceInfo.getModel();
+          const systemVersion = DeviceInfo.getSystemVersion();
+          const buildNumber = DeviceInfo.getBuildNumber();
+          const timestamp = Date.now().toString();
+          
+          // 创建一个基于设备信息的字符串，然后生成简单的hash
+          const deviceInfo = `${model}_${systemVersion}_${buildNumber}_${timestamp}`;
+          uniqueId = deviceInfo.replace(/[^a-zA-Z0-9]/g, '').substring(0, 16);
+        }
+      }
+
+      // 保存设备ID到本地存储
+      await AsyncStorage.setItem('deviceId', uniqueId);
+      setDeviceId(uniqueId);
+      return uniqueId;
+    } catch (error) {
+      console.error('获取设备ID失败:', error);
+      // 最后的备用方案：生成一个随机ID
+      const fallbackId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      await AsyncStorage.setItem('deviceId', fallbackId);
+      setDeviceId(fallbackId);
+      return fallbackId;
+    }
+  }, []);
+
+  // 修改这个useEffect - 移除showSplash依赖
+  useEffect(() => {
+    const initWebSocketService = async () => {
+      // 获取设备唯一标识
+      const userId = await getDeviceId();
+      
+      const webSocketService = createWebSocketService({
+        serverUrl: 'ws://192.168.18.122:8080/ws',
+        userId: userId, // 使用设备唯一标识作为用户ID
+        reconnectInterval: 5000,
+        maxReconnectAttempts: 1,
+        // 添加在线人数更新回调
+        onOnlineCountUpdate: (count: number) => {
+          console.log('更新在线人数:', count);
+          setOnlineCount(count);
+        },
+      });
+
+      // 新增：保存WebSocket服务实例的引用
+      setWebSocketServiceRef(webSocketService);
+
+      // 重写连接事件处理
+      const originalConnect = webSocketService.connect.bind(webSocketService);
+      webSocketService.connect = function () {
+        console.log('开始连接 WebSocket...');
+        setIsWebSocketConnected(false);
+        originalConnect();
+      };
+
+      // 监听连接状态变化
+      const checkConnectionStatus = () => {
+        const status = webSocketService.getConnectionStatus();
+        if (status.isConnected) {
+          setIsWebSocketConnected(true);
+        } else {
+          console.log('WebSocket 连接失败或断开');
+          setIsWebSocketConnected(false);
+          setOnlineCount(0);
+        }
+      };
+
+      // 定期检查连接状态
+      const statusInterval = setInterval(checkConnectionStatus, 5000);
+
+      // 连接 WebSocket
+      webSocketService.connect();
+
+      // 返回清理函数
+      return () => {
+        clearInterval(statusInterval);
+        webSocketService.cleanup();
+        setWebSocketServiceRef(null); // 新增：清理服务引用
+      };
+    };
+
+    // 移除showSplash条件，直接初始化
+    let cleanup: (() => void) | undefined;
+
+    initWebSocketService().then(cleanupFn => {
+      cleanup = cleanupFn;
+    });
+
+    return () => {
+      if (cleanup) {
+        cleanup();
+      }
+    };
+  }, [setOnlineCount, setIsWebSocketConnected, getDeviceId]); // 移除showSplash依赖
 
   // 如果显示闪屏页面，则渲染SplashScreen组件
   if (showSplash) {
@@ -673,7 +866,7 @@ function App() {
               />
             </RootStack.Navigator>
           </NavigationContainer>
-          
+
           {/* 添加版本更新弹窗 */}
           {updateInfo && (
             <UpdateModal
