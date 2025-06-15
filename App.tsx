@@ -412,8 +412,8 @@ function App() {
   }, [baseScale, pinchScale, scale]);
 
   const [deviceId, setDeviceId] = useState<string>('');
-  // 新增：WebSocket服务实例引用
-  const [webSocketServiceRef, setWebSocketServiceRef] = useState<any>(null);
+  // 修改：将useState改为useRef
+  const webSocketServiceRef = useRef<any>(null);
 
   // 修改这个useEffect - 移除showSplash依赖
   useEffect(() => {
@@ -429,11 +429,11 @@ function App() {
         
         // 延迟一秒后检查并尝试重连WebSocket，确保网络真正稳定
         setTimeout(() => {
-          if (webSocketServiceRef) { // 移除showSplash检查
-            const status = webSocketServiceRef.getConnectionStatus();
+          if (webSocketServiceRef.current) { // 修改为.current
+            const status = webSocketServiceRef.current.getConnectionStatus();
             if (!status.isConnected && !status.isConnecting) {
               console.log('WebSocket 未连接，尝试重新连接...');
-              webSocketServiceRef.connect();
+              webSocketServiceRef.current.connect();
             } else {
               console.log('WebSocket 已连接或正在连接中');
             }
@@ -445,7 +445,7 @@ function App() {
     });
 
     return () => unsubscribe();
-  }, [webSocketServiceRef]); // 移除showSplash依赖
+  }, []); // 移除webSocketServiceRef依赖，因为useRef不需要依赖
 
   useEffect(() => {
     initSounds();
@@ -639,7 +639,7 @@ function App() {
     }
   }, []);
 
-  // 修改这个useEffect - 移除showSplash依赖
+  // 修改这个useEffect
   useEffect(() => {
     const initWebSocketService = async () => {
       // 获取设备唯一标识
@@ -654,11 +654,12 @@ function App() {
         onOnlineCountUpdate: (count: number) => {
           console.log('更新在线人数:', count);
           setOnlineCount(count);
+          setIsWebSocketConnected(true);
         },
       });
 
-      // 新增：保存WebSocket服务实例的引用
-      setWebSocketServiceRef(webSocketService);
+      // 修改：保存WebSocket服务实例的引用
+      webSocketServiceRef.current = webSocketService;
 
       // 重写连接事件处理
       const originalConnect = webSocketService.connect.bind(webSocketService);
@@ -690,7 +691,7 @@ function App() {
       return () => {
         clearInterval(statusInterval);
         webSocketService.cleanup();
-        setWebSocketServiceRef(null); // 新增：清理服务引用
+        webSocketServiceRef.current = null; // 修改：清理服务引用
       };
     };
 

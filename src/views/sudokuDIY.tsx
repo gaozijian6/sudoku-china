@@ -601,7 +601,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         return;
       }
       if (!checkDraftIsValid(board, answer)) {
-          const falseCells = findDifferenceCells(board, standradBoardRef.current, answer);
+        const falseCells = findDifferenceCells(board, standradBoardRef.current, answer);
         const differenceMapAll = findDifferenceDraftAll(board, standradBoardRef.current, answer);
         const differenceMap = findDifferenceDraft(board, standradBoardRef.current, answer);
         if (falseCells.length > 0) {
@@ -1070,7 +1070,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         >
           <Image
             source={require('../assets/icon/draft.png')}
-            style={[styles.buttonIcon, { tintColor: draftMode ? '#1890ff' : undefined }]}
+            style={[styles.buttonIcon, styles.buttonIconDraft]}
           />
           <Text style={styles.buttonText}>{t('notes')}</Text>
         </Pressable>
