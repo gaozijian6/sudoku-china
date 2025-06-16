@@ -70,7 +70,19 @@ export const useSudokuBoardDIY = () => {
           }))
       );
   });
-  // const [standradBoard, setStandradBoard] = useState<CellData[][]>(mockBoard);
+  const standradBoardRef = useRef<CellData[][]>(
+    Array(9)
+      .fill(null)
+      .map(() =>
+        Array(9)
+          .fill(null)
+          .map(() => ({
+            value: null,
+            draft: Array.from({ length: 9 }, (_, i) => i + 1),
+            isGiven: false,
+          }))
+      )
+  );
   const [isValidBoard, setIsValidBoard] = useState<boolean>(false);
   const {
     sudokuType,
@@ -122,6 +134,7 @@ export const useSudokuBoardDIY = () => {
     });
 
     setStandradBoard(copyOfficialDraft(newBoard));
+    standradBoardRef.current = copyOfficialDraft(newBoard);
     candidateMap.current = newCandidateMap;
     graph.current = createGraph(newBoard, newCandidateMap);
   }, []);
@@ -143,6 +156,7 @@ export const useSudokuBoardDIY = () => {
       remainingCountsSync.current = data.remainingCounts;
       setRemainingCounts(remainingCountsSync.current);
       setStandradBoard(data.standradBoard);
+      standradBoardRef.current = data.standradBoard;
       updateAuxiliaryData(data.board);
       countsSync.current = data.countsSync;
       setCounts(countsSync.current);
@@ -241,19 +255,19 @@ export const useSudokuBoardDIY = () => {
 
           // 根据错误类型显示不同的Alert提示
           if (error.message && error.message.includes('Quota exceeded')) {
-            Alert.alert(
-              t('storageSpaceInsufficient'),
-              t('storageSpaceInsufficientDescription'),
-              [{ text: t('confirm'), style: 'default' }]
-            );
+            Alert.alert(t('storageSpaceInsufficient'), t('storageSpaceInsufficientDescription'), [
+              { text: t('confirm'), style: 'default' },
+            ]);
           } else if (error.message && error.message.includes('Network')) {
             Alert.alert(t('networkConnectionFailed'), t('networkConnectionFailedDescription'), [
               { text: t('confirm'), style: 'default' },
             ]);
           } else {
-            Alert.alert(t('saveFailed'), t('saveFailedDescription', { error: error.message || '未知错误' }), [
-              { text: t('confirm'), style: 'default' },
-            ]);
+            Alert.alert(
+              t('saveFailed'),
+              t('saveFailedDescription', { error: error.message || '未知错误' }),
+              [{ text: t('confirm'), style: 'default' }]
+            );
           }
         });
     }
@@ -387,6 +401,7 @@ export const useSudokuBoardDIY = () => {
     setBoard,
     standradBoard,
     setStandradBoard,
+    standradBoardRef,
     resetSudokuBoard,
     saveSudokuData,
     loadSavedData2,

@@ -73,7 +73,7 @@ const LocalGames = () => {
     if (isIpad) {
       // iPad：横屏15列，竖屏10列
       const isLandscape = screenData.width > screenData.height;
-      return isLandscape ? 14 : 10;
+      return isLandscape ? 13 : 10;
     }
     // 手机保持6列
     return 6;

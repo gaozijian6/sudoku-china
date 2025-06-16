@@ -182,6 +182,10 @@ interface SudokuState {
   }) => void;
   isPortrait: boolean;
   setIsPortrait: (value: boolean) => void;
+  onlineCount: number;
+  setOnlineCount: (value: number) => void;
+  isWebSocketConnected: boolean;
+  setIsWebSocketConnected: (value: boolean) => void;
 }
 
 export const useSudokuStore = create<SudokuState>(set => ({
@@ -410,4 +414,8 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setUserStatisticTime: value => set({ userStatisticTime: value }),
   isPortrait: true,
   setIsPortrait: value => set({ isPortrait: value }),
+  onlineCount: 0,
+  setOnlineCount: value => set({ onlineCount: value }),
+  isWebSocketConnected: false,
+  setIsWebSocketConnected: value => set({ isWebSocketConnected: value }),
 }));
