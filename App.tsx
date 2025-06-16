@@ -646,7 +646,8 @@ function App() {
       const userId = await getDeviceId();
       
       const webSocketService = createWebSocketService({
-        serverUrl: 'ws://192.168.18.122:8080/ws',
+        // serverUrl: 'ws://192.168.18.122:8080/ws',
+        serverUrl: 'ws://47.121.213.59:8080/ws',
         userId: userId, // 使用设备唯一标识作为用户ID
         reconnectInterval: 5000,
         maxReconnectAttempts: 1,
