@@ -97,7 +97,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     row: number;
     col: number;
   } | null>(null);
-  const [selectionMode, setSelectionMode] = useState<1 | 2>(1);
   const [errorCells, setErrorCells] = useState<{ row: number; col: number }[]>([]);
   const [hintDrawerVisible, setHintDrawerVisible] = useState<boolean>(false);
 
@@ -160,6 +159,8 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   const setCurrentPuzzleIndex = useSudokuStore(state => state.setCurrentPuzzleIndex);
   const currentPuzzleIndex = useSudokuStore(state => state.currentPuzzleIndex);
   const isPortrait = useSudokuStore(state => state.isPortrait);
+  const selectionMode = useSudokuStore(state => state.selectionMode);
+  const setSelectionMode = useSudokuStore(state => state.setSelectionMode);
 
   let styles = createStyles(isDark, draftMode, isPortrait);
 
@@ -173,11 +174,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   // 使用 useRef 存储游戏时间，避免频繁重新渲染
   const gameTimeRef = useRef<number>(0);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(true);
-
-  // 只在需要获取时间时才使用这个函数
-  const getCurrentGameTime = useCallback(() => {
-    return gameTimeRef.current;
-  }, []);
 
   // 修改计时器控制函数
   const stopGameTimer = useCallback(() => {
@@ -219,7 +215,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     lastErrorTime.current = null;
     setSelectedCell({ row: 0, col: 0 });
     lastSelectedCell.current = null;
-    setSelectionMode(1);
     setErrorCells([]);
     setHintDrawerVisible(false);
     setIsHint(false);
@@ -252,8 +247,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       lastErrorTime: lastErrorTime.current,
       selectedCell,
       lastSelectedCell: lastSelectedCell.current,
-      selectionMode,
-      // errorCells,
       hintContent,
       hintMethod,
       result,
@@ -287,7 +280,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     result,
     saveSudokuData,
     selectedCell,
-    selectionMode,
     difficulty,
     watchIconVisible,
     isFirstHint,
@@ -426,8 +418,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       lastErrorTime.current = data.lastErrorTime;
       setSelectedCell(data.selectedCell);
       lastSelectedCell.current = data.lastSelectedCell;
-      setSelectionMode(data.selectionMode);
-      // setErrorCells(data.errorCells);
       setHintContent(data.hintContent);
       setHintMethod(handleHintMethod(data.hintMethod, t));
       setResult(data.result);
@@ -864,7 +854,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
           return;
         } else {
           if (isFalseCellsBefore.current) {
-          setDifferenceMap(differenceMapAll);
+            setDifferenceMap(differenceMapAll);
             isDifferenceMapAll.current = true;
             setHintMethod(handleHintMethod('', t));
             setHintDrawerVisible(true);
@@ -1048,15 +1038,17 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     playSound('switch', isSound);
     if (selectionMode === 1) {
       setSelectionMode(2);
+      AsyncStorage.setItem('selectionMode', '2');
       setSelectedNumber(null);
     } else {
       setSelectionMode(1);
+      AsyncStorage.setItem('selectionMode', '1');
       if (lastSelectedNumber.current) {
         setSelectedNumber(lastSelectedNumber.current);
       }
       setEraseEnabled(false);
     }
-  }, [isSound, selectionMode]);
+  }, [isSound, selectionMode, setSelectionMode]);
 
   useEffect(() => {
     if (!selectedCell) return;
@@ -1171,7 +1163,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
         <View style={styles.gameInfoItem}>
           <GameTimer
             initialTime={gameTimeRef.current}
-            onTimeChange={(time) => {
+            onTimeChange={time => {
               gameTimeRef.current = time;
             }}
             style={styles.gameInfoText}

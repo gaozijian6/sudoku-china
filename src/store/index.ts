@@ -186,6 +186,8 @@ interface SudokuState {
   setOnlineCount: (value: number) => void;
   isWebSocketConnected: boolean;
   setIsWebSocketConnected: (value: boolean) => void;
+  selectionMode: 1 | 2;
+  setSelectionMode: (value: 1 | 2) => void;
 }
 
 export const useSudokuStore = create<SudokuState>(set => ({
@@ -418,4 +420,6 @@ export const useSudokuStore = create<SudokuState>(set => ({
   setOnlineCount: value => set({ onlineCount: value }),
   isWebSocketConnected: false,
   setIsWebSocketConnected: value => set({ isWebSocketConnected: value }),
+  selectionMode: 1 as 1 | 2,
+  setSelectionMode: value => set({ selectionMode: value }),
 }));

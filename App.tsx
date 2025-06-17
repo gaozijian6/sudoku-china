@@ -339,6 +339,7 @@ function App() {
   const setIsPortrait = useSudokuStore(state => state.setIsPortrait);
   const setOnlineCount = useSudokuStore(state => state.setOnlineCount);
   const setIsWebSocketConnected = useSudokuStore(state => state.setIsWebSocketConnected);
+  const setSelectionMode = useSudokuStore(state => state.setSelectionMode);
 
   const isMovingRef = useRef(false);
   const scale = useRef(new Animated.Value(1)).current;
@@ -539,6 +540,11 @@ function App() {
     AsyncStorage.getItem('isReason').then(value => {
       if (value) {
         setIsReason(value === 'true');
+      }
+    });
+    AsyncStorage.getItem('selectionMode').then(value => {
+      if (value) {
+        setSelectionMode(parseInt(value) as 1 | 2);
       }
     });
   }, []);
