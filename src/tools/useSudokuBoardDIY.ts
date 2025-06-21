@@ -5,7 +5,6 @@ import {
   Candidate,
   CandidateStats,
   Graph,
-  createGraph,
   copyOfficialDraft,
   BoardHistoryDIY,
   deepCopyBoard,
@@ -56,7 +55,6 @@ export const useSudokuBoardDIY = () => {
   const [remainingCounts, setRemainingCounts] = useState<number[]>(Array(9).fill(9));
   const remainingCountsSync = useRef<number[]>(Array(9).fill(9));
   const candidateMap = useRef<CandidateMap>(deepCopyCandidateMap(initialCandidateMap));
-  const graph = useRef<Graph>(createGraph(initialBoard, candidateMap.current));
   const [standradBoard, setStandradBoard] = useState<CellData[][]>(() => {
     return Array(9)
       .fill(null)
@@ -136,7 +134,6 @@ export const useSudokuBoardDIY = () => {
     setStandradBoard(copyOfficialDraft(newBoard));
     standradBoardRef.current = copyOfficialDraft(newBoard);
     candidateMap.current = newCandidateMap;
-    graph.current = createGraph(newBoard, newCandidateMap);
   }, []);
 
   const loadSavedData2 = useCallback(async () => {
@@ -348,7 +345,6 @@ export const useSudokuBoardDIY = () => {
         setBoard(newBoard);
         setCurrentStep(0);
         candidateMap.current = deepCopyCandidateMap(initialCandidateMap);
-        graph.current = createGraph(initialBoard, candidateMap.current);
       } else {
         newBoard = deepCopyBoard(board);
         newBoard.forEach(row =>
@@ -393,7 +389,6 @@ export const useSudokuBoardDIY = () => {
     history,
     currentStep,
     candidateMap,
-    graph,
     remainingCounts,
     updateRemainingCounts,
     setRemainingCounts,
