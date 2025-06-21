@@ -20,10 +20,6 @@ export interface Candidate extends Position {
   candidates: number[];
 }
 
-export interface GraphNode extends Candidate {
-  next: GraphNode[];
-}
-
 export interface CellData {
   value: number | null;
   isGiven: boolean;
@@ -35,10 +31,6 @@ export interface CellData {
   promptCandidates1?: number[];
   promptCandidates2?: number[];
   promptCandidates3?: number[];
-}
-
-export interface Graph {
-  [key: number]: GraphNode[];
 }
 
 export const calculateProgress = (userStatisticPass: any, difficultyLevel: DIFFICULTY) => {

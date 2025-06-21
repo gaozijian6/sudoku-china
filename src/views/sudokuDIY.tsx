@@ -25,7 +25,7 @@ import {
   findDifferenceDraftAll,
   findDifferenceCells,
 } from '../tools/solution';
-import type { CandidateMap, CellData, Graph, Position } from '../tools';
+import type { CellData, Position } from '../tools';
 import type { DifferenceMap, FalseCells, Result } from '../tools/solution';
 import { handleHintContent } from '../tools/handleHintContent';
 import Cell from '../components/SudokuCell';

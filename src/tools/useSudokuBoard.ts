@@ -5,8 +5,6 @@ import {
   CandidateMap,
   Candidate,
   CandidateStats,
-  Graph,
-  createGraph,
   copyOfficialDraft,
   deepCopyBoard,
 } from './index';
@@ -37,7 +35,6 @@ export const useSudokuBoard = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [remainingCounts, setRemainingCounts] = useState<number[]>(Array(9).fill(9));
   const candidateMap = useRef<CandidateMap>(deepCopyCandidateMap(initialCandidateMap));
-  const graph = useRef<Graph>(createGraph(initialBoard, candidateMap.current));
   const [counts, setCounts] = useState<number>(0);
   const [standradBoard, setStandradBoard] = useState<CellData[][]>(initialBoard);
   const standradBoardRef = useRef<CellData[][]>(initialBoard);
@@ -51,7 +48,6 @@ export const useSudokuBoard = () => {
     setRemainingCounts(Array(9).fill(9));
     remainingCountsSync.current = Array(9).fill(9);
     candidateMap.current = deepCopyCandidateMap(initialCandidateMap);
-    graph.current = createGraph(initialBoard, candidateMap.current);
     setCounts(0);
     countsSync.current = 0;
     setStandradBoard(initialBoard);
@@ -97,7 +93,6 @@ export const useSudokuBoard = () => {
       });
     });
 
-    graph.current = createGraph(newBoard, newCandidateMap);
 
     standradBoardRef.current = copyOfficialDraft(deepCopyBoard(newBoard));
     setStandradBoard(standradBoardRef.current);
@@ -287,7 +282,6 @@ export const useSudokuBoard = () => {
     history,
     currentStep,
     candidateMap,
-    graph,
     answerBoard,
     clearHistory,
     remainingCounts,

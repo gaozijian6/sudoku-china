@@ -4,7 +4,6 @@ import {
   CandidateMap,
   Candidate,
   CandidateStats,
-  Graph,
   copyOfficialDraft,
   BoardHistoryDIY,
   deepCopyBoard,
