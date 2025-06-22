@@ -19,6 +19,7 @@ export default {
       medium: '😮Medium',
       hard: '😣Hard',
       extreme: '🤯Extreme',
+      godlike: '👑Godlike',
       custom: 'Custom',
     },
     start: 'Start',

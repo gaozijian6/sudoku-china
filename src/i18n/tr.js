@@ -19,6 +19,7 @@ export default {
       medium: '😮Orta',
       hard: '😣Zor',
       extreme: '🤯Çok Zor',
+      godlike: '👑İlahi',
       custom: 'Özel',
     },
     start: 'Başla',

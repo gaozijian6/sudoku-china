@@ -19,6 +19,7 @@ export default {
       medium: '😮Medio',
       hard: '😣Difficile',
       extreme: '🤯Estremo',
+      godlike: '👑Divino',
       custom: 'Personalizzato',
     },
     start: 'Inizia',

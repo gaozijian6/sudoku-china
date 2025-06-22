@@ -19,6 +19,7 @@ export default {
       medium: '😮中等',
       hard: '😣困難',
       extreme: '🤯極難',
+      godlike: '👑神級',
       custom: '自定義',
     },
     start: '開始',

@@ -269,7 +269,7 @@ class Solver: NSObject {
       }
 
       if result == nil && counts != 81 {
-        resolver("e")
+        resolver("f")
         return
       }
 
@@ -278,16 +278,16 @@ class Solver: NSObject {
         // print(result)
         map[result["method"] as! String] = (map[result["method"] as! String] ?? 0) + 1
 
-        if map[SolutionMethods.DOUBLE_COLOR_CHAIN] != nil
-          || map[SolutionMethods.TRIPLE_COLOR_CHAIN] != nil
-        {
-          let endTime = CACurrentMediaTime()
-          let duration = (endTime - startTime) * 1000
-          print("Time taken: \(duration) 毫秒")
-          print("提前终止")
-          resolver("e")
-          return
-        }
+        // if map[SolutionMethods.DOUBLE_COLOR_CHAIN] != nil
+        //   || map[SolutionMethods.TRIPLE_COLOR_CHAIN] != nil
+        // {
+        //   let endTime = CACurrentMediaTime()
+        //   let duration = (endTime - startTime) * 1000
+        //   print("Time taken: \(duration) 毫秒")
+        //   print("提前终止")
+        //   resolver("e")
+        //   return
+        // }
 
         let positionDicts = result["position"] as! [[String: Any]]
         var position: [Position] = []

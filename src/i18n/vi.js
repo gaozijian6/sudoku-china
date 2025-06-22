@@ -19,6 +19,7 @@ export default {
       medium: '😮Trung bình',
       hard: '😣Khó',
       extreme: '🤯Cực khó',
+      godlike: '👑Thần cấp',
       custom: 'Tùy chỉnh',
     },
     start: 'Bắt đầu',

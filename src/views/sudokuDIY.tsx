@@ -103,7 +103,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     }
   }, [answer, counts]);
 
-  const [level, setLevel] = useState<'a' | 'b' | 'c' | 'd' | 'e' | ''>('');
+  const [level, setLevel] = useState<'a' | 'b' | 'c' | 'd' | 'e' | 'f' | ''>('');
 
   useEffect(() => {
     if (sudokuStatus === SUDOKU_STATUS.SOLVED) {
@@ -127,6 +127,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         return 'hard';
       case 'e':
         return 'extreme';
+      case 'f':
+        return 'godlike';
       default:
         return '';
     }
