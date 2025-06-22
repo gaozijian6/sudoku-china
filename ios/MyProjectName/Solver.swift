@@ -269,6 +269,7 @@ class Solver: NSObject {
       }
 
       if result == nil && counts != 81 {
+        resolver("e")
         return
       }
 
