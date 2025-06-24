@@ -161,6 +161,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
   const isPortrait = useSudokuStore(state => state.isPortrait);
   const selectionMode = useSudokuStore(state => state.selectionMode);
   const setSelectionMode = useSudokuStore(state => state.setSelectionMode);
+  const setSelectedCellDrafts = useSudokuStore(state => state.setSelectedCellDrafts);
 
   let styles = createStyles(isDark, draftMode, isPortrait);
 
@@ -1148,6 +1149,20 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       }, 0);
     }, 0);
   }, [isPortrait]);
+
+  useEffect(() => {
+    if (selectionMode === 2 && selectedCell && draftMode) {
+      const { row, col } = selectedCell;
+      const cell = board[row][col];
+      if (cell && cell.draft) {
+        setSelectedCellDrafts(cell.draft);
+      } else {
+        setSelectedCellDrafts([]);
+      }
+    } else {
+      setSelectedCellDrafts([]);
+    }
+  }, [selectionMode, selectedCell, draftMode, board]);
 
   return (
     <View style={[styles.container]}>
