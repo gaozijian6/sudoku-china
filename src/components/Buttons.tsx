@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { Text, View, Pressable } from 'react-native';
 import createStyles from '../views/sudokuStyles';
+import { useSudokuStore } from '../store';
 
 const Buttons = memo(
   ({
@@ -24,6 +25,7 @@ const Buttons = memo(
     isDark: boolean;
     isPortrait: boolean;
   }) => {
+    const selectedCellDrafts = useSudokuStore(state => state.selectedCellDrafts);
     const styles = createStyles(isDark, draftMode, isPortrait);
     return (
       <View style={styles.numberButtons}>
@@ -48,6 +50,11 @@ const Buttons = memo(
                   // backgroundColor: '#1890ff',
                   backgroundColor: isDark ? 'rgb(40, 61, 129)' : '#1890ff',
                 },
+              selectionMode === 2 && selectedCellDrafts.includes(number) && {
+                borderWidth: 2,
+                borderColor: isDark ? 'rgb(57, 87, 184)' : '#1890ff',
+                backgroundColor: isDark ? 'rgba(89, 121, 223, 0.3)' : 'rgba(24, 144, 255, 0.2)',
+              },
             ]}
             disabled={!draftMode && remainingCounts?.[number - 1] === 0}
           >
@@ -58,6 +65,9 @@ const Buttons = memo(
                   remainingCounts?.[number - 1] === 0 &&
                   styles.selectedNumberButtonDisabled,
                 selectionMode === 1 && selectedNumber === number && styles.selectedNumberText,
+                selectionMode === 2 && selectedCellDrafts.includes(number) && {
+                  color: isDark ? 'rgb(57, 87, 184)' : 'rgb(78,106,176)',
+                },
               ]}
             >
               {number}
@@ -70,6 +80,7 @@ const Buttons = memo(
                   styles.remainingCount,
                   remainingCounts?.[number - 1] === 0 && styles.remainingCountDisabled,
                   selectionMode === 1 && selectedNumber === number && styles.selectedNumberText,
+                 
                 ]}
               >
                 {remainingCounts?.[number - 1]}
