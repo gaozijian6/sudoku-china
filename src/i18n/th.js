@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'ช่องสีฟ้าที่อยู่ในสี่คอลัมน์ไม่มีช่องอื่นที่มีตัวเลือก{{target}} ไม่ว่าจะเลือกช่องใดในกลุ่มนี้ ตัวเลือก{{target}}ไม่ควรปรากฏในสี่แถวที่เกี่ยวข้อง',
       DOUBLE_COLOR_CHAIN_delete:
-        'เมื่อ {{posStr}} มีค่า {{target}} ช่องสีแดงไม่สามารถมีค่า {{target}} ได้',
+        'เมื่อ {{posStr}} มีค่า {{target1}} ช่องสีแดงไม่สามารถมีค่า {{target2}} ได้',
       DOUBLE_COLOR_CHAIN_s:
         'เมื่อ {{posStr1}} มีค่า {{target1}} จะทำให้ {{posStr2}} มีค่า {{target2}}',
       DOUBLE_COLOR_CHAIN_r:

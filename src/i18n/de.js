@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'Die blauen Zellen in den vier Spalten enthalten keine anderen Kandidaten für {{target}}. Unabhängig davon, wie diese Zellen gelöst werden, sollten die entsprechenden vier Zeilen keine Kandidaten für {{target}} enthalten',
       DOUBLE_COLOR_CHAIN_delete:
-        'wenn {{posStr}} den Wert {{target}} hat, kann das rote Feld nicht den Wert {{target}} haben',
+        'wenn {{posStr}} den Wert {{target1}} hat, kann das rote Feld nicht den Wert {{target2}} haben',
       DOUBLE_COLOR_CHAIN_s:
         'wenn {{posStr1}} den Wert {{target1}} hat, führt dies dazu, dass {{posStr2}} den Wert {{target2}} hat',
       DOUBLE_COLOR_CHAIN_r:

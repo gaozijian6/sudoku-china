@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'As células azuis estão localizadas em quatro colunas onde não existem outros candidatos para {{target}}. Independentemente de como essas células são preenchidas, o candidato {{target}} não deve aparecer nas quatro linhas correspondentes',
       DOUBLE_COLOR_CHAIN_delete:
-        'quando {{posStr}} assume {{target}}, a célula vermelha não pode assumir {{target}}',
+        'quando {{posStr}} assume {{target1}}, a célula vermelha não pode assumir {{target2}}',
       DOUBLE_COLOR_CHAIN_s:
         'quando {{posStr1}} assume {{target1}}, isso fará com que {{posStr2}} assuma {{target2}}',
       DOUBLE_COLOR_CHAIN_r:

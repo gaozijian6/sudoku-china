@@ -189,7 +189,7 @@ export default {
         '蓝色方格所在的四行上不存在其他关于{{target}}的候选方格,无论这些方格中如何取值,其对应的四列上不应存在候选数{{target}}',
       JELLYFISH_COLUMN:
         '蓝色方格所在的四列上不存在其他关于{{target}}的候选方格,无论这些方格中如何取值,其对应的四行上不应存在候选数{{target}}',
-      DOUBLE_COLOR_CHAIN_delete: '{{posStr}}取{{target}}时红色方格内不能取{{target}}',
+      DOUBLE_COLOR_CHAIN_delete: '{{posStr}}取{{target1}}时红色方格内不能取{{target2}}',
       DOUBLE_COLOR_CHAIN_s: '{{posStr1}}取{{target1}}时会导致{{posStr2}}取{{target2}}',
       DOUBLE_COLOR_CHAIN_r: '{{posStr1}}取{{target}}时会导致{{posStr2}}不能取{{target}}',
       DOUBLE_COLOR_CHAIN_q:

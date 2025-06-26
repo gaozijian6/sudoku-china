@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'De blauwe cellen in de vier kolommen bevatten geen andere kandidaatcellen voor {{target}}, ongeacht hoe deze cellen worden ingevuld, kan {{target}} niet voorkomen in de corresponderende vier rijen',
       DOUBLE_COLOR_CHAIN_delete:
-        'wanneer {{posStr}} de waarde {{target}} heeft, kan de rode cel niet de waarde {{target}} hebben',
+        'wanneer {{posStr}} de waarde {{target1}} heeft, kan de rode cel niet de waarde {{target2}} hebben',
       DOUBLE_COLOR_CHAIN_s:
         'wanneer {{posStr1}} de waarde {{target1}} heeft, leidt dit ertoe dat {{posStr2}} de waarde {{target2}} heeft',
       DOUBLE_COLOR_CHAIN_r:

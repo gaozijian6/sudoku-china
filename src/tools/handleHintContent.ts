@@ -26,6 +26,7 @@ export const handleHintContent = (
     highlightPromts1,
     highlightPromts2,
     highlightPromts3,
+    highlightDeletes,
   } = result;
   let posStr = '';
   let posStr1 = '';
@@ -1022,12 +1023,15 @@ export const handleHintContent = (
 
         if (label) {
           let [label1, label2] = label.substring(1).split('-');
+          console.log('label1', label1, 'label2', label2);
+
           if (label1 === '') {
             const startPos = `R${highlightPromts1[0].row + 1}C${highlightPromts1[0].col + 1}`;
-            const deleteTarget = highlightPromts1[0].value;
+            const deleteTarget = highlightDeletes[0].value;
             hintContent += t('hints.DOUBLE_COLOR_CHAIN_delete', {
               posStr: startPos,
-              target: deleteTarget,
+              target1: highlightPromts1[0].value,
+              target2: deleteTarget,
             });
             hintContent += t('period');
             hintContent += t('case2');
@@ -1077,10 +1081,11 @@ export const handleHintContent = (
             });
           } else if (label2 === '') {
             const startPos = `R${highlightPromts2[0].row + 1}C${highlightPromts2[0].col + 1}`;
-            const deleteTarget = highlightPromts2[0].value;
+            const deleteTarget = highlightDeletes[0].value;
             hintContent += t('hints.DOUBLE_COLOR_CHAIN_delete', {
               posStr: startPos,
-              target: deleteTarget,
+              target1: highlightPromts2[0].value,
+              target2: deleteTarget,
             });
             hintContent += t('period');
             hintContent += t('case2');
@@ -1263,10 +1268,11 @@ export const handleHintContent = (
           hintContent += t('case1');
           if (label1 === '') {
             const startPos = `R${highlightPromts1[0].row + 1}C${highlightPromts1[0].col + 1}`;
-            const deleteTarget = highlightPromts1[0].value;
+            const deleteTarget = highlightDeletes[0].value;
             hintContent += t('hints.DOUBLE_COLOR_CHAIN_delete', {
               posStr: startPos,
-              target: deleteTarget,
+              target1: highlightPromts1[0].value,
+              target2: deleteTarget,
             });
           } else {
             for (let i = 0; i < label1.length; i++) {
@@ -1318,10 +1324,11 @@ export const handleHintContent = (
           hintContent += t('case2');
           if (label2 === '') {
             const startPos = `R${highlightPromts2[0].row + 1}C${highlightPromts2[0].col + 1}`;
-            const deleteTarget = highlightPromts2[0].value;
+            const deleteTarget = highlightDeletes[0].value;
             hintContent += t('hints.DOUBLE_COLOR_CHAIN_delete', {
               posStr: startPos,
-              target: deleteTarget,
+              target1: highlightPromts2[0].value,
+              target2: deleteTarget,
             });
           } else {
             for (let i = 0; i < label2.length; i++) {
@@ -1373,10 +1380,11 @@ export const handleHintContent = (
           hintContent += t('case3');
           if (label3 === '') {
             const startPos = `R${highlightPromts3[0].row + 1}C${highlightPromts3[0].col + 1}`;
-            const deleteTarget = highlightPromts3[0].value;
+            const deleteTarget = highlightDeletes[0].value;
             hintContent += t('hints.DOUBLE_COLOR_CHAIN_delete', {
               posStr: startPos,
-              target: deleteTarget,
+              target1: highlightPromts3[0].value,
+              target2: deleteTarget,
             });
           } else {
             for (let i = 0; i < label3.length; i++) {

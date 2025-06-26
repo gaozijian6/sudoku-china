@@ -659,7 +659,6 @@ function App() {
         maxReconnectAttempts: 1,
         // 添加在线人数更新回调
         onOnlineCountUpdate: (count: number) => {
-          console.log('更新在线人数:', count);
           setOnlineCount(count);
           setIsWebSocketConnected(true);
         },

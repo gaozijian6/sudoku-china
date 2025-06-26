@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         '青色のマスがある4列には{{target}}に関する他の候補マスが存在せず、これらのマスがどのような値になっても、対応する4行には候補数{{target}}は存在しないはずです',
       DOUBLE_COLOR_CHAIN_delete:
-        '{{posStr}}が{{target}}の場合、赤色のマスには{{target}}が入れません',
+        '{{posStr}}が{{target1}}の場合、赤色のマスには{{target2}}が入れません',
       DOUBLE_COLOR_CHAIN_s: '{{posStr1}}が{{target1}}の場合、{{posStr2}}は{{target2}}になります',
       DOUBLE_COLOR_CHAIN_r: '{{posStr1}}が{{target}}の場合、{{posStr2}}は{{target}}になれません',
       DOUBLE_COLOR_CHAIN_q:

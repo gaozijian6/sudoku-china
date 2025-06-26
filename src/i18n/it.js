@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'Le celle blu nelle quattro colonne non contengono altri candidati per {{target}}. Qualunque sia la combinazione in queste celle, il candidato {{target}} non dovrebbe apparire nelle quattro righe corrispondenti',
       DOUBLE_COLOR_CHAIN_delete:
-        'quando {{posStr}} assume {{target}}, la cella rossa non può assumere {{target}}',
+        'quando {{posStr}} assume {{target1}}, la cella rossa non può assumere {{target2}}',
       DOUBLE_COLOR_CHAIN_s:
         'quando {{posStr1}} assume {{target1}}, porta {{posStr2}} ad assumere {{target2}}',
       DOUBLE_COLOR_CHAIN_r:

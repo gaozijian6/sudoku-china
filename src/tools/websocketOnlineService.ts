@@ -155,11 +155,9 @@ class WebSocketOnlineService {
   private handleMessage(data: string): void {
     try {
       const message = JSON.parse(data);
-      console.log('收到服务器消息:', message);
 
       switch (message.type) {
         case MessageType.ONLINE_COUNT:
-          console.log(`当前在线人数: ${message.count}`);
           // 通过回调通知外部更新在线人数
           if (this.config.onOnlineCountUpdate) {
             this.config.onOnlineCountUpdate(message.count);

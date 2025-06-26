@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         '파란색 셀이 위치한 네 열에는 {{target}}에 대한 다른 후보 셀이 없습니다. 이 셀들의 값이 어떻게 결정되든, 해당하는 네 행에는 후보 숫자 {{target}}이 올 수 없습니다',
       DOUBLE_COLOR_CHAIN_delete:
-        '{{posStr}}이(가) {{target}}일 때, 빨간 셀은 {{target}}이(가) 될 수 없습니다',
+        '{{posStr}}이(가) {{target1}}일 때, 빨간 셀은 {{target2}}이(가) 될 수 없습니다',
       DOUBLE_COLOR_CHAIN_s:
         '{{posStr1}}이(가) {{target1}}일 때, {{posStr2}}는 {{target2}}이(가) 됩니다',
       DOUBLE_COLOR_CHAIN_r:

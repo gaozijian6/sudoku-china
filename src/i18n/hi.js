@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'नीले वर्ग वाले चार कॉलम में {{target}} के लिए अन्य संभावित वर्ग मौजूद नहीं हैं, इन वर्गों में कैसे भी चुना जाए, उनके संबंधित चार पंक्तियों में संभावित संख्या {{target}} मौजूद नहीं होनी चाहिए',
       DOUBLE_COLOR_CHAIN_delete:
-        'जब {{posStr}} {{target}} लेता है, तो लाल सेल {{target}} नहीं ले सकता',
+        'जब {{posStr}} {{target1}} लेता है, तो लाल सेल {{target2}} नहीं ले सकता',
       DOUBLE_COLOR_CHAIN_s:
         'जब {{posStr1}} {{target1}} लेता है, तो इससे {{posStr2}} {{target2}} लेगा',
       DOUBLE_COLOR_CHAIN_r:

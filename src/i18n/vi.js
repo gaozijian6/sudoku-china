@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'Các ô màu xanh nằm trên bốn cột không có ô ứng viên nào khác về {{target}}, bất kể các ô này có giá trị nào, số ứng viên {{target}} không thể xuất hiện trên bốn hàng tương ứng',
       DOUBLE_COLOR_CHAIN_delete:
-        'khi {{posStr}} có giá trị {{target}}, ô màu đỏ không thể có giá trị {{target}}',
+        'khi {{posStr}} có giá trị {{target1}}, ô màu đỏ không thể có giá trị {{target2}}',
       DOUBLE_COLOR_CHAIN_s:
         'khi {{posStr1}} có giá trị {{target1}}, điều này sẽ dẫn đến {{posStr2}} có giá trị {{target2}}',
       DOUBLE_COLOR_CHAIN_r:

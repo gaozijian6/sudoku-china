@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'Mavi karelerin bulunduğu dört sütunda {{target}} adayı için başka aday hücre yoktur. Bu hücreler nasıl değer alırsa alsın, karşılık gelen dört satırda {{target}} adayı bulunamaz',
       DOUBLE_COLOR_CHAIN_delete:
-        '{{posStr}} {{target}} değerini aldığında, kırmızı hücre {{target}} değerini alamaz',
+        '{{posStr}} {{target1}} değerini aldığında, kırmızı hücre {{target2}} değerini alamaz',
       DOUBLE_COLOR_CHAIN_s:
         '{{posStr1}} {{target1}} değerini alırsa, {{posStr2}} {{target2}} değerini alır',
       DOUBLE_COLOR_CHAIN_r:
