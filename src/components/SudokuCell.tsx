@@ -14,6 +14,7 @@ const Cell = memo(
     selectedNumber,
     selectionMode,
     selectedCell,
+    relatedCells,
     errorCells,
     board,
     prompts,
@@ -26,6 +27,7 @@ const Cell = memo(
     isMovingRef,
     styles,
     isDark,
+    hintDrawerVisible,
   }: {
     cell: CellData;
     rowIndex: number;
@@ -34,6 +36,7 @@ const Cell = memo(
     selectedNumber: number | null;
     selectionMode: 1 | 2;
     selectedCell: { row: number; col: number } | null;
+    relatedCells: { row: number; col: number }[];
     errorCells: { row: number; col: number }[];
     board: CellData[][];
     prompts: number[];
@@ -46,7 +49,18 @@ const Cell = memo(
     isMovingRef: React.MutableRefObject<boolean>;
     styles: ReturnType<typeof createStyles>;
     isDark: boolean;
+    hintDrawerVisible: boolean;
   }) => {
+    // 计算是否为相关方格和选中方格
+    const isRelated =
+      selectionMode === 2 &&
+      relatedCells?.some(
+        relatedCell => relatedCell.row === rowIndex && relatedCell.col === colIndex
+      );
+
+    const isSelected =
+      selectionMode === 2 && selectedCell?.row === rowIndex && selectedCell?.col === colIndex;
+
     return (
       <Pressable
         key={`${rowIndex}-${colIndex}`}
@@ -79,10 +93,13 @@ const Cell = memo(
             styles.candidateNumber,
           selectedNumber && cell.value === selectedNumber && styles.selectedNumber,
           getCellClassName(board, rowIndex, colIndex, selectedNumber),
-          selectionMode === 2 &&
-            selectedCell?.row === rowIndex &&
-            selectedCell?.col === colIndex &&
-            styles.selectedCell,
+
+          // 相关方格高亮（必须在选中方格之前应用）
+          !hintDrawerVisible && isRelated && !isSelected && styles.relatedCell,
+
+          // 选中方格高亮
+          !hintDrawerVisible && isSelected && styles.selectedCell,
+
           errorCells?.some(errorCell => errorCell.row === rowIndex && errorCell.col === colIndex) &&
             styles.errorCell,
           falseCells?.some(falseCell => falseCell.row === rowIndex && falseCell.col === colIndex) &&
@@ -162,7 +179,8 @@ const Cell = memo(
     if (
       prevProps.cell.value !== null &&
       prevProps.isDark === nextProps.isDark &&
-      prevProps.cell.isGiven === nextProps.cell.isGiven
+      prevProps.cell.isGiven === nextProps.cell.isGiven &&
+      prevProps.hintDrawerVisible === nextProps.hintDrawerVisible
     ) {
       return (
         prevProps.cell.value === nextProps.cell.value &&
@@ -170,7 +188,9 @@ const Cell = memo(
         prevProps.errorCells?.length === nextProps.errorCells?.length &&
         prevProps.selectedCell?.row === nextProps.selectedCell?.row &&
         prevProps.selectedCell?.col === nextProps.selectedCell?.col &&
-        prevProps.falseCells?.length === nextProps.falseCells?.length
+        prevProps.falseCells?.length === nextProps.falseCells?.length &&
+        // 添加 relatedCells 的比较
+        JSON.stringify(prevProps.relatedCells) === JSON.stringify(nextProps.relatedCells)
       );
     }
 
@@ -184,6 +204,8 @@ const Cell = memo(
       prevProps.colIndex === nextProps.colIndex &&
       prevProps.selectedCell?.row === nextProps.selectedCell?.row &&
       prevProps.selectedCell?.col === nextProps.selectedCell?.col &&
+      // 添加 relatedCells 的比较
+      JSON.stringify(prevProps.relatedCells) === JSON.stringify(nextProps.relatedCells) &&
       prevProps.errorCells?.length === nextProps.errorCells?.length &&
       prevProps.prompts?.length === nextProps.prompts?.length &&
       prevProps.positions?.length === nextProps.positions?.length &&
@@ -195,7 +217,8 @@ const Cell = memo(
       prevProps.isMovingRef === nextProps.isMovingRef &&
       prevProps.scaleValue === nextProps.scaleValue &&
       prevProps.isDark === nextProps.isDark &&
-      prevProps.cell.isGiven === nextProps.cell.isGiven
+      prevProps.cell.isGiven === nextProps.cell.isGiven &&
+      prevProps.hintDrawerVisible === nextProps.hintDrawerVisible
     );
   }
 );

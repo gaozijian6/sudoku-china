@@ -313,8 +313,7 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       color: isDark ? '#888' : '#000',
     },
     selectedCell: {
-      borderWidth: 2,
-      backgroundColor: isDark ? 'rgb(68, 79, 94)' : 'rgb(204,223,253)',
+      backgroundColor: isDark ? 'rgba(111, 152, 240, 0.4)' : 'rgba(3, 71, 219, 0.3)',
     },
     selectedNumberButton: {
       fontSize: 30,
@@ -674,6 +673,10 @@ const sudokuStyles = (isDark: boolean, draftMode: boolean = false, isPortrait: b
       marginRight: 10,
       // tintColor: 'white',
       tintColor: isDark ? '#666' : '#fff',
+    },
+    // 相关方格的高亮样式（颜色较浅）
+    relatedCell: {
+      backgroundColor: isDark ? 'rgba(91, 139, 241, 0.2)' : 'rgba(34, 99, 239, 0.15)',
     },
   });
 };

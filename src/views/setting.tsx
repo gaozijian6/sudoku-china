@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import LanguageModal from '../components/LanguageModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DeviceInfo from 'react-native-device-info';
+import CustomSoundModal from '../components/CustomSoundModal';
 
 const PRIVACY_POLICY_URL = 'https://sites.google.com/view/sudokucustom';
 const TERMS_OF_SERVICE_URL = 'https://sites.google.com/view/sudoku-custom-terms';
@@ -31,6 +32,7 @@ function Setting() {
   const setIsSetting = useSudokuStore(state => state.setIsSetting);
   const styles = createStyles(isDark);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
+  const [customSoundModalVisible, setCustomSoundModalVisible] = useState(false);
   const { t, i18n } = useTranslation();
   
   // 从设备信息获取应用版本号
@@ -104,12 +106,19 @@ ${t('feedbackMessage')}
     Linking.openURL('https://www.xiaohongshu.com/user/profile/67a2381a000000000e01f711');
   }, []);
 
+  const handleSoundSettings = useCallback(() => {
+    setCustomSoundModalVisible(true);
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.item}>
           <Image source={require('../assets/icon/sound.png')} style={styles.leftIcon} />
           <Text style={styles.itemText}>{t('sound')}</Text>
+          <Pressable style={styles.soundSettingsButton} onPress={handleSoundSettings}>
+            <Text style={styles.switchButtonText}>{t('customSound')}</Text>
+          </Pressable>
           <Switch
             value={isSound}
             onValueChange={toogleSound}
@@ -232,6 +241,11 @@ ${t('feedbackMessage')}
           i18n.changeLanguage(lang);
           setLanguageModalVisible(false);
         }}
+      />
+
+      <CustomSoundModal
+        visible={customSoundModalVisible}
+        onClose={() => setCustomSoundModalVisible(false)}
       />
     </View>
   );
@@ -408,6 +422,22 @@ const createStyles = (isDark: boolean) =>
     versionText: {
       fontSize: 14,
       color: '#666',
+    },
+    soundSettingsButton: {
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 10,
+      borderRadius: 6,
+      backgroundColor: isDark ? 'rgba(39, 60, 95, 0.3)' : 'rgba(91,139,241,0.1)',
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(39, 60, 95, 0.6)' : 'rgba(91,139,241,0.3)',
+    },
+    switchButtonText: {
+      fontSize: 14,
+      color: isDark ? 'rgb(148,148,150)' : 'rgb(91,139,241)',
+      fontWeight: '500',
     },
   });
 

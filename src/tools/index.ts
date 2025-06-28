@@ -590,3 +590,48 @@ export const isSudokuDataDIY1Compressed = (str: any): boolean => {
 export const isSudokuDataDIY2Compressed = (str: any): boolean => {
   return typeof str === 'string' && !str.includes('board');
 };
+
+export const getRelatedPositions = (row: number, col: number): Position[] => {
+  const positions: Position[] = [];
+  const positionSet = new Set<string>();
+
+  // 获取同行的所有坐标
+  for (let c = 0; c < 9; c++) {
+    if (c !== col) {
+      const key = `${row}-${c}`;
+      if (!positionSet.has(key)) {
+        positions.push({ row, col: c });
+        positionSet.add(key);
+      }
+    }
+  }
+
+  // 获取同列的所有坐标
+  for (let r = 0; r < 9; r++) {
+    if (r !== row) {
+      const key = `${r}-${col}`;
+      if (!positionSet.has(key)) {
+        positions.push({ row: r, col });
+        positionSet.add(key);
+      }
+    }
+  }
+
+  // 获取同宫的所有坐标
+  const boxStartRow = Math.floor(row / 3) * 3;
+  const boxStartCol = Math.floor(col / 3) * 3;
+
+  for (let r = boxStartRow; r < boxStartRow + 3; r++) {
+    for (let c = boxStartCol; c < boxStartCol + 3; c++) {
+      if (r !== row || c !== col) {
+        const key = `${r}-${c}`;
+        if (!positionSet.has(key)) {
+          positions.push({ row: r, col: c });
+          positionSet.add(key);
+        }
+      }
+    }
+  }
+
+  return positions;
+};

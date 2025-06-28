@@ -300,5 +300,6 @@ export default {
     updateNotes: 'अपडेट नोट्स',
     currentVersion: 'वर्तमान संस्करण',
     newVersion: 'नया संस्करण',
+    customSound: 'कस्टम',
   },
 };
