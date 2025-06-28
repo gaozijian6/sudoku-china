@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'Die blauen Zellen in den vier Spalten enthalten keine anderen Kandidaten für {{target}}. Unabhängig davon, wie diese Zellen gelöst werden, sollten die entsprechenden vier Zeilen keine Kandidaten für {{target}} enthalten',
       DOUBLE_COLOR_CHAIN_delete:
-        'wenn {{posStr}} den Wert {{target}} hat, kann das rote Feld nicht den Wert {{target}} haben',
+        'wenn {{posStr}} den Wert {{target1}} hat, kann das rote Feld nicht den Wert {{target2}} haben',
       DOUBLE_COLOR_CHAIN_s:
         'wenn {{posStr1}} den Wert {{target1}} hat, führt dies dazu, dass {{posStr2}} den Wert {{target2}} hat',
       DOUBLE_COLOR_CHAIN_r:
@@ -301,5 +301,30 @@ export default {
     updateNotes: 'Aktualisierungsinhalte',
     currentVersion: 'Aktuelle Version',
     newVersion: 'Neue Version',
+    customSound: 'Benutzerdefiniert',
+    errorSound: 'Fehlerton',
+    successSound: 'Erfolgston 1', 
+    switchSound: 'Wechselton',
+    eraseSound: 'Löschton',
+    successSound2: 'Erfolgston 2',
+    gameCompleteSound: 'Spielende-Ton',
+    currentSound: 'Aktueller Ton',
+    change: 'Ändern',
+    customSoundDescription: 'Klicken Sie die Wiedergabetaste, um Töne zu hören, klicken Sie die Ändern-Taste, um zwischen verschiedenen Tondateien zu wechseln.',
+    soundSettingsSaved: 'Toneinstellungen gespeichert',
+    resetToDefault: 'Auf Standard zurücksetzen',
+    resetSoundSettingsConfirm: 'Sind Sie sicher, dass Sie die Toneinstellungen auf Standard zurücksetzen möchten?',
+    selectSound: 'Ton auswählen',
+    default: 'Standard',
+    save: 'Speichern',
+    // 音效名称翻译
+    sound1: 'Ton 1',
+    sound2: 'Ton 2',
+    sound3: 'Ton 3',
+    sound4: 'Ton 4',
+    sound5: 'Ton 5',
+    sound6: 'Ton 6',
+    sound7: 'Ton 7',
+    sound8: 'Ton 8',
   },
 };

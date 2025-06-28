@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         '파란색 셀이 위치한 네 열에는 {{target}}에 대한 다른 후보 셀이 없습니다. 이 셀들의 값이 어떻게 결정되든, 해당하는 네 행에는 후보 숫자 {{target}}이 올 수 없습니다',
       DOUBLE_COLOR_CHAIN_delete:
-        '{{posStr}}이(가) {{target}}일 때, 빨간 셀은 {{target}}이(가) 될 수 없습니다',
+        '{{posStr}}이(가) {{target1}}일 때, 빨간 셀은 {{target2}}이(가) 될 수 없습니다',
       DOUBLE_COLOR_CHAIN_s:
         '{{posStr1}}이(가) {{target1}}일 때, {{posStr2}}는 {{target2}}이(가) 됩니다',
       DOUBLE_COLOR_CHAIN_r:
@@ -297,5 +297,29 @@ export default {
     updateNotes: '업데이트 내용',
     currentVersion: '현재 버전',
     newVersion: '새 버전',
+    customSound: '커스텀',
+    errorSound: '오류 소리',
+    successSound: '성공 소리 1', 
+    switchSound: '전환 소리',
+    eraseSound: '지우기 소리',
+    successSound2: '성공 소리 2',
+    gameCompleteSound: '게임 완료 소리',
+    currentSound: '현재 소리',
+    change: '변경',
+    customSoundDescription: '소리를 미리 들으려면 재생 버튼을 클릭하고, 다른 소리 파일로 전환하려면 변경 버튼을 클릭하세요.',
+    soundSettingsSaved: '소리 설정이 저장되었습니다',
+    resetToDefault: '기본값으로 재설정',
+    resetSoundSettingsConfirm: '기본 소리 설정으로 재설정하시겠습니까?',
+    selectSound: '소리 선택',
+    default: '기본값',
+    save: '저장',
+    sound1: '소리 1',
+    sound2: '소리 2',
+    sound3: '소리 3',
+    sound4: '소리 4',
+    sound5: '소리 5',
+    sound6: '소리 6',
+    sound7: '소리 7',
+    sound8: '소리 8',
   },
 };

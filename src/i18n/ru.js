@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'Синие клетки в четырех столбцах не имеют других кандидатов {{target}}. Независимо от того, как эти клетки заполнены, в соответствующих четырех строках не должно быть кандидата {{target}}',
       DOUBLE_COLOR_CHAIN_delete:
-        'когда {{posStr}} принимает значение {{target}}, красная клетка не может принять {{target}}',
+        'когда {{posStr}} принимает значение {{target1}}, красная клетка не может принять {{target2}}',
       DOUBLE_COLOR_CHAIN_s:
         'когда {{posStr1}} принимает значение {{target1}}, это приводит к тому, что {{posStr2}} принимает {{target2}}',
       DOUBLE_COLOR_CHAIN_r:
@@ -301,5 +301,29 @@ export default {
     updateNotes: 'Содержание обновления',
     currentVersion: 'Текущая версия',
     newVersion: 'Новая версия',
+    customSound: 'Пользовательский',
+    errorSound: 'Звук ошибки',
+    successSound: 'Звук успеха 1', 
+    switchSound: 'Звук переключения',
+    eraseSound: 'Звук стирания',
+    successSound2: 'Звук успеха 2',
+    gameCompleteSound: 'Звук завершения игры',
+    currentSound: 'Текущий звук',
+    change: 'Изменить',
+    customSoundDescription: 'Нажмите кнопку воспроизведения для прослушивания звуков, нажмите кнопку изменения для переключения между различными звуковыми файлами.',
+    soundSettingsSaved: 'Настройки звука сохранены',
+    resetToDefault: 'Сбросить до стандартных',
+    resetSoundSettingsConfirm: 'Вы уверены, что хотите сбросить настройки звука до стандартных?',
+    selectSound: 'Выбрать звук',
+    default: 'Стандартный',
+    save: 'Сохранить',
+    sound1: 'Звук 1',
+    sound2: 'Звук 2',
+    sound3: 'Звук 3',
+    sound4: 'Звук 4',
+    sound5: 'Звук 5',
+    sound6: 'Звук 6',
+    sound7: 'Звук 7',
+    sound8: 'Звук 8',
   },
 };

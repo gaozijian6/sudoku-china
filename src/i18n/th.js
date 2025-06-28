@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'ช่องสีฟ้าที่อยู่ในสี่คอลัมน์ไม่มีช่องอื่นที่มีตัวเลือก{{target}} ไม่ว่าจะเลือกช่องใดในกลุ่มนี้ ตัวเลือก{{target}}ไม่ควรปรากฏในสี่แถวที่เกี่ยวข้อง',
       DOUBLE_COLOR_CHAIN_delete:
-        'เมื่อ {{posStr}} มีค่า {{target}} ช่องสีแดงไม่สามารถมีค่า {{target}} ได้',
+        'เมื่อ {{posStr}} มีค่า {{target1}} ช่องสีแดงไม่สามารถมีค่า {{target2}} ได้',
       DOUBLE_COLOR_CHAIN_s:
         'เมื่อ {{posStr1}} มีค่า {{target1}} จะทำให้ {{posStr2}} มีค่า {{target2}}',
       DOUBLE_COLOR_CHAIN_r:
@@ -298,5 +298,29 @@ export default {
     updateNotes: 'บันทึกการอัปเดต',
     currentVersion: 'รุ่นปัจจุบัน',
     newVersion: 'รุ่นใหม่',
+    customSound: 'กำหนดเอง',
+    errorSound: 'เสียงข้อผิดพลาด',
+    successSound: 'เสียงสำเร็จ 1', 
+    switchSound: 'เสียงสลับ',
+    eraseSound: 'เสียงลบ',
+    successSound2: 'เสียงสำเร็จ 2',
+    gameCompleteSound: 'เสียงเกมเสร็จสิ้น',
+    currentSound: 'เสียงปัจจุบัน',
+    change: 'เปลี่ยน',
+    customSoundDescription: 'คลิกปุ่มเล่นเพื่อฟังเสียง คลิกปุ่มเปลี่ยนเพื่อสลับระหว่างไฟล์เสียงต่างๆ',
+    soundSettingsSaved: 'บันทึกการตั้งค่าเสียงแล้ว',
+    resetToDefault: 'รีเซ็ตเป็นค่าเริ่มต้น',
+    resetSoundSettingsConfirm: 'คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตการตั้งค่าเสียงเป็นค่าเริ่มต้น?',
+    selectSound: 'เลือกเสียง',
+    default: 'ค่าเริ่มต้น',
+    save: 'บันทึก',
+    sound1: 'เสียง 1',
+    sound2: 'เสียง 2',
+    sound3: 'เสียง 3',
+    sound4: 'เสียง 4',
+    sound5: 'เสียง 5',
+    sound6: 'เสียง 6',
+    sound7: 'เสียง 7',
+    sound8: 'เสียง 8',
   },
 };

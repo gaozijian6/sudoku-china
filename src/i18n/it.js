@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'Le celle blu nelle quattro colonne non contengono altri candidati per {{target}}. Qualunque sia la combinazione in queste celle, il candidato {{target}} non dovrebbe apparire nelle quattro righe corrispondenti',
       DOUBLE_COLOR_CHAIN_delete:
-        'quando {{posStr}} assume {{target}}, la cella rossa non può assumere {{target}}',
+        'quando {{posStr}} assume {{target1}}, la cella rossa non può assumere {{target2}}',
       DOUBLE_COLOR_CHAIN_s:
         'quando {{posStr1}} assume {{target1}}, porta {{posStr2}} ad assumere {{target2}}',
       DOUBLE_COLOR_CHAIN_r:
@@ -301,5 +301,30 @@ export default {
     updateNotes: 'Contenuto dell\'aggiornamento',
     currentVersion: 'Versione corrente',
     newVersion: 'Nuova versione',
+    customSound: 'Personalizzato',
+    errorSound: 'Suono di Errore',
+    successSound: 'Suono di Successo 1', 
+    switchSound: 'Suono di Cambio',
+    eraseSound: 'Suono di Cancellazione',
+    successSound2: 'Suono di Successo 2',
+    gameCompleteSound: 'Suono di Completamento Gioco',
+    currentSound: 'Suono Attuale',
+    change: 'Cambia',
+    customSoundDescription: 'Fai clic sul pulsante di riproduzione per ascoltare i suoni in anteprima, fai clic sul pulsante cambia per passare tra diversi file audio.',
+    soundSettingsSaved: 'Impostazioni audio salvate',
+    resetToDefault: 'Ripristina Predefinito',
+    resetSoundSettingsConfirm: 'Sei sicuro di voler ripristinare le impostazioni audio predefinite?',
+    selectSound: 'Seleziona Suono',
+    default: 'Predefinito',
+    save: 'Salva',
+    // 音效名称翻译
+    sound1: 'Suono 1',
+    sound2: 'Suono 2',
+    sound3: 'Suono 3',
+    sound4: 'Suono 4',
+    sound5: 'Suono 5',
+    sound6: 'Suono 6',
+    sound7: 'Suono 7',
+    sound8: 'Suono 8',
   },
 };

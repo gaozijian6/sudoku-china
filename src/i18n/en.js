@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'The blue cells in these four columns have no other candidate cells for {{target}}. Regardless of how these cells are filled, candidate {{target}} should not appear in the corresponding four rows.',
       DOUBLE_COLOR_CHAIN_delete:
-        'when {{posStr}} takes {{target}}, the red cell cannot take {{target}}',
+        'when {{posStr}} takes {{target1}}, the red cell cannot take {{target2}}',
       DOUBLE_COLOR_CHAIN_s:
         'when {{posStr1}} takes {{target1}}, it will lead to {{posStr2}} taking {{target2}}',
       DOUBLE_COLOR_CHAIN_r:
@@ -300,5 +300,30 @@ export default {
     updateNotes: 'Update Notes',
     currentVersion: 'Current Version',
     newVersion: 'New Version',
+    customSound: 'Custom',
+    errorSound: 'Error Sound',
+    successSound: 'Success Sound 1', 
+    switchSound: 'Switch Sound',
+    eraseSound: 'Erase Sound',
+    successSound2: 'Success Sound 2',
+    gameCompleteSound: 'Game Complete Sound',
+    currentSound: 'Current Sound',
+    change: 'Change',
+    customSoundDescription: 'Click the play button to preview sounds, click the change button to switch between different sound files.',
+    soundSettingsSaved: 'Sound settings saved',
+    resetToDefault: 'Reset to Default',
+    resetSoundSettingsConfirm: 'Are you sure you want to reset to default sound settings?',
+    selectSound: 'Select Sound',
+    default: 'Default',
+    save: 'Save',
+    // 音效名称翻译
+    sound1: 'Sound 1',
+    sound2: 'Sound 2',
+    sound3: 'Sound 3',
+    sound4: 'Sound 4',
+    sound5: 'Sound 5',
+    sound6: 'Sound 6',
+    sound7: 'Sound 7',
+    sound8: 'Sound 8',
   },
 };

@@ -18,6 +18,7 @@ import {
   deepCopyBoard,
   solve3,
   checkDraftIsValid,
+  getRelatedPositions,
 } from '../tools';
 import { useSudokuBoardDIY } from '../tools/useSudokuBoardDIY';
 import {
@@ -67,7 +68,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     counts,
     standradBoardRef,
   } = useSudokuBoardDIY();
-  const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const lastSelectedNumber = useRef<number | null>(null);
   const [draftMode, setDraftMode] = useState<boolean>(false);
   const [selectedCell, setSelectedCell] = useState<{
@@ -78,7 +79,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     row: number;
     col: number;
   } | null>(null);
-  const [selectionMode, setSelectionMode] = useState<1 | 2>(1);
+  const selectionMode = useSudokuStore(state => state.selectionMode);
+  const setSelectionMode = useSudokuStore(state => state.setSelectionMode);
   const [errorCells, setErrorCells] = useState<{ row: number; col: number }[]>([]);
   const [hintDrawerVisible, setHintDrawerVisible] = useState<boolean>(false);
 
@@ -179,7 +181,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     setDraftMode(false);
     setSelectedCell({ row: 0, col: 0 });
     lastSelectedCell.current = null;
-    setSelectionMode(1);
     setErrorCells([]);
     setHintDrawerVisible(false);
     setIsHint(false);
@@ -283,7 +284,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
       setDraftMode(data.draftMode);
       setSelectedCell(data.selectedCell);
       lastSelectedCell.current = data.lastSelectedCell;
-      setSelectionMode(data.selectionMode);
       setErrorCells(data.errorCells);
       setHintContent(data.hintContent);
       setHintMethod(handleHintMethod(data.hintMethod, t));
@@ -339,11 +339,28 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     [jumpToNextNumber, remainingCounts, remainingCountsSync, selectedNumber, setRemainingCounts]
   );
 
+  // 添加相关方格的状态
+  const [relatedCells, setRelatedCells] = useState<{ row: number; col: number }[]>([]);
+
+  // 添加 useEffect 来处理初始状态和 selectedCell 变化
+  useEffect(() => {
+    console.log(selectedNumber);
+
+    if (selectionMode === 2 && selectedCell) {
+      const related = getRelatedPositions(selectedCell.row, selectedCell.col);
+
+      setRelatedCells(related);
+    } else {
+      setRelatedCells([]);
+    }
+  }, [selectedCell, selectionMode]);
+
   // 点击方格的回调函数
   const handleCellChange = useCallback(
     (row: number, col: number) => {
       if (selectionMode === 2) {
         setSelectedCell({ row, col });
+
         if (board[row][col].value) {
           setSelectedNumber(board[row][col].value);
         } else {
@@ -641,7 +658,8 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
         console.log(r);
         hintCount.current++;
         setResult(r);
-        setSelectedNumber(null);
+        // setSelectedNumber(null);
+        lastSelectedNumber.current = selectedNumber;
         setHintMethod(handleHintMethod(r.method, t));
         setHintContent(
           handleHintContent(
@@ -677,6 +695,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
       applyHintHighlight,
       updateBoard,
       selectedCell,
+      selectedNumber,
     ]
   );
 
@@ -760,8 +779,9 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
 
       setHintDrawerVisible(false);
       setIsHint(false);
-      lastSelectedCell.current = selectedCell;
+      // lastSelectedCell.current = selectedCell;
       setResult(null); // 重置 result
+      setSelectedNumber(lastSelectedNumber.current);
     }
   }, [
     falseCells.length,
@@ -775,7 +795,6 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     standradBoardRef,
     remainingCountsMinusOne,
     removeHintHighlight,
-    selectedCell,
     setIsHint,
   ]);
 
@@ -794,6 +813,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     setHintDrawerVisible(false);
     setIsHint(false);
     setSelectedCell(lastSelectedCell.current);
+    setSelectedNumber(lastSelectedNumber.current);
   }, [board, removeHintHighlight, updateBoard, setIsHint]);
 
   // 切换模式回调函数
@@ -801,15 +821,17 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
     playSound('switch', isSound);
     if (selectionMode === 1) {
       setSelectionMode(2);
+      AsyncStorage.setItem('selectionMode', '2');
       setSelectedNumber(null);
     } else {
       setSelectionMode(1);
+      AsyncStorage.setItem('selectionMode', '1');
       if (lastSelectedNumber.current) {
         setSelectedNumber(lastSelectedNumber.current);
       }
       setEraseEnabled(false);
     }
-  }, [isSound, selectionMode]);
+  }, [isSound, selectionMode, setSelectionMode]);
 
   useEffect(() => {
     if (!selectedCell) return;
@@ -998,6 +1020,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
               selectedNumber={selectedNumber}
               selectionMode={selectionMode}
               selectedCell={selectedCell}
+              relatedCells={relatedCells}
               errorCells={errorCells}
               board={board}
               prompts={prompts}
@@ -1009,6 +1032,7 @@ const SudokuDIY: React.FC<SudokuDIYProps> = memo(({ isMovingRef }) => {
               isMovingRef={isMovingRef}
               isDark={isDark}
               styles={styles}
+              hintDrawerVisible={hintDrawerVisible}
             />
           ))
         )}

@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'De blauwe cellen in de vier kolommen bevatten geen andere kandidaatcellen voor {{target}}, ongeacht hoe deze cellen worden ingevuld, kan {{target}} niet voorkomen in de corresponderende vier rijen',
       DOUBLE_COLOR_CHAIN_delete:
-        'wanneer {{posStr}} de waarde {{target}} heeft, kan de rode cel niet de waarde {{target}} hebben',
+        'wanneer {{posStr}} de waarde {{target1}} heeft, kan de rode cel niet de waarde {{target2}} hebben',
       DOUBLE_COLOR_CHAIN_s:
         'wanneer {{posStr1}} de waarde {{target1}} heeft, leidt dit ertoe dat {{posStr2}} de waarde {{target2}} heeft',
       DOUBLE_COLOR_CHAIN_r:
@@ -300,5 +300,29 @@ export default {
     updateNotes: 'Update inhoud',
     currentVersion: 'Huidige versie',
     newVersion: 'Nieuwe versie',
+    customSound: 'Aangepast',
+    errorSound: 'Fout Geluid',
+    successSound: 'Succes Geluid 1', 
+    switchSound: 'Wissel Geluid',
+    eraseSound: 'Wis Geluid',
+    successSound2: 'Succes Geluid 2',
+    gameCompleteSound: 'Spel Voltooid Geluid',
+    currentSound: 'Huidig Geluid',
+    change: 'Wijzigen',
+    customSoundDescription: 'Klik op de afspeelknop om geluiden te beluisteren, klik op de wijzigknop om tussen verschillende geluidsbestanden te schakelen.',
+    soundSettingsSaved: 'Geluidsinstellingen opgeslagen',
+    resetToDefault: 'Terugzetten naar Standaard',
+    resetSoundSettingsConfirm: 'Weet u zeker dat u wilt terugzetten naar de standaard geluidsinstellingen?',
+    selectSound: 'Geluid Selecteren',
+    default: 'Standaard',
+    save: 'Opslaan',
+    sound1: 'Geluid 1',
+    sound2: 'Geluid 2',
+    sound3: 'Geluid 3',
+    sound4: 'Geluid 4',
+    sound5: 'Geluid 5',
+    sound6: 'Geluid 6',
+    sound7: 'Geluid 7',
+    sound8: 'Geluid 8',
   },
 };

@@ -190,7 +190,7 @@ export default {
       JELLYFISH_COLUMN:
         'As células azuis estão localizadas em quatro colunas onde não existem outros candidatos para {{target}}. Independentemente de como essas células são preenchidas, o candidato {{target}} não deve aparecer nas quatro linhas correspondentes',
       DOUBLE_COLOR_CHAIN_delete:
-        'quando {{posStr}} assume {{target}}, a célula vermelha não pode assumir {{target}}',
+        'quando {{posStr}} assume {{target1}}, a célula vermelha não pode assumir {{target2}}',
       DOUBLE_COLOR_CHAIN_s:
         'quando {{posStr1}} assume {{target1}}, isso fará com que {{posStr2}} assuma {{target2}}',
       DOUBLE_COLOR_CHAIN_r:
@@ -301,5 +301,29 @@ export default {
     updateNotes: 'Notas da atualização',
     currentVersion: 'Versão atual',
     newVersion: 'Nova versão',
+    customSound: 'Personalizado',
+    errorSound: 'Som de Erro',
+    successSound: 'Som de Sucesso 1', 
+    switchSound: 'Som de Troca',
+    eraseSound: 'Som de Apagar',
+    successSound2: 'Som de Sucesso 2',
+    gameCompleteSound: 'Som de Jogo Concluído',
+    currentSound: 'Som Atual',
+    change: 'Alterar',
+    customSoundDescription: 'Clique no botão reproduzir para ouvir os sons, clique no botão alterar para alternar entre diferentes arquivos de som.',
+    soundSettingsSaved: 'Configurações de som salvas',
+    resetToDefault: 'Redefinir para Padrão',
+    resetSoundSettingsConfirm: 'Tem certeza de que deseja redefinir para as configurações de som padrão?',
+    selectSound: 'Selecionar Som',
+    default: 'Padrão',
+    save: 'Salvar',
+    sound1: 'Som 1',
+    sound2: 'Som 2',
+    sound3: 'Som 3',
+    sound4: 'Som 4',
+    sound5: 'Som 5',
+    sound6: 'Som 6',
+    sound7: 'Som 7',
+    sound8: 'Som 8',
   },
 };

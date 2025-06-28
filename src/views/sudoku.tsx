@@ -24,6 +24,7 @@ import {
   saveUserStatisticPass,
   calculateTotalProgress,
   saveUserStatisticTime,
+  getRelatedPositions,
 } from '../tools';
 import { useSudokuBoard } from '../tools/useSudokuBoard';
 import {
@@ -84,7 +85,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     initializeBoard2,
   } = useSudokuBoard();
 
-  const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const lastSelectedNumber = useRef<number | null>(null);
   const [draftMode, setDraftMode] = useState<boolean>(false);
   const lastErrorTime = useRef<number | null>(null);
@@ -189,6 +190,9 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     gameTimeRef.current = 0;
     setIsTimerRunning(true);
   }, []);
+
+  // 添加相关方格的状态
+  const [relatedCells, setRelatedCells] = useState<{ row: number; col: number }[]>([]);
 
   useEffect(() => {
     if (difficulty_route) {
@@ -526,11 +530,22 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     [jumpToNextNumber, remainingCounts, remainingCountsSync, selectedNumber, setRemainingCounts]
   );
 
-  // 点击方格的回调函数
+  // 添加 useEffect 来处理初始状态和 selectedCell 变化
+  useEffect(() => {
+    if (selectionMode === 2 && selectedCell) {
+      const related = getRelatedPositions(selectedCell.row, selectedCell.col);
+
+      setRelatedCells(related);
+    } else {
+      setRelatedCells([]);
+    }
+  }, [selectedCell, selectionMode]);
+
   const handleCellChange = useCallback(
     (row: number, col: number) => {
       if (selectionMode === 2) {
         setSelectedCell({ row, col });
+
         if (board[row][col].value) {
           setSelectedNumber(board[row][col].value);
         } else {
@@ -878,7 +893,8 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
         console.log(r);
         hintCount.current++;
         setResult(r);
-        setSelectedNumber(null);
+        // setSelectedNumber(null);
+        lastSelectedNumber.current = selectedNumber;
         setHintMethod(handleHintMethod(r.method, t));
         setHintContent(
           handleHintContent(
@@ -911,6 +927,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
       applyHintHighlight,
       updateBoard,
       selectedCell,
+      selectedNumber,
     ]
   );
 
@@ -997,8 +1014,9 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
 
       setHintDrawerVisible(false);
       setIsHint(false);
-      lastSelectedCell.current = selectedCell;
+      // lastSelectedCell.current = selectedCell;
       setResult(null); // 重置 result
+      setSelectedNumber(lastSelectedNumber.current);
     }
   }, [
     falseCells.length,
@@ -1012,7 +1030,6 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     standradBoardRef,
     removeHintHighlight,
     updateBoard,
-    selectedCell,
     playSuccessSound,
     remainingCountsMinusOne,
   ]);
@@ -1032,6 +1049,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
     setHintDrawerVisible(false);
     setIsHint(false);
     setSelectedCell(lastSelectedCell.current);
+    setSelectedNumber(lastSelectedNumber.current);
   }, [board, removeHintHighlight, updateBoard, setIsHint]);
 
   // 切换模式回调函数
@@ -1201,6 +1219,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
               selectedNumber={selectedNumber}
               selectionMode={selectionMode}
               selectedCell={selectedCell}
+              relatedCells={relatedCells}
               errorCells={errorCells}
               board={board}
               prompts={prompts}
@@ -1213,6 +1232,7 @@ const Sudoku: React.FC<SudokuProps> = memo(({ isMovingRef }) => {
               isMovingRef={isMovingRef}
               styles={styles}
               isDark={isDark}
+              hintDrawerVisible={hintDrawerVisible}
             />
           ))
         )}
