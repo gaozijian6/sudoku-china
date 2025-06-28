@@ -1023,8 +1023,6 @@ export const handleHintContent = (
 
         if (label) {
           let [label1, label2] = label.substring(1).split('-');
-          console.log('label1', label1, 'label2', label2);
-
           if (label1 === '') {
             const startPos = `R${highlightPromts1[0].row + 1}C${highlightPromts1[0].col + 1}`;
             const deleteTarget = highlightDeletes[0].value;

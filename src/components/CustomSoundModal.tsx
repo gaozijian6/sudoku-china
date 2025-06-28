@@ -605,7 +605,7 @@ const createStyles = (isDark: boolean) =>
     },
     saveButtonText: {
       fontSize: 16,
-      color: '#fff',
+      color: isDark ? 'rgb(148,148,150)' : '#fff',
       fontWeight: '600',
     },
     // 二级弹窗样式

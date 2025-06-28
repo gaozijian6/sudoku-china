@@ -4,7 +4,6 @@ import entryBoard from '../mock/1entry';
 import extremeBoard from '../mock/5extreme';
 import hardBoard from '../mock/4hard';
 import mediumBoard from '../mock/3medium';
-import { isUnitStrongLink } from './solution';
 import { SudokuSolver } from './DLX';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import iCloudStorage from 'react-native-icloudstore';
