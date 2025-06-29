@@ -1,74 +1,53 @@
 import Sound from 'react-native-sound';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import errorSound from '../assets/audio/error.wav';
-import successSound from '../assets/audio/success.wav';
-import switchSound from '../assets/audio/switch.wav';
-import eraseSound from '../assets/audio/erase.wav';
-import successSound2 from '../assets/audio/success2.wav';
-import successSound3 from '../assets/audio/success3.wav';
 
 // 自定义音效文件映射
 const customSounds = {
   switch: {
-    '音效1': require('../assets/audio/音效/切换音效/音效1.wav'),
-    '音效2': require('../assets/audio/音效/切换音效/音效2.mp3'),
-    '音效3': require('../assets/audio/音效/切换音效/音效3.mp3'),
-    '音效4': require('../assets/audio/音效/切换音效/音效4.wav'),
-    '音效5': require('../assets/audio/音效/切换音效/音效5.wav'),
-    '音效6': require('../assets/audio/音效/切换音效/音效6.wav'),
-    '音效7': require('../assets/audio/音效/切换音效/音效7.mp3'),
-    '音效8': require('../assets/audio/音效/切换音效/音效8.mp3'),
+    default: require('../assets/audio/音效/切换音效/default.wav'),
+    音效1: require('../assets/audio/音效/切换音效/音效1.wav'),
+    音效2: require('../assets/audio/音效/切换音效/音效2.mp3'),
+    音效3: require('../assets/audio/音效/切换音效/音效3.mp3'),
+    音效4: require('../assets/audio/音效/切换音效/音效4.wav'),
+    音效5: require('../assets/audio/音效/切换音效/音效5.wav'),
+    音效6: require('../assets/audio/音效/切换音效/音效6.wav'),
+    音效7: require('../assets/audio/音效/切换音效/音效7.mp3'),
+    音效8: require('../assets/audio/音效/切换音效/音效8.mp3'),
   },
   success: {
-    '音效1': require('../assets/audio/音效/成功音效1/音效1.wav'),
-    '音效2': require('../assets/audio/音效/成功音效1/音效2.mp3'),
-    '音效3': require('../assets/audio/音效/成功音效1/音效3.mp3'),
-    '音效4': require('../assets/audio/音效/成功音效1/音效4.mp3'),
-    '音效5': require('../assets/audio/音效/成功音效1/音效5.mp3'),
+    default: require('../assets/audio/音效/成功音效1/default.wav'),
+    音效1: require('../assets/audio/音效/成功音效1/音效1.wav'),
+    音效2: require('../assets/audio/音效/成功音效1/音效2.mp3'),
+    音效3: require('../assets/audio/音效/成功音效1/音效3.mp3'),
+    音效4: require('../assets/audio/音效/成功音效1/音效4.mp3'),
+    音效5: require('../assets/audio/音效/成功音效1/音效5.mp3'),
   },
   success2: {
-    '音效1': require('../assets/audio/音效/成功音效2/音效1.wav'),
-    '音效2': require('../assets/audio/音效/成功音效2/音效2.mp3'),
-    '音效3': require('../assets/audio/音效/成功音效2/音效3.mp3'),
-    '音效4': require('../assets/audio/音效/成功音效2/音效4.mp3'),
-    '音效5': require('../assets/audio/音效/成功音效2/音效5.mp3'),
+    default: require('../assets/audio/音效/成功音效2/default.wav'),
+    音效1: require('../assets/audio/音效/成功音效2/音效1.wav'),
+    音效2: require('../assets/audio/音效/成功音效2/音效2.mp3'),
+    音效3: require('../assets/audio/音效/成功音效2/音效3.mp3'),
+    音效4: require('../assets/audio/音效/成功音效2/音效4.mp3'),
+    音效5: require('../assets/audio/音效/成功音效2/音效5.mp3'),
   },
   success3: {
-    '音效2': require('../assets/audio/音效/通关音效/音效2.mp3'),
-    '音效3': require('../assets/audio/音效/通关音效/音效3.mp3'),
-    '音效4': require('../assets/audio/音效/通关音效/音效4.wav'),
-    '音效5': require('../assets/audio/音效/通关音效/音效5.mp3'),
+    default: require('../assets/audio/音效/通关音效/default.wav'),
+    音效2: require('../assets/audio/音效/通关音效/音效2.mp3'),
+    音效3: require('../assets/audio/音效/通关音效/音效3.mp3'),
+    音效4: require('../assets/audio/音效/通关音效/音效4.wav'),
+    音效5: require('../assets/audio/音效/通关音效/音效5.mp3'),
   },
   error: {
-    '音效1': require('../assets/audio/音效/错误音效/音效1.mp3'),
-    '音效2': require('../assets/audio/音效/错误音效/音效2.mp3'),
+    default: require('../assets/audio/音效/错误音效/default.wav'),
+    音效1: require('../assets/audio/音效/错误音效/音效1.mp3'),
+    音效2: require('../assets/audio/音效/错误音效/音效2.mp3'),
   },
-  erase: {}, // 擦除音效暂时没有对应文件夹，保持原有默认音效
+  erase: {
+    default: require('../assets/audio/音效/擦除音效/default.wav'),
+  },
 };
-
-// 不要在启动时立即设置音频类别
-// Sound.setActive(true);
-// Sound.setCategory('Ambient');
-
-interface SoundRefs {
-  errorSoundsRef: React.MutableRefObject<Sound[]>;
-  successSoundsRef: React.MutableRefObject<Sound[]>;
-  switchSoundsRef: React.MutableRefObject<Sound[]>;
-  eraseSoundsRef: React.MutableRefObject<Sound[]>;
-  successSoundsRef2: React.MutableRefObject<Sound[]>;
-  successSoundsRef3: React.MutableRefObject<Sound[]>;
-}
 
 type SoundType = 'error' | 'success' | 'switch' | 'erase' | 'success2' | 'success3';
-
-const soundRefs: SoundRefs = {
-  errorSoundsRef: { current: [] },
-  successSoundsRef: { current: [] },
-  switchSoundsRef: { current: [] },
-  eraseSoundsRef: { current: [] },
-  successSoundsRef2: { current: [] },
-  successSoundsRef3: { current: [] },
-};
 
 // 添加一个标志来跟踪是否已经初始化
 let isAudioInitialized = false;
@@ -124,38 +103,11 @@ export const initSounds = async () => {
   // 这个函数可以为空，或者用来预加载音效（可选）
 };
 
-// 按需创建音效的函数
-const createSoundsForType = async (type: SoundType) => {
-  const soundMap = {
-    error: { ref: soundRefs.errorSoundsRef, asset: errorSound, count: 3 },
-    success: { ref: soundRefs.successSoundsRef, asset: successSound, count: 3 },
-    switch: { ref: soundRefs.switchSoundsRef, asset: switchSound, count: 3 },
-    erase: { ref: soundRefs.eraseSoundsRef, asset: eraseSound, count: 3 },
-    success2: { ref: soundRefs.successSoundsRef2, asset: successSound2, count: 3 },
-    success3: { ref: soundRefs.successSoundsRef3, asset: successSound3, count: 1 },
-  };
-
-  const config = soundMap[type];
-  if (!config || config.ref.current.length > 0) {
-    return; // 已经创建过了
-  }
-
-  try {
-    config.ref.current = await Promise.all(
-      Array(config.count)
-        .fill(0)
-        .map(() => createSound(config.asset))
-    );
-  } catch (error) {
-    console.error(`创建 ${type} 音效失败:`, error);
-  }
-};
-
 // 播放自定义音效
 export const playCustomSound = async (soundAsset: any) => {
   // 在第一次播放时初始化音频
   initializeAudioOnFirstUse();
-  
+
   try {
     const sound = await createSound(soundAsset);
     sound.play(success => {
@@ -182,47 +134,23 @@ export const playSound = async (type: SoundType, isSound: boolean) => {
 
   // 获取用户的自定义音效配置
   const soundConfig = await getSoundConfig();
-  
-  // 如果有自定义配置且不是默认音效，播放自定义音效
-  if (soundConfig && soundConfig[type] && soundConfig[type] !== 'default') {
-    const customSoundName = soundConfig[type];
-    const customSoundAsset = customSounds[type][customSoundName];
-    
-    if (customSoundAsset) {
-      await playCustomSound(customSoundAsset);
-      return;
-    }
+
+  // 确定要播放的音效
+  let soundToPlay = 'default'; // 默认使用default
+
+  if (soundConfig && soundConfig[type]) {
+    soundToPlay = soundConfig[type];
   }
 
-  // 否则播放默认音效
-  const soundRefMap = {
-    error: soundRefs.errorSoundsRef,
-    success: soundRefs.successSoundsRef,
-    switch: soundRefs.switchSoundsRef,
-    erase: soundRefs.eraseSoundsRef,
-    success2: soundRefs.successSoundsRef2,
-    success3: soundRefs.successSoundsRef3,
-  };
-
-  const soundsRef = soundRefMap[type];
-  
-  // 如果音效还没有创建，先创建它们
-  if (!soundsRef?.current?.length) {
-    await createSoundsForType(type);
-  }
-
-  const sounds = soundsRef?.current;
-
-  if (!sounds?.length) {
+  // 播放自定义音效（包括default）
+  const customSoundAsset = customSounds[type][soundToPlay];
+  if (customSoundAsset) {
+    await playCustomSound(customSoundAsset);
     return;
   }
 
-  const availableSound = sounds.find(sound => sound?.isPlaying?.() === false);
-  if (!availableSound) {
-    return;
+  // 兜底：如果找不到指定音效，播放default
+  if (customSounds[type]['default']) {
+    await playCustomSound(customSounds[type]['default']);
   }
-
-  availableSound.play(success => {
-    !success && console.log('播放音频失败:', availableSound.isPlaying());
-  });
 };
