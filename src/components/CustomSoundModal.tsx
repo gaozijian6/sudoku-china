@@ -294,7 +294,8 @@ const CustomSoundModal: React.FC<CustomSoundModalProps> = ({ visible, onClose })
         '音效8': t('sound8'),
       };
       
-      return soundNameMap[current] || current;
+      // 添加兜底逻辑：如果找不到对应的翻译或者current为undefined，返回默认值
+      return soundNameMap[current] || current || t('default');
     },
     [soundConfig, t]
   );
