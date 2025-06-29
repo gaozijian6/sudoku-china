@@ -20,18 +20,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 type SoundType = 'error' | 'success' | 'switch' | 'erase' | 'success2' | 'success3';
 
 // 可选择的声音文件
-const soundOptions = {
-  error: require('../assets/audio/error.wav'),
-  success: require('../assets/audio/success.wav'),
-  success2: require('../assets/audio/success2.wav'),
-  success3: require('../assets/audio/success3.wav'),
-  switch: require('../assets/audio/switch.wav'),
-  erase: require('../assets/audio/erase.wav'),
-};
 
 // 自定义音效文件映射
 const customSounds = {
   switch: {
+    'default': require('../assets/audio/音效/切换音效/default.wav'),
     '音效1': require('../assets/audio/音效/切换音效/音效1.wav'),
     '音效2': require('../assets/audio/音效/切换音效/音效2.mp3'),
     '音效3': require('../assets/audio/音效/切换音效/音效3.mp3'),
@@ -42,6 +35,7 @@ const customSounds = {
     '音效8': require('../assets/audio/音效/切换音效/音效8.mp3'),
   },
   success: {
+    'default': require('../assets/audio/音效/成功音效1/default.wav'),
     '音效1': require('../assets/audio/音效/成功音效1/音效1.wav'),
     '音效2': require('../assets/audio/音效/成功音效1/音效2.mp3'),
     '音效3': require('../assets/audio/音效/成功音效1/音效3.mp3'),
@@ -49,6 +43,7 @@ const customSounds = {
     '音效5': require('../assets/audio/音效/成功音效1/音效5.mp3'),
   },
   success2: {
+    'default': require('../assets/audio/音效/成功音效2/default.wav'),
     '音效1': require('../assets/audio/音效/成功音效2/音效1.wav'),
     '音效2': require('../assets/audio/音效/成功音效2/音效2.mp3'),
     '音效3': require('../assets/audio/音效/成功音效2/音效3.mp3'),
@@ -56,14 +51,19 @@ const customSounds = {
     '音效5': require('../assets/audio/音效/成功音效2/音效5.mp3'),
   },
   success3: {
+    'default': require('../assets/audio/音效/通关音效/default.wav'),
     '音效2': require('../assets/audio/音效/通关音效/音效2.mp3'),
     '音效3': require('../assets/audio/音效/通关音效/音效3.mp3'),
     '音效4': require('../assets/audio/音效/通关音效/音效4.wav'),
     '音效5': require('../assets/audio/音效/通关音效/音效5.mp3'),
   },
   error: {
+    'default': require('../assets/audio/音效/错误音效/default.wav'),
     '音效1': require('../assets/audio/音效/错误音效/音效1.mp3'),
     '音效2': require('../assets/audio/音效/错误音效/音效2.mp3'),
+  },
+  erase: {
+    'default': require('../assets/audio/音效/擦除音效/default.wav'),
   },
 };
 
@@ -97,6 +97,7 @@ const CustomSoundModal: React.FC<CustomSoundModalProps> = ({ visible, onClose })
     error: 'default',
     success: 'default',
     switch: 'default',
+    erase: 'default',
     success2: 'default',
     success3: 'default',
   };
@@ -113,6 +114,7 @@ const CustomSoundModal: React.FC<CustomSoundModalProps> = ({ visible, onClose })
     success2: t('successSound2'),
     error: t('errorSound'),
     success3: t('gameCompleteSound'),
+    erase: t('eraseSound'),
   };
 
   // 处理弹窗显示/隐藏的动画
@@ -231,23 +233,10 @@ const CustomSoundModal: React.FC<CustomSoundModalProps> = ({ visible, onClose })
   // 更改声音配置 - 改为显示二级弹窗
   const changeSoundForType = useCallback(
     (soundType: SoundType) => {
-      if (customSounds[soundType] && Object.keys(customSounds[soundType]).length > 0) {
-        setCurrentSelectingType(soundType);
-        setSoundSelectVisible(true);
-      } else {
-        // 如果没有自定义音效，保持原有逻辑
-        const options = Object.keys(soundOptions) as (keyof typeof soundOptions)[];
-        const currentIndex = options.indexOf(soundConfig[soundType] as keyof typeof soundOptions);
-        const nextIndex = (currentIndex + 1) % options.length;
-        const nextOption = options[nextIndex];
-
-        setSoundConfig(prev => ({
-          ...prev,
-          [soundType]: nextOption,
-        }));
-      }
+      setCurrentSelectingType(soundType);
+      setSoundSelectVisible(true);
     },
-    [soundConfig]
+    []
   );
 
   // 选择自定义音效
@@ -272,12 +261,14 @@ const CustomSoundModal: React.FC<CustomSoundModalProps> = ({ visible, onClose })
         // 如果没有传递自定义音效名称，使用当前配置的音效
         const soundToPlay = customSoundName || soundConfig[soundType];
         
-        if (soundToPlay && soundToPlay !== 'default' && customSounds[soundType][soundToPlay]) {
-          // 播放自定义音效
+        if (soundToPlay && customSounds[soundType][soundToPlay]) {
+          // 播放自定义音效（包括default）
           playCustomSound(customSounds[soundType][soundToPlay]);
         } else {
-          // 播放默认音效
-          playSound(soundType, true);
+          // 兜底：如果找不到对应音效，播放default
+          if (customSounds[soundType]['default']) {
+            playCustomSound(customSounds[soundType]['default']);
+          }
         }
       }
     },
@@ -313,6 +304,7 @@ const CustomSoundModal: React.FC<CustomSoundModalProps> = ({ visible, onClose })
     (soundName: string) => {
       // 音效名称映射
       const soundNameMap: { [key: string]: string } = {
+        'default': t('default'),
         '音效1': t('sound1'),
         '音效2': t('sound2'),
         '音效3': t('sound3'),
@@ -356,23 +348,6 @@ const CustomSoundModal: React.FC<CustomSoundModalProps> = ({ visible, onClose })
             </View>
 
             <ScrollView style={styles.selectContent}>
-              {/* 默认选项 */}
-              <Pressable
-                style={[
-                  styles.soundSelectOption,
-                  currentSelected === 'default' && styles.selectedOption,
-                ]}
-                onPress={() => selectCustomSound('default')}
-              >
-                <Text style={styles.soundSelectText}>{t('default')}</Text>
-                <Pressable
-                  style={styles.previewButton}
-                  onPress={() => previewSound(currentSelectingType, 'default')}
-                >
-                  <Image source={require('../assets/icon/sound.png')} style={styles.playIcon} />
-                </Pressable>
-              </Pressable>
-
               {/* 自定义音效选项 */}
               {Object.keys(options).map((soundName) => (
                 <Pressable
